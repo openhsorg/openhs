@@ -5,6 +5,9 @@
 # to convert a file:
 # dos2unix myscript.sh
 
+#ECLIPSE="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/1/eclipse-jee-mars-1-linux-gtk-x86_64.tar.gz&r=1"
+ECLIPSE="http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/kepler/SR2/eclipse-rcp-kepler-SR2-linux-gtk-x86_64.tar.gz&r=1"
+
 # Die on any errors
 set -e 
 
@@ -106,7 +109,8 @@ apt-get -y update
 rm -f -r eclipse
 rm -f -r /opt/eclipse
 rm -f -r /usr/bin/eclipse
-wget "http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/1/eclipse-jee-mars-1-linux-gtk-x86_64.tar.gz&r=1" -O eclipse.tar.gz
+rm -f -r $HOME/.local/share/applications/eclipse.desktop
+wget "$ECLIPSE" -O eclipse.tar.gz
 tar -xf eclipse.tar.gz
 rm eclipse.tar.gz
 mv -f eclipse /opt/eclipse
@@ -123,6 +127,10 @@ add-apt-repository -y ppa:eugenesan/ppa
 apt-get -y update
 apt-get -y install smartgit
 copy_shortcut "smartgit.desktop"
+
+#Maven
+apt-get -y update
+apt-get -y install maven
 
 #Gparted
 apt-get -y update
