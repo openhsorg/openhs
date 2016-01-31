@@ -11,7 +11,13 @@ public class Site {
 	
 	Site ()
 	{
-		
+		Room room1 = new Room ();		
+		site.put("room1", room1);
+	}
+	
+	public int getNumberRooms ()
+	{
+		return site.size();
 	}
 	
 }
