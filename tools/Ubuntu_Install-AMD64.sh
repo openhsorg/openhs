@@ -86,9 +86,9 @@ apt-get -f -y install system-config-samba
 apt-get -y update
 apt-get -y install tor
 
-tar -xvJf ./data/tor-browser-linux64-5.0.3_en-US.tar.xz
-mv -f tor-browser_en-US $HOME/tor-browser_en-US
-rm -f -r tor-browser_en-US
+add-apt-repository -y ppa:webupd8team/tor-browser
+apt-get -y update
+apt-get -y install tor-browser
 
 #Kate editor
 apt-get -y update
