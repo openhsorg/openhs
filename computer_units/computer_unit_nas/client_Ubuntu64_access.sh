@@ -42,6 +42,8 @@ echo "//192.168.1.232/WD2 /mnt/OHS_HDD2 cifs username=$LOGIN,password=$PASSWORD,
 echo "//192.168.1.232/Porche /mnt/OHS_HDD3 cifs username=$LOGIN,password=$PASSWORD,uid=65534,gid=65534,file_mode=0777,dir_mode=0777,iocharset=utf8, 0 0" >> $path
 echo "//192.168.1.232/Old /mnt/OHS_HDD4 cifs username=$LOGIN,password=$PASSWORD,uid=65534,gid=65534,file_mode=0777,dir_mode=0777,iocharset=utf8, 0 0" >> $path
 
+mount -a
+
 # cd /opt/openhab
 # sudo ./start.sh
 
