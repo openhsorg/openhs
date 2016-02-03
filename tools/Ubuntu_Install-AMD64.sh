@@ -74,8 +74,8 @@ apt-get -f -y install doublecmd-qt
 copy_shortcut "doublecmd.desktop"
 
 #MNT
-cp -f data/mtn /usr/local/bin/mtn
-chmod +x /usr/local/bin/mtn
+# cp -f data/mtn /usr/local/bin/mtn
+# chmod +x /usr/local/bin/mtn
 
 #Samba
 apt-get -y update
@@ -96,8 +96,8 @@ apt-get -y install kate
 
 #Chrome
 apt-get update
-apt-get -y purge google-chrome-stable
-apt-get -y autoremove
+#apt-get -y purge google-chrome-stable
+#apt-get -y autoremove
 apt-get -y install libxss1 libappindicator1 libindicator7
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i ./google-chrome*.deb
