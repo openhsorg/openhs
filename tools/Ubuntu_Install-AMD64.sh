@@ -98,10 +98,12 @@ apt-get -y install kate
 apt-get update
 apt-get -y purge google-chrome-stable
 apt-get -y autoremove
+apt-get -y install libxss1 libappindicator1 libindicator7
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-dpkg -i google-chrome-stable_current_amd64.deb
+dpkg -i ./google-chrome*.deb
 apt-get -y install -f
 rm -f google-chrome-stable_current_amd64.deb
+rm -f google-chrome*.deb
 copy_shortcut "google-chrome.desktop"
 
 #Eclipse
