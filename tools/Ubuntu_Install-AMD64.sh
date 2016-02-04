@@ -144,9 +144,9 @@ apt-get -y update
 apt-get -y install skype
 
 #JDownloader
-wget http://installer.jdownloader.org/JD2Setup_x64.sh
-chmod +x JD2Setup_x64.sh
-./JD2Setup_x64.sh
+wget http://installer.jdownloader.org/JD2SilentSetup_x64.sh
+chmod +x JD2SilentSetup*.sh
+./JD2SilentSetup*.sh
 
 #Settings
 echo "********** ---------- Settings... ---------- **********"
