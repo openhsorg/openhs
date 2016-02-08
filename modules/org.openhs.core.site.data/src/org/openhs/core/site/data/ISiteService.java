@@ -5,5 +5,7 @@ public interface ISiteService {
 	Site ss = new Site ();
 	
 	int getNumberRooms ();
+	
+	String tellMe ();
 
 }

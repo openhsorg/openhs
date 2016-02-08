@@ -13,6 +13,9 @@ public class Site {
 	{
 		Room room1 = new Room ();		
 		rooms.put("room1", room1);
+		
+		Room room2 = new Room ();
+		rooms.put("room2", room2);
 	}
 	/*
 	public int getNumberRooms ()
