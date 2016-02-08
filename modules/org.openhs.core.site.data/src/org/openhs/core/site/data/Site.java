@@ -6,18 +6,18 @@ public class Site {
 
 	static String id;
 	
-	TreeMap<String, Room> site = 
+	public TreeMap<String, Room> rooms = 
             new TreeMap<String, Room>();	
 	
 	Site ()
 	{
 		Room room1 = new Room ();		
-		site.put("room1", room1);
+		rooms.put("room1", room1);
 	}
-	
+	/*
 	public int getNumberRooms ()
 	{
 		return site.size();
 	}
-	
+	*/
 }
