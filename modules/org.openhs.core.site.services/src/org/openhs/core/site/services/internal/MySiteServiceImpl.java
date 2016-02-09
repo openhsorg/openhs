@@ -4,15 +4,13 @@ import org.openhs.core.site.data.ISiteService;
 
 public class MySiteServiceImpl implements ISiteService{
 	
-	//Site ss = new Site ();
-
 	public int getNumberRooms ()
 	{
 		return ss.rooms.size();
 	}	
 	
-	public String tellMe ()
+	public String getId ()
 	{
-		return "Ahoj Service...";
+		return ss.getId();
 	}	
 }

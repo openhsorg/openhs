@@ -6,6 +6,6 @@ public interface ISiteService {
 	
 	int getNumberRooms ();
 	
-	String tellMe ();
+	String getId ();
 
 }

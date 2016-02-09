@@ -5,12 +5,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import org.openhs.tester.MyThread;
-import org.openhs.core.site.services.*;
+import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
 
 public class Activator implements BundleActivator {
 
-	ServiceReference helloServiceReference;
+	ServiceReference siteServiceFactoryReference;
 
 	private static BundleContext context;
 	private MyThread myThread;
@@ -26,16 +26,13 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;		
 	    
-        helloServiceReference= bundleContext.getServiceReference(SiteServiceFactory.class.getName());
-        SiteServiceFactory helloService =(SiteServiceFactory)bundleContext.getService(helloServiceReference);	    
-        
-        System.out.println("OKOKOK");
-        System.out.println(helloService.getInstance().tellMe());
-        
-        System.out.println("Number rooms is: " + helloService.getInstance().getNumberRooms());
-        
-		System.out.println("Starting thread");
-	    myThread = new MyThread();
+		System.out.println("Tester Activator Starts...");
+		
+		siteServiceFactoryReference= bundleContext.getServiceReference(SiteServiceFactory.class.getName());
+        SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);	                                                  
+
+	    myThread = new MyThread();	  
+	    myThread.siteServiceFactory = siteServiceFactory;
 	    myThread.start();	        
         
 	}
@@ -51,7 +48,7 @@ public class Activator implements BundleActivator {
 	    myThread.stopThread();
 	    myThread.join();		
 	    
-	    bundleContext.ungetService(helloServiceReference);
+	    bundleContext.ungetService(siteServiceFactoryReference);
 	}
 
 }
