@@ -1,1 +1,0 @@
-OpenHS IQRF communication module.
