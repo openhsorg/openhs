@@ -1,1 +1,0 @@
-OpenHS heating control module.
