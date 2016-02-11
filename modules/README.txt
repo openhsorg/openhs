@@ -2,7 +2,7 @@ OpenHS Software modules.
 
 Pre-requisitions:
 1. Eclipse Mars
-2. JavaSE-1.7
+2. JavaSE-1.8
 3. Run Configuration:
   - Bundles
     -- Workspace
@@ -18,4 +18,6 @@ Pre-requisitions:
 	  --- org.eclipse.osgi.compatibility.state
 	  --- org.eclipse.osgi.services
 	  --- org.eclipse.osgi.util
-	  
+  - Arguments
+    -- Program arguments: -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console
+    -- VM arguments: -Dosgi.requiredJavaVersion=1.7 -Declipse.ignoreApp=true -Dosgi.noShutdown=true	  
