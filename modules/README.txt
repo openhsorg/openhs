@@ -31,7 +31,13 @@ Pre-requisitions:
 	  --- org.eclipse.osgi.services
 	  --- org.eclipse.osgi.util
   - Arguments
-    -- Program arguments: -os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console
+    -- Program arguments:
+          -os ${target.os}
+ 		  -ws ${target.ws} 
+		  -arch ${target.arch}
+		  -nl ${target.nl}
+		  -consoleLog
+		  -console
     -- VM arguments: 
           -Declipse.ignoreApp=true
           -Dosgi.noShutdown=true 
