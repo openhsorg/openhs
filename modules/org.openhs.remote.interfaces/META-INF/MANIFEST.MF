@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Interfaces
-Bundle-SymbolicName: org.openhs.core.remote.interface
+Bundle-SymbolicName: org.openhs.core.remote.interfaces
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.openhs.remote.interfaces.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
