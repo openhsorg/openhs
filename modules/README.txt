@@ -9,6 +9,7 @@ Pre-requisitions:
 	  --- org.openhs.core.site.data
 	  --- org.openhs.core.site.service
 	  --- org.openhs.core.remote.access
+          --- org.openhs.core.sensor.units
 	  --- org.openhs.tester
     -- Target Platform
           --- javax.servlet
