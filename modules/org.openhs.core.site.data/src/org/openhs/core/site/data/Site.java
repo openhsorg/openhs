@@ -9,18 +9,6 @@ public class Site {
 	public TreeMap<String, Room> rooms = 
             new TreeMap<String, Room>();	
 	
-	Site ()
-	{		
-		Room room1 = new Room ();		
-		rooms.put("Room1", room1);
-		
-		Room room2 = new Room ();
-		rooms.put("Room2", room2);
-		
-		Room room3 = new Room ();
-		rooms.put("Room3", room2);		
-	}
-	
 	public String getId ()
 	{
 		return id;

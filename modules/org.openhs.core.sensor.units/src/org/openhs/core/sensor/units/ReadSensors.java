@@ -1,24 +1,26 @@
-package org.openhs.tester;
+package org.openhs.core.sensor.units;
 
 import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
 
-public class MyThread extends Thread {
+public class ReadSensors extends Thread {
 	  private volatile boolean active = true;
 	  
+	  int i = 0;
+	  
 	  public SiteServiceFactory siteServiceFactory = null;	  
-	  public Test test = null;
 
 	  public void run() {
 	    while (active) {
-	      System.out.println("\nThread adjustment...........");
+	      System.out.println("\nThread run...........");
 	      
 	      if (siteServiceFactory != null)
-	      {	    	  
-	    //	System.out.println("Site ID is: " + siteServiceFactory.getInstance().getId());	    	  
-	     //   System.out.println("Number rooms is: " + siteServiceFactory.getInstance().getNumberRooms());	  		
+	      {	   
+	    	i++;  
+	    	//System.out.println("ReadSensors: " + i);	
+	    	
+	    	if (i >= 150) i = 0;
 	    	  
-	    	  test.SetTemperature();
 	      }
 	      else
 	      {
@@ -26,7 +28,7 @@ public class MyThread extends Thread {
 	      }
 
 	      try {
-	        Thread.sleep(3000);
+	        Thread.sleep(5000);
 	      } catch (Exception e) {
 	        System.out.println("Thread interrupted " + e.getMessage());
 	      }

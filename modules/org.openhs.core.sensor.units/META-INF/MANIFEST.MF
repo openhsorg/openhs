@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Units
+Bundle-SymbolicName: org.openhs.core.sensor.units
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.openhs.core.sensor.units.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.openhs.core.site.data,
+ org.openhs.core.site.services,
+ org.osgi.framework;version="1.8.0"
