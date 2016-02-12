@@ -16,6 +16,9 @@ public class Site {
 		
 		Room room2 = new Room ();
 		rooms.put("Room2", room2);
+		
+		Room room3 = new Room ();
+		rooms.put("Room3", room2);		
 	}
 	
 	public String getId ()

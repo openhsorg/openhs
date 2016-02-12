@@ -8,7 +8,7 @@ Pre-requisitions:
     -- Workspace
 	  --- org.openhs.core.site.data
 	  --- org.openhs.core.site.service
-	  --- org.openhs.core.remote.interfaces
+	  --- org.openhs.core.remote.access
 	  --- org.openhs.tester
     -- Target Platform
           --- javax.servlet

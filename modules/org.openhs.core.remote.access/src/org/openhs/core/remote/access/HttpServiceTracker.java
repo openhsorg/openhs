@@ -1,6 +1,7 @@
-package org.openhs.remote.interfaces;
+package org.openhs.core.remote.access;
 
-import org.openhs.remote.interfaces.MainServlet;
+
+import org.openhs.core.remote.access.MainServlet;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;

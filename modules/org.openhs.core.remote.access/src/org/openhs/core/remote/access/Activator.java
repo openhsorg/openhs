@@ -1,6 +1,5 @@
-package org.openhs.remote.interfaces;
+package org.openhs.core.remote.access;
 
-import org.openhs.remote.interfaces.HttpServiceTracker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -8,7 +7,7 @@ import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
 
 public class Activator implements BundleActivator {
-	
+
 	private static BundleContext context;
 	private HttpServiceTracker serviceTracker;
 	ServiceReference siteServiceFactoryReference;
@@ -29,7 +28,7 @@ public class Activator implements BundleActivator {
 				
 		serviceTracker = new HttpServiceTracker(context);
 		serviceTracker.mainServlet.siteServiceFactory = siteServiceFactory;
-		serviceTracker.open();				
+		serviceTracker.open();			
 	}
 
 	/*
@@ -42,7 +41,7 @@ public class Activator implements BundleActivator {
 	    serviceTracker.close();
 	    serviceTracker = null;	
 	    
-	    bundleContext.ungetService(siteServiceFactoryReference);	    
+	    bundleContext.ungetService(siteServiceFactoryReference);	 		
 	}
 
 }

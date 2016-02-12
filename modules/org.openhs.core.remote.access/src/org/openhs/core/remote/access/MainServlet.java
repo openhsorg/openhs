@@ -1,4 +1,4 @@
-package org.openhs.remote.interfaces;
+package org.openhs.core.remote.access;
 
 import java.io.IOException;
 import java.util.Date;
