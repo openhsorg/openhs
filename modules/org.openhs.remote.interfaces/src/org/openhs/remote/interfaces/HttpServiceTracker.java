@@ -1,5 +1,6 @@
-package org.openhs.tester;
+package org.openhs.remote.interfaces;
 
+import org.openhs.remote.interfaces.MainServlet;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
@@ -7,7 +8,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class HttpServiceTracker extends ServiceTracker {
 	
-	//SimpleServlet ss = new SimpleServlet();
+	public MainServlet mainServlet = new MainServlet();
 
   public HttpServiceTracker(BundleContext context) {
     super(context, HttpService.class.getName(), null);
@@ -21,8 +22,8 @@ public class HttpServiceTracker extends ServiceTracker {
       return null;
 
     try {
-      System.out.println("Registering servlet at /simple");
-      httpService.registerServlet("/simple", new SimpleServlet(), null, null);
+      System.out.println("Registering servlet at /openhs");
+      httpService.registerServlet("/openhs", mainServlet, null, null);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -34,10 +35,10 @@ public class HttpServiceTracker extends ServiceTracker {
   public void removedService(ServiceReference reference, Object service) {
     HttpService httpService = (HttpService) service;
 
-    System.out.println("Unregistering /simple");
-    httpService.unregister("/simple");
+    System.out.println("Unregistering /openhs");
+    httpService.unregister("/openhs");
 
     super.removedService(reference, service);
   }
 
-}  
+} 

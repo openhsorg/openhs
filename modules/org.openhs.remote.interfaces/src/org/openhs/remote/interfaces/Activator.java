@@ -1,19 +1,17 @@
-package org.openhs.tester;
+package org.openhs.remote.interfaces;
 
+import org.openhs.remote.interfaces.HttpServiceTracker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-
-import org.openhs.tester.MyThread;
 import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
 
 public class Activator implements BundleActivator {
-
-	ServiceReference siteServiceFactoryReference;
-
+	
 	private static BundleContext context;
-	private MyThread myThread;
+	private HttpServiceTracker serviceTracker;
+	ServiceReference siteServiceFactoryReference;
 
 	static BundleContext getContext() {
 		return context;
@@ -24,20 +22,14 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;		
-						/*
-	    serviceTracker = new HttpServiceTracker(context);
-	    serviceTracker.open();		
-	    	    	    */
-		System.out.println("Tester Activator Starts...");
+		Activator.context = bundleContext;
 		
 		siteServiceFactoryReference= bundleContext.getServiceReference(SiteServiceFactory.class.getName());
-        SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);	                                                  
-
-	    myThread = new MyThread();	  
-	    myThread.siteServiceFactory = siteServiceFactory;
-	    myThread.start();	        
-        
+        SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);	                                                  		
+				
+		serviceTracker = new HttpServiceTracker(context);
+		serviceTracker.mainServlet.siteServiceFactory = siteServiceFactory;
+		serviceTracker.open();				
 	}
 
 	/*
@@ -46,15 +38,11 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
-		/*
+		
 	    serviceTracker.close();
-	    serviceTracker = null;		
-		*/
-	    System.out.println("Stopping thread...");
-	    myThread.stopThread();
-	    myThread.join();		
+	    serviceTracker = null;	
 	    
-	    bundleContext.ungetService(siteServiceFactoryReference);
+	    bundleContext.ungetService(siteServiceFactoryReference);	    
 	}
 
 }

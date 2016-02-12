@@ -6,8 +6,7 @@ import org.openhs.core.site.data.ISiteService;
 public class MyThread extends Thread {
 	  private volatile boolean active = true;
 	  
-	  public SiteServiceFactory siteServiceFactory = null;
-	  public HttpServiceTracker serviceTracker = null;
+	  public SiteServiceFactory siteServiceFactory = null;	  
 
 	  public void run() {
 	    while (active) {
