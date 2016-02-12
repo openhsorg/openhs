@@ -33,11 +33,11 @@ Pre-requisitions:
   - Arguments
     -- Program arguments:
           -os ${target.os}
- 		  -ws ${target.ws} 
-		  -arch ${target.arch}
-		  -nl ${target.nl}
-		  -consoleLog
-		  -console
+	  -ws ${target.ws} 
+	  -arch ${target.arch}
+	  -nl ${target.nl}
+	  -consoleLog
+	  -console
     -- VM arguments: 
           -Declipse.ignoreApp=true
           -Dosgi.noShutdown=true 
