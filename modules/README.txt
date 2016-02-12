@@ -41,5 +41,6 @@ Pre-requisitions:
     -- VM arguments: 
           -Declipse.ignoreApp=true
           -Dosgi.noShutdown=true 
-          -Dorg.osgi.service.http.port=9090
+          -Dorg.osgi.service.http.port=7070
           -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m	  
+4. Local Browser address: http://localhost:7070/openhs
