@@ -5,6 +5,10 @@ Bundle-SymbolicName: org.openhs.tester
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.openhs.tester.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.openhs.core.site.data,
+Import-Package: javax.servlet;version="3.1.0",
+ javax.servlet.http;version="3.1.0",
+ org.openhs.core.site.data,
  org.openhs.core.site.services,
- org.osgi.framework;version="1.8.0"
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.http;version="1.2.1",
+ org.osgi.util.tracker;version="1.5.1"
