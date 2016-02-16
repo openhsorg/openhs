@@ -11,7 +11,7 @@ public class MyThread extends Thread {
 
 	  public void run() {
 	    while (active) {
-	      System.out.println("\nThread adjustment...........");
+	      //System.out.println("\nThread adjustment...........");
 	      
 	      if (siteServiceFactory != null)
 	      {	    	  

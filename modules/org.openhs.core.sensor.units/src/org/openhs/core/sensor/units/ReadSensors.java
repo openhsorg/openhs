@@ -12,7 +12,7 @@ public class ReadSensors extends Thread {
 
 	  public void run() {
 	    while (active) {
-	      System.out.println("\nThread run...........");
+	     // System.out.println("\nThread run...........");
 	      
 	      if (siteServiceFactory != null)
 	      {	   
