@@ -29,7 +29,6 @@ Pre-requisitions:
 	  --- org.eclipse.jetty.servlet
 	  --- org.eclipse.jetty.util
 	  --- org.eclipse.osgi
-	  --- org.eclipse.osgi.compatibility.state
 	  --- org.eclipse.osgi.services
 	  --- org.eclipse.osgi.util
   - Arguments

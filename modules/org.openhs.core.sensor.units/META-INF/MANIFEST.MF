@@ -8,3 +8,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.openhs.core.site.data,
  org.openhs.core.site.services,
  org.osgi.framework;version="1.8.0"
+Require-Bundle: org.openhs.core.site.data;bundle-version="1.0.0",
+ org.openhs.core.site.services;bundle-version="1.0.0"
