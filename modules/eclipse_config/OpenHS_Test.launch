@@ -22,5 +22,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="org.openhs.core.remote.access@6:default,org.openhs.core.sensor.units@5:default,org.openhs.core.site.data@default:default,org.openhs.core.site.services@default:default,org.openhs.tester@default:default"/>
+<stringAttribute key="workspace_bundles" value="org.openhs.core.remote.access@6:default,org.openhs.core.sensor.units@5:default,org.openhs.core.site.data@4:default,org.openhs.core.site.services@4:default,org.openhs.tester@6:default"/>
 </launchConfiguration>
