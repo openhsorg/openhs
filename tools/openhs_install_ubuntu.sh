@@ -28,3 +28,5 @@ cd $HOME/$OPENHS
 
 chmod +x start.sh
 
+./start.sh
+
