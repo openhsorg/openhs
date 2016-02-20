@@ -7,15 +7,6 @@
 # Variables
 OPENHS="openhs_20160220"
 
-# Die on any errors
-set -e 
-
-if [[ `whoami` != "root" ]]
-then
-  echo "Script must be run as root."
-  exit 1
-fi
-
 echo "********** OpenHS setup of computer unit (Raspberry Pi )... **********"
 
 read -p "Press any key for continue..."
