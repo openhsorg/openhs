@@ -125,10 +125,10 @@ apt-get -f -y install git-gui
 git config --global user.name \"Michal Valny\"
 git config --global user.email \"michal.valny@openhs.org\"
 git config --list
-add-apt-repository -y ppa:eugenesan/ppa
-apt-get -y update
-apt-get -y install smartgit
-copy_shortcut "smartgit.desktop"
+#add-apt-repository -y ppa:eugenesan/ppa
+#apt-get -y update
+#apt-get -y install smartgit
+#copy_shortcut "smartgit.desktop"
 
 #Maven
 apt-get -y update
