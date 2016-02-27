@@ -41,9 +41,12 @@ echo "********** ---------- Update Ubuntu ... ---------- **********"
 apt-get update && apt-get upgrade -y -q
 
 # Java
-apt-get install -y default-jre
-apt-get install -y default-jdk
-apt-cache search jdk
+#apt-get install -y default-jre
+#apt-get install -y default-jdk
+#apt-cache search jdk
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install openjdk-8-jdk
 
 # Dosbox
 apt-get -y update
