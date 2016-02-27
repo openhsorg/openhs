@@ -3,7 +3,8 @@ OpenHS Software modules.
 Pre-requisitions:
 1. Eclipse Mars Java EE
 2. JavaSE-1.8
-3. Run Configuration (import to eclipse from /eclipse_config/OpenHS_Test.launch) :
+3. Import Run Configuration from /eclipse_config/OpenHS_Test.launch
+4. If you want to create Run Configuration manually insert these bundles:
   - Bundles
     -- Workspace
 	  --- org.openhs.core.site.data
