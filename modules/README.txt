@@ -45,4 +45,4 @@ Pre-requisitions:
           -Dosgi.noShutdown=true 
           -Dorg.osgi.service.http.port=7070
           -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m	  
-4. Local Browser address: http://localhost:7070/openhs
+5. Local Browser address: http://localhost:7070/openhs
