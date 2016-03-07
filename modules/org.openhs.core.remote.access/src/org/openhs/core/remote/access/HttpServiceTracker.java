@@ -10,6 +10,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public class HttpServiceTracker extends ServiceTracker {
 	
   public MainServlet mainServlet = new MainServlet();
+  public ImageServlet imageServlet = new ImageServlet();
 
   public HttpServiceTracker(BundleContext context) {
     super(context, HttpService.class.getName(), null);
@@ -23,8 +24,9 @@ public class HttpServiceTracker extends ServiceTracker {
       return null;
 
     try {
-      System.out.println("Registering servlet at /openhs");
+      //System.out.println("Registering servlet at /openhs");
       httpService.registerServlet("/openhs", mainServlet, null, null);
+      httpService.registerServlet("/image", imageServlet, null, null);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -36,8 +38,9 @@ public class HttpServiceTracker extends ServiceTracker {
   public void removedService(ServiceReference reference, Object service) {
     HttpService httpService = (HttpService) service;
 
-    System.out.println("Unregistering /openhs");
+   // System.out.println("Unregistering /openhs");
     httpService.unregister("/openhs");
+    httpService.unregister("/image");
 
     super.removedService(reference, service);
   }
