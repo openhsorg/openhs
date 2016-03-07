@@ -56,7 +56,7 @@ public class MainServlet extends HttpServlet {
 	  
 	  protected void getHouseData (PrintWriter out){
 				  
-  		out.println("<font color=red>");		  		
+  		out.println("<font color=green>");		  		
   		out.println("<h1>OpenHS world...\n</h1>");
   		out.println("<font color=green>");
   		out.println("<p style='font-family:Courier; color:#0020C2; font-size: 20px;'>");

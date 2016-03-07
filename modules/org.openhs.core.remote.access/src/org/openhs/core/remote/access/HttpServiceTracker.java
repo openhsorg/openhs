@@ -9,7 +9,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class HttpServiceTracker extends ServiceTracker {
 	
-	public MainServlet mainServlet = new MainServlet();
+  public MainServlet mainServlet = new MainServlet();
 
   public HttpServiceTracker(BundleContext context) {
     super(context, HttpService.class.getName(), null);
