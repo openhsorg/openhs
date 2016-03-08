@@ -16,8 +16,6 @@ public class ImageServlet extends HttpServlet {
 	        URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();
 
 	        String path = location.getFile() + "images/HomeInformationStation.png";
-	        
-//	        System.out.println("Path:" + path);	
 		    		    		    		 
 		    response.setContentType("image/jpeg");  
 		    ServletOutputStream out;  

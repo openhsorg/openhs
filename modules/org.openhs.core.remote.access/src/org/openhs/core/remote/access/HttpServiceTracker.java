@@ -11,6 +11,8 @@ public class HttpServiceTracker extends ServiceTracker {
 	
   public MainServlet mainServlet = new MainServlet();
   public ImageServlet imageServlet = new ImageServlet();
+  public ImageServlet2 imageServlet2 = new ImageServlet2();
+  public ImageServlet3 imageServlet3 = new ImageServlet3();
 
   public HttpServiceTracker(BundleContext context) {
     super(context, HttpService.class.getName(), null);
@@ -27,6 +29,8 @@ public class HttpServiceTracker extends ServiceTracker {
       //System.out.println("Registering servlet at /openhs");
       httpService.registerServlet("/openhs", mainServlet, null, null);
       httpService.registerServlet("/image", imageServlet, null, null);
+      httpService.registerServlet("/image2", imageServlet2, null, null);
+      httpService.registerServlet("/image3", imageServlet3, null, null);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -41,6 +45,8 @@ public class HttpServiceTracker extends ServiceTracker {
    // System.out.println("Unregistering /openhs");
     httpService.unregister("/openhs");
     httpService.unregister("/image");
+    httpService.unregister("/image2");
+    httpService.unregister("/image3");
 
     super.removedService(reference, service);
   }
