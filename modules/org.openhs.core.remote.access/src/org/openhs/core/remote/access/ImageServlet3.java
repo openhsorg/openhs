@@ -22,9 +22,7 @@ public class ImageServlet3 extends HttpServlet {
           URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();
  		  String path =  location.getFile() + "images/HomeInformationStation.png";
  		  String path2 = location.getFile() + "images/HomeSystem.png";
-		 
-		  //BufferedImage image = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB); // 123 wide, 123 tall
- 		  
+
  		  if (state)
  		  {
  			  image=ImageIO.read(new File(path));
@@ -40,7 +38,7 @@ public class ImageServlet3 extends HttpServlet {
  			  state = true; 			  
  		  }
 		  		
-		  Font font=new Font("Courier", Font.HANGING_BASELINE , 14); 
+		  Font font=new Font("Serif", Font.ITALIC | Font.BOLD, 18);
 		  graphics2D.setColor(Color.red); 
 		  graphics2D.setFont(font); 
 		  
@@ -53,7 +51,7 @@ public class ImageServlet3 extends HttpServlet {
 		  graphics2D.dispose();
 		  
 		  response.setContentType("image/png");
-		  response.setHeader("Refresh", "2");
+		  response.setHeader("Refresh", "4");
 		  OutputStream outputStream = response.getOutputStream();
 		  ImageIO.write(image, "jpeg", outputStream);
 		  outputStream.close();		 

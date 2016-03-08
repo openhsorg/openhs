@@ -11,7 +11,8 @@ import java.net.URL;
 public class ImageServlet extends HttpServlet {
 		 	
 	 
-	 public void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
+	 public void doGet(HttpServletRequest req, HttpServletResponse response) throws
+	 ServletException, IOException {
 		    
 	        URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();
 
@@ -35,6 +36,15 @@ public class ImageServlet extends HttpServlet {
 		    fin.close();  
 		    bout.close();  
 		    out.close();  
+		    
+		    System.out.println("GET: " + req.getRequestURI());
 	}	 
+	
+	    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	            throws ServletException, IOException {
+	    	
+	    	System.out.println("doPost called with URI: " + req.getRequestURI());
+	    	
+	    }	 
 	
 }
