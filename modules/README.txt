@@ -7,10 +7,11 @@ Pre-requisitions:
 4. If you want to create Run Configuration manually insert these bundles:
   - Bundles
     -- Workspace
+          --- org.openhs.core.meteostation
+	  --- org.openhs.core.remote.access          
+	  --- org.openhs.core.sensor.units
 	  --- org.openhs.core.site.data
 	  --- org.openhs.core.site.service
-	  --- org.openhs.core.remote.access
-          --- org.openhs.core.sensor.units
 	  --- org.openhs.tester
     -- Target Platform
           --- javax.servlet
