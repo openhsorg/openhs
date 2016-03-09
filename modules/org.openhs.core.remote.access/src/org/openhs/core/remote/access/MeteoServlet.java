@@ -22,8 +22,12 @@ import java.awt.Rectangle;
 import java.awt.Image;
 import java.awt.*;
 
+import org.openhs.core.meteostation.*;
+
 
 public class MeteoServlet extends HttpServlet {
+	
+	Meteostation meteo = null;
 	
 	 int  i = 0;
 
@@ -57,7 +61,7 @@ public class MeteoServlet extends HttpServlet {
 		  graphics2D.drawString(tmpInStr, 20, 120);		
 		  
 		  //Out temp		  	  
-		  String tmpOutStr = "Out" + "  -12°C";
+		  String tmpOutStr = "Out" + "   " + meteo.getOutTemp() + " °C";
 		  graphics2D.drawString(tmpOutStr, 20, 270);		 		  
 		  		
 		  //Line in the middle

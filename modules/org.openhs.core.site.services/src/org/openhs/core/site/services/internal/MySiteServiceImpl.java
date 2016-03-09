@@ -59,6 +59,8 @@ public class MySiteServiceImpl implements ISiteService{
 	
 	public Room getRoom (String keyRoom)
 	{
+		if (ss.rooms.size() <= 0) return null;
+				
 		return ss.rooms.get(keyRoom);
 	}	
 	
@@ -66,20 +68,22 @@ public class MySiteServiceImpl implements ISiteService{
 	{
 		Room room = getRoom (keyRoom);
 		
+		if (room == null) return null;
+		
 		return room.sensors.get(keySensor);		
 	}
 	
 	public double getSensorTemperature (String keyRoom, String keySensor)
 	{
-		Sensor sensor = getSensor (keyRoom, keySensor);
-	  	
+		Sensor sensor = getSensor (keyRoom, keySensor);		
+			  	
 		return sensor.temperature;
 	}
 	
 	public boolean setSensorTemperature (String roomKey, String sensorKey, double temp)
 	{
-		Sensor sensor = getSensor (roomKey, sensorKey);
-	  	
+		Sensor sensor = getSensor (roomKey, sensorKey);				
+					  	
 		sensor.temperature = temp;
 		
 		return true;

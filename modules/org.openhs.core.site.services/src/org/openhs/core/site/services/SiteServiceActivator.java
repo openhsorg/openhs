@@ -31,7 +31,6 @@ public class SiteServiceActivator implements BundleActivator {
 		System.out.println("Starting S");
 		
 		SiteServiceFactory sf = new SiteServiceFactory ();
-		//ISiteService sf = new MySiteServiceImpl();
 		if (sf != null)
 		{
 			System.out.println("Starting S2");

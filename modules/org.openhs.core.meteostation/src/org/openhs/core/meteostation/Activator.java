@@ -1,18 +1,21 @@
-package org.openhs.core.remote.access;
+package org.openhs.core.meteostation;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.meteostation.*;
+
 
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
-	private HttpServiceTracker serviceTracker;
 	ServiceReference siteServiceFactoryReference;
-	ServiceReference meteoReference;
+	private ServiceRegistration serviceRegistration;
+	
+	private Meteostation station;
+	private Refresh refresh;
 
 	static BundleContext getContext() {
 		return context;
@@ -26,15 +29,23 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		
 		siteServiceFactoryReference= bundleContext.getServiceReference(SiteServiceFactory.class.getName());
-        SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);
+        SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);	                                                  
+
+        station = new Meteostation ();
         
-		meteoReference = bundleContext.getServiceReference(Meteostation.class.getName());
-		Meteostation meteo =(Meteostation)bundleContext.getService(meteoReference);	                                                  		
-	        				
-		serviceTracker = new HttpServiceTracker(context);
-		serviceTracker.mainServlet.siteServiceFactory = siteServiceFactory;
-		serviceTracker.meteoServlet.meteo = meteo;
-		serviceTracker.open();			
+		//SiteServiceFactory sf = new SiteServiceFactory ();
+		if (station != null)
+		{
+			System.out.println("Starting S2");
+			serviceRegistration = bundleContext.registerService(Meteostation.class.getName(), station, null);
+		}
+		else
+		{
+			System.out.println("Starting S:  ERROR");
+		}        
+        
+        refresh = new Refresh (siteServiceFactory, station);
+        refresh.start();
 	}
 
 	/*
@@ -44,10 +55,10 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
 		
-	    serviceTracker.close();
-	    serviceTracker = null;	
+	    refresh.stopThread();
+	    refresh.join();
 	    
-	    bundleContext.ungetService(siteServiceFactoryReference);	 		
+		bundleContext.ungetService(siteServiceFactoryReference);
 	}
 
 }
