@@ -27,7 +27,7 @@ import org.openhs.core.meteostation.*;
 
 public class MeteoServlet extends HttpServlet {
 	
-	Meteostation meteo = null;
+	 Meteostation meteo = null;
 	
 	 int  i = 0;
 
@@ -41,8 +41,17 @@ public class MeteoServlet extends HttpServlet {
 		 
   		  //BufferedImage image=ImageIO.read(new File(path));
 		  BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB); // 500 wide, 500 tall
-  		  
+		  //BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB); // 500 wide, 500 tall
+  		  		  		  
 		  Graphics2D graphics2D = image.createGraphics();
+		  		  
+		  graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON );
+		  graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING,
+                   RenderingHints.VALUE_RENDER_QUALITY);		      		  
+		  		  
+		  graphics2D.clearRect(0, 0, dimension.width, dimension.height);
+		  		  
 		  graphics2D.setColor(Color.white); 
 		  
 		  //Inside temp		  
@@ -57,11 +66,11 @@ public class MeteoServlet extends HttpServlet {
 
 		  graphics2D.setFont(tempFont);
 		  
-		  String tmpInStr = "In" + "      22°C";
+		  String tmpInStr = "In" + "     22 C";
 		  graphics2D.drawString(tmpInStr, 20, 120);		
 		  
 		  //Out temp		  	  
-		  String tmpOutStr = "Out" + "   " + meteo.getOutTemp() + " °C";
+		  String tmpOutStr = "Out" + "   " + meteo.getOutTemp() + "  C";
 		  graphics2D.drawString(tmpOutStr, 20, 270);		 		  
 		  		
 		  //Line in the middle
@@ -93,30 +102,33 @@ public class MeteoServlet extends HttpServlet {
   		  //String path = location.getFile() + "images/HomeInformationStation.png";
 		  
 	      File imageFile = new File(location.getFile() + "images/indicatorFrost.png");
-	      Image imgFrost = ImageIO.read(imageFile);		  
+	      BufferedImage imgFrost = ImageIO.read(imageFile);		  
 	      imageFile = new File(location.getFile() + "images/indicatorDay.png");
 	      Image imgDay = ImageIO.read(imageFile);	
 	      imageFile = new File(location.getFile() + "images/indicatorIntruder.png");
 	      Image imgIntruder = ImageIO.read(imageFile);			      
-		  
-	      //Rectangle2D rect = new Rectangle2D.Float();
 
-	      Rectangle rect = new Rectangle(10, 300, 50, 50);	      
+	      Rectangle rect = new Rectangle(10, 300, 50, 50);	
+
 	      graphics2D.drawImage(imgFrost, rect.x, rect.y, rect.width, rect.height, null);	
 	      
 	      rect = new Rectangle(80, 300, 50, 50);	      
 	      graphics2D.drawImage(imgDay, rect.x, rect.y, rect.width, rect.height, null);			 
 	      
-	      rect = new Rectangle(150, 300, 50, 50);    
+	      rect = new Rectangle(150, 300, 50, 50); 	      
 	      graphics2D.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);			      
 		  
-		  graphics2D.dispose();
+	      Toolkit.getDefaultToolkit().sync(); 
 		  
-		  response.setContentType("image/png");
+	      graphics2D.dispose();
+				  
+		  response.setContentType("image/jpg");
 		  response.setHeader("Refresh", "1");
 		  OutputStream outputStream = response.getOutputStream();
-		  ImageIO.write(image, "jpeg", outputStream);
-		  outputStream.close();
+		  
+		  ImageIO.write(image, "jpg", outputStream);
+		  		  
+		  outputStream.close();		  	  				 		
 		  
 		 }		
 
