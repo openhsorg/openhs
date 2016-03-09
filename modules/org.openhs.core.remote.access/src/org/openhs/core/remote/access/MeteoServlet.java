@@ -46,7 +46,6 @@ public class MeteoServlet extends HttpServlet {
 		  Map<TextAttribute, Object> attributes = new HashMap<>();
 
 		  attributes.put(TextAttribute.FAMILY, fontIn.getFamily());
-		  //attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_SEMIBOLD);
 		  attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_MEDIUM);
 	      attributes.put(TextAttribute.SIZE, (int) (fontIn.getSize() * 1.4));
 	      attributes.put(TextAttribute.WEIGHT, (int) (80));
