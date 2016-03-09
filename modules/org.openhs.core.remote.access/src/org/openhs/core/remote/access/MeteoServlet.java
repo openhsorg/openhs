@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.font.TextAttribute;
 import java.awt.Rectangle;
 import java.awt.Image;
+import java.awt.*;
 
 
 public class MeteoServlet extends HttpServlet {
@@ -27,12 +28,15 @@ public class MeteoServlet extends HttpServlet {
 	 int  i = 0;
 
 	 protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException, ServletException {
-		  
-          //URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();
-  		  //String path = location.getFile() + "images/HomeInformationStation.png";
+		  		 
+		  // Get toolkit
+		  Toolkit toolkit = Toolkit.getDefaultToolkit();
+
+		  // Get size
+		  Dimension dimension = toolkit.getScreenSize();
 		 
   		  //BufferedImage image=ImageIO.read(new File(path));
-		  BufferedImage image = new BufferedImage(1000, 700, BufferedImage.TYPE_INT_RGB); // 500 wide, 500 tall
+		  BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB); // 500 wide, 500 tall
   		  
 		  Graphics2D graphics2D = image.createGraphics();
 		  graphics2D.setColor(Color.white); 
