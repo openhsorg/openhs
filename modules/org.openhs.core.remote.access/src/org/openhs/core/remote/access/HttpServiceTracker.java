@@ -14,6 +14,7 @@ public class HttpServiceTracker extends ServiceTracker {
   public ImageServlet2 imageServlet2 = new ImageServlet2();
   public ImageServlet3 imageServlet3 = new ImageServlet3();
   public ButtonServlet btnSrv = new ButtonServlet();
+  public MeteoServlet meteoServlet = new MeteoServlet();
 
   public HttpServiceTracker(BundleContext context) {
     super(context, HttpService.class.getName(), null);
@@ -33,6 +34,7 @@ public class HttpServiceTracker extends ServiceTracker {
       httpService.registerServlet("/image2", imageServlet2, null, null);
       httpService.registerServlet("/image3", imageServlet3, null, null);
       httpService.registerServlet("/btn", btnSrv, null, null);
+      httpService.registerServlet("/meteo", meteoServlet, null, null);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -50,6 +52,8 @@ public class HttpServiceTracker extends ServiceTracker {
     httpService.unregister("/image");
     httpService.unregister("/image2");
     httpService.unregister("/image3");
+    httpService.unregister("/btn");
+    httpService.unregister("/meteo");
 
     super.removedService(reference, service);
   }
