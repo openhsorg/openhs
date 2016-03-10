@@ -87,7 +87,7 @@ public class MainServlet extends HttpServlet {
         	
         	for (String keyS : keysSensors)
         	{
-        		out.println("<br><tr/>  -" + keyS + " Temperature: " + service.getSensorTemperature(key, keyS) + " C");
+        		out.println("<br><tr/>  -" + keyS + " Temperature: " + service.getSensorTemperature(key, keyS).get() + " C");
         	}        	        	        	
         }			
 				
