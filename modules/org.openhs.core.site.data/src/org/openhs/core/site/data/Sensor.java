@@ -7,9 +7,10 @@
 */
 package org.openhs.core.site.data;
 
-public class Sensor {
-
-	Temperature temperature;
+public class Sensor 
+{
+	Temperature temperature = new Temperature ();
+	Humidity 	humidity = new Humidity ();
 	
 	double hum = 50;
 	
