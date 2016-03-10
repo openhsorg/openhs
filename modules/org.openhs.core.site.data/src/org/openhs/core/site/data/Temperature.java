@@ -11,7 +11,7 @@ package org.openhs.core.site.data;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class Temperature extends MeasuredValue
+public class Temperature extends Value
 {
 	/**
 	 * Measured value is in Celsius degrees.

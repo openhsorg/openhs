@@ -1,8 +1,8 @@
 /**
-* @name		MeasuredValue.java 03/01/2016
+* @name		Value.java 03/01/2016
 * @author	Michal Valny
 * @version	1.0
-* @description 	MeasuredValue data
+* @description 	Any data.
 * 
 */
 
@@ -11,7 +11,7 @@ package org.openhs.core.site.data;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class MeasuredValue {
+public class Value {
 	
 	/**
 	 * Measured value is valid. 

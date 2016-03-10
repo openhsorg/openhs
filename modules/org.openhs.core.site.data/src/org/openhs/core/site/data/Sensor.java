@@ -5,14 +5,14 @@
 * @description 	Sensor data
 * 
 */
+
 package org.openhs.core.site.data;
 
 public class Sensor 
 {
 	Temperature temperature = new Temperature ();
-	Humidity 	humidity = new Humidity ();
 	
-	double hum = 50;
+	Humidity 	humidity = new Humidity ();
 	
 	public Temperature getTemperature ()
 	{
@@ -23,4 +23,14 @@ public class Sensor
 	{
 		temperature = temp;
 	}	
+	
+	public Humidity getHumidity ()
+	{
+		return humidity;
+	}
+	
+	public void setHumidity (Humidity hum)
+	{
+		humidity = hum;
+	}		
 }

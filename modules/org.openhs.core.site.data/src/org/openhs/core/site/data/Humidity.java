@@ -8,7 +8,7 @@
 
 package org.openhs.core.site.data;
 
-public class Humidity extends MeasuredValue {
+public class Humidity extends Value {
 
 	/**
 	 * Measured value is in percentage of humidity.
