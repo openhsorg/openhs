@@ -14,9 +14,7 @@ public class SiteServiceActivator implements BundleActivator {
 	private ServiceRegistration serviceRegistration;
 
 	private static BundleContext context;
-	
-	
-
+		
 	static BundleContext getContext() {
 		return context;
 	}
