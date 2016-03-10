@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
+import org.openhs.core.site.data.Temperature;
 
 public class MySiteServiceImpl implements ISiteService{
 	
@@ -73,18 +74,18 @@ public class MySiteServiceImpl implements ISiteService{
 		return room.sensors.get(keySensor);		
 	}
 	
-	public double getSensorTemperature (String keyRoom, String keySensor)
+	public Temperature getSensorTemperature (String keyRoom, String keySensor)
 	{
 		Sensor sensor = getSensor (keyRoom, keySensor);		
 			  	
-		return sensor.temperature;
+		return sensor.getTemperature();
 	}
 	
-	public boolean setSensorTemperature (String roomKey, String sensorKey, double temp)
+	public boolean setSensorTemperature (String roomKey, String sensorKey, Temperature temp)
 	{
 		Sensor sensor = getSensor (roomKey, sensorKey);				
 					  	
-		sensor.temperature = temp;
+		sensor.setTemperature(temp);
 		
 		return true;
 	}

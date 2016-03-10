@@ -41,8 +41,8 @@ public class Refresh extends Thread{
 		    	  Sensor sensor = service.getSensor ("Room1", "Sensor1");
 		    	  
 		    	  if (sensor != null)
-		    	  {
-		    		  station.setOutTemp((int) sensor.temperature);
+		    	  {		    		  
+		    		  station.setOutTemp((int) sensor.getTemperature().get());
 		    	  }
 		    	  
 		      }

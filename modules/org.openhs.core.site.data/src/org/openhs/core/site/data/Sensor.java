@@ -1,12 +1,25 @@
-/*
- * 
- * Michal Valny
- * 
- */
+/**
+* @name		Sensor.java 03/01/2016
+* @author	Michal Valny
+* @version	1.0
+* @description 	Sensor data
+* 
+*/
 package org.openhs.core.site.data;
 
 public class Sensor {
 
-	public double temperature = 0;
-	public double hum = 50;
+	Temperature temperature;
+	
+	double hum = 50;
+	
+	public Temperature getTemperature ()
+	{
+		return temperature;
+	}
+	
+	public void setTemperature (Temperature temp)
+	{
+		temperature = temp;
+	}	
 }

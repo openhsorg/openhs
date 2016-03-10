@@ -2,13 +2,17 @@ package org.openhs.tester;
 
 import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.data.Temperature;;
 
 public class Test {
 	
 	public SiteServiceFactory siteServiceFactory = null;
 	
-	double temp1 = 0;
-	double temp2 = 0;
+	//double temp1 = 0;
+	//double temp2 = 0;
+	
+	Temperature temp1 = new Temperature ();
+	Temperature temp2 = new Temperature ();
 	
 	void BuildHouse()
 	{
@@ -26,12 +30,14 @@ public class Test {
 	
 	void SetTemperature ()
 	{
+		temp1.set(temp1.get() + 0.5);
+		temp2.set(temp2.get() + 2);
+		/*
 		temp1 = temp1 + 0.5;
 		temp2 = temp2 + 2;
-		
-		if (temp1 >= 80) temp1 = -6;
-		if (temp2 >= 80) temp2 = -6;
-		
+		*/
+		if (temp1.get() >= 80) temp1.set(-6);
+		if (temp2.get() >= 80) temp2.set(-6);		
 		
 		ISiteService service = siteServiceFactory.getInstance();
 		

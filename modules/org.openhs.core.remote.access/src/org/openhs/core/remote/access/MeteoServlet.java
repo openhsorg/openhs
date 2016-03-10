@@ -75,6 +75,7 @@ public class MeteoServlet extends HttpServlet {
 		  		
 		  //Line in the middle
 		  graphics2D.drawLine(20, 170, 400, 170); 
+		  graphics2D.drawRect(5, 5, 410, 550);
 		  
 		  //Time
 		  attributes.put(TextAttribute.SIZE, (int) (fontIn.getSize() * 0.5));
