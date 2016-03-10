@@ -13,20 +13,24 @@ import java.util.Date;
 
 public class Temperature {
 	
+	/**
+	 * Temperature value is valid. 
+	 */
 	boolean valid = false;
 	
+	/**
+	 * Temperature value in Celsius degrees
+	 */
 	double value = 0;
 	
+	/**
+	 * Timestamp of last written value.
+	 */
 	Timestamp timestamp = new Timestamp(0);
 	
 	public boolean valid()
 	{
 		return valid;
-	}
-	
-	public void valid (boolean val)
-	{
-		valid = val;
 	}
 	
 	public double get()
@@ -37,6 +41,8 @@ public class Temperature {
 	public void set(double val)
 	{
 		value = val;
+		
+		valid = true;
 		
 		setTimestamp();
 	}
