@@ -8,32 +8,55 @@
 
 package org.openhs.core.meteostation;
 
+import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Temperature;
+import org.openhs.core.site.data.Sensor;
+import org.openhs.core.site.data.SiteException;
 
 public class Meteostation {
 	
+	/*
+	 * Basic data structure.
+	 */
+	ISiteService siteService;
 	
+	/*
+	 * What sensors we deal with.
+	 */
+	String sensorInString = "Room1/Sensor1";
+	String sensorOutString = "Room2/Sensor1";
 	
-	private Temperature tempIn = new Temperature ();
-	private Temperature tempOut = new Temperature ();
-
-	public Temperature getTempOut ()
+	Meteostation (ISiteService service)
 	{
-		return tempOut;
-	}	
-
-	public Temperature getTempIn ()
+		siteService = service;
+	}
+	
+	public Sensor getSensorIn () throws SiteException
 	{
-		return tempIn;
+		return getSensor(sensorInString);
+	}
+	
+	public Sensor getSensorOut () throws SiteException
+	{
+		return getSensor(sensorOutString);
 	}	
 	
-	public void setTempOut (Temperature temp)
+	public Sensor getSensor (String key) throws SiteException
 	{
-		tempOut = temp;
-	}	
-
-	public void setTempIn (Temperature temp)
-	{
-		tempIn = temp;
-	}		
+		Sensor sensor;
+		
+		try
+		{
+			String delims = "[/]";
+			String[] tokens = key.split(delims);
+			
+			sensor = siteService.getSensor(tokens[0], tokens[1]);
+		}
+		catch (Exception ex)
+		{
+			throw ex;
+		}
+		
+		return sensor;
+	}
 }

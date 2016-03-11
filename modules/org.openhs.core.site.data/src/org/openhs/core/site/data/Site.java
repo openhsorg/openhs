@@ -14,8 +14,11 @@ public class Site {
 
 	private static String id = "My First Crazy Site :):)";
 	
+	/*
+	 * Rooms.
+	 */
 	public TreeMap<String, Room> rooms = 
-            new TreeMap<String, Room>();	
+            new TreeMap<String, Room>();			
 	
 	public String getId ()
 	{

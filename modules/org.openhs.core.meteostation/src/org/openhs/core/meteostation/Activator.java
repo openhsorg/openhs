@@ -30,19 +30,20 @@ public class Activator implements BundleActivator {
 		
 		siteServiceFactoryReference= bundleContext.getServiceReference(SiteServiceFactory.class.getName());
         SiteServiceFactory siteServiceFactory =(SiteServiceFactory)bundleContext.getService(siteServiceFactoryReference);	                                                  
-
-        station = new Meteostation ();
+        ISiteService service = siteServiceFactory.getInstance();	
+        
+        station = new Meteostation (service);
         
 		//SiteServiceFactory sf = new SiteServiceFactory ();
-		if (station != null)
-		{
-			System.out.println("Starting S2");
+	//	if (station != null)
+	//	{
+			//System.out.println("Starting S2");
 			serviceRegistration = bundleContext.registerService(Meteostation.class.getName(), station, null);
-		}
-		else
-		{
-			System.out.println("Starting S:  ERROR");
-		}        
+	//	}
+	//	else
+	////	{
+	//		System.out.println("Starting S:  ERROR");
+	//	}        
         
         refresh = new Refresh (siteServiceFactory, station);
         refresh.start();

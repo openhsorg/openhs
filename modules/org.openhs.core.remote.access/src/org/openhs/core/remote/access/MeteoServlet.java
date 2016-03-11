@@ -70,7 +70,21 @@ public class MeteoServlet extends HttpServlet {
 		  graphics2D.drawString(tmpInStr, 20, 120);		
 		  
 		  //Out temp		  	  
-		  String tmpOutStr = "Out" + "   " + (int) meteo.getTempOut().getCelsius() + "  C";
+		  //String tmpOutStr = "Out" + "   " + (int) meteo.getTempOut().getCelsius() + "  C";
+		  
+		  String tmpOutStr;
+		  String tempOut = "";
+		  
+		  try
+		  {
+			  tempOut = "" + (int) meteo.getSensorIn().getTemperature().getCelsius() + "";
+		  }
+		  catch (Exception ex)
+		  {
+			  tempOut = "" + "--" + "";
+		  }
+		  
+		  tmpOutStr = "Out" + "   " + tempOut + "  C";
 		  graphics2D.drawString(tmpOutStr, 20, 270);		 		  
 		  		
 		  //Line in the middle

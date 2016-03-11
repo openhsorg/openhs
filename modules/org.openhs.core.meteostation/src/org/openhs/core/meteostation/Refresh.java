@@ -30,7 +30,7 @@ public class Refresh extends Thread{
 		      if (siteServiceFactory != null)
 		      {	    	  
 		    	  ISiteService service = siteServiceFactory.getInstance();	
-
+/*
 		    	  Sensor sensor = null; 
 		    	  
 		    	  try
@@ -41,14 +41,16 @@ public class Refresh extends Thread{
 		    	  {
 		    		  
 		    	  }
+		    	  */
 		    	//  finally 
 		    	//  {
 		    	  
-		    	  
+		    	 /* 
 		    	  if (sensor != null)
 		    	  {		    		  
 		    		  station.setTempOut(sensor.getTemperature());
 		    	  }
+		    	  */
 		    	 // }
 		    	  
 		      }
