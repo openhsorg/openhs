@@ -8,11 +8,17 @@
 
 package org.openhs.core.site.data;
 
+import java.util.UUID;
+
 public class Sensor 
 {
 	Temperature temperature = new Temperature ();
 	
 	Humidity 	humidity = new Humidity ();
+	
+	UUID uuid = UUID.randomUUID();
+	
+	String id = "";
 	
 	public Temperature getTemperature ()
 	{

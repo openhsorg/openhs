@@ -15,6 +15,8 @@ import java.io.*;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
+import org.openhs.core.site.data.Temperature;
+import org.openhs.core.site.data.SiteException;
 import org.openhs.core.site.services.SiteServiceFactory;
 
 
@@ -85,9 +87,22 @@ public class MainServlet extends HttpServlet {
         	
         	Set<String> keysSensors = sensors.keySet();
         	
+        	Temperature temp;
+        	
         	for (String keyS : keysSensors)
         	{
-        		out.println("<br><tr/>  -" + keyS + " Temperature: " + service.getSensorTemperature(key, keyS).get() + " C");
+        		try
+        		{
+        			temp = service.getSensorTemperature(key, keyS);
+        			
+        			out.println("<br><tr/>  -" + keyS + " Temperature: " + temp.get() + " C");
+        		}
+        		catch (SiteException ex)
+        		{
+        			
+        		}
+        		
+        		//out.println("<br><tr/>  -" + keyS + " Temperature: " + temp.get() + " C");
         	}        	        	        	
         }			
 				

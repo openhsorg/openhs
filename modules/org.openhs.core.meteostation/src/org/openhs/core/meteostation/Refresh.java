@@ -7,6 +7,7 @@ import java.util.*;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
+import org.openhs.core.site.data.SiteException;
 import org.openhs.core.site.services.SiteServiceFactory;
 
 public class Refresh extends Thread{
@@ -38,7 +39,16 @@ public class Refresh extends Thread{
 		    	  
 		    	  String ss = service.getId();
 		    	  
-		    	  Sensor sensor = service.getSensor ("Room1", "Sensor1");
+		    	  Sensor sensor = null; 
+		    	  
+		    	  try
+		    	  {
+		    		  sensor = service.getSensor ("Room1", "Sensor1");
+		    	  }
+		    	  catch (SiteException ex)
+		    	  {
+		    		  
+		    	  }
 		    	  
 		    	  if (sensor != null)
 		    	  {		    		  

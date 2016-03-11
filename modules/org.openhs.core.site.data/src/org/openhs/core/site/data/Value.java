@@ -13,17 +13,17 @@ import java.util.Date;
 
 public class Value {
 	
-	/**
+	/*
 	 * Measured value is valid. 
 	 */
 	boolean valid = false;
 	
-	/**
+	/*
 	 * Measured value
 	 */
 	double value = 0;
 	
-	/**
+	/*
 	 * Timestamp of last written value.
 	 */
 	Timestamp timestamp = new Timestamp(0);
