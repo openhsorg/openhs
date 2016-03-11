@@ -21,17 +21,22 @@ public class Test {
 		service.addRoom("Room1");
 		service.addRoom("Room2");
 		service.addRoom("Room3");
+		service.addRoom("Outside");
 		
 		service.addSensor("Room1", "Sensor1");
 		service.addSensor("Room2", "Sensor1");
 		service.addSensor("Room3", "Sensor1");
-		service.addSensor("Room3", "Sensor2");		
+		service.addSensor("Room3", "Sensor2");
+		service.addSensor("Outside", "Sensor1");
+		
+		temp1.set(-6);
+		temp2.set(-6);		
 	}
 	
 	void SetTemperature ()
 	{
 		temp1.set(temp1.getCelsius() + 0.5);
-		temp2.set(temp2.getFahrenheit() + 2);
+		temp2.set(temp2.getCelsius() + 2);
 		/*
 		temp1 = temp1 + 0.5;
 		temp2 = temp2 + 2;
@@ -42,7 +47,7 @@ public class Test {
 		ISiteService service = siteServiceFactory.getInstance();
 		
 		service.setSensorTemperature("Room1", "Sensor1", temp1);
-		service.setSensorTemperature("Room2", "Sensor1", temp2);
+		service.setSensorTemperature("Outside", "Sensor1", temp2);
 		
 	}
 

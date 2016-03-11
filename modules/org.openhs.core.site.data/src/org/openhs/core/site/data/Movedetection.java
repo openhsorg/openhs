@@ -9,5 +9,13 @@
 package org.openhs.core.site.data;
 
 public class Movedetection extends Value {
+	
+	/*
+	 * 
+	 */
+	public boolean getDetection ()
+	{
+		return false;
+	}
 
 }

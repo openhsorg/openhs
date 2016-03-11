@@ -26,7 +26,16 @@ public class Refresh extends Thread{
 	  public void run() {
 		    while (active) {
 		      //System.out.println("\nThread adjustment...........");
-		      
+		    	/*
+		     try
+		     {
+		    	 station.setFrostIndicator();
+		     }
+		     catch (Exception ex)
+		     {
+		    	 
+		     }
+		      */
 		      if (siteServiceFactory != null)
 		      {	    	  
 		    	  ISiteService service = siteServiceFactory.getInstance();	

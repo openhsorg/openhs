@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Date;
 import java.util.*;
 import java.text.*;
 
@@ -33,6 +32,8 @@ public class MeteoServlet extends HttpServlet {
 
 	 protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException, ServletException {
 		  		 
+		  ArrayList<Boolean> list = meteo.getIndicatorsList();
+		 
 		  // Get toolkit
 		  Toolkit toolkit = Toolkit.getDefaultToolkit();
 
@@ -77,7 +78,7 @@ public class MeteoServlet extends HttpServlet {
 		  
 		  try
 		  {
-			  tempOut = "" + (int) meteo.getSensorIn().getTemperature().getCelsius() + "";
+			  tempOut = "" + (int) meteo.getSensorOut().getTemperature().getCelsius() + "";
 		  }
 		  catch (Exception ex)
 		  {
@@ -125,13 +126,22 @@ public class MeteoServlet extends HttpServlet {
 
 	      Rectangle rect = new Rectangle(10, 300, 50, 50);	
 
-	      graphics2D.drawImage(imgFrost, rect.x, rect.y, rect.width, rect.height, null);	
+	      if (list.get(0))
+	      {
+	    	  graphics2D.drawImage(imgFrost, rect.x, rect.y, rect.width, rect.height, null);
+	      }
 	      
-	      rect = new Rectangle(80, 300, 50, 50);	      
-	      graphics2D.drawImage(imgDay, rect.x, rect.y, rect.width, rect.height, null);			 
+	      if (list.get(1))
+	      {	      
+	    	  rect = new Rectangle(80, 300, 50, 50);	      
+	    	  graphics2D.drawImage(imgDay, rect.x, rect.y, rect.width, rect.height, null);
+	      }
 	      
-	      rect = new Rectangle(150, 300, 50, 50); 	      
-	      graphics2D.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);			      
+	      if (list.get(2))
+	      {	      
+	    	  rect = new Rectangle(150, 300, 50, 50); 	      
+	    	  graphics2D.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);
+	      }
 		  
 	      Toolkit.getDefaultToolkit().sync(); 
 		  

@@ -16,7 +16,7 @@ public class Sensor
 	
 	Humidity 	humidity = new Humidity ();
 	
-	Movedetection 	movement = new Movedetection ();
+	Movedetection 	movedetection = new Movedetection ();
 	
 	Lightsensing 	lightsensing = new Lightsensing ();
 	
@@ -42,4 +42,13 @@ public class Sensor
 		humidity = hum;
 	}		
 	
+	public Movedetection getMovedetection ()
+	{
+		return movedetection;
+	}
+	
+	public void setMovedetection (Movedetection mov)
+	{
+		movedetection = mov;
+	}		
 }
