@@ -15,7 +15,6 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration serviceRegistration;
 	
 	private Meteostation station;
-	private Refresh refresh;
 
 	static BundleContext getContext() {
 		return context;
@@ -34,19 +33,7 @@ public class Activator implements BundleActivator {
         
         station = new Meteostation (service);
         
-		//SiteServiceFactory sf = new SiteServiceFactory ();
-	//	if (station != null)
-	//	{
-			//System.out.println("Starting S2");
-			serviceRegistration = bundleContext.registerService(Meteostation.class.getName(), station, null);
-	//	}
-	//	else
-	////	{
-	//		System.out.println("Starting S:  ERROR");
-	//	}        
-        
-        refresh = new Refresh (siteServiceFactory, station);
-        refresh.start();
+		serviceRegistration = bundleContext.registerService(Meteostation.class.getName(), station, null);
 	}
 
 	/*
@@ -55,10 +42,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
-		
-	    refresh.stopThread();
-	    refresh.join();
-	    
+
 		bundleContext.ungetService(siteServiceFactoryReference);
 	}
 
