@@ -16,9 +16,11 @@ public class Sensor
 	
 	Humidity 	humidity = new Humidity ();
 	
-	UUID uuid = UUID.randomUUID();
+	Movedetection 	movement = new Movedetection ();
 	
-	String id = "";
+	Lightsensing 	lightsensing = new Lightsensing ();
+	
+	UUID uuid = UUID.randomUUID();
 	
 	public Temperature getTemperature ()
 	{
@@ -39,4 +41,5 @@ public class Sensor
 	{
 		humidity = hum;
 	}		
+	
 }

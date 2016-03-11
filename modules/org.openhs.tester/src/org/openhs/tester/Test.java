@@ -30,14 +30,14 @@ public class Test {
 	
 	void SetTemperature ()
 	{
-		temp1.set(temp1.get() + 0.5);
-		temp2.set(temp2.get() + 2);
+		temp1.set(temp1.getCelsius() + 0.5);
+		temp2.set(temp2.getFahrenheit() + 2);
 		/*
 		temp1 = temp1 + 0.5;
 		temp2 = temp2 + 2;
 		*/
-		if (temp1.get() >= 80) temp1.set(-6);
-		if (temp2.get() >= 80) temp2.set(-6);		
+		if (temp1.getCelsius() >= 80) temp1.set(-6);
+		if (temp2.getCelsius() >= 80) temp2.set(-6);		
 		
 		ISiteService service = siteServiceFactory.getInstance();
 		

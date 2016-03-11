@@ -31,8 +31,6 @@ public interface ISiteService
 	
 	Sensor getSensor (String keyRoom, String keySensor)  throws SiteException;
 	
-	Sensor getSensor (String name);	
-	
 	TreeMap<String, Room> getRooms ();
 	
 	TreeMap<String, Sensor> getSensors (String keyRoom);

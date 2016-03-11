@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 public class Room {
 	
-	/**
+	/*
 	 * Set of sensors in room
 	 */
 	public TreeMap<String, Sensor> sensors = 

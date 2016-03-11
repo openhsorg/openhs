@@ -94,12 +94,6 @@ public class MySiteServiceImpl implements ISiteService{
 		}
 		
 		return room.sensors.get(keySensor);		
-	}
-	
-	public Sensor getSensor (String name)
-	{	
-		
-		return null;		
 	}	
 	
 	public Temperature getSensorTemperature (String keyRoom, String keySensor) throws SiteException

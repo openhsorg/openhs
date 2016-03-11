@@ -7,6 +7,7 @@ import java.util.*;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
+import org.openhs.core.site.data.Temperature;
 import org.openhs.core.site.data.SiteException;
 import org.openhs.core.site.services.SiteServiceFactory;
 
@@ -28,17 +29,8 @@ public class Refresh extends Thread{
 		      
 		      if (siteServiceFactory != null)
 		      {	    	  
-		    //	System.out.println("Site ID is: " + siteServiceFactory.getInstance().getId());	    	  
-		     //   System.out.println("Number rooms is: " + siteServiceFactory.getInstance().getNumberRooms());	  		
-		    	  
-		    	 // test.SetTemperature();
-		    	//System.out.println("Ahoj meteo !!!");
-		    	  
-		    	 // siteServiceFactory.
 		    	  ISiteService service = siteServiceFactory.getInstance();	
-		    	  
-		    	  String ss = service.getId();
-		    	  
+
 		    	  Sensor sensor = null; 
 		    	  
 		    	  try
@@ -49,11 +41,15 @@ public class Refresh extends Thread{
 		    	  {
 		    		  
 		    	  }
+		    	//  finally 
+		    	//  {
+		    	  
 		    	  
 		    	  if (sensor != null)
 		    	  {		    		  
-		    		  station.setOutTemp((int) sensor.getTemperature().get());
+		    		  station.setTempOut(sensor.getTemperature());
 		    	  }
+		    	 // }
 		    	  
 		      }
 		      else
