@@ -11,6 +11,7 @@ package org.openhs.core.site.data;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
+import org.openhs.core.site.data.utils.TimeProfile;
 
 public class Switch {
 	
@@ -25,6 +26,11 @@ public class Switch {
 	 * State
 	 */
 	double state = 0;
+	
+	/*
+	 * Time profiler
+	 */
+	TimeProfile timeProfile;
 	
 	/*
 	 * Timestamp of last written value.

@@ -8,7 +8,6 @@ import org.openhs.core.site.services.SiteServiceFactory;
 import org.openhs.core.site.services.internal.MySiteServiceImpl;
 import org.openhs.core.site.data.ISiteService;
 
-
 public class SiteServiceActivator implements BundleActivator {
 
 	private ServiceRegistration serviceRegistration;
