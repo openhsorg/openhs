@@ -4,7 +4,7 @@ Bundle-Name: Services
 Bundle-SymbolicName: org.openhs.core.site.services
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Activator: org.openhs.core.site.services.SiteServiceActivator
 Import-Package: org.openhs.core.site.data,
  org.osgi.framework;version="1.8.0"
 Export-Package: org.openhs.core.site.services
+Service-Component: OSGI-INF/component.xml
