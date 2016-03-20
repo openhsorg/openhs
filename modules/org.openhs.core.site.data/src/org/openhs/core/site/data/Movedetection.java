@@ -11,7 +11,7 @@ package org.openhs.core.site.data;
 public class Movedetection extends Value {
 	
 	/*
-	 * 
+	 * Returns move detection yes/no.
 	 */
 	public boolean getDetection ()
 	{
