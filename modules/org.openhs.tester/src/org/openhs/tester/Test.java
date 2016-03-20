@@ -9,6 +9,9 @@ public class Test {
 
     public void activate() {
         System.out.println("Starting Test");
+        
+        BuildHouse();
+        
         m_myThread = new MyThread(m_siteService, this);
         m_myThread.start();
 
