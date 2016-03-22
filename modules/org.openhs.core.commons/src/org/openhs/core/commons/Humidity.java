@@ -6,7 +6,9 @@
 * 
 */
 
-package org.openhs.core.site.data;
+package org.openhs.core.commons;
+
+import org.openhs.core.commons.Value;
 
 public class Humidity extends Value {
 

@@ -13,24 +13,28 @@ import java.util.ArrayList;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Sensor;
 import org.openhs.core.site.data.SiteException;
+import org.openhs.core.commons.Message;
+import org.openhs.core.commons.Temperature;
 
 public class Meteostation {
+	
+	Message msg = new Message ();
 
     public void activate() {
-        System.out.println("Starting Meteostation");
+    	msg.println("org.openhs.core.meteostation: activate");
     }
 
     public void deactivate() {
-        System.out.println("Stopping Meteostation");
+    	msg.println("org.openhs.core.meteostation: deactivate");
     }
 
     public void setService(ISiteService ser) {
-        System.out.println("Meteostation: Set ISiteService");
+    	msg.println("org.openhs.core.meteostation: Set ISiteService");
         m_siteService = ser;
     }
 
     public void unsetService(ISiteService ser) {
-        System.out.println("Meteostation: Unset ISiteService");
+    	msg.println("org.openhs.core.meteostation: UnSet ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }

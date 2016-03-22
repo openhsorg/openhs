@@ -11,7 +11,7 @@ package org.openhs.core.site.data;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
-import org.openhs.core.site.data.utils.TimeProfile;
+import org.openhs.core.commons.TimeProfile;
 
 public class Switch {
 	

@@ -8,8 +8,6 @@
 
 package org.openhs.core.site.data;
 
-import org.openhs.core.site.data.utils.TimeProfile;
-
 import java.util.TreeMap;
 
 
@@ -23,7 +21,7 @@ public class Site {
 	public TreeMap<String, Room> rooms = 
             new TreeMap<String, Room>();		
 	
-	TimeProfile timeprofile = new TimeProfile ();
+	//TimeProfile timeprofile = new TimeProfile ();
 	
 	public String getId ()
 	{

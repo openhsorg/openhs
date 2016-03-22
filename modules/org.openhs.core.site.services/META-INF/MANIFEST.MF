@@ -8,3 +8,4 @@ Import-Package: org.openhs.core.site.data,
  org.osgi.framework;version="1.8.0"
 Export-Package: org.openhs.core.site.services
 Service-Component: OSGI-INF/component.xml
+Require-Bundle: org.openhs.core.commons;bundle-version="1.0.0"

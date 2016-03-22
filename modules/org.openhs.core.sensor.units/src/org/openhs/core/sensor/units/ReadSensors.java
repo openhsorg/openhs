@@ -1,19 +1,22 @@
 package org.openhs.core.sensor.units;
 
+import org.openhs.core.commons.Message;
 import org.openhs.core.site.data.ISiteService;
 
 public class ReadSensors extends Thread {
     private volatile boolean active = true;
 
     int i = 0;
+    
+	Message msg = new Message ();  
 
     public void activate() {
-        System.out.println("Starting ReadSensors");
+    	msg.println("org.openhs.core.sensor.unit: activate");
         start();
     }
 
     public void deactivate() {
-        System.out.println("Stopping ReadSensors");
+    	msg.println("org.openhs.core.sensor.unit: deactivate");
         stopThread();
         try {
             join();
@@ -24,12 +27,12 @@ public class ReadSensors extends Thread {
     }
 
     public void setService(ISiteService ser) {
-        System.out.println("ReadSensors: Set ISiteService");
+        msg.println("org.openhs.core.sensor.unit: Set ISiteService");
         m_siteService = ser;
     }
 
     public void unsetService(ISiteService ser) {
-        System.out.println("ReadSensors: Unset ISiteService");
+    	msg.println("org.openhs.core.sensor.unit: UnSet ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }

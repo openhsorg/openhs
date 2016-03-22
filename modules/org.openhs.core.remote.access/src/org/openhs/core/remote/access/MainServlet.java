@@ -16,14 +16,17 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
 import org.openhs.core.site.data.SiteException;
-import org.openhs.core.site.data.Temperature;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
+import org.openhs.core.commons.Message;
+import org.openhs.core.commons.Temperature;
 
 public class MainServlet extends HttpServlet {
+	
+	Message msg = new Message ();
 
     public void activate() {
-        System.out.println("Starting MainServlet");
+        msg.println("org.openhs.core.remote.access: activate");
 
         mainServlet = new MainServlet();
         imageServlet = new ImageServlet();
@@ -49,7 +52,7 @@ public class MainServlet extends HttpServlet {
     }
 
     public void deactivate() {
-        System.out.println("Stopping MainServlet");
+    	msg.println("org.openhs.core.remote.access: deactivate");
         m_httpService.unregister("/openhs");
         m_httpService.unregister("/image");
         m_httpService.unregister("/image2");
@@ -59,36 +62,36 @@ public class MainServlet extends HttpServlet {
     }
 
     public void setService(ISiteService ser) {
-        System.out.println("MainServlet: Set ISiteService");
+        msg.println("org.openhs.core.remote.access: Set ISiteService");
         m_siteService = ser;
     }
 
     public void unsetService(ISiteService ser) {
-        System.out.println("MainServlet: Unset ISiteService");
+    	msg.println("org.openhs.core.remote.access: UnSet ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }
     }
 
     public void setService(Meteostation ser) {
-        System.out.println("MainServlet: Set Meteostation");
+        msg.println("org.openhs.core.remote.access: Set Meteostation");
         m_meteo = ser;
     }
 
     public void unsetService(Meteostation ser) {
-        System.out.println("MainServlet: Unset Meteostation");
+    	msg.println("org.openhs.core.remote.access: UnSet Meteostation");
         if (m_meteo == ser) {
             m_meteo = null;
         }
     }
 
     public void setService(HttpService ser) {
-        System.out.println("MainServlet: Set HttpService");
+    	msg.println("org.openhs.core.remote.access: Set HttpService");
         m_httpService = ser;
     }
 
     public void unsetService(HttpService ser) {
-        System.out.println("MainServlet: Unset HttpService");
+    	msg.println("org.openhs.core.remote.access: UnSet HttpService");
         if (m_httpService == ser) {
             m_httpService = null;
         }

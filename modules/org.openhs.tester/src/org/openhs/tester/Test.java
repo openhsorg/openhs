@@ -1,14 +1,17 @@
 package org.openhs.tester;
 
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.site.data.Temperature;;
+import org.openhs.core.commons.Message;
+import org.openhs.core.commons.Temperature;
 
 public class Test {
+	
+	Message msg = new Message ();
 
     private MyThread m_myThread;
 
     public void activate() {
-        System.out.println("Starting Test");
+        msg.println("org.openhs.tester: activate");
         
         BuildHouse();
         
@@ -18,7 +21,7 @@ public class Test {
     }
 
     public void deactivate() {
-        System.out.println("Stopping Test");
+    	msg.println("org.openhs.tester: deactivate");
         m_myThread.stopThread();
         try {
             m_myThread.join();
@@ -29,12 +32,12 @@ public class Test {
     }
 
     public void setService(ISiteService ser) {
-        System.out.println("Test: Set ISiteService");
+    	msg.println("org.openhs.tester: Set ISiteService");
         m_siteService = ser;
     }
 
     public void unsetService(ISiteService ser) {
-        System.out.println("Test: Unset ISiteService");
+    	msg.println("org.openhs.tester: UnSet ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }

@@ -6,7 +6,7 @@
 * 
 */
 
-package org.openhs.core.site.data;
+package org.openhs.core.commons;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -16,7 +16,7 @@ public class Value {
 	/*
 	 * Measured value is valid. 
 	 */
-	boolean valid = false;
+	boolean valid = false;	
 	
 	/*
 	 * Measured value

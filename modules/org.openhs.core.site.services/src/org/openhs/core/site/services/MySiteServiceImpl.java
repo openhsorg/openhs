@@ -14,16 +14,19 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.site.data.Room;
 import org.openhs.core.site.data.Sensor;
 import org.openhs.core.site.data.SiteException;
-import org.openhs.core.site.data.Temperature;
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Message;
 
 public class MySiteServiceImpl implements ISiteService {
+	
+	Message msg = new Message ();
 
     public void activate() {
-        System.out.println("Starting MySiteServiceImpl");
+    	msg.println("org.openhs.core.site.services: activate");
     }
 
     public void deactivate() {
-        System.out.println("Stopping MySiteServiceImpl");
+    	msg.println("org.openhs.core.site.services: deactivate");
     }
 
     @Override

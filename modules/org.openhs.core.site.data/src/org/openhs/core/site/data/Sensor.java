@@ -9,6 +9,10 @@
 package org.openhs.core.site.data;
 
 import java.util.UUID;
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Humidity;
+import org.openhs.core.commons.Movedetection;
+import org.openhs.core.commons.Lightsensing;
 
 public class Sensor 
 {

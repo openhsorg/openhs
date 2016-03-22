@@ -10,6 +10,8 @@ package org.openhs.core.site.data;
 
 import java.util.TreeMap;
 
+import org.openhs.core.commons.Temperature;
+
 public interface ISiteService
 
 {	
