@@ -3,6 +3,7 @@
 ## Step by Step Setup:
 * **[Setup Java for OpenHS](https://github.com/openhsorg/openhs/wiki/Setup-Java-for-OpenHS)**
 * **[Setup OpenHS in Eclipse environment](https://github.com/openhsorg/openhs/wiki/Setup-OpenHS-in-Eclipse-environment)**
+* **[Create OpenHS plug-in in Eclipse] (https://github.com/openhsorg/openhs/wiki/Create-OpenHS-plug-in-in-Eclipse)**
 
 ## Content:
 * **applications:** Any applications working with OpenHS (config tools, GUIs, etc...)
