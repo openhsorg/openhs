@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openhs.core.meteostation.Meteostation;
+import org.openhs.core.commons.Sensor;
+import org.openhs.core.commons.SiteException;
 
 public class MeteoServlet extends HttpServlet {
 

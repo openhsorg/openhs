@@ -6,7 +6,7 @@
 * 
 */
 
-package org.openhs.core.site.data;
+package org.openhs.core.commons;
 
 import java.util.UUID;
 import org.openhs.core.commons.Temperature;

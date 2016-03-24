@@ -22,5 +22,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="org.openhs.core.commons@default:default,org.openhs.core.email@default:default,org.openhs.core.meteostation@default:default,org.openhs.core.remote.access@6:default,org.openhs.core.sensor.units@5:default,org.openhs.core.site.data@default:default,org.openhs.core.site.services@default:default,org.openhs.tester@6:default"/>
+<stringAttribute key="workspace_bundles" value="org.openhs.core.commons@default:default,org.openhs.core.configuration@default:default,org.openhs.core.email@default:default,org.openhs.core.meteostation@default:default,org.openhs.core.remote.access@6:default,org.openhs.core.sensor.units@5:default,org.openhs.core.site.data@default:default,org.openhs.core.site.services@default:default,org.openhs.tester@6:default"/>
 </launchConfiguration>

@@ -13,13 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.site.data.Room;
-import org.openhs.core.site.data.Sensor;
-import org.openhs.core.site.data.SiteException;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.openhs.core.commons.Message;
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Sensor;
+import org.openhs.core.commons.Room;
+import org.openhs.core.commons.SiteException;
 
 public class MainServlet extends HttpServlet {
 	

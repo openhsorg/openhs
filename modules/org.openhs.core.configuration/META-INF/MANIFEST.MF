@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Configuration
+Bundle-SymbolicName: org.openhs.core.configuration
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.openhs.core.commons;bundle-version="1.0.0",
+ org.openhs.core.site.data;bundle-version="1.0.0",
+ org.openhs.core.site.services;bundle-version="1.0.0"
+Import-Package: org.osgi.framework;version="1.8.0"
+Service-Component: OSGI-INF/component.xml
+Export-Package: org.openhs.core.configuration

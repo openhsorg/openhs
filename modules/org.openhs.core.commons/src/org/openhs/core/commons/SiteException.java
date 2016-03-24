@@ -6,7 +6,7 @@
 * 
 */
 
-package org.openhs.core.site.data;
+package org.openhs.core.commons;
 
 public class SiteException extends Exception {
 	
@@ -14,3 +14,4 @@ public class SiteException extends Exception {
 		      super(msg);
 		   }	
 }
+

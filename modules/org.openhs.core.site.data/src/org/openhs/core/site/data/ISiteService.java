@@ -11,6 +11,10 @@ package org.openhs.core.site.data;
 import java.util.TreeMap;
 
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Sensor;
+import org.openhs.core.commons.Site;
+import org.openhs.core.commons.Room;
+import org.openhs.core.commons.SiteException;
 
 public interface ISiteService
 
