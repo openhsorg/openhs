@@ -13,7 +13,7 @@ public class Test {
     public void activate() {
         msg.println("org.openhs.tester: activate");
         
-        BuildHouse();
+     //   BuildHouse();
         
         m_myThread = new MyThread(m_siteService, this);
         m_myThread.start();

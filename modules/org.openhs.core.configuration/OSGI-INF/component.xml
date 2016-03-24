@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.openhs.core.configuration">
    <implementation class="org.openhs.core.configuration.Config"/>
-   <service>
-      <provide interface="org.openhs.core.configuration.Config"/>
-   </service>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.data.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
+   <service>
+      <provide interface="org.openhs.core.configuration.IConfiguration"/>
+   </service>
 </scr:component>

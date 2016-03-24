@@ -1,38 +1,73 @@
 package org.openhs.core.configuration;
 
 import org.openhs.core.commons.Message;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Configuration;
 import org.openhs.core.site.data.ISiteService;
 
-public class Config {
+public class Config implements IConfiguration {
 	
     /*
      * Basic data structure.
      */
-    private ISiteService m_siteService = null;	
-	
+    ISiteService m_siteService = null;	
+    
+    /*
+     * Messages.
+     */
 	Message msg = new Message ();
 	
-	Configuration config = new Configuration ();
+	/*
+	 * Configuration.
+	 */
+	Configuration config = new Configuration ();	 
 
-    public void activate() {
+    void activate() {
     	msg.println("org.openhs.core.configuration: activate");
+    	
+    	initialize();
     }
 
-    public void deactivate() {
+    void deactivate() {
     	msg.println("org.openhs.core.configuration: deactivate");
     }
 
-    public void setService(ISiteService ser) {
+    void setService(ISiteService ser) {
     	msg.println("org.openhs.core.configuration: Set ISiteService");
         m_siteService = ser;
     }
 
-    public void unsetService(ISiteService ser) {
+    void unsetService(ISiteService ser) {
     	msg.println("org.openhs.core.configuration: UnSet ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }
     }	
+    
+    /*
+     * Initialize configuration...
+     */
+    void initialize ()
+    {
+     
+        m_siteService.addRoom("Room1");
+        m_siteService.addRoom("Outside");
 
+        m_siteService.addSensor("Room1", "Sensor1");
+        m_siteService.addSensor("Outside", "Sensor1");	
+    	    	
+    }
+            
+    public boolean setConfiguration (Configuration configIn)
+    {
+    	config = configIn;
+    	
+    	return true;
+    }
+    
+    public Configuration getConfiguration ()
+    {
+    	return config;
+    }        
+ 
 }
