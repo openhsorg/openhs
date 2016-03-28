@@ -9,6 +9,7 @@
 package org.openhs.core.site.services;
 
 import java.util.TreeMap;
+import java.io.*;
 
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Temperature;
@@ -19,6 +20,8 @@ import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 
 public class MySiteServiceImpl implements ISiteService {
+	
+	Site ss = new Site ();
 	
 	Message msg = new Message ();
 
@@ -128,6 +131,18 @@ public class MySiteServiceImpl implements ISiteService {
         sensor.setTemperature(temp);
 
         return true;
+    }
+    
+    public Site getSite () {
+        return ss;    	
+    }
+    
+    public boolean setSite (Site siteIn)
+    {   //Needs to be solved...
+    	
+    	ss = siteIn;
+    	
+    	return true;
     }
 
 }

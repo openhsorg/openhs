@@ -16,10 +16,7 @@ import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 
-public interface ISiteService
-
-{	
-	Site ss = new Site ();
+public interface ISiteService {		
 	
 	String getId ();
 	
@@ -40,5 +37,9 @@ public interface ISiteService
 	TreeMap<String, Room> getRooms ();
 	
 	TreeMap<String, Sensor> getSensors (String keyRoom);
+	
+	boolean setSite (Site siteIn);
+	
+	Site getSite ();
 
 }
