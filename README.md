@@ -13,7 +13,7 @@
 * **sensor_units:** Drivers and sensor units software.
 * **tools:** Any useful tools related to OpenHS.
 
-## Deployment
+## Deployment (will be removed)
 * **Script for automatic download and deployment (no sources):**
    https://github.com/openhsorg/openhs/blob/master/tools/openhs_install_ubuntu.sh 
 * **Recent compiled builds (no sources):**
