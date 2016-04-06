@@ -1,5 +1,7 @@
 # openhs
 
+More about OpenHS project: [http://openhs.org/wordpress/] (http://openhs.org/wordpress/) (Login:guest, Password: guest)
+
 ## Step by Step Setup:
 * **[Setup Java for OpenHS](https://github.com/openhsorg/openhs/wiki/Setup-Java-for-OpenHS)**
 * **[Setup OpenHS in Eclipse environment](https://github.com/openhsorg/openhs/wiki/Setup-OpenHS-in-Eclipse-environment)**
