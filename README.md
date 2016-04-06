@@ -13,10 +13,8 @@ OpenHS website: [http://openhs.org/wordpress/] (http://openhs.org/wordpress/) (L
 
 ## Folders content:
 * **applications:** Any applications working with OpenHS (config tools, GUIs, etc...)
-* **computer_units:** Drivers and units software.
-* **documents:** Documentation.
+* **hardware_units:** Software for hardware units.
 * **modules:** OpenHS Java deployeable modules.
-* **sensor_units:** Drivers and sensor units software.
 * **tools:** Any useful tools related to OpenHS.
 
 
