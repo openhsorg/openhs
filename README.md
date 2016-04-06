@@ -1,7 +1,7 @@
 # openhs
 
 OpenHS website: [http://openhs.org/wordpress/] (http://openhs.org/wordpress/) (Login:guest, Password: guest)
-Main project wiki: [https://github.com/openhsorg/openhs/wiki](https://github.com/openhsorg/openhs/wiki)
+<br>Main project wiki: [https://github.com/openhsorg/openhs/wiki](https://github.com/openhsorg/openhs/wiki)
 
 ## Step by Step Setup:
 * **[Setup Java for OpenHS](https://github.com/openhsorg/openhs/wiki/Setup-Java-for-OpenHS)**
