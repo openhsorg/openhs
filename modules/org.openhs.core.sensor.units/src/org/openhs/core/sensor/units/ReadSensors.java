@@ -12,11 +12,12 @@ public class ReadSensors extends Thread {
 
     public void activate() {
     	msg.println("org.openhs.core.sensor.unit: activate");
-        start();
+       // start();
     }
 
     public void deactivate() {
     	msg.println("org.openhs.core.sensor.unit: deactivate");
+    	/*
         stopThread();
         try {
             join();
@@ -24,6 +25,7 @@ public class ReadSensors extends Thread {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        */
     }
 
     public void setService(ISiteService ser) {

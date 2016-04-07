@@ -63,8 +63,8 @@ public class Test {
             temp2.set(-40);
         }
 
-        m_siteService.setSensorTemperature("Room1", "Sensor1", temp1);
-        m_siteService.setSensorTemperature("Outside", "Sensor1", temp2);
+       // m_siteService.setSensorTemperature("Room1", "Sensor1", temp1);
+       m_siteService.setSensorTemperature("Outside", "Sensor1", temp2);
 
     }
 

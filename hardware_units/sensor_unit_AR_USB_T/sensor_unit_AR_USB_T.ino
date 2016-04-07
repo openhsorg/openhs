@@ -2,7 +2,6 @@
 
 dht DHT;
 
-
 #define DHT22_PIN 5
 
 void setup()
@@ -36,9 +35,16 @@ void loop()
             break;
     }
     // DISPLAY DATA
-    Serial.print(DHT.humidity, 1);
-    Serial.print(",\t");
-    Serial.println(DHT.temperature, 1);
+//    Serial.print(DHT.humidity, 1);
+//    Serial.print(",\t");
+//    Serial.println(DHT.temperature, 1);
+    
+    // Sent sensor data
+    Serial.print("Sensor:Sensor1;");
+    Serial.print("temp:");
+    Serial.print(DHT.temperature, 1);
+    Serial.print(";");
+    Serial.print("\n");
 
     delay(1000);
 

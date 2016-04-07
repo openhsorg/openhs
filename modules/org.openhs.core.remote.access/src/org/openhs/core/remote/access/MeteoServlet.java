@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.commons.Sensor;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.SiteException;
 
 public class MeteoServlet extends HttpServlet {
@@ -81,17 +82,43 @@ public class MeteoServlet extends HttpServlet {
 
         graphics2D.setFont(tempFont);
 
-        String tmpInStr = "In" + "     22 C";
+        String tmpInStr;
+        String tempIn;
+        
+        try {
+        	Temperature tIn =  m_meteo.getSensorIn().getTemperature();
+        	
+        	if (tIn.valid())
+        	{
+        		tempIn = "" + (int) tIn.getCelsius() + "";
+        	}
+        	else
+        	{
+        		tempIn = "--";
+        	}        	           
+        } catch (Exception ex) {
+            tempIn = "" + "--" + "";
+        }        
+        tmpInStr = "In" + "   " + tempIn + "  C";
+        
         graphics2D.drawString(tmpInStr, 20, 120);
 
-        // Out temp
-        // String tmpOutStr = "Out" + " " + (int) meteo.getTempOut().getCelsius() + " C";
-
         String tmpOutStr;
-        String tempOut = "";
+        String tempOut;
 
         try {
-            tempOut = "" + (int) m_meteo.getSensorOut().getTemperature().getCelsius() + "";
+        	
+        	Temperature tOut =  m_meteo.getSensorOut().getTemperature();
+        	
+        	if (tOut.valid())
+        	{
+        		tempOut = "" + (int) tOut.getCelsius() + "";
+        	}
+        	else
+        	{
+        		tempOut = "--";
+        	}
+        	            
         } catch (Exception ex) {
             tempOut = "" + "--" + "";
         }
