@@ -12,7 +12,6 @@ Import-Package: javax.servlet;version="3.1.0",
  org.osgi.service.http;version="1.2.1",
  org.osgi.util.tracker;version="1.5.1"
 Require-Bundle: org.openhs.core.remote.access;bundle-version="1.0.0",
- org.openhs.core.sensor.units;bundle-version="1.0.0",
  org.openhs.core.site.data;bundle-version="1.0.0",
  org.openhs.core.site.services;bundle-version="1.0.0",
  org.openhs.core.commons;bundle-version="1.0.0"

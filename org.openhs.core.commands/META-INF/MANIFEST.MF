@@ -1,13 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Units
-Bundle-SymbolicName: org.openhs.core.sensor.units
+Bundle-Name: Commands
+Bundle-SymbolicName: org.openhs.core.commands
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.openhs.core.site.data,
- org.openhs.core.site.services,
- org.osgi.framework;version="1.8.0"
 Require-Bundle: org.openhs.core.site.data;bundle-version="1.0.0",
  org.openhs.core.site.services;bundle-version="1.0.0",
  org.openhs.core.commons;bundle-version="1.0.0"
+Export-Package: org.openhs.core.commands
 Service-Component: OSGI-INF/component.xml
