@@ -13,6 +13,7 @@ import java.io.*;
 
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Message;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
@@ -132,6 +133,34 @@ public class MySiteServiceImpl implements ISiteService {
 
         return true;
     }
+    
+    @Override
+    public Humidity getSensorHumidity(String keyRoom, String keySensor) throws SiteException {
+        Sensor sensor = null;
+
+        try {
+            sensor = getSensor(keyRoom, keySensor);
+        } catch (SiteException ex) {
+            throw ex;
+        }
+
+        return sensor.getHumidity();
+    }
+
+    @Override
+    public boolean setSensorHumidity(String roomKey, String sensorKey, Humidity hum) {
+        Sensor sensor = null;
+
+        try {
+            sensor = getSensor(roomKey, sensorKey);
+        } catch (SiteException ex) {
+            return false;
+        }
+
+        sensor.setHumidity(hum);
+
+        return true;
+    }    
     
     public Site getSite () {
         return ss;    	

@@ -4,5 +4,6 @@ import org.openhs.core.commons.Configuration;
 
 public interface ICommands {
 
-	public boolean setCommand (String commandIn);
+	public boolean setCommand (String commandIn);	
+
 }

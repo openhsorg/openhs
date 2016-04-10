@@ -6,7 +6,9 @@ import java.util.regex.Pattern;
 import org.openhs.core.commons.Configuration;
 import org.openhs.core.commons.Message;
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Humidity;
 import org.openhs.core.site.data.ISiteService;
+import java.util.Scanner;
 
 public class Commands implements ICommands {
 
@@ -36,57 +38,96 @@ public class Commands implements ICommands {
         m_siteService = ser;             
     }	
     
-    public boolean setCommand (String commandIn) {
-    	
-    	//Example: Sensor:Sensor1;temp:23.20;
+    public boolean setCommand (String commandIn) {    
+    	//Example: ohs device=sensor name=Sensor1 temp1=22.10 hum=88.5
     	
     	String pattern1;
 		String pattern2;
 		Pattern p;
 		Matcher m;			
 		
-    	if (commandIn.contains("Sensor:"))
+    	if (commandIn.contains("ohs"))
     	{
-			pattern1 = "Sensor:";
-			pattern2 = ";";
+			pattern1 = "device=";
+			pattern2 = " ";
 			
 			p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
 			m = p.matcher(commandIn);    	
 			
-			String sensorName = "";
+			String deviceName = "";
 			
 			while (m.find()) {    
+				
+				deviceName = m.group(1);
+			}			
 			
-				sensorName = m.group(1);
+			//System.out.println("COMMAND:> device: "+ deviceName);			
+			switch (deviceName)
+			{
+			case "sensor":				
+				setCommandSensor (commandIn);
+				
+				break;			
 			}
-    		
-    		if (commandIn.contains("temp:"))
-    		{
-     			
-    			pattern1 = "temp:";
-    			pattern2 = ";";
-    			
-    			p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
-    			m = p.matcher(commandIn);
-    			
-    			while (m.find()) {        			 
-    			  
-    			  double f = Double.parseDouble(m.group(1));
-    			  
-    			  System.out.println("COMMAND:> Sensor: "+ sensorName + " Temp: " + String.format("%.2f", f));
-    			  
-    			  Temperature temp = new Temperature ();
-    			  
-    			  temp.set(f);        			  
-    			          			  
-    			  if (!this.m_siteService.setSensorTemperature("Room1", sensorName, temp)) {
-    				  System.out.println("Cannot write temp :(");
-    			  }  
-    			  
-    			}
-    		}        		
-    	}     	
+			
+    	}
+			    	
     	
     	return true;
+    }
+    
+    boolean setCommandSensor (String commandIn){
+    	
+    	String stringName = parseValue ("name", commandIn);
+    	
+    	String stringTemp = parseValue ("temp", commandIn);
+    	
+    	String stringHum = parseValue ("hum", commandIn);
+    	
+    	//System.out.println("COMMAND sensor:> " + " Name:" + stringName + " Temp:" + stringTemp + " Hum:" + stringHum);
+    	
+    	if (!stringTemp.isEmpty()) {
+    		double f = Double.parseDouble(stringTemp);
+    		
+    		Temperature temp = new Temperature ();
+    		
+    		temp.set(f);
+    		
+	  		if (!this.m_siteService.setSensorTemperature("Room1", stringName, temp)) {
+	  			System.out.println("Cannot write temp :(");
+			  } 	  		
+    	}
+    	
+    	if (!stringHum.isEmpty()) {
+    		double h = Double.parseDouble(stringHum);
+    		
+    		Humidity hum = new Humidity ();
+    		
+    		hum.set(h);
+    		
+	  		if (!this.m_siteService.setSensorHumidity("Room1", stringName, hum)) {
+	  			System.out.println("Cannot write temp :(");
+			  } 	  		
+    	}    			  		         			     	
+    	
+    	return true;
+    }
+    
+    String parseValue (String id, String text)
+    {
+    	String output = "";
+    	
+    	String pattern1 = id + "=";
+		String pattern2 = " ";
+		
+		Pattern p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
+		Matcher m = p.matcher(text);    			
+				
+		while (m.find()) {    
+			
+			output = m.group(1);
+		}					
+		
+		return output;    	
     }
 }

@@ -7,11 +7,6 @@ dht DHT;
 void setup()
 {
     Serial.begin(9600);
-    Serial.println("DHT TEST PROGRAM ");
-    Serial.print("LIBRARY VERSION: ");
-    Serial.println(DHT_LIB_VERSION);
-    Serial.println();
-    Serial.println("Type,\tstatus,\tHumidity (%),\tTemperature (C)");
 }
 
 void loop()
@@ -22,7 +17,7 @@ void loop()
     switch (chk)
     {
         case DHTLIB_OK: 
-            Serial.print("OK,\t"); 
+           // Serial.print("OK,\t"); 
             break;
         case DHTLIB_ERROR_CHECKSUM: 
             Serial.print("Checksum error,\t"); 
@@ -34,18 +29,21 @@ void loop()
             Serial.print("Unknown error,\t"); 
             break;
     }
-    // DISPLAY DATA
-//    Serial.print(DHT.humidity, 1);
-//    Serial.print(",\t");
-//    Serial.println(DHT.temperature, 1);
     
-    // Sent sensor data
-    Serial.print("Sensor:Sensor1;");
-    Serial.print("temp:");
-    Serial.print(DHT.temperature, 1);
-    Serial.print(";");
-    Serial.print("\n");
+    // Sent sensor data   
+    if (chk == DHTLIB_OK)
+    {
+      Serial.print(" ohs ");
+      Serial.print(" device=");
+      Serial.print("sensor ");
+      Serial.print(" name=");
+      Serial.print("Sensor1 ");     
+      Serial.print(" temp=");
+      Serial.print(DHT.temperature, 1);
+      Serial.print(" hum=");
+      Serial.print(DHT.humidity, 1);      
+      Serial.print(" \n");
+    }
 
     delay(1000);
-
 }

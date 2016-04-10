@@ -11,6 +11,7 @@ package org.openhs.core.site.data;
 import java.util.TreeMap;
 
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
@@ -27,6 +28,10 @@ public interface ISiteService {
 	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;
 	
 	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp);		
+	
+	Humidity getSensorHumidity (String keyRoom, String keySensor)  throws SiteException;
+	
+	boolean setSensorHumidity (String keyRoom, String keySensor, Humidity hum);		
 	
 	boolean addRoom (String key);
 	

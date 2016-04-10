@@ -27,6 +27,11 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
      * Messages.
      */
 	Message msg = new Message ();
+	
+	/*
+	 * Enable communication
+	 */
+	boolean enable = false;
 
 	/*
 	 * Methods
@@ -45,8 +50,14 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
     	
         try
         {
-        	// Turn on listening
-        	connect("/dev/ttyS33"); 
+        	if (enable) {
+            	// Turn on listening        	
+            	connect("/dev/ttyS33");         		
+        	}
+        	else {
+        		msg.println("org.openhs.core.io.serial: DISABLED Serial Comm [see 'enable' parameter]"); 		
+        	}
+
         }
         catch ( Exception e )
         {
@@ -187,7 +198,6 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
     /** */
     public static class SerialWriter implements Runnable 
     {
-     	
         OutputStream out;
         
         public SerialWriter ( OutputStream out)
