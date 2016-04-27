@@ -82,49 +82,32 @@ public class MeteoServlet extends HttpServlet {
 
         graphics2D.setFont(tempFont);
 
-        String tmpInStr;
-        String tempIn;
+        String tmpInStr = "error";
+        String tempOutStr = "error";
         
         try {
         	Temperature tIn =  m_meteo.getSensorIn().getTemperature();
         	
-        	if (tIn.valid())
-        	{
-        		tempIn = "" + (int) tIn.getCelsius() + "";
-        	}
-        	else
-        	{
-        		tempIn = "--";
-        	}        	           
+        	tmpInStr = "In   " + tIn.getCelsiusString() + "  C";
+        	        	           
         } catch (Exception ex) {
-            tempIn = "" + "--" + "";
+        	tmpInStr = "" + "--" + "";
         }        
-        tmpInStr = "In" + "   " + tempIn + "  C";
         
         graphics2D.drawString(tmpInStr, 20, 120);
 
-        String tmpOutStr;
-        String tempOut;
 
         try {
         	
         	Temperature tOut =  m_meteo.getSensorOut().getTemperature();
         	
-        	if (tOut.valid())
-        	{
-        		tempOut = "" + (int) tOut.getCelsius() + "";
-        	}
-        	else
-        	{
-        		tempOut = "--";
-        	}
+        	tempOutStr = "Out   " + tOut.getCelsiusString() + "  C";
         	            
         } catch (Exception ex) {
-            tempOut = "" + "--" + "";
+        	tempOutStr = "" + "--" + "";
         }
 
-        tmpOutStr = "Out" + "   " + tempOut + "  C";
-        graphics2D.drawString(tmpOutStr, 20, 270);
+        graphics2D.drawString(tempOutStr, 20, 270);
 
         // Line in the middle
         graphics2D.drawLine(20, 170, 400, 170);
