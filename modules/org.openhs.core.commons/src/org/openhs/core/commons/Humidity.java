@@ -16,4 +16,15 @@ public class Humidity extends Value {
 	 * Measured value is in percentage of humidity.
 	 */
 	
+	public String getString()
+	{
+		if (this.valid()) {
+			return (String) "" + get();
+		}
+		else {
+			return StringIdent.NOT_VALID.toString();
+		}	
+	}		
+		
+	
 }

@@ -6,9 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.servlet;version="3.1.0",
  javax.servlet.http;version="3.1.0",
- org.openhs.core.meteostation,
- org.openhs.core.site.data,
- org.openhs.core.site.services,
  org.osgi.framework;version="1.8.0",
  org.osgi.service.http;version="1.2.1",
  org.osgi.util.tracker;version="1.5.1"
@@ -17,3 +14,4 @@ Require-Bundle: org.openhs.core.site.data;bundle-version="1.0.0",
  org.openhs.core.meteostation;bundle-version="1.0.0",
  org.openhs.core.commons;bundle-version="1.0.0"
 Service-Component: OSGI-INF/component.xml
+Bundle-ActivationPolicy: lazy

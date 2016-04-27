@@ -14,8 +14,7 @@ public class Test {
         msg.println("org.openhs.tester: activate");
         
         m_myThread = new MyThread(m_siteService, this);
-        m_myThread.start();
-
+        m_myThread.start();                
     }
 
     public void deactivate() {

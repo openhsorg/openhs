@@ -42,7 +42,7 @@ public class Meteostation {
     /*
      * Basic data structure.
      */
-    private ISiteService m_siteService = null;
+    public ISiteService m_siteService = null;
 
     /*
      * What sensors we deal with.

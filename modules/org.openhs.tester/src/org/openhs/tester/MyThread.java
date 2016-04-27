@@ -20,7 +20,7 @@ public class MyThread extends Thread {
             // System.out.println("\nThread adjustment...........");
 
             if (m_siteService != null) {
-                // System.out.println("Site ID is: " + siteServiceFactory.getInstance().getId());
+                 //System.out.println("Site ID is: " + m_siteService.getId());
                 // System.out.println("Number rooms is: " + siteServiceFactory.getInstance().getNumberRooms());
 
                 m_test.SetTemperature();

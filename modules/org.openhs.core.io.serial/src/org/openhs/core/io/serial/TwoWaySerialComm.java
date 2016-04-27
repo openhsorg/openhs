@@ -45,7 +45,7 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
     }
 
     void setService(ICommands com) {
-    	msg.println("org.openhs.core.io.serial: Set ISiteService");      	
+    	msg.println("org.openhs.core.io.serial: Set ICommands");      	
     	m_command = com;
     	
         try

@@ -25,7 +25,7 @@ public interface ISiteService {
 	
 	int getNumberSensors (String roomKey);
 	
-	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;
+	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;	
 	
 	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp);		
 	

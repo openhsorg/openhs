@@ -117,7 +117,7 @@ public class MySiteServiceImpl implements ISiteService {
         }
 
         return sensor.getTemperature();
-    }
+    }  
 
     @Override
     public boolean setSensorTemperature(String roomKey, String sensorKey, Temperature temp) {

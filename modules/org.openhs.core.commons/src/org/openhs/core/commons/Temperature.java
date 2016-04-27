@@ -22,11 +22,37 @@ public class Temperature extends Value
 	}
 	
 	/*
+	 * Get temperature in Celsius degrees in string form.
+	 */	
+	public String getCelsiusString()
+	{
+		if (this.valid()) {
+			return (String) "" + getCelsius();			
+		}
+		else {
+			return StringIdent.NOT_VALID.toString();
+		}	
+	}	
+	
+	/*
 	 * Get temperature in Farenheit degrees.
 	 */
 	public double getFahrenheit()
 	{
 		return ((value - 32) * 5) / 9;
+	}
+	
+	/*
+	 * Get temperature in Farenheit degrees in string form.
+	 */	
+	public String getFahrenheitString()
+	{
+		if (this.valid()) {
+			return (String) "" + getFahrenheit();
+		}
+		else {
+			return StringIdent.NOT_VALID.toString();
+		}	
 	}		
 	
 	/*
