@@ -6,15 +6,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeMap;
+import java.net.URL;
 import java.util.*;
-import java.text.*;  
+import java.text.*;
 
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
 
 import java.awt.BasicStroke;
@@ -23,10 +24,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import java.util.TimerTask;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -44,28 +42,31 @@ import java.awt.Graphics;
 import java.awt.BasicStroke;
 
 public class TimeServlet2 extends HttpServlet{
-	  private ISiteService m_siteService = null;
+	
+	private ISiteService m_siteService = null;
+	private Meteostation m_meteo = null;
 
-	  ImageIcon img;
+	ImageIcon img;
 
-	  private GregorianCalendar m_calendar;
-	  private int[] x=new int[2];
-	  private int[] y=new int[2];
-	  private java.util.Timer clocktimer=new java.util.Timer();
+	private GregorianCalendar m_calendar;
+	private int[] x=new int[2];
+	private int[] y=new int[2];
+	private java.util.Timer clocktimer=new java.util.Timer();
 	  
-	   int width = 300; 
-	   int height = 300;  	  
+	int width = 300; 
+	int height = 300;  	  
 
 	  /**You could set the TimeZone for the clock here. I used the Dfault time
 	  zone from the user so that every time the program runs on different
 	  computers the correct time is displayed*/
-
+	
 	  private TimeZone clockTimeZone=TimeZone.getDefault();	  
 	
-	   TimeServlet2 (ISiteService site) {
+	   TimeServlet2 (ISiteService site, Meteostation meteo) {
 	    	m_siteService = site;
+	    	m_meteo = meteo;
 	    }
-
+	
 	    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	  //      resp.setContentType("text/html");
 	  //      resp.setHeader("Refresh", "5");
@@ -74,13 +75,13 @@ public class TimeServlet2 extends HttpServlet{
 	    	
 	        // Get toolkit
 	        Toolkit toolkit = Toolkit.getDefaultToolkit();
-
+	
 	        // Get size
 	        Dimension dimension = toolkit.getScreenSize();	  
 	        
 	        width = dimension.width;
 	        height = dimension.height;
-                	    	       	        
+	            	    	       	        
 	        // BufferedImage image=ImageIO.read(new File(path));
 	        BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 	        
@@ -89,28 +90,76 @@ public class TimeServlet2 extends HttpServlet{
 	        paint(graphics);
 	        
 	        Toolkit.getDefaultToolkit().sync();
-
+	
 	        graphics.dispose();
-
+	
 	        resp.setContentType("image/jpg");
 	        resp.setHeader("Refresh", "1");
+	        
 	        OutputStream outputStream = resp.getOutputStream();
-
+	
 	        ImageIO.write(image, "jpg", outputStream);
-
-	        outputStream.close();	        
 	
-	    }    
+	        outputStream.close();
+	        
+	        
+	      //  resp.setHeader("Refresh", "5");
+	        /*
+	        PrintWriter out = resp.getWriter();
+	
+	
+	            out.println("<!DOCTYPE html>");
+	            out.println("<html lang='en'>");
+	            out.println("<head>");
+	            out.println("<meta charset='utf-8'/>");
+	            
+	            out.println("<link href='css/some-stylesheet.css' rel='stylesheet'/>");
+	            out.println("<body>");
+	            
+	            out.println("<font color=green>");
+	            out.println("<h1>Admin page...\n</h1>");
+	            out.println("<font color=green>");
+	            out.println("<p style='font-family:Courier; color:#0020C2; font-size: 20px;'>");
+	            out.println("Date: XXXXXXXXXXXXXXXX" );
+	            out.println("</p>");
+	
+	            out.println("<font color=black>");
+	            out.println("<br/>---------- OpenHS Core Data ---------");	  
+	            */
+	
+	    }    	    
+	
+	    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	        String value = request.getParameter("helloValue");
+	        System.out.println("doPost,helloValue=" + value);
+	       // response.setContentType("text/html");
+	       // response.getWriter().print("<html><body>helloValue=" + value + "</body></html>");
+	       /* 
+	        response.getWriter().print("<html><body>" +
+	                "<h3>Hello Servlet</h3>" +
+	                "<form name=\"input\" method=\"post\">\n" +
+	                "Hello value: <input type=\"text\" name=\"helloValue\">\n" +
+	                "<input type=\"submit\" value=\"Submit\">\n" +
+	                "");       
+	        
+	        response.getWriter().print("<html><body>helloValue=" + value + "</body></html>");
+	        */
+	    }	    
 	    
-	
 	    
 	    public void paint(Graphics g)
 	    {
-
+	
 		    g.setColor(Color.BLACK);
 		    g.fillRect(0,0,width,height);
 		    drawCardinals((Graphics2D)g);
-		    drawHands((Graphics2D)g);
+		    drawHands((Graphics2D)g);		       
+		    
+		    // Meteo data
+		    drawMeteo((Graphics2D) g);
+		    
+	        // Time below
+		    drawDigiTime((Graphics2D) g);
 
 	    }
 	 	
@@ -123,14 +172,14 @@ public class TimeServlet2 extends HttpServlet{
 		    x[1]=(int)(width/2+endRadius*Math.cos(theta));
 		    y[1]=(int)(height/2+endRadius*Math.sin(theta));
 	    }
-
+	
 	    //The Hours/Cardinals of the clock
 	    /** Set Stroke sets the thickness of the cardinals and hands*/
 	    void drawCardinals(Graphics2D g) {
 	    	//	g.setStroke(new BasicStroke(9));
 	    	g.setStroke(new BasicStroke(12));
 	    	g.setColor(Color.gray);
-
+	
 		    for(double theta=0;theta<Math.PI*2;theta+=Math.PI/6)
 		    {
 			    clockMinutes(100,100,theta);
@@ -141,7 +190,7 @@ public class TimeServlet2 extends HttpServlet{
 			    g.drawPolyline(x,y,2);
 		    }
 	    }
-
+	
 	    //The Hand of the Clocks instance method
 	    public void drawHands(Graphics2D g)
 	    {
@@ -165,6 +214,115 @@ public class TimeServlet2 extends HttpServlet{
 	
 		    g.fillOval(width/2-8,height/2-8,16,16);
 	    }
+	    
+	    public void drawDigiTime(Graphics2D g) {	   
+	    	
+		    Font fontIn = new Font("Aerial", Font.BOLD, 60);
+	        Map<TextAttribute, Object> attributes = new HashMap<>();
+	
+	        attributes.put(TextAttribute.FAMILY, fontIn.getFamily());
+	        attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_MEDIUM);
+	        attributes.put(TextAttribute.SIZE, (int) (fontIn.getSize() * 1.4));
+	        attributes.put(TextAttribute.WEIGHT, (80));
+	        	        
+	        attributes.put(TextAttribute.SIZE, (int) (fontIn.getSize() * 0.5));
+	        Font timeFont = Font.getFont(attributes);
+	
+	        g.setColor(Color.GRAY);
+	        g.setFont(timeFont);	
+	        
+	        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss");
+	        String TimeToStr = format.format(m_calendar.getTime());
+	        
+	        g.drawString(TimeToStr, width/2 - 100, height/2 + 150);
+	
+	        SimpleDateFormat formatDate = new SimpleDateFormat("EEE-dd-MMM-yyyy");
+	        String DateToStr = formatDate.format(m_calendar.getTime());		    
+	
+	        g.drawString(DateToStr, width/2 - 100, height/2 + 200);	    	
+	    }
 
+	    public void drawMeteoIndicators(Graphics2D g) {
+	    	
+	    	 // Draw indicators...
+	        URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();
+	        // String path = location.getFile() + "images/HomeInformationStation.png";
+
+	        try {
+	        		        
+		        File imageFile = new File(location.getFile() + "images/indicatorFrost.png");
+		        BufferedImage imgFrost = ImageIO.read(imageFile);
+		        imageFile = new File(location.getFile() + "images/indicatorDay.png");
+		        Image imgDay = ImageIO.read(imageFile);
+		        imageFile = new File(location.getFile() + "images/indicatorIntruder.png");
+		        Image imgIntruder = ImageIO.read(imageFile);		        
+		        
+		        ArrayList<Boolean> list = m_meteo.getIndicatorsList();
+	
+		        Rectangle rect = new Rectangle(width/2 - 100,  height/2 + 250, 50, 50);
+		        
+		        if (list.get(0)) {
+		            g.drawImage(imgFrost, rect.x, rect.y, rect.width, rect.height, null);
+		        }		        		        
+	
+		        if (list.get(1)) {
+		        	rect.x = rect.x + 60;
+		            g.drawImage(imgDay, rect.x, rect.y, rect.width, rect.height, null);		            
+		        }
+	
+		        if (list.get(2)) {
+		        	rect.x = rect.x + 60;
+		            g.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);
+		        }
+	        }
+	        catch (Exception e)
+	        {
+	        	
+	        }
+	        
+	    }
+	    
+	    public void drawMeteo(Graphics2D g) {
+	    	
+	        // Inside temp
+	        Font fontIn = new Font("Aerial", Font.BOLD, 50);
+	        Map<TextAttribute, Object> attributes = new HashMap<>();
+
+	        attributes.put(TextAttribute.FAMILY, fontIn.getFamily());
+	        attributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_MEDIUM);
+	        attributes.put(TextAttribute.SIZE, (int) (fontIn.getSize()) * 0.8);
+	       // attributes.put(TextAttribute.WEIGHT, (80));
+	        Font tempFont = Font.getFont(attributes);
+
+	        g.setFont(tempFont);
+	        g.setColor(Color.GRAY);
+	        
+	        String tmpInStr = "error";
+	        String tmpOutStr = "error";
+	        
+	        Temperature tIn;
+	        Temperature tOut;
+	        
+	        try {
+	        		        
+	        	tIn =  m_meteo.getSensorIn().getTemperature();
+	        	tOut =  m_meteo.getSensorOut().getTemperature();
+	        	
+	        	tmpInStr = "In     " + tIn.getCelsiusString() + " C";
+	        	tmpOutStr = "Out   " + tOut.getCelsiusString() + " C";
+	        }
+	        catch (Exception ex)
+	        {
+	        	
+	        }
+	        //g.drawString("In", width/2 - 150, height/2 -180);
+	        g.drawString(tmpInStr, width/2 - 120, height/2 -200);
+	        
+	       // g.drawString("Out", width/2 + 50, height/2 -180);
+	        g.drawString(tmpOutStr, width/2 - 120, height/2 - 150);
+	        	        
+		    drawMeteoIndicators((Graphics2D) g);
+	    
+	    }
 	    
 }

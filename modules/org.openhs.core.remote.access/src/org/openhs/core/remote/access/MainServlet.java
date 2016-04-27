@@ -54,7 +54,7 @@ public class MainServlet {
         btnSrv = new ButtonServlet();
         meteoServlet = new MeteoServlet(m_meteo);
         timeServlet = new TimeServlet(m_siteService);
-        timeServlet2 = new TimeServlet2(m_siteService);
+        timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
 
         try {
             m_httpService.registerServlet("/openhs", adminServlet, null, null);
@@ -62,9 +62,8 @@ public class MainServlet {
             m_httpService.registerServlet("/image2", imageServlet2, null, null);
             m_httpService.registerServlet("/image3", imageServlet3, null, null);
             m_httpService.registerServlet("/btn", btnSrv, null, null);
-            m_httpService.registerServlet("/meteo", meteoServlet, null, null);
-            m_httpService.registerServlet("/time", timeServlet, null, null);
-            m_httpService.registerServlet("/time2", timeServlet2, null, null);
+            m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
+            m_httpService.registerServlet("/time", timeServlet2, null, null);
         } catch (ServletException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

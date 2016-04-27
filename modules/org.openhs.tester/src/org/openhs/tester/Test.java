@@ -31,6 +31,9 @@ public class Test {
     public void setService(ISiteService ser) {
     	msg.println("org.openhs.tester: Set ISiteService");
         m_siteService = ser;
+        
+        temp1.set(-10.0);
+        temp2.set(-10.0);
     }
 
     public void unsetService(ISiteService ser) {

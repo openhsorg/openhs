@@ -184,11 +184,11 @@ public class MeteoServlet extends HttpServlet {
 
         response.setContentType("image/jpg");
         response.setHeader("Refresh", "1");
+        
         OutputStream outputStream = response.getOutputStream();
-
         ImageIO.write(image, "jpg", outputStream);
-
         outputStream.close();
+                       
 
     }
 
