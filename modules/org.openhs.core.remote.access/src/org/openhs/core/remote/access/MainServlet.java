@@ -63,7 +63,7 @@ public class MainServlet {
             m_httpService.registerServlet("/image3", imageServlet3, null, null);
             m_httpService.registerServlet("/btn", btnSrv, null, null);
             m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
-            m_httpService.registerServlet("/time", timeServlet2, null, null);
+            m_httpService.registerServlet("/meteo2", timeServlet2, null, null);
         } catch (ServletException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -81,8 +81,7 @@ public class MainServlet {
         m_httpService.unregister("/image3");
         m_httpService.unregister("/btn");
         m_httpService.unregister("/meteo");
-        m_httpService.unregister("/time");
-        m_httpService.unregister("/time2");
+        m_httpService.unregister("/meteo2");
     }
 
     public void setService(ISiteService ser) {
