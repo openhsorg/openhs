@@ -45,8 +45,8 @@ apt-get update && apt-get upgrade -y -q
 #apt-get install -y default-jdk
 #apt-cache search jdk
 sudo add-apt-repository ppa:openjdk-r/ppa
-sudo apt-get update
-sudo apt-get install openjdk-8-jdk
+sudo apt-get -y update
+sudo apt-get -y install openjdk-8-jdk
 
 # Dosbox
 apt-get -y update
@@ -145,6 +145,9 @@ apt-get -f -y install gparted
 add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 apt-get -y update
 apt-get -y install skype
+
+apt-get -y update
+apt-get install -y unrar
 
 #JDownloader
 wget http://installer.jdownloader.org/JD2SilentSetup_x64.sh
