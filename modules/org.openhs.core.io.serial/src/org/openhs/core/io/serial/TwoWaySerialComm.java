@@ -95,6 +95,7 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
         }        
     }
     
+    
     static String getPortTypeName ( int portType )
     {
         switch ( portType )
