@@ -16,3 +16,5 @@ Require-Bundle: org.openhs.core.remote.access;bundle-version="1.0.0",
  org.openhs.core.site.services;bundle-version="1.0.0",
  org.openhs.core.commons;bundle-version="1.0.0"
 Service-Component: OSGI-INF/component.xml
+Bundle-ClassPath: org.eclipse.paho.client.mqttv3-1.0.2.jar,
+ .

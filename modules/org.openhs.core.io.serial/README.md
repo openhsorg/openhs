@@ -7,4 +7,10 @@ This bundle reads any serial port and string sends to **org.openhs.core.commands
 >>>>>>> refs/remotes/origin/michalv
 Besides that, you need to close the serial port after starting, to prevent Linux from making new devices, like /dev/ttyACM2. Do not forget to remove the lock file from /var/lock if you forgot to close the port.
 
+Please also use command:
+**sudo chmod a+rw /dev/ttyACM0**
+
+Install if needed:
+**sudo apt-get install librxtx-java**
+
 3. In Windows you may need to copy **rxtxParallel.dll** and **rxtxSerial.dll** libraries to the Java runtime LIB folder.

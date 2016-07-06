@@ -31,7 +31,7 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
 	/*
 	 * Enable communication
 	 */
-	boolean enable = false;
+	boolean enable = true;
 
 	/*
 	 * Methods
@@ -68,7 +68,7 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
 
     
     SerialPort serialPort = null;
-
+/*
     private static final String PORT_NAMES[] = { 
     //    "/dev/tty.usbmodem", // Mac OS X
 //        "/dev/usbdev", // Linux
@@ -76,7 +76,7 @@ public class TwoWaySerialComm implements ITwoWaySerialComm {
 //        "/dev/serial", // Linux
 //        "COM3", // Windows
     };
-    
+    */
     private String appName;
     private BufferedReader input;
     private OutputStream output;

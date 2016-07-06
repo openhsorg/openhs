@@ -4,7 +4,15 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Message;
 import org.openhs.core.commons.Temperature;
 
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+
 public class Test {
+	
 	
 	Message msg = new Message ();
 
@@ -68,6 +76,42 @@ public class Test {
        // m_siteService.setSensorTemperature("Room1", "Sensor1", temp1);
        m_siteService.setSensorTemperature("Outside", "Sensor1", temp2);
 
+    }
+    
+    void SendMessage ()
+    {
+    	
+        String topic        = "hello/world";
+        String content      = "My first message from OSGI...!!!";
+        int qos             = 2;
+        String broker       = "tcp://192.168.1.217:1883";
+        String clientId     = "openhs1";
+        MemoryPersistence persistence = new MemoryPersistence();
+
+        try {
+            MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setCleanSession(true);
+            System.out.println("Connecting to broker: "+broker);
+            sampleClient.connect(connOpts);
+            System.out.println("Connected");
+            System.out.println("Publishing message: "+content);
+            MqttMessage message = new MqttMessage(content.getBytes());
+            message.setQos(qos);
+            sampleClient.publish(topic, message);
+            System.out.println("Message published");
+            sampleClient.disconnect();
+            System.out.println("Disconnected");
+           // System.exit(0);
+        } catch(MqttException me) {
+            System.out.println("reason "+me.getReasonCode());
+            System.out.println("msg "+me.getMessage());
+            System.out.println("loc "+me.getLocalizedMessage());
+            System.out.println("cause "+me.getCause());
+            System.out.println("excep "+me);
+            me.printStackTrace();
+        }
+    	
     }
 
 }
