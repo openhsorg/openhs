@@ -4,6 +4,9 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
+
+//import java.util.ArrayList;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -18,6 +21,8 @@ public class MqttService implements MqttCallback {
 		String myTopic = "openhs";
 		
 		Boolean brokerConnected = false;
+		
+		CircularArrayList <Message> messages = null;
 
 		static final String BROKER_URL = "tcp://192.168.1.217:1883";
 		static final String M2MIO_DOMAIN = "<Insert m2m.io domain here>";
@@ -62,10 +67,22 @@ public class MqttService implements MqttCallback {
 		 */
 		@Override
 		public void messageArrived(String topic, MqttMessage message) throws Exception {
+			
+			String msg = new String(message.getPayload());
+			
 			System.out.println("-------------------------------------------------");
 			System.out.println("| Topic:" + topic);
-			System.out.println("| Message: " + new String(message.getPayload()));
+			System.out.println("| Message: " + msg);
 			System.out.println("-------------------------------------------------");
+			
+			Message mes = new Message();
+			
+			mes.id = topic;
+			mes.message = msg;
+			
+			messages.insert(mes);
+			
+			
 		}
 
 		public void connectBroker () {

@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+//import java.util.ArrayList;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
 public class RxTxService {
+	
+	  CircularArrayList <Message> messages = null;
 
 	  SerialPort serialPort = null;
 	  /*

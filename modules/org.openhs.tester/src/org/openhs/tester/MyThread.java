@@ -30,7 +30,7 @@ public class MyThread extends Thread {
                 // System.out.println("Number rooms is: " + siteServiceFactory.getInstance().getNumberRooms());
 
             	
-            	System.out.println("Alive...");
+            //	System.out.println("Alive...");
             	
                 m_test.SetTemperature();
                 
@@ -40,7 +40,7 @@ public class MyThread extends Thread {
                 {
                 	//m_test.SendMessage();
                // 	mqtt.SendMessage("hello/world", "Ted trochu jina message...");
-                	comm.sendMessage("openhs", "Hello its my again!!!!!");
+             //   	comm.sendMessage("openhs", "Hello its my again!!!!!");
                 }
                 
             } else {

@@ -1,17 +1,23 @@
 package org.openhs.core.comm;
 
+import java.util.ArrayList;
+
 public class MainComm {
 	
 	MqttService  mqtt = new MqttService();
 	RxTxService  rxtx = new RxTxService();
 	
-	boolean enableMqtt = false;
+	boolean enableMqtt = true;
 	boolean enableRxTx = false;
+	
+	//ArrayList <Message> messages = new ArrayList<Message>();
+	CircularArrayList <Message> messages = new CircularArrayList<Message>(10);
 	
 	public void activate () {
 		System.out.println("org.openhs.core.comm: activated...");		
 		
 		if (enableMqtt){
+			mqtt.messages = messages;			
 			mqtt.connectBroker();
 			
 			mqtt.subscribe();	

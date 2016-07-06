@@ -68,10 +68,8 @@ public class Commands implements ICommands {
 				setCommandSensor (commandIn);
 				
 				break;			
-			}
-			
-    	}
-			    	
+			}			
+    	}			    
     	
     	return true;
     }
