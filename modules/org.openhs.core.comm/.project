@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.openhs.core.io.serial</name>
+	<name>org.openhs.core.comm</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -35,6 +35,11 @@
 			<name>gnu.io.rxtx_2.1.7.4_v20071016.jar</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/lib/gnu.io.rxtx_2.1.7.4_v20071016.jar</locationURI>
+		</link>
+		<link>
+			<name>org.eclipse.paho.client.mqttv3-1.0.2.jar</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/lib/org.eclipse.paho.client.mqttv3-1.0.2.jar</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

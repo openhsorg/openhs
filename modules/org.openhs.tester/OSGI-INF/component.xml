@@ -2,5 +2,5 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="org.openhs.tester">
    <implementation class="org.openhs.tester.Test"/>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.data.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
-   <reference bind="setServiceMqtt" cardinality="1..1" interface="org.openhs.core.mqtt.client.MqttSender" name="MqttSender" policy="static"/>
+   <reference bind="setServiceComm" cardinality="1..1" interface="org.openhs.core.comm.MainComm" name="MainComm" policy="static" unbind="unsetServiceComm"/>
 </scr:component>

@@ -1,7 +1,7 @@
 package org.openhs.tester;
 
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.mqtt.client.MqttSender;
+import org.openhs.core.comm.MainComm;
 
 public class MyThread extends Thread {
     private volatile boolean active = true;
@@ -9,14 +9,14 @@ public class MyThread extends Thread {
     public Test m_test = null;
 
     private ISiteService m_siteService = null;
-    private MqttSender mqtt = null;
+    private MainComm comm = null;
     
     int i = 0; 
 
-    MyThread(ISiteService ser, MqttSender sender, Test test) {
+    MyThread(ISiteService ser, MainComm cm, Test test) {
         m_siteService = ser;
         m_test = test;
-        mqtt = sender;
+        comm = cm;
     }
 
     @Override
@@ -39,7 +39,8 @@ public class MyThread extends Thread {
                 if (i > 1)
                 {
                 	//m_test.SendMessage();
-                	mqtt.SendMessage("hello/world", "Ted trochu jina message...");
+               // 	mqtt.SendMessage("hello/world", "Ted trochu jina message...");
+                	comm.sendMessage("openhs", "Hello its my again!!!!!");
                 }
                 
             } else {

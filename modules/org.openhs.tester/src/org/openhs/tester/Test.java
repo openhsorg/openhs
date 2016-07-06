@@ -3,7 +3,7 @@ package org.openhs.tester;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Message;
 import org.openhs.core.commons.Temperature;
-import org.openhs.core.mqtt.client.MqttSender;
+import org.openhs.core.comm.MainComm;
 
 public class Test {
 	
@@ -15,7 +15,7 @@ public class Test {
     public void activate() {
         msg.println("org.openhs.tester: activate");
         
-        m_myThread = new MyThread(m_siteService, mqtt, this);
+        m_myThread = new MyThread(m_siteService, comm, this);
         m_myThread.start();                
     }
 
@@ -45,20 +45,20 @@ public class Test {
         }
     }
 
-    public void setServiceMqtt(MqttSender sender) {
-    	msg.println("org.openhs.tester: Set setServiceMqtt");
-        mqtt = sender;
+    public void setServiceComm(MainComm sender) {
+    	msg.println("org.openhs.tester: Set setServiceComm");
+        comm = sender;
     }
 
-    public void unsetServiceMqtt(MqttSender sender) {
-    	msg.println("org.openhs.tester: UnSet unsetServiceMqtt");
-        if (mqtt == sender) {
-            sender = null;
+    public void unsetServiceComm(MainComm sender) {
+    	msg.println("org.openhs.tester: UnSet unsetServiceComm");
+        if (comm == sender) {
+            comm = null;
         }
     }    
     
     private ISiteService m_siteService = null;
-    private MqttSender mqtt = null;
+    private MainComm comm = null;
 
     // double temp1 = 0;
     // double temp2 = 0;

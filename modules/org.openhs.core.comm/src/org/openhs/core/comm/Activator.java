@@ -1,4 +1,4 @@
-package org.openhs.core.mqtt.client;
+package org.openhs.core.comm;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
