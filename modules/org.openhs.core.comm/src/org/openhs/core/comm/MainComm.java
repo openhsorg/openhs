@@ -7,11 +7,11 @@ public class MainComm {
 	MqttService  mqtt = new MqttService();
 	RxTxService  rxtx = new RxTxService();
 	
-	boolean enableMqtt = true;
+	boolean enableMqtt = false;
 	boolean enableRxTx = false;
 	
 	//ArrayList <Message> messages = new ArrayList<Message>();
-	CircularArrayList <Message> messages = new CircularArrayList<Message>(10);
+	public CircularArrayList <Message> messages = new CircularArrayList<Message>(10);
 	
 	public void activate () {
 		System.out.println("org.openhs.core.comm: activated...");		
