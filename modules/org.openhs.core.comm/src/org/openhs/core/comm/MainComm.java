@@ -22,6 +22,9 @@ public class MainComm {
 			
 			mqtt.subscribe();	
 		}
+		else{
+			System.out.println("org.openhs.core.comm: RxTx service disabled --> see parameter [boolean enableMqtt]");
+		}		
 		
 		if (enableRxTx){			
 			try {
