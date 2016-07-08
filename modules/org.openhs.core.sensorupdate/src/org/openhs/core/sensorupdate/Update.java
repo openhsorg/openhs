@@ -35,7 +35,9 @@ public class Update extends Thread {
 	            			
 	            			txt.println("org.openhs.core.sensorupdate> Sensor message......: " + msg.message);         			
 	            		}	            		
-	            	}	            		               
+	            	}	         
+	            	
+	            	comm.messages.removeOldest();
 	                
 	            } else {
 	                System.out.println("MainComm is null !!!");
