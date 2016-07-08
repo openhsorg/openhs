@@ -11,13 +11,13 @@ package org.openhs.core.meteostation;
 import java.util.ArrayList;
 
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
 
 public class Meteostation {
 	
-	Message msg = new Message ();
+	TextOutput msg = new TextOutput ();
 
     public void activate() {
     	msg.println("org.openhs.core.meteostation: activate");

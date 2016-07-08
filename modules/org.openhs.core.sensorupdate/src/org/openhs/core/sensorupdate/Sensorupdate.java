@@ -1,14 +1,17 @@
 package org.openhs.core.sensorupdate;
 
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.comm.MainComm;
 
 public class Sensorupdate {
+	
+	TextOutput msg = new TextOutput ();
 	
 	public MainComm comm = null;
 	
 	private Update update;
 	
-	boolean enable = false;
+	boolean enable = true;
 
 	public void activate () {
 		System.out.println("org.openhs.core.sensorupdate: Activated...");
@@ -24,7 +27,6 @@ public class Sensorupdate {
 		if (enable){
 			update.stopThread();
 		}
-
 	}
 	
     public void setService(MainComm com) {

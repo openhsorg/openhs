@@ -14,7 +14,7 @@ import java.io.*;
 import java.io.IOException;
 
 import org.openhs.core.commons.Site;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Configuration;
 import org.openhs.core.site.data.ISiteService;
@@ -29,7 +29,7 @@ public class Config implements IConfiguration {
     /*
      * Messages.
      */
-	Message msg = new Message ();
+    TextOutput msg = new TextOutput ();
 	
 	/*
 	 * Configuration.

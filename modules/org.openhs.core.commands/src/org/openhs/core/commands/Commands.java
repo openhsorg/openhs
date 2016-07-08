@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhs.core.commons.Configuration;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.site.data.ISiteService;
@@ -20,7 +20,7 @@ public class Commands implements ICommands {
     /*
      * Messages.
      */
-	Message msg = new Message ();
+    TextOutput msg = new TextOutput ();
 
 	/*
 	 * Methods

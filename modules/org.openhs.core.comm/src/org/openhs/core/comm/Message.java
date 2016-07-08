@@ -2,8 +2,8 @@ package org.openhs.core.comm;
 
 public class Message {
 	
-	String id = "";
+	public String topic = "";
 	
-	String message = "";
+	public String message = "";
 
 }

@@ -1,8 +1,13 @@
 package org.openhs.core.sensorupdate;
 
 import org.openhs.core.comm.MainComm;
+import org.openhs.core.comm.Message;
+import org.openhs.core.comm.TopicsID;
+import org.openhs.core.commons.TextOutput;
 
 public class Update extends Thread {
+	
+	TextOutput txt = new TextOutput ();
 
 	 private volatile boolean active = true;
 
@@ -16,19 +21,21 @@ public class Update extends Thread {
 
 	    @Override
 	    public void run() {
-	        while (active) {
-	            // System.out.println("\nThread adjustment...........");
-	        	       	
+	        while (active) {        	       	
 
 	            if (comm != null) {
-	                 //System.out.println("Site ID is: " + m_siteService.getId());
-	                // System.out.println("Number rooms is: " + siteServiceFactory.getInstance().getNumberRooms());
 
-	            	int num = comm.messages.size();
+	            	int num = comm.messages.size();	            	
+	            	txt.println("org.openhs.core.sensorupdate> Sensor......: " + num);
 	            	
-	            	System.out.println("Sensor......: " + num);
-	            	
-	               
+	            	if (num > 0) {
+	            			            		
+	            		Message msg = comm.messages.getOldest();
+	            		if (msg.topic.equals(TopicsID.OPENHS.toString()) && msg.message.contains("temp")) {
+	            			
+	            			txt.println("org.openhs.core.sensorupdate> Sensor message......: " + msg.message);         			
+	            		}	            		
+	            	}	            		               
 	                
 	            } else {
 	                System.out.println("MainComm is null !!!");

@@ -7,4 +7,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/component.xml
 Import-Package: org.osgi.framework;version="1.8.0"
 Export-Package: org.openhs.core.sensorupdate
-Require-Bundle: org.openhs.core.comm;bundle-version="1.0.0"
+Require-Bundle: org.openhs.core.comm;bundle-version="1.0.0",
+ org.openhs.core.commons;bundle-version="1.0.0"

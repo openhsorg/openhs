@@ -15,7 +15,7 @@ import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Room;
@@ -23,7 +23,7 @@ import org.openhs.core.commons.SiteException;
 
 public class MainServlet {
 	
-	Message msg = new Message ();
+	TextOutput msg = new TextOutput ();
 	
     private MainServlet mainServlet = null;
     private AdminServlet adminServlet = null;

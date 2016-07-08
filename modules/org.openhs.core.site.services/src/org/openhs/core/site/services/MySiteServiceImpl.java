@@ -14,7 +14,7 @@ import java.io.*;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
@@ -24,7 +24,7 @@ public class MySiteServiceImpl implements ISiteService {
 	
 	Site ss = new Site ();
 	
-	Message msg = new Message ();
+	TextOutput msg = new TextOutput ();
 
     public void activate() {
     	msg.println("org.openhs.core.site.services: activate");

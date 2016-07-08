@@ -1,14 +1,14 @@
 package org.openhs.tester;
 
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.commons.Message;
+import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.comm.MainComm;
 
 public class Test {
 	
 	
-	Message msg = new Message ();
+	TextOutput msg = new TextOutput ();
 
     private MyThread m_myThread;
 

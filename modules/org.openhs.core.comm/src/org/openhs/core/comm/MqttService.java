@@ -18,7 +18,10 @@ public class MqttService implements MqttCallback {
 	    MqttClient myClient;
 		MqttConnectOptions connOpt;
 				
-		String myTopic = "openhs";
+		/**
+		 * Topics identificators...
+		 */
+		String myTopic = TopicsID.OPENHS.toString();
 		
 		Boolean brokerConnected = false;
 		
@@ -77,7 +80,7 @@ public class MqttService implements MqttCallback {
 			
 			Message mes = new Message();
 			
-			mes.id = topic;
+			mes.topic = topic;
 			mes.message = msg;
 			
 			messages.insert(mes);
