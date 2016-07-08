@@ -6,7 +6,7 @@ EXTERNAL BUNDLES:
 
 1. **gnu.io.rxtx_<version>.jar** bundle. Please look into **https://github.com/openhsorg/openhs/modules/lib**. This library must be linked.
 
-1.1. Library requires native java support.
+1.1. Library requires native java support. Please refer to **https://github.com/openhsorg/openhs_bins**
 In Linux run: **$ sudo apt-get install librxtx-java**. And enable port: **$ sudo chmod a+rw /dev/ttyACM0**
 In Windows you may need to copy **rxtxParallel.dll** and **rxtxSerial.dll** libraries to the Java runtime LIB folder.
 
