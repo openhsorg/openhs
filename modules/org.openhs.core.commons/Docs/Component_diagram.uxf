@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.1.0">
+<diagram program="umlet" version="14.2.0">
   <help_text>// Uncomment the following line to change the fontsize and font:
 fontsize=18
 fontfamily=SansSerif //possible: SansSerif,Serif,Monospaced
@@ -28,8 +28,8 @@ fontfamily=SansSerif //possible: SansSerif,Serif,Monospaced
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>378</x>
-      <y>444</y>
+      <x>252</x>
+      <y>432</y>
       <w>180</w>
       <h>36</h>
     </coordinates>
@@ -41,8 +41,8 @@ bg=yellow</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>378</x>
-      <y>546</y>
+      <x>252</x>
+      <y>534</y>
       <w>180</w>
       <h>36</h>
     </coordinates>
@@ -54,8 +54,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>510</y>
+      <x>354</x>
+      <y>498</y>
       <w>18</w>
       <h>48</h>
     </coordinates>
@@ -65,8 +65,8 @@ bg=green</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>474</y>
+      <x>354</x>
+      <y>462</y>
       <w>18</w>
       <h>48</h>
     </coordinates>
@@ -77,8 +77,8 @@ m2=</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>378</x>
-      <y>348</y>
+      <x>252</x>
+      <y>336</y>
       <w>180</w>
       <h>36</h>
     </coordinates>
@@ -89,8 +89,8 @@ org.openhs.core.site.service</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>414</y>
+      <x>354</x>
+      <y>402</y>
       <w>18</w>
       <h>42</h>
     </coordinates>
@@ -100,8 +100,8 @@ org.openhs.core.site.service</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>474</x>
-      <y>378</y>
+      <x>348</x>
+      <y>366</y>
       <w>30</w>
       <h>48</h>
     </coordinates>
@@ -111,8 +111,8 @@ org.openhs.core.site.service</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>318</y>
+      <x>354</x>
+      <y>306</y>
       <w>18</w>
       <h>42</h>
     </coordinates>
@@ -122,8 +122,8 @@ org.openhs.core.site.service</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>126</x>
-      <y>180</y>
+      <x>0</x>
+      <y>168</y>
       <w>192</w>
       <h>36</h>
     </coordinates>
@@ -134,8 +134,8 @@ org.openhs.core.sensor.units</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>306</x>
-      <y>30</y>
+      <x>180</x>
+      <y>18</y>
       <w>222</w>
       <h>42</h>
     </coordinates>
@@ -146,8 +146,8 @@ org.openhs.core.remote.access</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>342</x>
-      <y>180</y>
+      <x>216</x>
+      <y>168</y>
       <w>192</w>
       <h>36</h>
     </coordinates>
@@ -158,8 +158,8 @@ org.openhs.core.meteostation</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>474</x>
-      <y>282</y>
+      <x>348</x>
+      <y>270</y>
       <w>30</w>
       <h>48</h>
     </coordinates>
@@ -169,8 +169,8 @@ org.openhs.core.meteostation</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>240</x>
-      <y>210</y>
+      <x>114</x>
+      <y>198</y>
       <w>258</w>
       <h>90</h>
     </coordinates>
@@ -180,8 +180,8 @@ org.openhs.core.meteostation</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>240</x>
-      <y>144</y>
+      <x>114</x>
+      <y>132</y>
       <w>18</w>
       <h>48</h>
     </coordinates>
@@ -191,8 +191,8 @@ org.openhs.core.meteostation</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>450</x>
-      <y>150</y>
+      <x>324</x>
+      <y>138</y>
       <w>18</w>
       <h>42</h>
     </coordinates>
@@ -202,8 +202,8 @@ org.openhs.core.meteostation</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>552</x>
-      <y>180</y>
+      <x>426</x>
+      <y>168</y>
       <w>192</w>
       <h>36</h>
     </coordinates>
@@ -214,8 +214,8 @@ org.openhs.core.configuration</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>216</x>
-      <y>210</y>
+      <x>90</x>
+      <y>198</y>
       <w>270</w>
       <h>318</h>
     </coordinates>
@@ -226,8 +226,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>210</y>
+      <x>354</x>
+      <y>198</y>
       <w>156</w>
       <h>90</h>
     </coordinates>
@@ -237,8 +237,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>450</x>
-      <y>210</y>
+      <x>324</x>
+      <y>198</y>
       <w>48</w>
       <h>90</h>
     </coordinates>
@@ -248,44 +248,20 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>486</x>
-      <y>210</y>
-      <w>186</w>
-      <h>318</h>
-    </coordinates>
-    <panel_attributes>lt=[].&gt;
-m2=</panel_attributes>
-    <additional_attributes>290.0;10.0;290.0;510.0;10.0;510.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>510</x>
-      <y>210</y>
-      <w>108</w>
-      <h>318</h>
-    </coordinates>
-    <panel_attributes>lt=[].
-m2=</panel_attributes>
-    <additional_attributes>10.0;10.0;160.0;180.0;160.0;510.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>522</x>
-      <y>48</y>
+      <x>396</x>
+      <y>36</y>
       <w>246</w>
       <h>480</h>
     </coordinates>
     <panel_attributes>lt=[].
 m2=</panel_attributes>
-    <additional_attributes>10.0;10.0;390.0;10.0;380.0;780.0;230.0;780.0</additional_attributes>
+    <additional_attributes>10.0;10.0;390.0;10.0;380.0;780.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>618</x>
-      <y>150</y>
+      <x>492</x>
+      <y>138</y>
       <w>18</w>
       <h>42</h>
     </coordinates>
@@ -295,8 +271,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>234</x>
-      <y>66</y>
+      <x>108</x>
+      <y>54</y>
       <w>192</w>
       <h>90</h>
     </coordinates>
@@ -306,8 +282,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>66</y>
+      <x>282</x>
+      <y>54</y>
       <w>66</w>
       <h>96</h>
     </coordinates>
@@ -317,8 +293,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>408</x>
-      <y>66</y>
+      <x>282</x>
+      <y>54</y>
       <w>234</w>
       <h>96</h>
     </coordinates>
@@ -328,8 +304,8 @@ m2=</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>318</x>
-      <y>114</y>
+      <x>192</x>
+      <y>102</y>
       <w>150</w>
       <h>150</h>
     </coordinates>
@@ -339,13 +315,96 @@ m2=</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>18</x>
-      <y>120</y>
-      <w>204</w>
+      <x>696</x>
+      <y>348</y>
+      <w>192</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+org.openhs.core.email
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>702</x>
+      <y>234</y>
+      <w>192</w>
       <h>36</h>
     </coordinates>
     <panel_attributes>symbol=component
-org.openhs.core.email</panel_attributes>
+org.openhs.core.comm</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>702</x>
+      <y>282</y>
+      <w>192</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+org.openhs.core.commands</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>654</x>
+      <y>120</y>
+      <w>192</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+org.openhs.core.sensorupdate</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>354</x>
+      <y>150</y>
+      <w>342</w>
+      <h>366</h>
+    </coordinates>
+    <panel_attributes>lt=[].&gt;
+m2=</panel_attributes>
+    <additional_attributes>550.0;10.0;550.0;590.0;10.0;590.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>792</x>
+      <y>192</y>
+      <w>18</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=()-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>786</x>
+      <y>150</y>
+      <w>30</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-(</panel_attributes>
+    <additional_attributes>20.0;10.0;20.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>384</x>
+      <y>198</y>
+      <w>108</w>
+      <h>318</h>
+    </coordinates>
+    <panel_attributes>lt=[].
+m2=</panel_attributes>
+    <additional_attributes>10.0;10.0;160.0;180.0;160.0;510.0</additional_attributes>
   </element>
 </diagram>
