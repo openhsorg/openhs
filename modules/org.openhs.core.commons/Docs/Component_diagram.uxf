@@ -315,8 +315,8 @@ m2=</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>696</x>
-      <y>330</y>
+      <x>702</x>
+      <y>456</y>
       <w>192</w>
       <h>30</h>
     </coordinates>
@@ -341,7 +341,7 @@ org.openhs.core.comm</panel_attributes>
     <id>UMLGeneric</id>
     <coordinates>
       <x>702</x>
-      <y>264</y>
+      <y>408</y>
       <w>192</w>
       <h>36</h>
     </coordinates>
@@ -418,5 +418,52 @@ m2=</panel_attributes>
     <panel_attributes>lt=[].
 m2=</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;510.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>834</x>
+      <y>276</y>
+      <w>222</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+/lib/gnu.io.rtx_...jar</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>834</x>
+      <y>330</y>
+      <w>222</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+/lib/org.eclipse.pho.client.mqttv3.jar
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>786</x>
+      <y>246</y>
+      <w>60</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0;80.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>786</x>
+      <y>288</y>
+      <w>60</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0;80.0;100.0</additional_attributes>
   </element>
 </diagram>
