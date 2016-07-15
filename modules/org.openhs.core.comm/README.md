@@ -15,12 +15,3 @@ Besides that, you need to close the serial port after starting, to prevent Linux
 
 ---
 
-2. **org.eclipse.paho.client.mqttv3-1.0.2.jar**
-
-2.1. Fresh bundle you can find there: **https://repo.eclipse.org/content/repositories/paho-releases/
-
-2.2  Documentation: http://www.eclipse.org/paho/files/javadoc/index.html
-
-2.3. Support:
-
-
