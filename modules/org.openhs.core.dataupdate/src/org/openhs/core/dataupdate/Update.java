@@ -1,4 +1,4 @@
-package org.openhs.core.sensorupdate;
+package org.openhs.core.dataupdate;
 
 import org.openhs.core.comm.MainComm;
 import org.openhs.core.comm.Message;
@@ -6,7 +6,7 @@ import org.openhs.core.comm.TopicsID;
 import org.openhs.core.commons.TextOutput;
 
 public class Update extends Thread {
-	
+
 	TextOutput txt = new TextOutput ();
 
 	 private volatile boolean active = true;
@@ -26,7 +26,7 @@ public class Update extends Thread {
 	            if (comm != null) {
 
 	            	int num = comm.messages.size();	            	
-	            	txt.println("org.openhs.core.sensorupdate> Sensor......: " + num);
+	            	txt.println("org.openhs.core.dataupdate> Sensor......: " + num);
 	            	
 	            	if (num > 0) {
 	            			            		
@@ -53,5 +53,5 @@ public class Update extends Thread {
 
 	    public void stopThread() {
 	        active = false;
-	    }	
-}    
+	    }		
+}
