@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="org.openhs.comm.rxtx">
+   <implementation class="org.openhs.comm.rxtx.RxTxService"/>
+   <property name="todoParams" type="String" value="Add some params here ;-)"/>
+   <service>
+      <provide interface="org.openhs.comm.api.ICommService"/>
+   </service>
+</scr:component>

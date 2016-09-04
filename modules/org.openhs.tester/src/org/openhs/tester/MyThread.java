@@ -1,7 +1,6 @@
 package org.openhs.tester;
 
 import org.openhs.core.site.data.ISiteService;
-import org.openhs.core.comm.MainComm;
 
 public class MyThread extends Thread {
     private volatile boolean active = true;
@@ -9,14 +8,12 @@ public class MyThread extends Thread {
     public Test m_test = null;
 
     private ISiteService m_siteService = null;
-    private MainComm comm = null;
     
     int i = 0; 
 
-    MyThread(ISiteService ser, MainComm cm, Test test) {
+    MyThread(ISiteService ser, Test test) {
         m_siteService = ser;
         m_test = test;
-        comm = cm;
     }
 
     @Override

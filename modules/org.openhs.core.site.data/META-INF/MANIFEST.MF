@@ -3,6 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Data
 Bundle-SymbolicName: org.openhs.core.site.data
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.openhs.core.site.data
-Require-Bundle: org.openhs.core.commons;bundle-version="1.0.0"
+Import-Package: org.openhs.core.commons

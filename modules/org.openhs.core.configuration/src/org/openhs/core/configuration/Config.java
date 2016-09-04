@@ -218,7 +218,7 @@ public class Config implements IConfiguration {
         m_siteService.addRoom("Outside");
 
         m_siteService.addSensor("Room1", "Sensor1");
-        m_siteService.addSensor("Outside", "Sensor1");	    	
+        m_siteService.addSensor("Outside", "Sensor2");	    	
     }
             
     public boolean setConfiguration (Configuration configIn)

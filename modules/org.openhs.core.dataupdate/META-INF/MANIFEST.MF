@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dataupdate
 Bundle-SymbolicName: org.openhs.core.dataupdate
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/component.xml
-Require-Bundle: org.openhs.core.comm;bundle-version="1.0.0",
- org.openhs.core.commons;bundle-version="1.0.0",
- org.openhs.core.site.services;bundle-version="1.0.0"
 Export-Package: org.openhs.core.dataupdate
-Import-Package: org.osgi.framework;version="1.8.0"
+Import-Package: org.openhs.comm.api,
+ org.openhs.core.commons,
+ org.openhs.core.site.data,
+ org.osgi.framework;version="1.8.0"

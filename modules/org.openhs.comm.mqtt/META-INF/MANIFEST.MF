@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mqtt
+Bundle-SymbolicName: org.openhs.comm.mqtt
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.eclipse.paho.client.mqttv3;version="1.1.0",
+ org.eclipse.paho.client.mqttv3.persist;version="1.1.0",
+ org.openhs.comm.api,
+ org.osgi.service.component;version="1.2.2"
+Service-Component: OSGI-INF/component.xml

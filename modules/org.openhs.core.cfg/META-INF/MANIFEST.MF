@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cfg
+Bundle-SymbolicName: org.openhs.core.cfg
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Service-Component: OSGI-INF/component.xml
+Import-Package: org.osgi.service.cm;version="1.5.0",
+ org.slf4j;version="1.7.2"

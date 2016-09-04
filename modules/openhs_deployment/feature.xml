@@ -17,14 +17,16 @@
    </license>
 
    <requires>
-      <import plugin="org.openhs.core.comm" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.openhs.core.commons" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.openhs.core.site.data" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.openhs.core.site.services" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.paho.client.mqttv3" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="javax.mail" version="1.4.0" match="greaterOrEqual"/>
       <import plugin="org.openhs.core.meteostation" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.openhs.core.remote.access" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.openhs.comm.api"/>
+      <import plugin="com.microrisc.simply.mix" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.servicemix.bundles.commons-configuration"/>
+      <import plugin="org.apache.commons.lang"/>
+      <import plugin="org.slf4j.api"/>
+      <import plugin="javax.xml"/>
    </requires>
 
    <plugin
@@ -147,13 +149,6 @@
          unpack="false"/>
 
    <plugin
-         id="javax.mail"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.openhs.core.comm"
          download-size="0"
          install-size="0"
@@ -169,13 +164,6 @@
 
    <plugin
          id="org.eclipse.equinox.http.servlet"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.openhs.core.email"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -264,5 +252,52 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="com.microrisc.iqrf.jlibspi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="com.microrisc.iqrf.simply.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.microrisc.jlibcdc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="com.microrisc.jlibcdc.natives.win.x64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="com.microrisc.jlibspi.natives.lin.armv7l"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="com.microrisc.simply.iqrf.test.mapping"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
+
+   <plugin
+         id="com.microrisc.simply.mix"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

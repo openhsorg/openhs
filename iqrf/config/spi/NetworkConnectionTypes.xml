@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : NetworkConnectionTypes.xml
+    Created on : 27. June 2013
+    Author     : Michal Konopa
+    Description:
+		Contains description of network connections types.
+-->
+
+<connectionTypes>
+
+    <connectionType>
+        <name>SPI</name>
+        <implClass>com.microrisc.simply.network.spi.SimpleSPIPortConnectionInfo</implClass>
+        <note>Some note here.</note>
+    </connectionType>
+
+</connectionTypes>
