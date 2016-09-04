@@ -18,6 +18,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     private ISiteService m_siteService = null;
+    private int m_log_num = 0; //TODO temporary - use slf4j instead
 	
 	public Dataupdate() {
 		m_queue = new LinkedBlockingQueue<IMessage>();
@@ -67,7 +68,12 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	}
     	else {
     		SensorMessage smsg = (SensorMessage)x;
-    		System.out.println("do soming: " + smsg );
+    		if(m_log_num++ < 4) {
+    			System.out.println("do soming: " + smsg );
+    		}
+    		if(m_log_num == 4) {
+    			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
+    		}
     		
     		Temperature temp = new Temperature ();
     		temp.set(smsg.getTemp());
@@ -119,7 +125,9 @@ public class Dataupdate implements IMessageHandler, Runnable {
     
 	@Override
 	public void handleMessage(IMessage m, ICommService cs) {
-    	System.out.println(cs.getName() + ": " + m);
+		if(m_log_num < 4) {
+			System.out.println(cs.getName() + ": " + m);
+		}
 		try {
 			m_queue.offer(m, 100, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
