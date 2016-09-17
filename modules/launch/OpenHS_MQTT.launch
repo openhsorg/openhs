@@ -6,7 +6,7 @@
 <stringAttribute key="bootstrap" value=""/>
 <stringAttribute key="checked" value="[NONE]"/>
 <booleanAttribute key="clearConfig" value="false"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/OpenHS_Test"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/OpenHS_MQTT"/>
 <booleanAttribute key="default" value="true"/>
 <booleanAttribute key="default_auto_start" value="true"/>
 <intAttribute key="default_start_level" value="4"/>
@@ -22,5 +22,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="com.microrisc.iqrf.jlibspi@default:false,com.microrisc.jlibcdc.natives.win.x64@default:false,com.microrisc.jlibcdc@default:false,com.microrisc.jlibspi.natives.lin.armv7l@default:false,com.microrisc.simply.iqrf.test.mapping@default:false,com.microrisc.simply.mix@default:default,org.apache.felix.configadmin@default:default,org.apache.servicemix.bundles.commons-configuration@default:default,org.eclipse.paho.client.mqttv3@default:default,org.openhs.comm.api@default:default,org.openhs.comm.iqrf@default:default,org.openhs.core.cfg@default:default,org.openhs.core.commons@default:default,org.openhs.core.configuration@default:default,org.openhs.core.dataupdate@default:default,org.openhs.core.meteostation@default:default,org.openhs.core.remote.access@default:default,org.openhs.core.site.data@default:default,org.openhs.core.site.services@default:default"/>
+<stringAttribute key="workspace_bundles" value="org.apache.felix.configadmin@default:default,org.apache.servicemix.bundles.commons-configuration@default:default,org.eclipse.paho.client.mqttv3@default:default,org.openhs.comm.api@default:default,org.openhs.comm.mqtt@default:default,org.openhs.core.cfg@default:default,org.openhs.core.commons@default:default,org.openhs.core.configuration@default:default,org.openhs.core.dataupdate@default:default,org.openhs.core.meteostation@default:default,org.openhs.core.remote.access@default:default,org.openhs.core.site.data@default:default,org.openhs.core.site.services@default:default"/>
 </launchConfiguration>

@@ -64,6 +64,10 @@ public class MqttService implements MqttCallback, ICommService {
 		public void connectionLost(Throwable t) {
 			System.out.println("Connection lost!");
 			// code to reconnect to the broker would go here if desired
+			
+			connectBroker();
+			
+			subscribe();
 		}
 
 		/**
@@ -93,13 +97,16 @@ public class MqttService implements MqttCallback, ICommService {
 			System.out.println("| Topic:" + topic);
 			System.out.println("| Message: " + msg);
 			System.out.println("-------------------------------------------------");
+			//System.out.println("***");
 			
 		
-			IMessage mes = parseMsg(msg);
+			SensorMessage mes = parseMsg(msg);
 			
 			//TODO topic?
 			//mes.topic = topic;
 			//mes.message = msg;
+			
+			System.out.println("COMMAND:> device: " + mes.toString());	
 			
 			if (msg != null) {
 				m_messageHandler.handleMessage(mes, this);
@@ -250,15 +257,15 @@ public class MqttService implements MqttCallback, ICommService {
 		}		
 	
 
-	    public IMessage parseMsg(String msg) {    
+	    public SensorMessage parseMsg(String msg) {    
 	    	//Example: ohs device=sensor name=Sensor1 temp1=22.10 hum=88.5
 	    	SensorMessage sensorMsg = null;
 	    	
 	    	String pattern1;
 			String pattern2;
 			Pattern p;
-			Matcher m;			
-			
+			Matcher m;						
+						
 	    	if (msg.contains("ohs"))
 	    	{
 				pattern1 = "device=";
@@ -274,7 +281,7 @@ public class MqttService implements MqttCallback, ICommService {
 					deviceName = m.group(1);
 				}			
 				
-				//System.out.println("COMMAND:> device: "+ deviceName);			
+				System.out.println("COMMAND:> device: "+ deviceName);			
 				switch (deviceName)
 				{
 				case "sensor":				
@@ -283,13 +290,15 @@ public class MqttService implements MqttCallback, ICommService {
 			    	String stringTemp = parseValue ("temp", msg);
 			    	
 			    	String stringHum = parseValue ("hum", msg);
+			    	
+			    	System.out.println("COMMAND:> device***: " + stringName + ":" + stringTemp + ":" + stringHum);	
 					
 					sensorMsg =  new SensorMessage(deviceName, stringName,
 							Double.parseDouble(stringTemp), Double.parseDouble(stringHum));
 					
 					break;			
 				}
-	    	}			    
+	    	}				    		    
 	    	
 	    	return sensorMsg;
 	    }
