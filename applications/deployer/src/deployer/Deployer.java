@@ -2,10 +2,12 @@ package deployer;
 
 import java.io.File;
 import java.util.*;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
@@ -64,7 +66,7 @@ public class Deployer {
 	    	dir.mkdir();
 	    }
 	    
-	    //Write ini file
+	    //INI file
         try {
         	        	        	
         	File fini = new File(path + fileSep + "configuration" + fileSep + "config.ini");
@@ -101,9 +103,90 @@ public class Deployer {
             System.err.println("ERROR: Problem writing to the file :(");
         }	    
 	   
-		
-	//	System.out.println("Path:" + path);
-		
+        //Create startup file
+        
+        File file = new File(path);
+        String parentPath = file.getAbsoluteFile().getParent();        
+        
+        try {
+        	
+        	File start = new File(parentPath + fileSep + "start.sh");
+        	
+            FileOutputStream is = new FileOutputStream(start);
+            OutputStreamWriter osw = new OutputStreamWriter(is);    
+            Writer w = new BufferedWriter(osw);
+            
+            //Search OSGI file
+            String osgi = "";
+            
+            for (String fname : results){
+            	if(fname.contains("org.eclipse.osgi_")){
+            		osgi = fname;
+            	}
+            }
+            
+            //write...
+            w.write("java -jar plugins" + fileSep);
+            w.write(osgi);
+            w.write(" -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m");                      
+            
+            w.close();
+            
+        } catch (IOException e) {
+            System.err.println("ERROR: Problem writing to the file :(");
+        }	    
+	   
+        //Linux parameters
+        
+        String osName = System.getProperty("os.name");
+        String osNameMatch = osName.toLowerCase();
+        
+        if(osNameMatch.contains("linux")) {
+        	        	        
+        }else if(osNameMatch.contains("windows")) {
+            
+        }else if(osNameMatch.contains("solaris") || osNameMatch.contains("sunos")) {
+            
+        }else if(osNameMatch.contains("mac os") || osNameMatch.contains("macos") || osNameMatch.contains("darwin")) {
+            
+        }else {
+        }     
+	        
+        System.out.println("Done...");
 	}
+	
+	/*
+	 * Performs command from one string.
+	 */
+	void command( String cmd )
+	{
+		
+		String[] str = cmd.split("\\s");
+	
+		Process ls = null; 
+        BufferedReader input = null; 
+        String line = null; 
+         
+        try { 
+               ls = Runtime.getRuntime().exec(str); 
+             
+               input = new BufferedReader(new InputStreamReader(ls.getInputStream())); 
+
+            } catch (IOException e1) { 
+                e1.printStackTrace();   
+                System.exit(1); 
+            } 
+             
+            
+           try { 
+                   while( (line=input.readLine())!=null) 
+                    System.out.println(line);                   
+
+            } catch (IOException e1) { 
+                e1.printStackTrace();   
+                System.exit(0); 
+            }         		
+		
+	}	
 
 }
