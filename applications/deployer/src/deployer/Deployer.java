@@ -10,6 +10,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Deployer {
 	
@@ -106,16 +112,10 @@ public class Deployer {
         //Linux parameters        
         String osName = System.getProperty("os.name");
         String osNameMatch = osName.toLowerCase();
-        
-        String scriptFile = "start.sh";
-        
+                
         if(osNameMatch.contains("linux")) {
-        	
-        	scriptFile = "start.sh";
         	        	        
         }else if(osNameMatch.contains("windows")) {
-            
-        	scriptFile = "start.bat";
         	
         }else if(osNameMatch.contains("solaris") || osNameMatch.contains("sunos")) {
             
@@ -124,13 +124,17 @@ public class Deployer {
         }else {
         }            
 	   
-        //Create startup file        
+        //Create startup file
+        
+        String scriptFileLin = "start.sh";
+        String scriptFileWin = "start.bat";
+        
         File file = new File(path);
         String parentPath = file.getAbsoluteFile().getParent();        
         
         try {
         	
-        	File start = new File(parentPath + fileSep + scriptFile);
+        	File start = new File(parentPath + fileSep + scriptFileLin);
         	
             FileOutputStream is = new FileOutputStream(start);
             OutputStreamWriter osw = new OutputStreamWriter(is);    
@@ -154,8 +158,14 @@ public class Deployer {
             
         } catch (IOException e) {
             System.err.println("ERROR: Problem writing to the file :(");
-        }	    	    
-	        
+        }	    	
+        
+        //Copy to Win
+        File from = new File(parentPath + fileSep + scriptFileLin);
+        File to = new File(parentPath + fileSep + scriptFileWin);
+        
+        CopyFile(from, to);
+        	        
         System.out.println("Done...");
 	}
 	
@@ -192,5 +202,36 @@ public class Deployer {
             }         		
 		
 	}	
+	
+	public static void CopyFile(File from, File to)
+    {
+
+    	InputStream inStream = null;
+    	OutputStream outStream = null;
+
+    	try{
+
+    	    inStream = new FileInputStream(from);
+    	    outStream = new FileOutputStream(to);
+
+    	    byte[] buffer = new byte[1024];
+
+    	    int length;
+    	    //copy the file content in bytes
+    	    while ((length = inStream.read(buffer)) > 0){
+
+    	    	outStream.write(buffer, 0, length);
+
+    	    }
+
+    	    inStream.close();
+    	    outStream.close();
+
+    	    System.out.println("File is copied successful!");
+
+    	}catch(IOException e){
+    		e.printStackTrace();
+    	}
+    }	
 
 }
