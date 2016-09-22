@@ -101,16 +101,36 @@ public class Deployer {
             w.close();
         } catch (IOException e) {
             System.err.println("ERROR: Problem writing to the file :(");
-        }	    
-	   
-        //Create startup file
+        }	   
         
+        //Linux parameters        
+        String osName = System.getProperty("os.name");
+        String osNameMatch = osName.toLowerCase();
+        
+        String scriptFile = "start.sh";
+        
+        if(osNameMatch.contains("linux")) {
+        	
+        	scriptFile = "start.sh";
+        	        	        
+        }else if(osNameMatch.contains("windows")) {
+            
+        	scriptFile = "start.bat";
+        	
+        }else if(osNameMatch.contains("solaris") || osNameMatch.contains("sunos")) {
+            
+        }else if(osNameMatch.contains("mac os") || osNameMatch.contains("macos") || osNameMatch.contains("darwin")) {
+            
+        }else {
+        }            
+	   
+        //Create startup file        
         File file = new File(path);
         String parentPath = file.getAbsoluteFile().getParent();        
         
         try {
         	
-        	File start = new File(parentPath + fileSep + "start.sh");
+        	File start = new File(parentPath + fileSep + scriptFile);
         	
             FileOutputStream is = new FileOutputStream(start);
             OutputStreamWriter osw = new OutputStreamWriter(is);    
@@ -134,23 +154,7 @@ public class Deployer {
             
         } catch (IOException e) {
             System.err.println("ERROR: Problem writing to the file :(");
-        }	    
-	   
-        //Linux parameters
-        
-        String osName = System.getProperty("os.name");
-        String osNameMatch = osName.toLowerCase();
-        
-        if(osNameMatch.contains("linux")) {
-        	        	        
-        }else if(osNameMatch.contains("windows")) {
-            
-        }else if(osNameMatch.contains("solaris") || osNameMatch.contains("sunos")) {
-            
-        }else if(osNameMatch.contains("mac os") || osNameMatch.contains("macos") || osNameMatch.contains("darwin")) {
-            
-        }else {
-        }     
+        }	    	    
 	        
         System.out.println("Done...");
 	}
