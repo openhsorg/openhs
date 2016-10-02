@@ -2,6 +2,7 @@ package org.openhs.core.remote.access;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeMap;
@@ -212,8 +213,25 @@ public class AdminServlet extends HttpServlet{
 		
 		out.print("\nbutton {" +
 		"color: #900;\n" +
-			  "font-weight: bold;\n" +
+			  "font-weight: bold;\n" +			  
 			"}\n");
+		
+		out.print("\n.submit-button {" +
+			  "background-image: url('images/layout/indicatorFrost.png');\n" +
+			"}\n");		
+		
+		
+		out.print("\n.buttonx {" +
+		"background-color: #4CAF50;\n" +
+			  "border: none;\n" +
+			  "color: white;\n" +
+			  "padding: 15px 32px;\n" +
+			  "text-align: center;\n" +
+			  "text-decoration: none;\n" +
+			  "display: inline-block;\n" +
+			  "font-size: 16px;\n" +
+			  "border-radius: 5px;\n" +
+			"}\n");		
 		
 		
     	out.println("</style>\n");
@@ -247,8 +265,7 @@ public class AdminServlet extends HttpServlet{
     	out.println("<article>");
     	  
     	html_data(out);
-    	
-        
+    	        
         out.print("<h3>Hello Servlet</h3>" +
                 "<form name=\"input\" method=\"post\">\n" +
                 "Hello value: <input type=\"text\" name=\"helloValue\">\n" +
@@ -258,13 +275,22 @@ public class AdminServlet extends HttpServlet{
         
         out.print("<form action=\"MyServ\">" +
         "<input type=\"submit\" name=\"btn1\" value=\"click me baby...\">" +
-        "<input type=\"submit\" name=\"btn2\" value=\"OK\">" + 
+        "<input type=\"submit\" class=\"buttonx\" name=\"btn2\" value=\"OKOKOK\" />" + 
         "<button type=\"submit\" value=\"Submit\">Submit</button>\n" +
         "</form>\n");
         
         
+        /*
+        URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();        
+        String path = location.getFile() + "images/aaa.jpg";
         
-    	  
+        
+        System.out.println("\n\n>>>>>>path: " + path + "\n\n");
+        
+        out.print("<br>");
+        out.print("<a href='#' onclick='document.form[0].submit();'><img src=\"" + path + "\"></a>\n");
+        */
+            	  
     	out.println("</article>");    	
     	
     	out.println("<footer>Copyright © openhs.org</footer>");
