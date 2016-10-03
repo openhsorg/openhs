@@ -21,6 +21,8 @@ public interface ISiteService {
 	
 	String getId ();
 	
+	void setId (String newID);
+	
 	int getNumberRooms ();
 	
 	int getNumberSensors (String roomKey);
