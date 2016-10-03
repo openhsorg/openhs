@@ -24,6 +24,9 @@ public class AdminServlet extends HttpServlet{
     private ISiteService m_siteService = null;
 
     int i = 0;
+    
+    int screen = 0;
+    boolean edit = false;
 
     AdminServlet(ISiteService site) {
     	m_siteService = site;
@@ -48,17 +51,42 @@ public class AdminServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-        PrintWriter out = response.getWriter();
+       edit = false;
+       
+        if (request.getParameter("Administration") != null) {
+        	System.out.println("...Administration");
+        	
+        	screen = 0;
+        	
+        } else if (request.getParameter("Datastruct") != null) {       	
+        	System.out.println("...Datastruct");
+
+        	screen = 1;
+        	
+        } else if (request.getParameter("Editdatatree") != null) {
+        	System.out.println("...Editdatatree");
+        	
+        	edit = true;
+        } else if (request.getParameter("siteID") != null) {
+        	System.out.println("...siteID");
+        	
+            String value = request.getParameter("siteID");
+            System.out.println("doPost,siteID=" + value);     
+            
+            m_siteService.setId(value);
+            
+        	edit = false;
+        } else {
+            // ???
+        }
+    	       
+    	
+    	PrintWriter out = response.getWriter();
         
         html_page(out);
     	
         String value = request.getParameter("helloValue");
         System.out.println("doPost,helloValue=" + value);
-       // response.setContentType("text/html");
-       // response.getWriter().print("<html><body>helloValue=" + value + "</body></html>");
-   
-        
-        //response.getWriter().print("<html><body>helloValue=" + value + "</body></html>");
         
         out.close();
     }    
@@ -116,6 +144,7 @@ public class AdminServlet extends HttpServlet{
     	out.print("h2 {\n" + 
     	"font: 20px arial, sans-serif;\n" +    	
     	"color: #ff6600;" + 
+    	//"text-shadow: 2px 4px 10px #000000;\n" +
     	"}\n");      	    	
     	
     	out.print(".tree {\n" +
@@ -153,7 +182,7 @@ public class AdminServlet extends HttpServlet{
 
     	out.print("\nnav {\n" +
     	"float: left;\n" +
-    	"max-width: 600px;\n" +
+    	"max-width: 200px;\n" +
     	"margin: 0;\n" +
     	"padding: 1em;\n" +
     	"}\n");
@@ -168,7 +197,7 @@ public class AdminServlet extends HttpServlet{
     	"}\n");
     	
 		out.print("\narticle {\n" +
-    	"margin-left: 610px;\n" +
+    	"margin-left: 220px;\n" +
     	"border-left: 1px solid gray;\n" +
     	"padding: 1em;\n" +
     	"overflow: hidden;\n" +
@@ -229,8 +258,9 @@ public class AdminServlet extends HttpServlet{
 			  "text-align: center;\n" +
 			  "text-decoration: none;\n" +
 			  "display: inline-block;\n" +
-			  "font-size: 16px;\n" +
-			  "border-radius: 5px;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 10px;\n" +
+			  "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
 			"}\n");		
 		
 		
@@ -238,8 +268,7 @@ public class AdminServlet extends HttpServlet{
     }
     
     protected void html_page(PrintWriter out){
-    	
-    	    	
+    	    	    	
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
     	out.println("<head>");
@@ -257,15 +286,15 @@ public class AdminServlet extends HttpServlet{
     	
     	out.println("<nav>");
     	
-    	html_tree(out);
+    	html_left(out);
     	
     	out.println("</nav>");   	
-    	
-    	
+    	    	
     	out.println("<article>");
     	  
-    	html_data(out);
-    	        
+    	html_center(out);
+    	     
+    	/*
         out.print("<h3>Hello Servlet</h3>" +
                 "<form name=\"input\" method=\"post\">\n" +
                 "Hello value: <input type=\"text\" name=\"helloValue\">\n" +
@@ -276,8 +305,10 @@ public class AdminServlet extends HttpServlet{
         out.print("<form action=\"MyServ\">" +
         "<input type=\"submit\" name=\"btn1\" value=\"click me baby...\">" +
         "<input type=\"submit\" class=\"buttonx\" name=\"btn2\" value=\"OKOKOK\" />" + 
-        "<button type=\"submit\" value=\"Submit\">Submit</button>\n" +
+      //  "<button type=\"submit\" class=\"buttonx\" value=\"Submit\">Submit</button>\n" +
         "</form>\n");
+        
+        */
         
         
         /*
@@ -302,20 +333,70 @@ public class AdminServlet extends HttpServlet{
     	
     }
     
-    protected void html_tree(PrintWriter out){
-    	    	   	
-    	out.println("<h2>Data tree structure:</h2>");
-    	//out.println("<p class=\"tree\">");
-    	    	/*
-        if (m_siteService != null) {            	
-        	getHouseData(out);
-        }
-        else {
-            out.println("<br/><br/>error no data site :(");
-            out.println("<br/>");                    
-        }
-        */
+    protected void html_left(PrintWriter out){    	 
     	
+    	
+    	out.println("<h2>Menu:</h2>");
+    	
+        out.print("<form name=\"admin\" method=\"post\" action=\"\">" +
+        "<input type=\"submit\" class=\"buttonx\" name=\"Administration\" value=\"Administration\">" +
+        "</form>\n"); 
+        
+        out.print("<br>");
+    	
+        out.print("<form name=\"admin\" method=\"post\" action=\"\">" +
+        "<input type=\"submit\" class=\"buttonx\" name=\"Datastruct\" value=\"Data Structure\">" +
+        "</form>\n");          
+        
+        out.print("<br>");
+        
+        out.println("<h2>Applications:</h2>");
+        
+        out.print("<a href=\"/meteo\" accesskey=\"1\" title=\"\">Meteo station</a>");
+        out.print("<br>");
+        out.print("<a href=\"/meteo2\" accesskey=\"1\" title=\"\">Time and temperature</a>");
+        out.print("<br>");
+        out.print("<a href=\"/image\" accesskey=\"1\" title=\"\">Image Demo</a>");        
+        
+        out.print("<br>");
+    	
+        /*
+        out.print("<form action=\"meteo\">" +
+        "<input type=\"submit\" class=\"buttonx\" name=\"Meteostation\" value=\"Meteo Station\">" +
+        "</form>\n");  
+        */
+    }
+    
+    protected void html_center(PrintWriter out){
+    	
+    	switch (screen) {
+    	
+    	case 0:
+    		
+        	out.println("<h2>Information:</h2>");
+
+        	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
+        	out.println("<br><info2>Name: </info2>" + "<info>" + "Not specified..." + "</info>");    
+        	
+        break;
+    		
+    	case 1:
+    		
+    		html_datatree(out);
+    		
+    	break;
+    		
+    	}
+    	
+	   	
+
+        
+    }    
+    
+    protected void html_datatree (PrintWriter out){
+    	
+    	out.println("<h2>Data tree structure:</h2>");
+      	
     	out.println("<div class=\"clt\">");
     	
     	if (m_siteService != null) {   
@@ -326,23 +407,10 @@ public class AdminServlet extends HttpServlet{
             out.println("<br/>");     
     	}
     
-        out.println("</div>");  	    	    	
-      //  out.println("</p>");
+        out.println("</div>");  
     }
     
-    protected void html_data(PrintWriter out){
-	   	
-    	out.println("<h2>Information:</h2>");
-    	//out.println("<p class='info'>");
-
-    	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
-    	out.println("<br><info2>Name: </info2>" + "<info>" + "Not specified..." + "</info>");
-        
-        //out.println("</p>");
-    }    
-    
     protected void getHouseData2(PrintWriter out) {
-
 
     	out.println("<ul>");
         //out.println("<li>Site:" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms());
@@ -382,7 +450,6 @@ public class AdminServlet extends HttpServlet{
                 } catch (SiteException ex) {
 
                 }
-
             }    
            out.println("</ul>"); 
            out.println("</li>");
@@ -390,7 +457,29 @@ public class AdminServlet extends HttpServlet{
         
       	out.println("</ul>");
         out.println("</li></ul>");        
-
+        
+        
+        out.print("<br>");
+        
+        if (!edit){
+    	
+        	out.print("<form name=\"editTree\" method=\"post\" action=\"\">" +
+        			"<input type=\"submit\" class=\"buttonx\" name=\"Editdatatree\" value=\"Edit data structure\">" +
+        			"</form>\n");
+        }
+        else{
+        	
+        	String siteID = m_siteService.getId();
+        	
+            out.print("<h3>Please update:</h3>" +
+                    "<form name=\"input\" method=\"post\">\n" +
+                    "Site name: <input type=\"text\" name=\"siteID\" value=\"" + siteID + "\">\n" +
+                    "<input type=\"submit\" value=\"Submit\">\n" +
+                    "");     
+        }
+        
+        
+        
     }      
     
     
