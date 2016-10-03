@@ -27,5 +27,10 @@ public class Site {
 	{
 		return id;
 	}
+	
+	public void setId (String newID)
+	{
+		id = newID;
+	}	
 
 }
