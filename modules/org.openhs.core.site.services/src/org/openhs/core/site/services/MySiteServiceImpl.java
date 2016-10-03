@@ -64,6 +64,11 @@ public class MySiteServiceImpl implements ISiteService {
     public String getId() {
         return ss.getId();
     }
+    
+    @Override
+    public void setId(String newID) {
+        ss.setId(newID);
+    }    
 
     @Override
     public boolean addRoom(String key) {
