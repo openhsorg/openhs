@@ -1,6 +1,8 @@
 package org.openhs.core.remote.access;
 
 import java.io.IOException;
+
+
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Date;
@@ -25,8 +27,14 @@ public class AdminServlet extends HttpServlet{
 
     int i = 0;
     
-    int screen = 0;
-    boolean edit = false;
+   // int screen = 0; //0 - admin, 1 - data structure
+  //  boolean edit = false;
+    
+    AdminScreens  		screen = AdminScreens.ADMIN;
+    AdminScreensDetail  sreenDet = AdminScreensDetail.NONE;
+    AdminScreensButtons btn = AdminScreensButtons.NONE;
+    
+    String dataItemID = "";
 
     AdminServlet(ISiteService site) {
     	m_siteService = site;
@@ -34,9 +42,7 @@ public class AdminServlet extends HttpServlet{
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
-        resp.setHeader("Refresh", "5");
-        
-     //   System.out.println("Site ID is: " + m_siteService.getId());
+        resp.setHeader("Refresh", "5");        
 
         i++;
 
@@ -51,31 +57,51 @@ public class AdminServlet extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
-       edit = false;
-       
+    	sreenDet = AdminScreensDetail.NONE;
+    	       
         if (request.getParameter("Administration") != null) {
         	System.out.println("...Administration");
         	
-        	screen = 0;
+        	screen = AdminScreens.ADMIN;
         	
         } else if (request.getParameter("Datastruct") != null) {       	
         	System.out.println("...Datastruct");
 
-        	screen = 1;
+        	screen = AdminScreens.DATA_STRUCTURE;
         	
-        } else if (request.getParameter("Editdatatree") != null) {
-        	System.out.println("...Editdatatree");
+        } else if (request.getParameter(btn.SITE.toString()) != null) {
+        	System.out.println("...Edit site");
         	
-        	edit = true;
-        } else if (request.getParameter("siteID") != null) {
-        	System.out.println("...siteID");
+          	sreenDet = AdminScreensDetail.SITE;
+          	
+          	dataItemID = request.getParameter(btn.SITE.toString());
+            System.out.println("Site=" + dataItemID);               	          	
+          	
+        } else if (request.getParameter(btn.ROOM.toString()) != null) {
+        	System.out.println("...Edit room");
         	
-            String value = request.getParameter("siteID");
-            System.out.println("doPost,siteID=" + value);     
-            
+          	sreenDet = AdminScreensDetail.ROOM;
+          	
+          	dataItemID = request.getParameter(btn.ROOM.toString());
+            System.out.println("Room=" + dataItemID);   
+          	
+        } else if (request.getParameter(AdminScreensButtons.SITE_NAME.toString()) != null) {
+        	System.out.println(AdminScreensButtons.SITE_NAME.toString());
+        	
+            String value = request.getParameter(AdminScreensButtons.SITE_NAME.toString());
+            System.out.println("Site Name changing = " + value);     
+             
             m_siteService.setId(value);
             
-        	edit = false;
+        } else if (request.getParameter(AdminScreensButtons.ROOM_NAME.toString()) != null) {
+        	System.out.println(AdminScreensButtons.ROOM_NAME.toString());
+        	
+            String value = request.getParameter(AdminScreensButtons.ROOM_NAME.toString());
+            System.out.println("Room Name changing =" + value);    
+            
+            
+                        
+            
         } else {
             // ???
         }
@@ -84,10 +110,7 @@ public class AdminServlet extends HttpServlet{
     	PrintWriter out = response.getWriter();
         
         html_page(out);
-    	
-        String value = request.getParameter("helloValue");
-        System.out.println("doPost,helloValue=" + value);
-        
+    	        
         out.close();
     }    
     
@@ -156,14 +179,14 @@ public class AdminServlet extends HttpServlet{
     	out.print("info {\n" +
     	"font-family: sans-serif;\n" + 
     	"font-weight: bold;\n" + 
-    	"font-size: 16px;\n" +
-    	"color: #0174DF;\n" + 
+    	"font-size: 14px;\n" +
+    	"color: #000000;\n" + 
     	"}\n");    	
     	
     	out.print("info2 {\n" +    	
     	"font-family: sans-serif;\n" +     	
-    	"font-size: 16px;\n" +	
-    	"color: #0174DF;\n" + 
+    	"font-size: 14px;\n" +	
+    	"color: #000000;\n" + 
     	"}\n");      	
     	
     	out.print("div.container {\n" +
@@ -204,6 +227,7 @@ public class AdminServlet extends HttpServlet{
     	"}\n");
 		
 		
+		// Tree		
 		out.print("\n.clt, .clt ul, .clt li {\n"+
 		"position: relative;\n" + 
 		"font: 14px arial, sans-serif;\n" +
@@ -237,8 +261,11 @@ public class AdminServlet extends HttpServlet{
 		out.print("\n.clt ul > li:last-child::after {\n"+
 		    "height: 8px;\n"+
 		"}\n");
+				
+		//-> Tree
 		
 		
+		//Buttons
 		
 		out.print("\nbutton {" +
 		"color: #900;\n" +
@@ -263,6 +290,33 @@ public class AdminServlet extends HttpServlet{
 			  "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
 			"}\n");		
 		
+		
+		out.print("\n.buttonEdit {" +
+		"background-color: #ff6600;\n" +
+			  "border: none;\n" +
+			  "color: white;\n" +
+			  "padding: 15px 32px;\n" +
+			  "text-align: center;\n" +
+			  "text-decoration: none;\n" +
+			  "display: inline-block;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 10px;\n" +
+			  "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
+			"}\n");				
+		
+		
+		out.print("\n.buttonSensorEdit {" +
+			  "background-color: #ffe6cc;\n" +
+			  "border: 2px solid white;\n" +
+			  "color: black;\n" +
+			 // "padding: 1px 1px;\n" +
+			  "text-align: center;\n" +
+			//  "text-decoration: none;\n" +
+			//  "display: inline-block;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 6px;\n" +
+			 // "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
+			"}\n");				
 		
     	out.println("</style>\n");
     }
@@ -324,7 +378,7 @@ public class AdminServlet extends HttpServlet{
             	  
     	out.println("</article>");    	
     	
-    	out.println("<footer>Copyright Â© openhs.org</footer>");
+    	out.println("<footer>Copyright © openhs.org</footer>");
 
     	out.println("</div>");
 
@@ -371,7 +425,7 @@ public class AdminServlet extends HttpServlet{
     	
     	switch (screen) {
     	
-    	case 0:
+    	case ADMIN:
     		
         	out.println("<h2>Information:</h2>");
 
@@ -380,7 +434,7 @@ public class AdminServlet extends HttpServlet{
         	
         break;
     		
-    	case 1:
+    	case DATA_STRUCTURE:
     		
     		html_datatree(out);
     		
@@ -414,7 +468,19 @@ public class AdminServlet extends HttpServlet{
 
     	out.println("<ul>");
         //out.println("<li>Site:" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms());
-    	out.println("<li><info2>Site:</info2>" + "<info>" + m_siteService.getId() + "</info>");
+    	//out.println("<li><info2>Site:</info2>" + "<info>" + m_siteService.getId() + "</info>");
+   // 	if (!edit){
+    		out.print("<li><form name='admin' method='post' action=''>" +
+    				"<input type='submit' class='buttonSensorEdit' name='" + btn.SITE.toString() + "' value='" + m_siteService.getId() + "'>" +
+    				"</form>");
+    	/*}
+    	else{
+          	
+            out.print("<li><form name=\"input\" method=\"post\">\n" +
+                    "Site: <input type=\"text\" name=\"siteID\" value=\"" + m_siteService.getId() + "\">" +
+                    "<input type=\"submit\" value=\"Submit\">");       		
+    	}
+    	*/    	
         out.println("<ul>");
       //  out.println("<br/>Number rooms is: " + m_siteService.getNumberRooms());
 
@@ -425,7 +491,12 @@ public class AdminServlet extends HttpServlet{
         for (String key : keys) {            
             
             //out.println("<li>Room:" + key + "   ..." + "Num Sensors:" + m_siteService.getNumberSensors(key));
-        	out.println("<li><info2>Room:</info2>" + "<info>" + key + "</info>");
+        	//out.println("<li><info2>Room:</info2>" + "<info>" + key + "</info>");
+        	
+            out.print("<li><form name='admin' method='post' action=''>" +
+                    "<input type='submit' class='buttonSensorEdit' name='" + btn.ROOM.toString() + "' value='" + key + "'>" +
+                    "</form>");           	
+        	
             out.println("<ul>");
             TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
 
@@ -438,8 +509,16 @@ public class AdminServlet extends HttpServlet{
                 try {
                     temp = m_siteService.getSensorTemperature(key, keyS);
                     hum = m_siteService.getSensorHumidity(key, keyS);
+                                        
+                //    out.print("<li><info2>Sensor:</info2>" + "<info>" + keyS + "</info>");
                     
-                    out.println("<li><info2>Sensor:</info2>" + "<info>" + keyS + "</info>");
+                 //   out.print("<a href='/meteo' accesskey='1' title=''>Meteo station</a>");
+                    
+                    out.print("<li><form name='admin' method='post' action=''>" +
+                            "<input type='submit' class='buttonSensorEdit' name='Edit' value='Sensor:" + keyS + "'>" +
+                            "</form>");                    
+                    
+                //    out.print("<br>");
                     
                     out.println("<ul>");
                     out.println("<li><info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info></li>");                    
@@ -461,26 +540,49 @@ public class AdminServlet extends HttpServlet{
         
         out.print("<br>");
         
-        if (!edit){
-    	
-        	out.print("<form name=\"editTree\" method=\"post\" action=\"\">" +
-        			"<input type=\"submit\" class=\"buttonx\" name=\"Editdatatree\" value=\"Edit data structure\">" +
-        			"</form>\n");
-        }
-        else{
-        	
-        	String siteID = m_siteService.getId();
-        	
-            out.print("<h3>Please update:</h3>" +
-                    "<form name=\"input\" method=\"post\">\n" +
-                    "Site name: <input type=\"text\" name=\"siteID\" value=\"" + siteID + "\">\n" +
-                    "<input type=\"submit\" value=\"Submit\">\n" +
-                    "");     
-        }
-        
-        
-        
+        html_detail(out);
+              
     }      
     
+    
+    void html_detail (PrintWriter out){
+    	
+    	switch (sreenDet){
+    	
+    	case SITE:
+    		        	        	
+            out.print("<h2>Site detail:</h2>" +
+                    "<form name='input' method='post'>\n" +
+                    "<info2>Name of site:</info2> <input type='text' name='" + AdminScreensButtons.SITE_NAME.toString() + "' value='" + dataItemID + "'>\n" +
+                    "<input type='submit' value='Submit'>" +
+                    ""); 
+            
+            out.print("<br>");
+            out.print("<info2>Number of rooms: </info2>" + "<info2>" + m_siteService.getNumberRooms() + "</info2>");
+        break;
+        
+    	case ROOM:
+        	
+            out.print("<h2>Site detail:</h2>" +
+                    "<form name='input' method='post'>\n" +
+                    "<info2>Name of room:</info2> <input type='text' name='" + AdminScreensButtons.ROOM_NAME.toString() + "' value='" + dataItemID + "'>\n" +
+                    "<input type='submit' value='Submit'>" +
+                    ""); 
+            
+            
+        break;        
+        
+    	}
+    	
+    	
+    }
+    
+    void buttonSensorEdit (PrintWriter out){
+    	
+        out.print("<form name='admin' method='post' action=''>" +
+        "<input type='submit' class='buttonSensorEdit' name='Edit' value='Edit'>" +
+        "</form>\n");       	
+    	
+    }
     
 }
