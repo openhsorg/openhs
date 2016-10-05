@@ -211,7 +211,6 @@ public class AdminServlet extends HttpServlet{
     }
     
     protected void ccs_styles( PrintWriter out){
-    	
     	out.println("\n<style>\n");
     	
     	out.print("h1 {\n" + 
@@ -377,6 +376,287 @@ public class AdminServlet extends HttpServlet{
     	out.println("</style>\n");
     }
     
+protected void ccs_styles2( PrintWriter out){
+    	
+    	out.println("\n<style>\n");
+    	
+    	out.print("h1 {\n" + 
+    	"font: 15px arial, sans-serif;\n" +
+    	"font-size: 28px;" +    	 
+    	"color: #ff6600;" + 
+    	"}\n");    	
+    	    	
+    	out.print("h2 {\n" + 
+    	"font: 20px arial, sans-serif;\n" +    	
+    	"color: #ff6600;" + 
+    	//"text-shadow: 2px 4px 10px #000000;\n" +
+    	"}\n");      	    
+    	
+    	out.print(".tree {\n" +
+    	"font: 20px arial, sans-serif;\n" + 
+    	"font-size: 18px;\n" +
+    	"color: #0174DF;\n" + 
+    	"}\n");
+    	
+    	out.print("info {\n" +
+    	"font-family: sans-serif;\n" + 
+    	"font-weight: bold;\n" + 
+    	"font-size: 14px;\n" +
+    	"color: #000000;\n" + 
+    	"}\n");    	
+    	
+    	out.print("info2 {\n" +    	
+    	"font-family: sans-serif;\n" +     	
+    	"font-size: 14px;\n" +	
+    	"color: #000000;\n" + 
+    	"}\n");     	
+    	
+    	out.print("body {\n" +
+		"background-color: #ffffff;\n" +
+		"font-family: verdana, arial, helvetica, sans-serif;\n" +
+		"font-size: 70%;\n" +
+		"margin: 15px 0;\n" +
+		"padding: 0;\n" +
+		"}\n");
+ 		
+		out.print("#mainContainer {\n" +
+		"background-color: #000000;\n" +
+		"height: 100%;\n" +
+		"margin: 0 auto;\n" +
+		"position: relative;\n" +
+		"width: 100%;\n" +
+		"}\n");
+		
+		out.print(".contentBlock {\n" +
+		"border: 1px solid orange;\n" +
+		"box-sizing: border-box;\n" +
+		"color: black;\n" +
+		"font-size: 2em;\n" +
+		"text-align: center;\n" +
+		"overflow:hidden;\n" +
+		"}\n");
+		
+		out.print(".contentBlock:after {\n" +
+		"content: '';\n" +
+		"display: inline-block;\n" +
+		"height: 100%;\n" +
+		"vertical-align: middle;\n" +
+		"}\n");
+		
+		out.print("#contentBlock1 {\n" +
+		"background-color: #CEE3F6;\n" +
+		"text-align: center;\n" +		
+		"height: 100px;\n" +
+		"left: 0px;\n" +
+		"position: absolute;\n" +
+		"top: 0px;\n" +
+		"width: 100%;\n" +
+		"}\n");
+		
+		out.print("#contentBlock2 {\n" +
+		"height: auto;\n" +
+		"left: 0px;\n" +
+		"position: absolute;\n" +
+		"top: 110px;\n" +
+		"width: 200px;\n" +
+		//"max-width: 200px;\n" +
+		"text-align: left;\n" +
+    	"margin: 0;\n" +
+    	"padding: 1em;\n" +		
+		"}\n");
+		
+		out.print("#contentBlock3 {\n" +
+		"height: auto;\n" +
+		"left: 220px;\n" +
+		"position: absolute;\n" +
+		"top: 110px;\n" +
+		"width: 60%;\n" +
+		//"max-width: 200px;\n" +
+		"float: right;\n" +
+		"text-align: left;\n" +
+    	"margin: 0;\n" +
+    	"padding: 1em;\n" +		
+		"}\n");
+		
+		out.print("#contentBlock4 {\n" +
+		"height: auto;\n" +
+		"right: 0px;\n" +
+		"position: absolute;\n" +
+		"top: 110px;\n" +
+		"width: 200px;\n" +
+		"}\n");
+		
+		out.print("#contentBlock5 {\n" +
+		"height: 50px;\n" +
+		"bottom: 0;\n" +
+		"position: fixed;\n" +
+		"width: 100%;\n" +
+		"background-color: #CEE3F6;\n" +
+		"text-align: center;\n" +
+		"}\n");
+				
+		// Tree		
+		out.print("\n.clt, .clt ul, .clt li {\n"+
+		"position: relative;\n" + 
+		"font: 14px arial, sans-serif;\n" +
+		"}\n");
+
+		out.print("\n.clt ul {\n"+
+		"list-style: none;\n"+
+		"padding-left: 32px;\n"+
+		"}\n");
+		
+		out.print("\n.clt li::before, .clt li::after {\n"+
+		"content: '';\n"+
+		"position: absolute;\n"+
+		"left: -12px;\n"+
+		"}\n");
+		
+		out.print("\n.clt li::before {\n"+
+		"border-top: 1px solid #000;\n"+
+		"top: 9px;\n"+
+		"width: 8px;\n"+
+		"height: 0;\n"+
+		"}\n");
+		
+		out.print("\n.clt li::after {\n"+
+		    "border-left: 1px solid #000;\n"+
+		    "height: 100%;\n"+
+		    "width: 0px;\n"+
+		    "top: 2px;\n"+
+		"}\n");		
+		
+		out.print("\n.clt ul > li:last-child::after {\n"+
+		    "height: 8px;\n"+
+		"}\n");
+				
+		//-> Tree
+		
+		
+		//Buttons
+		
+		out.print("\nbutton {" +
+		"color: #900;\n" +
+			  "font-weight: bold;\n" +			  
+			"}\n");
+		
+		out.print("\n.submit-button {" +
+			  "background-image: url('images/layout/indicatorFrost.png');\n" +
+			"}\n");		
+		
+		
+		out.print("\n.buttonx {" +
+		"background-color: #4CAF50;\n" +
+			  "border: none;\n" +
+			  "color: white;\n" +
+			  "padding: 15px 32px;\n" +
+			  "text-align: center;\n" +
+			  "text-decoration: none;\n" +
+			  "display: inline-block;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 10px;\n" +
+			  "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
+			"}\n");		
+		
+		
+		out.print("\n.buttonEdit {" +
+		"background-color: #ff6600;\n" +
+			  "border: none;\n" +
+			  "color: white;\n" +
+			  "padding: 15px 32px;\n" +
+			  "text-align: center;\n" +
+			  "text-decoration: none;\n" +
+			  "display: inline-block;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 10px;\n" +
+			  "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
+			"}\n");				
+		
+		
+		out.print("\n.buttonSensorEdit {" +
+			  "background-color: #ffe6cc;\n" +
+			  "border: 2px solid white;\n" +
+			  "color: black;\n" +
+			 // "padding: 1px 1px;\n" +
+			  "text-align: center;\n" +
+			//  "text-decoration: none;\n" +
+			//  "display: inline-block;\n" +
+			  "font-size: 14px;\n" +
+			  "border-radius: 6px;\n" +
+			 // "box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);\n" +
+			"}\n");				
+		
+    	out.println("</style>\n");
+    }    
+
+protected void html_page2(PrintWriter out){
+	
+	out.println("<!DOCTYPE html>");
+	out.println("<html>");
+	out.println("<head>");	
+	
+	//ccs_scripts(out);
+	
+	ccs_styles2(out);
+	
+	out.print("</head>\n");
+	out.print("<body>\n");
+	
+	out.println("<div class='container'>");
+	
+	out.println("<div class='contentBlock' id='contentBlock1'>");
+	out.println("<h1>Admin page</h1>");
+	out.println("</div>");
+	
+	out.println("<div class='contentBlock' id='contentBlock2'>");
+	html_left(out);
+	out.println("</div>");	
+	
+	out.println("<div class='contentBlock' id='contentBlock3'>");
+	html_center(out);
+	html_center(out);
+	html_center(out);
+	out.println("</div>");		
+	
+	out.println("<div class='contentBlock' id='contentBlock4'>");
+	out.println("<h1>Empty...</h1>");
+	out.println("</div>");		
+	
+	out.println("<div class='contentBlock' id='contentBlock5'>");
+	out.println("<footer>Copyright © openhs.org</footer>");
+	out.println("</div>");			
+	
+	/*
+
+	out.println("<div class='container'>");
+
+	out.println("<header>");
+	out.println("<h1>Admin page</h1>");
+	out.println("</header>");
+	
+	out.println("<nav>");
+	
+	html_left(out);
+	
+	out.println("</nav>");   	
+	    	
+	out.println("<article>");
+	  
+	html_center(out);
+	            	  
+	out.println("</article>");    	
+	
+	out.println("<footer>Copyright © openhs.org</footer>");
+
+	out.println("</div>");
+	*/
+
+	out.println("</body>");
+	out.println("</html>");
+	
+}
+    
+    
     protected void html_page(PrintWriter out){
     	    	    	
     	out.println("\n<!DOCTYPE html>");
@@ -405,35 +685,7 @@ public class AdminServlet extends HttpServlet{
     	out.println("<article>");
     	  
     	html_center(out);
-    	     
-    	/*
-        out.print("<h3>Hello Servlet</h3>" +
-                "<form name=\"input\" method=\"post\">\n" +
-                "Hello value: <input type=\"text\" name=\"helloValue\">\n" +
-                "<input type=\"submit\" value=\"Submit\">\n" +
-                "");       	
-        
-        
-        out.print("<form action=\"MyServ\">" +
-        "<input type=\"submit\" name=\"btn1\" value=\"click me baby...\">" +
-        "<input type=\"submit\" class=\"buttonx\" name=\"btn2\" value=\"OKOKOK\" />" + 
-      //  "<button type=\"submit\" class=\"buttonx\" value=\"Submit\">Submit</button>\n" +
-        "</form>\n");
-        
-        */
-        
-        
-        /*
-        URL location = ImageServlet.class.getProtectionDomain().getCodeSource().getLocation();        
-        String path = location.getFile() + "images/aaa.jpg";
-        
-        
-        System.out.println("\n\n>>>>>>path: " + path + "\n\n");
-        
-        out.print("<br>");
-        out.print("<a href='#' onclick='document.form[0].submit();'><img src=\"" + path + "\"></a>\n");
-        */
-            	  
+    	            	  
     	out.println("</article>");    	
     	
     	out.println("<footer>Copyright © openhs.org</footer>");
@@ -446,9 +698,8 @@ public class AdminServlet extends HttpServlet{
     }
     
     protected void html_left(PrintWriter out){    	 
-    	
-    	
-    	out.println("<h2>Menu:</h2>");
+    	    	
+    	out.println("<h2>Menu</h2>");
     	
         out.print("<form name=\"admin\" method=\"post\" action=\"\">" +
         "<input type=\"submit\" class=\"buttonx\" name=\"Administration\" value=\"Administration\">" +
@@ -466,7 +717,7 @@ public class AdminServlet extends HttpServlet{
         "<input type='submit' class='buttonx' name='" + AdminScreensButtons.B_METEO.toString() + "' value='Meteo Setup'>" +
         "</form>\n");            
      
-        
+     /*   
         out.print("<br>");
         
         out.println("<h2>Applications:</h2>");
@@ -478,12 +729,7 @@ public class AdminServlet extends HttpServlet{
         out.print("<a href=\"/image\" accesskey=\"1\" title=\"\">Image Demo</a>");        
         
         out.print("<br>");
-    	
-        /*
-        out.print("<form action=\"meteo\">" +
-        "<input type=\"submit\" class=\"buttonx\" name=\"Meteostation\" value=\"Meteo Station\">" +
-        "</form>\n");  
-        */
+    */
     }
     
     protected void html_center(PrintWriter out){
@@ -492,7 +738,7 @@ public class AdminServlet extends HttpServlet{
     	
     	case ADMIN:
     		
-        	out.println("<h2>Information:</h2>");
+        	out.println("<h2>General Administration</h2>");
 
         	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
         	out.println("<br><info2>Name: </info2>" + "<info>" + "Not specified..." + "</info>");    
@@ -520,7 +766,7 @@ public class AdminServlet extends HttpServlet{
     
     protected void html_datatree (PrintWriter out){
     	
-    	out.println("<h2>Data tree structure:</h2>");
+    	out.println("<h2>Data structure</h2>");
       	
     	out.println("<div class=\"clt\">");
     	
@@ -705,12 +951,8 @@ public class AdminServlet extends HttpServlet{
             }        
         }
     	
-    	out.println("<h2>Meteo station setup:</h2>");
-
-    	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
     	
-    	out.print("<br>");
-    	out.print("<br>");
+    	out.println("<h2>Meteo station setup</h2>");
     	
     	//Inner temp
    	    out.print("<form action='' method='post'\n");
@@ -759,8 +1001,21 @@ public class AdminServlet extends HttpServlet{
     	out.print("<br>");
     	out.print("<input type='submit' value='save'/>");  
      	out.print("</form>\n");       	
+    	out.println("<br>");
+    	out.println("<br>");       	
     	
+    	out.println("<h2>Meteo station application</h2>");
+
+    	out.println("<info2>Application:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");    	
+    	out.println("<a href=\"/meteo\" accesskey=\"1\" title=\"\">Meteo station page</a>");
+    	out.println("<br>");
     	
+    	out.println("<info2>Check for updates:&emsp;&emsp;&emsp;");    	
+    	out.println("<a href=\"/meteo\" accesskey=\"1\" title=\"\">Link to web-shop</a>");    
+    	out.println("<br>");
+    	
+    	out.println("<br>");
+    	out.println("<br>");    	
     }
     
 }
