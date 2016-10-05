@@ -96,7 +96,6 @@ public class MeteoServlet extends HttpServlet {
         
         graphics2D.drawString(tmpInStr, 20, 120);
 
-
         try {
         	
         	Temperature tOut =  m_meteo.getSensorOut().getTemperature();

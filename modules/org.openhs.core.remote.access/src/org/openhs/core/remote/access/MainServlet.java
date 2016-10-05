@@ -47,7 +47,7 @@ public class MainServlet {
         msg.println("org.openhs.core.remote.access: activate");
 
         mainServlet = new MainServlet();
-        adminServlet = new AdminServlet(m_siteService);
+        adminServlet = new AdminServlet(m_siteService, m_meteo);
         imageServlet = new ImageServlet();
         imageServlet2 = new ImageServlet2();
         imageServlet3 = new ImageServlet3();

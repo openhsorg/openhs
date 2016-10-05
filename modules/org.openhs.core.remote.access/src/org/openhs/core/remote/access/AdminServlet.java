@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +25,7 @@ import org.openhs.core.site.data.ISiteService;
 
 public class AdminServlet extends HttpServlet{
     private ISiteService m_siteService = null;
+    private Meteostation m_meteo = null;
 
     int i = 0;
     
@@ -36,8 +38,9 @@ public class AdminServlet extends HttpServlet{
     
     String dataItemID = "";
 
-    AdminServlet(ISiteService site) {
+    AdminServlet(ISiteService site, Meteostation meteo) {
     	m_siteService = site;
+    	m_meteo = meteo;
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,6 +61,13 @@ public class AdminServlet extends HttpServlet{
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
     	sreenDet = AdminScreensDetail.NONE;
+    	
+//    	String strSelectedState[] = request.getParameterValues("fruit");
+    	System.out.println("...doPost");
+    	
+    //	for(int i=0;i<strSelectedState.length;i++){
+    //		System.out.println("Selected state values are:- " + strSelectedState[i]);
+   // 	}
     	       
         if (request.getParameter("Administration") != null) {
         	System.out.println("...Administration");
@@ -69,21 +79,33 @@ public class AdminServlet extends HttpServlet{
 
         	screen = AdminScreens.DATA_STRUCTURE;
         	
-        } else if (request.getParameter(btn.SITE.toString()) != null) {
+        } else if (request.getParameter(AdminScreensButtons.B_METEO.toString()) != null) {
+        	        	
+        	screen = AdminScreens.METEO_SETUP;              	          	
+          	
+        } else if (request.getParameter(AdminScreensButtons.SITE.toString()) != null) {
         	System.out.println("...Edit site");
         	
           	sreenDet = AdminScreensDetail.SITE;
           	
-          	dataItemID = request.getParameter(btn.SITE.toString());
+          	dataItemID = request.getParameter(AdminScreensButtons.SITE.toString());
             System.out.println("Site=" + dataItemID);               	          	
           	
-        } else if (request.getParameter(btn.ROOM.toString()) != null) {
+        } else if (request.getParameter(AdminScreensButtons.ROOM.toString()) != null) {
         	System.out.println("...Edit room");
         	
           	sreenDet = AdminScreensDetail.ROOM;
           	
-          	dataItemID = request.getParameter(btn.ROOM.toString());
+          	dataItemID = request.getParameter(AdminScreensButtons.ROOM.toString());
             System.out.println("Room=" + dataItemID);   
+          	
+        } else if (request.getParameter(AdminScreensButtons.SENSOR.toString()) != null) {
+        	System.out.println("...Edit sensor");
+        	
+          	sreenDet = AdminScreensDetail.SENSOR;
+          	
+          	dataItemID = request.getParameter(AdminScreensButtons.SENSOR.toString());
+            System.out.println("Sensor=" + dataItemID);   
           	
         } else if (request.getParameter(AdminScreensButtons.SITE_NAME.toString()) != null) {
         	System.out.println(AdminScreensButtons.SITE_NAME.toString());
@@ -99,8 +121,29 @@ public class AdminServlet extends HttpServlet{
             String value = request.getParameter(AdminScreensButtons.ROOM_NAME.toString());
             System.out.println("Room Name changing =" + value);    
             
-            
+            m_siteService.setRoomKey (dataItemID, value);
                         
+            
+        } else if (request.getParameter(AdminScreensButtons.SENSOR_NAME.toString()) != null) {
+        	System.out.println(AdminScreensButtons.SENSOR_NAME.toString());
+        	
+            String value = request.getParameter(AdminScreensButtons.SENSOR_NAME.toString());
+            System.out.println("Sensor Name changing =" + value);    
+            
+            m_siteService.setSensorKey (dataItemID, value);                         
+            
+        } else if (request.getParameter(AdminScreensButtons.METEO_IN_TEMP.toString()) != null) {
+        	System.out.println("in temp settings...");
+        	
+            String v = request.getParameter(AdminScreensButtons.METEO_IN_TEMP.toString());
+            System.out.println("sensor =" + v);     
+            
+            m_meteo.sensorInString = v;
+            
+            v = request.getParameter(AdminScreensButtons.METEO_OUT_TEMP.toString());
+            System.out.println("sensor2 =" + v);
+            
+            m_meteo.sensorOutString = v;
             
         } else {
             // ???
@@ -153,6 +196,19 @@ public class AdminServlet extends HttpServlet{
         }
 
     }    
+    
+    protected void ccs_scripts( PrintWriter out){
+    	
+    	/*
+    	out.print("<script>\n");
+    	out.print("$(function () {\n");
+    			out.print("$('#selectnumber').change(function(){\n");
+    					out.print("alert('.val() = ' + $('#selectnumber').val() + '  AND  html() = ' + $('#selectnumber option:selected').html() + '  AND .text() = ' + $('#selectnumber option:selected').text());\n");
+    							out.print("})\n");
+    									out.print("});\n");
+    											out.print("</script>\n");
+    	*/
+    }
     
     protected void ccs_styles( PrintWriter out){
     	
@@ -325,7 +381,9 @@ public class AdminServlet extends HttpServlet{
     	    	    	
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
-    	out.println("<head>");
+    	out.println("<head>");	
+    	
+    	ccs_scripts(out);
     	
     	ccs_styles(out);
     	
@@ -398,9 +456,16 @@ public class AdminServlet extends HttpServlet{
         
         out.print("<br>");
     	
-        out.print("<form name=\"admin\" method=\"post\" action=\"\">" +
-        "<input type=\"submit\" class=\"buttonx\" name=\"Datastruct\" value=\"Data Structure\">" +
-        "</form>\n");          
+        out.print("<form name='admin' method='post' action=''>" +
+        "<input type='submit' class='buttonx' name='Datastruct' value='Data Structure'>" +
+        "</form>\n");    
+        
+        out.print("<br>");
+    	
+        out.print("<form name='admin' method='post' action=''>" +
+        "<input type='submit' class='buttonx' name='" + AdminScreensButtons.B_METEO.toString() + "' value='Meteo Setup'>" +
+        "</form>\n");            
+     
         
         out.print("<br>");
         
@@ -439,6 +504,12 @@ public class AdminServlet extends HttpServlet{
     		html_datatree(out);
     		
     	break;
+    	
+    	case METEO_SETUP:
+    		
+    		html_meteo(out);
+    		
+    	break;    	
     		
     	}
     	
@@ -515,7 +586,7 @@ public class AdminServlet extends HttpServlet{
                  //   out.print("<a href='/meteo' accesskey='1' title=''>Meteo station</a>");
                     
                     out.print("<li><form name='admin' method='post' action=''>" +
-                            "<input type='submit' class='buttonSensorEdit' name='Edit' value='Sensor:" + keyS + "'>" +
+                            "<input type='submit' class='buttonSensorEdit' name='" + btn.SENSOR.toString() + "' value='" + keyS + "'>" +
                             "</form>");                    
                     
                 //    out.print("<br>");
@@ -550,9 +621,10 @@ public class AdminServlet extends HttpServlet{
     	switch (sreenDet){
     	
     	case SITE:
+    		
+    		out.println("<h2>Site detail:</h2>");
     		        	        	
-            out.print("<h2>Site detail:</h2>" +
-                    "<form name='input' method='post'>\n" +
+            out.print("<form name='input' method='post'>\n" +
                     "<info2>Name of site:</info2> <input type='text' name='" + AdminScreensButtons.SITE_NAME.toString() + "' value='" + dataItemID + "'>\n" +
                     "<input type='submit' value='Submit'>" +
                     ""); 
@@ -562,19 +634,48 @@ public class AdminServlet extends HttpServlet{
         break;
         
     	case ROOM:
+    		
+    		out.println("<h2>Room detail:</h2>");
         	
-            out.print("<h2>Site detail:</h2>" +
-                    "<form name='input' method='post'>\n" +
+            out.print("<form name='input' method='post'>\n" +
                     "<info2>Name of room:</info2> <input type='text' name='" + AdminScreensButtons.ROOM_NAME.toString() + "' value='" + dataItemID + "'>\n" +
                     "<input type='submit' value='Submit'>" +
                     ""); 
             
+            out.print("<br>");
+            out.print("<info2>Number of sensors: </info2>" + "<info2>" + m_siteService.getNumberSensors(dataItemID) + "</info2>");
             
-        break;        
+        break;    
+        
+    	case SENSOR:
+    		
+    		out.println("<h2>Sensor detail:</h2>");
+        	
+            out.println("<form name='input' method='post'>\n" +
+                    "<info2>Name of room:</info2> <input type='text' name='" + AdminScreensButtons.SENSOR_NAME.toString() + "' value='" + dataItemID + "'>\n" +
+                    "<input type='submit' value='Submit'>" +
+                    "");
+            
+            Temperature temp;
+            Humidity hum;
+            
+            try {
+            	temp = m_siteService.getSensorTemperature("Room1", dataItemID);
+            	hum = m_siteService.getSensorHumidity("Room1", dataItemID);
+            	
+            	out.print("<br>");
+                out.print("<info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info>");
+                out.print("<br>");
+                out.print("<info2>Humidity:</info2>" + "<info>" + hum.getString() + " %" + "; </info>");             	
+            }
+            catch (Exception ex){
+            	
+            }                       
+            
+        break;            
         
     	}
-    	
-    	
+    	    	
     }
     
     void buttonSensorEdit (PrintWriter out){
@@ -582,6 +683,83 @@ public class AdminServlet extends HttpServlet{
         out.print("<form name='admin' method='post' action=''>" +
         "<input type='submit' class='buttonSensorEdit' name='Edit' value='Edit'>" +
         "</form>\n");       	
+    	
+    }
+    
+    protected void html_meteo (PrintWriter out){
+    	
+    	ArrayList<String> sensorList = new ArrayList<String>();
+    	
+        TreeMap<String, Room> rooms = m_siteService.getRooms();
+
+        Set<String> keys = rooms.keySet();
+
+        for (String key : keys) {
+        	
+            TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
+
+            Set<String> keysSensors = sensors.keySet();
+
+            for (String keyS : keysSensors) {
+            	sensorList.add(key + "/" + keyS);
+            }        
+        }
+    	
+    	out.println("<h2>Meteo station setup:</h2>");
+
+    	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
+    	
+    	out.print("<br>");
+    	out.print("<br>");
+    	
+    	//Inner temp
+   	    out.print("<form action='' method='post'\n");
+   	    out.print("<br>");
+   	    out.print("<info2>Select sensor measuring inner temperature:  </info2>");
+    	out.print("<select name='" + AdminScreensButtons.METEO_IN_TEMP.toString() + "'  size='1'>\n");
+    	
+    	out.print("<option value='none' selected>none</option>\n");
+    	
+    	String selected = "";
+    	
+    	for (String item : sensorList) {
+    		
+    		if (m_meteo.sensorInString.contentEquals(item)){
+    			selected = " selected";
+    		} else{
+    			selected = "";
+    		}
+    		    		
+    		out.print("<option value='" + item + "'" + selected + ">" + item + "</option>\n");
+    	}
+    	out.print("</select>\n");    	
+     	
+     	//Out temp
+   	    out.print("<br>");
+   	    out.print("<br>");
+   	    out.print("<info2>Select sensor measuring outer temperature:  </info2>");
+    	out.print("<select name='" + AdminScreensButtons.METEO_OUT_TEMP.toString() + "'  size='1'>\n");
+    	
+    	out.print("<option value='none' selected>none</option>\n");
+    	
+    	selected = "";
+    	
+    	for (String item : sensorList) {
+    		
+    		if (m_meteo.sensorOutString.contentEquals(item)){
+    			selected = " selected";
+    		} else{
+    			selected = "";
+    		}
+    		    		
+    		out.print("<option value='" + item + "'" + selected + ">" + item + "</option>\n");
+    	}
+    	out.print("</select>\n");
+    	out.print("<br>");
+    	out.print("<br>");
+    	out.print("<input type='submit' value='save'/>");  
+     	out.print("</form>\n");       	
+    	
     	
     }
     

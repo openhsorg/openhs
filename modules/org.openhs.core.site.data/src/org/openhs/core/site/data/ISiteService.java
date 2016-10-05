@@ -29,7 +29,7 @@ public interface ISiteService {
 	
 	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;	
 	
-	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp);		
+	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp) throws SiteException;		
 	
 	Humidity getSensorHumidity (String keyRoom, String keySensor)  throws SiteException;
 	
@@ -46,6 +46,10 @@ public interface ISiteService {
 	TreeMap<String, Sensor> getSensors (String keyRoom);
 	
 	boolean setSite (Site siteIn);
+	
+	boolean setRoomKey (String oldKey, String newKey);
+	
+	boolean setSensorKey (String oldKey, String newKey);
 	
 	Site getSite ();
 

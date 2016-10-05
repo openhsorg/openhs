@@ -81,30 +81,38 @@ public class Dataupdate implements IMessageHandler, Runnable {
     		hum.set(smsg.getHum());
     		
 	  		if (m_siteService != null) {
-	  			//TODO link - sensor room?
-	  			if (smsg.getName().compareTo("Sensor1") == 0) {
 	  			
-		    		if (!this.m_siteService.setSensorTemperature("Room1", smsg.getName(), temp)) {
-			  			System.out.println("Cannot write temp :(");
-					} 	  		
-		    	
-			  		if (!this.m_siteService.setSensorHumidity("Room1", smsg.getName(), hum)) {
-			  			System.out.println("Cannot write temp :(");
-					}
-	  			}
-	  			else if (smsg.getName().compareTo("Sensor2") == 0) {
+  				try {
+  					
+		  			//TODO link - sensor room?
+		  			if (smsg.getName().compareTo("Sensor1") == 0) {	  					  				
+		  				  						  				
+			    		if (!this.m_siteService.setSensorTemperature("Room1", smsg.getName(), temp)) {
+				  			System.out.println("Cannot write temp :(");
+						} 	  		
+			    	
+				  		if (!this.m_siteService.setSensorHumidity("Room1", smsg.getName(), hum)) {
+				  			System.out.println("Cannot write temp :(");
+				  		}					
+		  				
+		  			}
+		  			else if (smsg.getName().compareTo("Sensor2") == 0) {
+			  			
+			    		if (!this.m_siteService.setSensorTemperature("Outside", smsg.getName(), temp)) {
+				  			System.out.println("Cannot write temp :(");
+						} 	  		
+			    	
+				  		if (!this.m_siteService.setSensorHumidity("Outside", smsg.getName(), hum)) {
+				  			System.out.println("Cannot write temp :(");
+						}
+		  			}
+		  			else {
+			  			System.out.println("Unknown Sensor name: " + smsg.getName());
+		  			}
+	  			
+	  			} catch (Exception ex){
 		  			
-		    		if (!this.m_siteService.setSensorTemperature("Outside", smsg.getName(), temp)) {
-			  			System.out.println("Cannot write temp :(");
-					} 	  		
-		    	
-			  		if (!this.m_siteService.setSensorHumidity("Outside", smsg.getName(), hum)) {
-			  			System.out.println("Cannot write temp :(");
-					}
-	  			}
-	  			else {
-		  			System.out.println("Unknown Sensor name: " + smsg.getName());
-	  			}
+	  			}	  			
 	  		}
     	}
     }

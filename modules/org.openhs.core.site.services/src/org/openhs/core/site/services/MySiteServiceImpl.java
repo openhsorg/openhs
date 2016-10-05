@@ -8,6 +8,7 @@
 
 package org.openhs.core.site.services;
 
+import java.util.Set;
 import java.util.TreeMap;
 import java.io.*;
 
@@ -47,9 +48,16 @@ public class MySiteServiceImpl implements ISiteService {
     @Override
     public TreeMap<String, Sensor> getSensors(String keyRoom) {
         TreeMap<String, Room> rooms = getRooms();
-
+        
         Room room = rooms.get(keyRoom);
-
+       /* 
+        if (room == null) {
+            throw new SiteException("Room Key doesn't exists...");
+        } else {
+            return room.sensors;
+        }
+        */
+        
         return room.sensors;
     }
 
@@ -100,12 +108,17 @@ public class MySiteServiceImpl implements ISiteService {
 
     @Override
     public Sensor getSensor(String keyRoom, String keySensor) throws SiteException {
-        Room room;
+        Room room = null;
+        TreeMap<String, Sensor> sensors;
 
         try {
             room = getRoom(keyRoom);
         } catch (SiteException ex) {
             throw ex;
+        }    
+        
+        if (room == null){
+        	throw new SiteException("Room does not exist!");
         }
 
         return room.sensors.get(keySensor);
@@ -125,13 +138,17 @@ public class MySiteServiceImpl implements ISiteService {
     }  
 
     @Override
-    public boolean setSensorTemperature(String roomKey, String sensorKey, Temperature temp) {
+    public boolean setSensorTemperature(String roomKey, String sensorKey, Temperature temp) throws SiteException{
         Sensor sensor = null;
 
         try {
             sensor = getSensor(roomKey, sensorKey);
         } catch (SiteException ex) {
             return false;
+        }
+        
+        if (sensor == null) {
+        	throw new SiteException("Sensor does not exist!");
         }
 
         sensor.setTemperature(temp);
@@ -178,5 +195,38 @@ public class MySiteServiceImpl implements ISiteService {
     	
     	return true;
     }
+    
+    public boolean setRoomKey (String oldKey, String newKey)
+    {
+    	TreeMap<String, Room> rooms = getRooms();
+    	
+    	Room room = rooms.remove(oldKey);
+    	
+    	rooms.put(newKey, room);
+    	
+    	return true;
+    }
+    
+    public boolean setSensorKey (String oldKey, String newKey)
+    {    	
+    	//TODO    	    	 	    	    	
+    	TreeMap<String, Room> rooms = getRooms();
+    	
+    	Set<String> roomKeys = rooms.keySet();
+    	
+    	for (String roomKey : roomKeys){
+    		
+    		TreeMap<String, Sensor> sensors = getSensors(roomKey);
+    		
+    		if(sensors.containsKey(oldKey)){
+    			
+    	    	Sensor sensor = sensors.remove(oldKey);
+    	    	
+    	    	sensors.put(newKey, sensor);    			
+    		}    		
+    	}
+    	
+    	return true;
+    }    
 
 }
