@@ -40,7 +40,7 @@ public class AdminServlet extends HttpServlet{
     private ISiteService m_siteService = null;
     private Meteostation m_meteo = null;
 
-    int i = 0;
+    int i = 100;
     
    // int screen = 0; //0 - admin, 1 - data structure
   //  boolean edit = false;
@@ -62,7 +62,7 @@ public class AdminServlet extends HttpServlet{
 
         i++;
 
-        PrintWriter out = resp.getWriter();
+        PrintWriter out = resp.getWriter();    
         
         html_page(out);
         
@@ -75,12 +75,7 @@ public class AdminServlet extends HttpServlet{
     	
     	sreenDet = AdminScreensDetail.NONE;
     	
-//    	String strSelectedState[] = request.getParameterValues("fruit");
     	System.out.println("...doPost");
-    	
-    //	for(int i=0;i<strSelectedState.length;i++){
-    //		System.out.println("Selected state values are:- " + strSelectedState[i]);
-   // 	}
     	       
         if (request.getParameter("Administration") != null) {
         	System.out.println("...Administration");
@@ -96,6 +91,10 @@ public class AdminServlet extends HttpServlet{
         	        	
         	screen = AdminScreens.METEO_SETUP;              	          	
           	
+        } else if (request.getParameter(AdminScreensButtons.B_CLOCK.toString()) != null) {
+        	
+        	screen = AdminScreens.CLOCK_SETUP;              	          	
+	
         } else if (request.getParameter(AdminScreensButtons.SITE.toString()) != null) {
         	System.out.println("...Edit site");
         	
@@ -723,7 +722,13 @@ protected void html_page2(PrintWriter out){
     	
         out.print("<form name='admin' method='post' action=''>" +
         "<input type='submit' class='buttonx' name='" + AdminScreensButtons.B_METEO.toString() + "' value='Meteo Setup'>" +
-        "</form>\n");            
+        "</form>\n");       
+        
+        out.print("<br>");
+    	
+        out.print("<form name='admin' method='post' action=''>" +
+        "<input type='submit' class='buttonx' name='" + AdminScreensButtons.B_CLOCK.toString() + "' value='Clock Setup'>" +
+        "</form>\n");           
      
      /*   
         out.print("<br>");
@@ -763,7 +768,13 @@ protected void html_page2(PrintWriter out){
     		
     		html_meteo(out);
     		
-    	break;    	
+    	break;    
+    	
+    	case CLOCK_SETUP:
+    		
+    		html_clock(out);
+    		
+    	break;      	
     		
     	}
     	
@@ -1024,6 +1035,31 @@ protected void html_page2(PrintWriter out){
     	
     	out.println("<br>");
     	out.println("<br>");    	
+    }
+    
+    protected void html_clock (PrintWriter out){
+    	/*
+    	out.println("<canvas id='myCanvas' width='200' height='100' style='border:1px solid #d3d3d3;'>");
+    	out.println("Your browser does not support the HTML5 canvas tag.</canvas>");
+
+		out.println("<script>");
+		out.println("var c = document.getElementById('myCanvas');");
+		out.println("var ctx = c.getContext('2d');");
+		out.println("ctx.beginPath();");
+						
+		i = i + 5;
+		
+		out.println("ctx.arc(" + i + ", 50, 40, 0, 2*Math.PI);");
+		out.println("ctx.stroke();");
+		out.println("</script>");
+		
+		if (i > 150) i = 100;
+		*/
+    	
+    	URL  url = this.getClass().getResource("/web/canvas1.txt");
+    	
+    	fileToPage(out, url.getPath());
+    	
     }
     
 }

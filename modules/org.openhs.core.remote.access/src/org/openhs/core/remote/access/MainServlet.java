@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openhs.core.meteostation.Meteostation;
+import org.openhs.core.clock.OhsClock;
 import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -38,6 +39,7 @@ public class MainServlet {
     private HttpService m_httpService = null;
     private ISiteService m_siteService = null;
     private Meteostation m_meteo = null;
+    private OhsClock m_clock = null;
 
     private static final long serialVersionUID = 1L;
 
@@ -107,6 +109,18 @@ public class MainServlet {
             m_meteo = null;
         }
     }
+    
+    public void setService(OhsClock clock) {
+        msg.println("org.openhs.core.remote.access: Set OhsClock");
+        m_clock = clock;
+    }
+
+    public void unsetService(OhsClock clock) {
+    	msg.println("org.openhs.core.remote.access: UnSet OhsClock");
+        if (m_clock == clock) {
+        	m_clock = null;
+        }
+    }    
 
     public void setService(HttpService ser) {
     	msg.println("org.openhs.core.remote.access: Set HttpService");

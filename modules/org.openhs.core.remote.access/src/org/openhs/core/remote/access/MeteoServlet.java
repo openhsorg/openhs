@@ -13,12 +13,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -56,7 +58,7 @@ public class MeteoServlet extends HttpServlet {
 
         // BufferedImage image=ImageIO.read(new File(path));
         BufferedImage image = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB); // 500
-                                                                                                                // wide,
+                                                                                                              // wide,
                                                                                                                 // 500
                                                                                                                 // tall
         // BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB); // 500 wide, 500 tall
@@ -165,19 +167,22 @@ public class MeteoServlet extends HttpServlet {
             rect = new Rectangle(150, 300, 50, 50);
             graphics2D.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);
         }
+        
 
         Toolkit.getDefaultToolkit().sync();
 
         graphics2D.dispose();
+        
+        response.setContentType("text/html");     
 
         response.setContentType("image/jpg");
         response.setHeader("Refresh", "1");
         
         OutputStream outputStream = response.getOutputStream();
+        
         ImageIO.write(image, "jpg", outputStream);
         outputStream.close();
-                       
-
+                               
     }    
 
 }
