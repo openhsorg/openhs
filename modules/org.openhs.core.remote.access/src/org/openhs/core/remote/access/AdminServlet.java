@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,18 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class AdminServlet extends HttpServlet{
     private ISiteService m_siteService = null;
@@ -199,15 +212,7 @@ public class AdminServlet extends HttpServlet{
     
     protected void ccs_scripts( PrintWriter out){
     	
-    	/*
-    	out.print("<script>\n");
-    	out.print("$(function () {\n");
-    			out.print("$('#selectnumber').change(function(){\n");
-    					out.print("alert('.val() = ' + $('#selectnumber').val() + '  AND  html() = ' + $('#selectnumber option:selected').html() + '  AND .text() = ' + $('#selectnumber option:selected').text());\n");
-    							out.print("})\n");
-    									out.print("});\n");
-    											out.print("</script>\n");
-    	*/
+
     }
     
     protected void ccs_styles( PrintWriter out){
@@ -599,6 +604,8 @@ protected void html_page2(PrintWriter out){
 	
 	ccs_styles2(out);
 	
+//	out.println("<link href='/web/styles.css' rel='stylesheet' type='text/css'>");
+	
 	out.print("</head>\n");
 	out.print("<body>\n");
 	
@@ -625,31 +632,6 @@ protected void html_page2(PrintWriter out){
 	out.println("<div class='contentBlock' id='contentBlock5'>");
 	out.println("<footer>Copyright © openhs.org</footer>");
 	out.println("</div>");			
-	
-	/*
-
-	out.println("<div class='container'>");
-
-	out.println("<header>");
-	out.println("<h1>Admin page</h1>");
-	out.println("</header>");
-	
-	out.println("<nav>");
-	
-	html_left(out);
-	
-	out.println("</nav>");   	
-	    	
-	out.println("<article>");
-	  
-	html_center(out);
-	            	  
-	out.println("</article>");    	
-	
-	out.println("<footer>Copyright © openhs.org</footer>");
-
-	out.println("</div>");
-	*/
 
 	out.println("</body>");
 	out.println("</html>");
@@ -661,12 +643,16 @@ protected void html_page2(PrintWriter out){
     	    	    	
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
-    	out.println("<head>");	
+    	out.println("<head>");
     	
-    	ccs_scripts(out);
+    	out.println("<style>");
+        	
+    	URL  url = this.getClass().getResource("/web/styles.css");
     	
-    	ccs_styles(out);
+    	fileToPage(out, url.getPath());
     	
+    	out.println("</style>");
+   
     	out.print("</head>\n");
     	out.print("<body>\n");
 
@@ -695,6 +681,28 @@ protected void html_page2(PrintWriter out){
     	out.println("</body>");
     	out.println("</html>");
     	
+    }
+    
+    protected void fileToPage(PrintWriter out, String filepath){
+    	
+		ServletContext context = getServletContext();
+		
+		try {
+			InputStream is = context.getResourceAsStream(filepath);
+				if (is != null) {
+					InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader reader = new BufferedReader(isr);
+					String text = "";
+
+					
+					while ((text = reader.readLine()) != null) {
+						out.println(text);
+					}
+					
+					//out.println("</style>");
+				}					
+			} catch (IOException e) {
+		}
     }
     
     protected void html_left(PrintWriter out){    	 

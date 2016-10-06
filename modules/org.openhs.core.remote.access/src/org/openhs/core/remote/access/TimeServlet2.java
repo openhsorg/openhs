@@ -101,31 +101,6 @@ public class TimeServlet2 extends HttpServlet{
 	        ImageIO.write(image, "jpg", outputStream);
 	
 	        outputStream.close();
-	        
-	        
-	      //  resp.setHeader("Refresh", "5");
-	        /*
-	        PrintWriter out = resp.getWriter();
-	
-	
-	            out.println("<!DOCTYPE html>");
-	            out.println("<html lang='en'>");
-	            out.println("<head>");
-	            out.println("<meta charset='utf-8'/>");
-	            
-	            out.println("<link href='css/some-stylesheet.css' rel='stylesheet'/>");
-	            out.println("<body>");
-	            
-	            out.println("<font color=green>");
-	            out.println("<h1>Admin page...\n</h1>");
-	            out.println("<font color=green>");
-	            out.println("<p style='font-family:Courier; color:#0020C2; font-size: 20px;'>");
-	            out.println("Date: XXXXXXXXXXXXXXXX" );
-	            out.println("</p>");
-	
-	            out.println("<font color=black>");
-	            out.println("<br/>---------- OpenHS Core Data ---------");	  
-	            */
 	
 	    }    	    
 	
