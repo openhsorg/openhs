@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletConfig;
 
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.clock.OhsClock;
@@ -59,6 +60,7 @@ public class MainServlet {
         timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
+        
 
         try {
             m_httpService.registerServlet("/openhs", adminServlet, null, null);
@@ -69,6 +71,11 @@ public class MainServlet {
             m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
             m_httpService.registerServlet("/time", timeServlet2, null, null);
             m_httpService.registerServlet("/test", testServlet, null, null);
+            
+            m_httpService.registerResources("/images", "/images", null);
+            m_httpService.registerResources("/web", "/web", null);
+            
+                        
         } catch (ServletException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -88,6 +95,7 @@ public class MainServlet {
         m_httpService.unregister("/meteo");
         m_httpService.unregister("/time");
         m_httpService.unregister("/test");
+        m_httpService.unregister("/web");
     }
 
     public void setService(ISiteService ser) {
