@@ -37,6 +37,9 @@ public class MainServlet {
     private TimeServlet timeServlet = null;
     private TimeServlet2 timeServlet2 = null;
     private TestServlet testServlet = null;
+    private WelcomeServlet welcomeServlet = null;
+    private StatisticsServlet statisticsServlet = null;
+    private ClockServlet clockServlet = null;
 
     private HttpService m_httpService = null;
     private ISiteService m_siteService = null;
@@ -60,6 +63,9 @@ public class MainServlet {
         timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
+        welcomeServlet = new WelcomeServlet();
+        statisticsServlet = new StatisticsServlet();
+        clockServlet = new ClockServlet();
         
 
         try {
@@ -71,6 +77,9 @@ public class MainServlet {
             m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
             m_httpService.registerServlet("/time", timeServlet2, null, null);
             m_httpService.registerServlet("/test", testServlet, null, null);
+            m_httpService.registerServlet("/", welcomeServlet, null, null);
+            m_httpService.registerServlet("/stats", statisticsServlet, null, null);
+            m_httpService.registerServlet("/clock", clockServlet, null, null);
             
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
@@ -96,6 +105,9 @@ public class MainServlet {
         m_httpService.unregister("/time");
         m_httpService.unregister("/test");
         m_httpService.unregister("/web");
+        m_httpService.unregister("/");
+        m_httpService.unregister("/stats");
+        m_httpService.unregister("/clock");
     }
 
     public void setService(ISiteService ser) {
