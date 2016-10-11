@@ -36,9 +36,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openhs.core.cfg.OpenhsProps;
+
+
 public class AdminServlet extends HttpServlet{
     private ISiteService m_siteService = null;
     private Meteostation m_meteo = null;
+    private OpenhsProps m_openhsProps = null;
 
     int i = 100;
     
@@ -51,7 +55,8 @@ public class AdminServlet extends HttpServlet{
     
     String dataItemID = "";
 
-    AdminServlet(ISiteService site, Meteostation meteo) {
+    AdminServlet(OpenhsProps props, ISiteService site, Meteostation meteo) {
+    	m_openhsProps = props;
     	m_siteService = site;
     	m_meteo = meteo;
     }
@@ -75,7 +80,9 @@ public class AdminServlet extends HttpServlet{
     	
     	sreenDet = AdminScreensDetail.NONE;
     	
-    	System.out.println("...doPost");
+    	//String[] c = request.getParameterValues("ccc");
+    	
+    	System.out.println("...doPost...");
     	       
         if (request.getParameter("Administration") != null) {
         	System.out.println("...Administration");
@@ -94,6 +101,20 @@ public class AdminServlet extends HttpServlet{
         } else if (request.getParameter(AdminScreensButtons.B_CLOCK.toString()) != null) {
         	
         	screen = AdminScreens.CLOCK_SETUP;              	          	
+	
+        } else if (request.getParameter(AdminScreensButtons.BCH_SERIAL.toString()) != null) {
+        	
+        	//screen = AdminScreens.CLOCK_SETUP;  
+        	//System.out.println("---->Checkbox!!!=");
+        	
+        	String[] c = request.getParameterValues("interfaces");
+        	
+        	if (c != null){
+        	
+	        	for (String s : c){
+	        		System.out.println("---->Checkbox!!!=" + s);	
+	        	}
+        	}
 	
         } else if (request.getParameter(AdminScreensButtons.SITE.toString()) != null) {
         	System.out.println("...Edit site");
@@ -322,11 +343,34 @@ public class AdminServlet extends HttpServlet{
     	switch (screen) {
     	
     	case ADMIN:
-    		
+    		    		
         	out.println("<h2>General Administration</h2>");
 
         	out.println("<info2>Time: </info2>" + "<info>" + new Date().toString() + "</info>");
-        	out.println("<br><info2>Name: </info2>" + "<info>" + "Not specified..." + "</info>");    
+        	
+        	//Interfaces
+        	out.println("<br><h3>Interfaces</h3>");        	
+        	        	
+			out.println("<form method='post' action='openhs'>");
+			
+			out.println("<p><input type='checkbox' name='interfaces' value='" + AdminScreensButtons.CH_SERIALCOMM.toString() + "' checked />");
+			out.println("Serial communication</p>");
+			//out.println("<p><input type='checkbox' name='interfaces' value='Playing Game' />");
+			//out.println("MQTT communication</p>");
+			out.println("<p><input type='submit' name='" + AdminScreensButtons.BCH_SERIAL.toString() + "' value='Update'></input></p>");
+			out.println("</form>");       	
+        	
+        	// Draw list of running bundles
+        	out.println("<br><h3>List of modules</h3>");
+        	        	
+        	ArrayList<String> bundleList = m_openhsProps.getBundlesList();
+        	
+        	out.print("<info2>Number of running modules:</info2>");
+        	out.println("<info2>" + bundleList.size() + "</info2><br>");
+        	
+        	for (String bundle:bundleList){
+        		out.println("<br><info3>" + bundle + "</info3>");
+        	}
         	
         break;
     		

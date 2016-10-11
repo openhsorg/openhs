@@ -22,6 +22,7 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.cfg.OpenhsProps;
 
 public class MainServlet {
 	
@@ -45,6 +46,7 @@ public class MainServlet {
     private ISiteService m_siteService = null;
     private Meteostation m_meteo = null;
     private OhsClock m_clock = null;
+    private OpenhsProps m_openhsProps = null;
 
     private static final long serialVersionUID = 1L;
 
@@ -54,7 +56,7 @@ public class MainServlet {
         msg.println("org.openhs.core.remote.access: activate");
 
         mainServlet = new MainServlet();
-        adminServlet = new AdminServlet(m_siteService, m_meteo);
+        adminServlet = new AdminServlet(m_openhsProps, m_siteService, m_meteo);
         imageServlet = new ImageServlet();
         imageServlet2 = new ImageServlet2();
         imageServlet3 = new ImageServlet3();
@@ -157,6 +159,18 @@ public class MainServlet {
             m_httpService = null;
         }
     }
+    
+    public void setService(OpenhsProps props) {
+    	msg.println("org.openhs.core.remote.access: Set HttpService");
+    	m_openhsProps = props;
+    }
+
+    public void unsetService(OpenhsProps props) {
+    	msg.println("org.openhs.core.remote.access: UnSet HttpService");
+        if (m_openhsProps == props) {
+        	m_openhsProps = null;
+        }
+    }    
 
 
 }

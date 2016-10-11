@@ -16,6 +16,12 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import java.io.File;
+import java.util.ArrayList;
+
 public class OpenhsProps {
 	
 	//initialize logger
@@ -69,6 +75,8 @@ public class OpenhsProps {
     		// get the property values for communication
     		String commComponent = m_properties.getProperty(OHS_COMM_COMPONENT);
     		String commConfigFile = m_properties.getProperty(OHS_COMM_CONFIG_FILE);
+    		
+//    		System.out.println("\n\n------> Starting...." + commComponent);
     	
     		Configuration config = null;
 			config = m_ca.getConfiguration(commComponent);
@@ -83,6 +91,40 @@ public class OpenhsProps {
 		
 		    //push the configuration dictionary to the comm component
 		    config.update(dict);
+		    
+		    
+		    
+		    String comp = "org.openhs.comm.rxtx";
+		    
+    		Configuration config2 = null;
+			config2 = m_ca.getConfiguration(comp);
+			
+			Dictionary<String, Object> dict2 = config2.getProperties();
+		    if (dict2 == null) {
+		       dict2 = new Hashtable<String, Object>();
+		    }
+		    
+		    // configure the Dictionary
+		    dict2.put(OHS_COMM_CONFIG_FILE, commConfigFile);
+		
+		    //push the configuration dictionary to the comm component
+		    config2.update(dict2);			
+			
+		    /*
+		    try {
+		    	
+		    System.out.println("\n\n------> Starting....rxtx");
+		    	
+		    BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+		 //   Bundle b = bundlecontext.installBundle("file:plugins" + File.separator + "org.openhs.comm.rxtx");
+		    Bundle b = bundlecontext.installBundle("file:C:\\Users\\E454551\\openhs\\plugins\\org.openhs.comm.rxtx_1.0.0.201610061057.jar");
+		    b.start();
+		    
+		    } catch(Exception ex){
+		    	
+		    	System.out.println("\n>>>:" + ex.toString());
+		    }
+		    */
 
     	} catch (IOException ex) {
     		ex.printStackTrace();
@@ -118,4 +160,60 @@ public class OpenhsProps {
 			m_ca = null;
     }
 
+    void startBundle (String jarFile){
+    	try {
+	    	
+		    System.out.println("\n\n------> Starting....:" + jarFile);
+		    	
+		    BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+		 //   Bundle b = bundlecontext.installBundle("file:plugins" + File.separator + "org.openhs.comm.rxtx");
+		   // Bundle b = bundlecontext.installBundle("file:C:\\Users\\E454551\\openhs\\plugins\\org.openhs.comm.rxtx_1.0.0.201610061057.jar");
+
+	        String fileSep = System.getProperty( "file.separator"); 
+	        
+		    Bundle b = bundlecontext.installBundle("file:" + m_openhsDir + fileSep + "plugins" + fileSep + jarFile);
+		    b.start();
+		    
+		    } catch(Exception ex){
+		    	
+		    	System.out.println("\n>>>:" + ex.toString());
+		    }    	
+    }
+    
+    public ArrayList<String> getBundlesList (){
+    	   	
+    	ArrayList<String> list = new ArrayList<String>();
+    	
+    	try{
+    	
+    		list = new ArrayList<String>();
+    	
+    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+    	    	
+    		Bundle bundles [] = bundlecontext.getBundles();
+    	
+    		for (int i=0; i<bundles.length; i++){
+    		
+    			String name = bundles[i].getSymbolicName();
+    			String state = "";
+    		
+    			switch(bundles[i].getState())
+    			{
+    				case Bundle.ACTIVE:    				
+    					state = "ACTIVE";
+    					break;
+    			}
+    		
+    			list.add(name + " : " + state);	    		
+    			}
+    	
+    		return list;
+    	
+	    } catch(Exception ex){
+	    	
+	    	System.out.println("\n>>>:" + ex.toString());
+	    	
+	    	return list;
+	    } 
+    }
 }

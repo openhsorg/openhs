@@ -2,4 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhs.core.cfg">
    <implementation class="org.openhs.core.cfg.OpenhsProps"/>
    <reference bind="setService" cardinality="1..1" interface="org.osgi.service.cm.ConfigurationAdmin" name="ConfigurationAdmin" policy="dynamic" unbind="unsetService"/>
+   <service>
+      <provide interface="org.openhs.core.cfg.OpenhsProps"/>
+   </service>
 </scr:component>
