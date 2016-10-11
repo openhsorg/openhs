@@ -23,6 +23,7 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
+import org.osgi.framework.Bundle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,14 +108,37 @@ public class AdminServlet extends HttpServlet{
         	//screen = AdminScreens.CLOCK_SETUP;  
         	//System.out.println("---->Checkbox!!!=");
         	
-        	String[] c = request.getParameterValues("interfaces");
+        	String[] c = request.getParameterValues("interfaces");       
+        	boolean on [] = {false, false, false};
+
         	
         	if (c != null){
+        		
+        		int n=0;
         	
 	        	for (String s : c){
-	        		System.out.println("---->Checkbox!!!=" + s);	
+	        		System.out.println("---->Checkbox!!!=" + s);
+	        		
+	        		n++;
+	        		
+	        		if(s.equals("sercom")){
+	        			//m_openhsProps.startBundleState ("org.openhs.comm.rxtx");
+	        			on[n]=true;
+	        		}
 	        	}
         	}
+        	
+        	for (int i=0; i<on.length; i++)
+        	{
+        		if (i==1){
+        			if(on[i]){
+        				m_openhsProps.startBundleState ("org.openhs.comm.rxtx");
+        			} else{
+        				m_openhsProps.stopBundleState ("org.openhs.comm.rxtx");
+        			}
+        		}
+        	}
+        	
 	
         } else if (request.getParameter(AdminScreensButtons.SITE.toString()) != null) {
         	System.out.println("...Edit site");
@@ -353,8 +377,16 @@ public class AdminServlet extends HttpServlet{
         	        	
 			out.println("<form method='post' action='openhs'>");
 			
-			out.println("<p><input type='checkbox' name='interfaces' value='" + AdminScreensButtons.CH_SERIALCOMM.toString() + "' checked />");
-			out.println("Serial communication</p>");
+			if (m_openhsProps.getBundleState ("org.openhs.comm.rxtx") == Bundle.ACTIVE){			
+				out.println("<p><input type='checkbox' name='interfaces' value='sercom' checked />");
+				out.println("Serial communication</p>");
+			} else {
+				out.println("<p><input type='checkbox' name='interfaces' value='sercom' />");
+				out.println("Serial communication</p>");
+			}			
+			
+			//out.println("<p><input type='checkbox' name='interfaces' value='" + AdminScreensButtons.CH_SERIALCOMM.toString() + "' checked />");
+			//out.println("Serial communication</p>");
 			//out.println("<p><input type='checkbox' name='interfaces' value='Playing Game' />");
 			//out.println("MQTT communication</p>");
 			out.println("<p><input type='submit' name='" + AdminScreensButtons.BCH_SERIAL.toString() + "' value='Update'></input></p>");
@@ -366,10 +398,14 @@ public class AdminServlet extends HttpServlet{
         	ArrayList<String> bundleList = m_openhsProps.getBundlesList();
         	
         	out.print("<info2>Number of running modules:</info2>");
-        	out.println("<info2>" + bundleList.size() + "</info2><br>");
+        	out.print("<br>");
         	
-        	for (String bundle:bundleList){
-        		out.println("<br><info3>" + bundle + "</info3>");
+        	for(String item:bundleList){
+        		if(item.contains("ACTIVE")){
+        			out.println("<bundleActive>" + item + "</bundleActive><br>");
+        		}else{
+        			out.println("<bundleIdle>" + item + "</bundleIdle><br>");	
+        		}        		
         	}
         	
         break;

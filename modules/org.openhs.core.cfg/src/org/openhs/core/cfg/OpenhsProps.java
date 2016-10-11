@@ -202,6 +202,14 @@ public class OpenhsProps {
     				case Bundle.ACTIVE:    				
     					state = "ACTIVE";
     					break;
+    					
+    				case Bundle.INSTALLED:    				
+    					state = "INSTALLED";
+    					break;    	
+    					
+    				case Bundle.RESOLVED:    				
+    					state = "RESOLVED";
+    					break;      					
     			}
     		
     			list.add(name + " : " + state);	    		
@@ -216,4 +224,77 @@ public class OpenhsProps {
 	    	return list;
 	    } 
     }
+    
+    public int getBundleState (String symbolicName){
+    	int ret = 0;
+    	try{
+    	
+    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+    	    	
+    		Bundle bundles [] = bundlecontext.getBundles();
+    	
+    		for (int i=0; i<bundles.length; i++){
+    		
+    			String name = bundles[i].getSymbolicName();
+    			
+    			if (name.equals(symbolicName)){
+    				return bundles[i].getState();
+    			}    		
+    		}
+    		    			    	
+	    } catch(Exception ex){
+	    	
+	    	System.out.println("\n>>>:" + ex.toString());
+	    	
+	    	return ret;
+	    }     	
+    	
+    	return ret;
+    }
+    
+    public void startBundleState (String symbolicName){
+
+    	try{
+    	
+    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+    	    	
+    		Bundle bundles [] = bundlecontext.getBundles();
+    	
+    		for (int i=0; i<bundles.length; i++){    		
+    			String name = bundles[i].getSymbolicName();
+    			
+    			if (name.equals(symbolicName)){
+    				if (bundles[i].getState() != Bundle.ACTIVE){
+    					bundles[i].start();   					
+    				}    				
+    			}    		
+    		}
+    		    			    	
+	    } catch(Exception ex){	    	
+	    	System.out.println("\n>>>:" + ex.toString());
+	    }     	
+    }    
+    
+    public void stopBundleState (String symbolicName){
+
+    	try{
+    	
+    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+    	    	
+    		Bundle bundles [] = bundlecontext.getBundles();
+    	
+    		for (int i=0; i<bundles.length; i++){    		
+    			String name = bundles[i].getSymbolicName();
+    			
+    			if (name.equals(symbolicName)){
+    				if (bundles[i].getState() == Bundle.ACTIVE){
+    					bundles[i].stop();   					
+    				}    				
+    			}    		
+    		}
+    		    			    	
+	    } catch(Exception ex){	    	
+	    	System.out.println("\n>>>:" + ex.toString());
+	    }     	
+    }     
 }
