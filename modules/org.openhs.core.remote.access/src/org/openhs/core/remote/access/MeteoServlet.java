@@ -142,9 +142,9 @@ public class MeteoServlet extends HttpServlet {
      //   File imageFile = new File(location.getFile() + "images/indicatorFrost.png");
         //BufferedImage imgFrost = ImageIO.read(imageFile);
         
-        BufferedImage imgFrost = ImageIO.read(this.getClass().getResource("/images/indicatorFrost.png"));
-        BufferedImage imgDay = ImageIO.read(this.getClass().getResource("/images/indicatorDay.png"));
-        BufferedImage imgIntruder = ImageIO.read(this.getClass().getResource("/images/indicatorIntruder.png"));
+        BufferedImage imgFrost = ImageIO.read(this.getClass().getResource("/web/meteo/indicatorFrost.png"));
+        BufferedImage imgDay = ImageIO.read(this.getClass().getResource("/web/meteo/indicatorDay.png"));
+        BufferedImage imgIntruder = ImageIO.read(this.getClass().getResource("/web/meteo/indicatorIntruder.png"));
         
         /*
         imageFile = new File(location.getFile() + "images/indicatorDay.png");
