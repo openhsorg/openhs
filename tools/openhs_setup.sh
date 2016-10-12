@@ -9,6 +9,8 @@ OPENHS="openhs_20160916"
 
 echo "********** OpenHS setupsetup of computer unit (Raspberry Pi )... **********"
 
+cd $HOME
+
 wget http://openhs.org/wordpress/wp-content/uploads/$OPENHS.zip
 
 if [ -d "openhs" ]; then
