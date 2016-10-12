@@ -109,35 +109,66 @@ public class AdminServlet extends HttpServlet{
         	//System.out.println("---->Checkbox!!!=");
         	
         	String[] c = request.getParameterValues("interfaces");       
-        	boolean on [] = {false, false, false};
-
+        	boolean on [] = {false, false, false, false};
         	
         	if (c != null){
         		
-        		int n=0;
+        	//	int n=0;
         	
 	        	for (String s : c){
-	        		System.out.println("---->Checkbox!!!=" + s);
-	        		
-	        		n++;
+	        		System.out.println("---->Checkbox!!!=" + s);	        			        	
 	        		
 	        		if(s.equals("sercom")){
-	        			//m_openhsProps.startBundleState ("org.openhs.comm.rxtx");
-	        			on[n]=true;
-	        		}
+	        			on[1]=true;
+	        		} 
+	        		
+	        		if(s.equals("mqttcom")){
+	        			on[2]=true;
+	        		} 
+	        		
+	        		//n++;
 	        	}
         	}
         	
+			if(on[1]==true){
+				m_openhsProps.m_bundles.startSerialComm();;
+			} else{
+				m_openhsProps.m_bundles.stopSerialComm();
+			}
+			
+			if(on[2]==true){
+				m_openhsProps.m_bundles.startMqttComm();;
+			} else{
+				m_openhsProps.m_bundles.stopMqttComm();
+			}
+			/*
+			try{
+				Thread.sleep(1000);
+			}catch(Exception ex){
+				
+			}
+			*/
+			
+        	/*
         	for (int i=0; i<on.length; i++)
         	{
-        		if (i==1){
+        		if (i==0){
         			if(on[i]){
-        				m_openhsProps.startBundleState ("org.openhs.comm.rxtx");
+        				m_openhsProps.m_bundles.startSerialComm();;
         			} else{
-        				m_openhsProps.stopBundleState ("org.openhs.comm.rxtx");
+        				m_openhsProps.m_bundles.stopSerialComm();
         			}
         		}
+        		
+        		if (i==1){
+        			if(on[i]){
+        				m_openhsProps.m_bundles.startMqttComm();;
+        			} else{
+        				m_openhsProps.m_bundles.stopMqttComm();
+        			}
+        		}        		
         	}
+        	*/
         	
 	
         } else if (request.getParameter(AdminScreensButtons.SITE.toString()) != null) {
@@ -377,13 +408,21 @@ public class AdminServlet extends HttpServlet{
         	        	
 			out.println("<form method='post' action='openhs'>");
 			
-			if (m_openhsProps.getBundleState ("org.openhs.comm.rxtx") == Bundle.ACTIVE){			
+			if (m_openhsProps.m_bundles.getSerialCommState() == Bundle.ACTIVE){			
 				out.println("<p><input type='checkbox' name='interfaces' value='sercom' checked />");
 				out.println("Serial communication</p>");
 			} else {
 				out.println("<p><input type='checkbox' name='interfaces' value='sercom' />");
 				out.println("Serial communication</p>");
-			}			
+			}		
+			
+			if (m_openhsProps.m_bundles.getMqttCommState() == Bundle.ACTIVE){			
+				out.println("<p><input type='checkbox' name='interfaces' value='mqttcom' checked />");
+				out.println("Mqtt communication</p>");
+			} else {
+				out.println("<p><input type='checkbox' name='interfaces' value='mqttcom' />");
+				out.println("Mqtt communication</p>");
+			}				
 			
 			//out.println("<p><input type='checkbox' name='interfaces' value='" + AdminScreensButtons.CH_SERIALCOMM.toString() + "' checked />");
 			//out.println("Serial communication</p>");
@@ -395,7 +434,7 @@ public class AdminServlet extends HttpServlet{
         	// Draw list of running bundles
         	out.println("<br><h3>List of modules</h3>");
         	        	
-        	ArrayList<String> bundleList = m_openhsProps.getBundlesList();
+        	ArrayList<String> bundleList = m_openhsProps.m_bundles.getBundlesList();
         	
         	out.print("<info2>Number of running modules:</info2>");
         	out.print("<br>");

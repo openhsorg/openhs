@@ -36,6 +36,8 @@ public class OpenhsProps {
 	private final String OHS_PROPS = "openhs.properties";
 	private final String OHS_COMM_COMPONENT = "commComponent";
 	private final String OHS_COMM_CONFIG_FILE = "commConfigFile";
+	
+	public OpenhsBundles m_bundles = new OpenhsBundles();
 
     public OpenhsProps() {
     	String currentUsersHomeDir = System.getProperty("user.home");
@@ -90,9 +92,7 @@ public class OpenhsProps {
 		    dict.put(OHS_COMM_CONFIG_FILE, commConfigFile);
 		
 		    //push the configuration dictionary to the comm component
-		    config.update(dict);
-		    
-		    
+		    config.update(dict);		    		    
 		    
 		    String comp = "org.openhs.comm.rxtx";
 		    
@@ -160,141 +160,5 @@ public class OpenhsProps {
 			m_ca = null;
     }
 
-    void startBundle (String jarFile){
-    	try {
-	    	
-		    System.out.println("\n\n------> Starting....:" + jarFile);
-		    	
-		    BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-		 //   Bundle b = bundlecontext.installBundle("file:plugins" + File.separator + "org.openhs.comm.rxtx");
-		   // Bundle b = bundlecontext.installBundle("file:C:\\Users\\E454551\\openhs\\plugins\\org.openhs.comm.rxtx_1.0.0.201610061057.jar");
-
-	        String fileSep = System.getProperty( "file.separator"); 
-	        
-		    Bundle b = bundlecontext.installBundle("file:" + m_openhsDir + fileSep + "plugins" + fileSep + jarFile);
-		    b.start();
-		    
-		    } catch(Exception ex){
-		    	
-		    	System.out.println("\n>>>:" + ex.toString());
-		    }    	
-    }
-    
-    public ArrayList<String> getBundlesList (){
-    	   	
-    	ArrayList<String> list = new ArrayList<String>();
-    	
-    	try{
-    	
-    		list = new ArrayList<String>();
-    	
-    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-    	    	
-    		Bundle bundles [] = bundlecontext.getBundles();
-    	
-    		for (int i=0; i<bundles.length; i++){
-    		
-    			String name = bundles[i].getSymbolicName();
-    			String state = "";
-    		
-    			switch(bundles[i].getState())
-    			{
-    				case Bundle.ACTIVE:    				
-    					state = "ACTIVE";
-    					break;
-    					
-    				case Bundle.INSTALLED:    				
-    					state = "INSTALLED";
-    					break;    	
-    					
-    				case Bundle.RESOLVED:    				
-    					state = "RESOLVED";
-    					break;      					
-    			}
-    		
-    			list.add(name + " : " + state);	    		
-    			}
-    	
-    		return list;
-    	
-	    } catch(Exception ex){
-	    	
-	    	System.out.println("\n>>>:" + ex.toString());
-	    	
-	    	return list;
-	    } 
-    }
-    
-    public int getBundleState (String symbolicName){
-    	int ret = 0;
-    	try{
-    	
-    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-    	    	
-    		Bundle bundles [] = bundlecontext.getBundles();
-    	
-    		for (int i=0; i<bundles.length; i++){
-    		
-    			String name = bundles[i].getSymbolicName();
-    			
-    			if (name.equals(symbolicName)){
-    				return bundles[i].getState();
-    			}    		
-    		}
-    		    			    	
-	    } catch(Exception ex){
-	    	
-	    	System.out.println("\n>>>:" + ex.toString());
-	    	
-	    	return ret;
-	    }     	
-    	
-    	return ret;
-    }
-    
-    public void startBundleState (String symbolicName){
-
-    	try{
-    	
-    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-    	    	
-    		Bundle bundles [] = bundlecontext.getBundles();
-    	
-    		for (int i=0; i<bundles.length; i++){    		
-    			String name = bundles[i].getSymbolicName();
-    			
-    			if (name.equals(symbolicName)){
-    				if (bundles[i].getState() != Bundle.ACTIVE){
-    					bundles[i].start();   					
-    				}    				
-    			}    		
-    		}
-    		    			    	
-	    } catch(Exception ex){	    	
-	    	System.out.println("\n>>>:" + ex.toString());
-	    }     	
-    }    
-    
-    public void stopBundleState (String symbolicName){
-
-    	try{
-    	
-    		BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-    	    	
-    		Bundle bundles [] = bundlecontext.getBundles();
-    	
-    		for (int i=0; i<bundles.length; i++){    		
-    			String name = bundles[i].getSymbolicName();
-    			
-    			if (name.equals(symbolicName)){
-    				if (bundles[i].getState() == Bundle.ACTIVE){
-    					bundles[i].stop();   					
-    				}    				
-    			}    		
-    		}
-    		    			    	
-	    } catch(Exception ex){	    	
-	    	System.out.println("\n>>>:" + ex.toString());
-	    }     	
-    }     
+   
 }
