@@ -5,7 +5,7 @@
 # to convert a file:
 # dos2unix myscript.sh
 
-OPENHS="openhs_20160916"
+OPENHS="openhs_20161012"
 
 echo "********** OpenHS setupsetup of computer unit (Raspberry Pi )... **********"
 
