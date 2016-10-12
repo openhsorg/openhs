@@ -11,6 +11,10 @@ echo "********** OpenHS setupsetup of computer unit (Raspberry Pi )... *********
 
 wget http://openhs.org/wordpress/wp-content/uploads/$OPENHS.zip
 
+if [ -d "openhs" ]; then
+  rm openhs -r
+fi
+
 unzip $OPENHS.zip
 
 rm $OPENHS.zip
