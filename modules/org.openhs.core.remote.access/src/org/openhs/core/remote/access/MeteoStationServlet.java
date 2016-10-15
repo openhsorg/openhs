@@ -6,20 +6,66 @@ import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.openhs.core.cfg.OpenhsProps;
+import org.openhs.core.meteostation.Meteostation;
+import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Weather;
+
 import javax.servlet.http.HttpServlet;
+import javax.servlet.RequestDispatcher;
 
 public class MeteoStationServlet extends HttpServlet {
 	
+	 private Meteostation m_meteo = null;
+	
+	int i = 0;
+	
+	MeteoStationServlet(Meteostation meteo) {
+    	m_meteo = meteo;
+    }	
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
-        resp.setHeader("Refresh", "5");    
+        resp.setHeader("Refresh", "5");
         
-		 PrintWriter out = resp.getWriter();
+        //req.setAttribute("gauge.value", "12"); 
+       // req.getRequestDispatcher("web/meteo/meteo.jsp").forward(req, resp); 
+       
+        boolean ex = true;
+        
+      //  while (ex) {
+        	
+        	i ++;
+        	
+        	String str = req.getParameter("gauge");
+        	System.out.println("\n................>:" + str);
+        	
+        //	req.setAttribute(str, "33");
+        //	getServletContext().getRequestDispatcher("web/meteo/meteo.jsp").forward(req,resp);        	
+        
+        
+        	PrintWriter out = resp.getWriter(); 
 	        
     	 print (out);
+    	 
+    	 
+    	 out.close();   
+    	 
+    	 System.out.println("\n................>");
+    	 /*
+    	 try {
+				Thread.sleep (500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		
+			}	    	 
+    	 
+        }
     	        
-         out.close();        
+             */ 
         
     }    
     
@@ -27,6 +73,26 @@ public class MeteoStationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
     }	
+    
+	private void performTask(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	IOException {
+		
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		out.println("TestServlet says hi<br/>");
+		
+		String action = request.getParameter("action");
+		if (action != null) {
+			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+			if ("include".equalsIgnoreCase(action)) {
+				rd.include(request, response);
+			} else if ("forward".equalsIgnoreCase(action)) {
+				rd.forward(request, response);
+			}
+		}
+
+}    
+    
     
   protected void print (PrintWriter out){
     	
@@ -36,20 +102,23 @@ public class MeteoStationServlet extends HttpServlet {
     	    	    	
     	out.println("<script src='web/meteo/gauge.min.js'></script>");
     	    	
-    	out.println("<script src='web/meteo/meteo.jsp'></script>");    
+    //	out.println("<script src='web/meteo/meteo.jsp'></script>");    
     
     	out.println("<title>Meteo</title>");
     	
     	out.print("</head>\n");
     	out.print("<body>\n");
     	
+    	///out.println("number:" + i);
+    	/*
     	out.println("<canvas id='cvs' width='300' height='300'>");
 
-    	out.println("</canvas>");    	
+    	out.println("</canvas>"); 
+    	*/
     	
-    	/*
+    	
 		out.println("<canvas data-type='radial-gauge'");
-		out.println("data-value='40'");
+		out.println("data-value='" + getTemperature() + "'");
 		out.println("data-width='300'");
 		out.println("data-height='300'");
 		out.println("data-units='°C'");
@@ -92,10 +161,25 @@ public class MeteoStationServlet extends HttpServlet {
 		out.println("data-color-value-box-rect='#222'");
 		out.println("data-color-value-box-rect-end='#333'");
 		out.println("></canvas>");
-    	*/
+    	
     	
     	out.println("</body>");
     	out.println("</html>");    	
     }    
+  
+  public float getTemperature(){
+	  
+	  float tmp = -5f;
+	  
+	  Weather wet = m_meteo.getCurrentWeather();
+	  
+	  Temperature temp = wet.getTemperature();
+	  
+	  tmp = (float) temp.getCelsius();
+	  
+	  System.out.println("\n.....TEMP.........>:" + tmp);
+	  	  
+	  return tmp;
+  }
 
 }

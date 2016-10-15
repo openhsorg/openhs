@@ -14,10 +14,38 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Weather;
+import org.openhs.core.weather.OpenhsWeather;
 
 public class Meteostation {
 	
 	TextOutput msg = new TextOutput ();
+
+    /*
+     * Basic data structure.
+     */
+    public ISiteService m_siteService = null;
+    
+    
+    public OpenhsWeather m_weather = null;
+
+    /*
+     * What sensors we deal with.
+     */
+    public String sensorInString = "***";
+    public String sensorOutString = "Room1/Sensor1";
+
+    /*
+     * Indicators.
+     */
+    ArrayList<Boolean> list = new ArrayList<Boolean>();
+    /*
+     * [0]: Frost outside
+     * [1]: Day/Night time
+     * [2]: Intruder outside
+     */
+    
+    
 
     public void activate() {
     	msg.println("org.openhs.core.meteostation: activate");
@@ -37,28 +65,19 @@ public class Meteostation {
         if (m_siteService == ser) {
             ser = null;
         }
+    }   
+    
+    public void setWService(OpenhsWeather ser) {
+    	msg.println("org.openhs.core.meteostation: Set IOpenhsWeather");
+    	m_weather = ser;
     }
 
-    /*
-     * Basic data structure.
-     */
-    public ISiteService m_siteService = null;
-
-    /*
-     * What sensors we deal with.
-     */
-    public String sensorInString = "***";
-    public String sensorOutString = "Room1/Sensor1";
-
-    /*
-     * Indicators.
-     */
-    ArrayList<Boolean> list = new ArrayList<Boolean>();
-    /*
-     * [0]: Frost outside
-     * [1]: Day/Night time
-     * [2]: Intruder outside
-     */
+    public void unsetWService(OpenhsWeather ser) {
+    	msg.println("org.openhs.core.meteostation: UnSet IOpenhsWeather");
+        if (m_weather == ser) {
+            ser = null;
+        }
+    } 
 
     /*
      * Constructor
@@ -67,7 +86,7 @@ public class Meteostation {
         list.add(false); // Frost indicator...
         list.add(false); // Daylight time indicator...
         list.add(false); // Movedetection outside...
-    }
+    }    
 
     public Sensor getSensorIn() throws SiteException {
         return getSensor(sensorInString);
@@ -143,6 +162,10 @@ public class Meteostation {
         }
 
         list.set(2, intruder);
+    }
+    
+    public Weather getCurrentWeather() {
+    	return this.m_weather.getCurrentWeather();
     }
 
 }

@@ -8,3 +8,4 @@ Service-Component: OSGI-INF/component.xml
 Import-Package: org.json;version="20160810.0.0",
  org.openhs.comm.api,
  org.openhs.core.commons
+Export-Package: org.openhs.core.weather

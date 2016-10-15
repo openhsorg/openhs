@@ -69,7 +69,7 @@ public class MainServlet {
         welcomeServlet = new WelcomeServlet();
         statisticsServlet = new StatisticsServlet();
         clockServlet = new ClockServlet();
-        meteoStatServlet = new MeteoStationServlet();
+        meteoStatServlet = new MeteoStationServlet(m_meteo);
         
 
         try {

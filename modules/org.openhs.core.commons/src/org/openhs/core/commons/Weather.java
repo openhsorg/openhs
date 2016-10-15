@@ -52,5 +52,8 @@ public class Weather {
     	this.pressure = pressure;
     }
     
-
+    public Temperature getTemperature() {
+    	return this.temp;
+    }
+    
 }

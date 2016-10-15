@@ -5,4 +5,5 @@
    <service>
       <provide interface="org.openhs.core.meteostation.Meteostation"/>
    </service>
+   <reference bind="setWService" cardinality="1..1" interface="org.openhs.core.weather.OpenhsWeather" name="OpenhsWeather" policy="static" unbind="unsetWService"/>
 </scr:component>
