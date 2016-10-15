@@ -41,6 +41,7 @@ public class MainServlet {
     private WelcomeServlet welcomeServlet = null;
     private StatisticsServlet statisticsServlet = null;
     private ClockServlet clockServlet = null;
+    private MeteoStationServlet meteoStatServlet = null;
 
     private HttpService m_httpService = null;
     private ISiteService m_siteService = null;
@@ -68,6 +69,7 @@ public class MainServlet {
         welcomeServlet = new WelcomeServlet();
         statisticsServlet = new StatisticsServlet();
         clockServlet = new ClockServlet();
+        meteoStatServlet = new MeteoStationServlet();
         
 
         try {
@@ -82,6 +84,7 @@ public class MainServlet {
             m_httpService.registerServlet("/", welcomeServlet, null, null);
             m_httpService.registerServlet("/stats", statisticsServlet, null, null);
             m_httpService.registerServlet("/clock", clockServlet, null, null);
+            m_httpService.registerServlet("/meteo2", meteoStatServlet, null, null);
             
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
@@ -110,6 +113,7 @@ public class MainServlet {
         m_httpService.unregister("/");
         m_httpService.unregister("/stats");
         m_httpService.unregister("/clock");
+        m_httpService.unregister("/meteo2");
     }
 
     public void setService(ISiteService ser) {
