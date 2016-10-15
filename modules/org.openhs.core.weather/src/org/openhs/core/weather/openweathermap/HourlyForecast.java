@@ -1,4 +1,4 @@
-package org.openhs.core.weather;
+package org.openhs.core.weather.openweathermap;
 
 
 import org.json.JSONArray;

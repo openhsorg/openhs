@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.openhs.comm.api.IOpenhsWeather;
+import org.openhs.core.weather.openweathermap.CurrentWeather;
+import org.openhs.core.weather.openweathermap.OpenWeatherMap;
 
 public class OpenhsWeather implements IOpenhsWeather {
 	
