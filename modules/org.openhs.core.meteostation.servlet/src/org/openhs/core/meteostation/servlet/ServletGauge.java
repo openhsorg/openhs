@@ -1,48 +1,44 @@
-package org.openhs.core.remote.access;
+package org.openhs.core.meteostation.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhs.core.cfg.OpenhsProps;
-import org.openhs.core.meteostation.Meteostation;
-import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.meteostation.Meteostation;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.RequestDispatcher;
+public class ServletGauge extends HttpServlet {
 
-public class MeteoStationServlet extends HttpServlet {
-	
-	 private Meteostation m_meteo = null;
+	private Meteostation m_meteo = null;
 	
 	int i = 0;
 	
-	MeteoStationServlet(Meteostation meteo) {
-    	m_meteo = meteo;
-    }	
+	ServletGauge(Meteostation meteo) {
+		this.m_meteo = meteo;
+	}   	
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        resp.setHeader("Refresh", "10");
-        
-       	PrintWriter out = resp.getWriter(); 
+       resp.setContentType("text/html");
+       resp.setHeader("Refresh", "10");
+       
+      	PrintWriter out = resp.getWriter(); 
 	        
-       	print (out);    	
-    	 
-    	out.close();   
-        
-    }    
-    
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    }	
-    
+      	print (out);    	
+   	 
+      	out.close();          
+   }    
+   
+   @Override
+   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+   	
+   }	
+   
 	private void performTask(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	IOException {
 		
@@ -59,51 +55,50 @@ public class MeteoStationServlet extends HttpServlet {
 				rd.forward(request, response);
 			}
 		}
-
 }    
-    
-    
-  protected void print (PrintWriter out){
-    	
-    	out.println("\n<!DOCTYPE html>");
-    	out.println("<html>");
-    	out.println("<head>");  
-    	    	    	
-    	out.println("<script src='web/meteo/gauge.min.js'></script>");
-    	    	
-    //	out.println("<script src='web/meteo/meteo.jsp'></script>");    
-    	
-    	out.println("<link href='/web/meteo/meteo_styles.css' rel='stylesheet' type='text/css'>");
-    
-    	out.println("<title>Meteo</title>");
-    	
-    	out.print("</head>\n");
-    	out.print("<body>\n");
-    	
-    	/*
-    	out.println("<canvas id='cvs' width='300' height='300'>");
+   
+   
+ protected void print (PrintWriter out){
+   	
+   	out.println("\n<!DOCTYPE html>");
+   	out.println("<html>");
+   	out.println("<head>");  
+   	    	    	
+   	out.println("<script src='res/web/gauge.min.js'></script>");
+   	    	
+   //	out.println("<script src='web/meteo/meteo.jsp'></script>");    
+   	
+   	out.println("<link href='/res/web/meteo_styles.css' rel='stylesheet' type='text/css'>");
+   
+   	out.println("<title>Meteo</title>");
+   	
+   	out.print("</head>\n");
+   	out.print("<body>\n");
+   	
+   	/*
+   	out.println("<canvas id='cvs' width='300' height='300'>");
 
-    	out.println("</canvas>"); 
-    	*/    	
-    	
-    	float tempOut = getTempOut();
-    	float tempIn = m_meteo.getTempIn();
-    	
-    	float temp = Float.NaN;
-    	
-    	for (int i = 1; i <= 3; i++) {
-    		
-    		if (i == 1) {    			 
-    			
+   	out.println("</canvas>"); 
+   	*/    	
+   	
+   	float tempOut = getTempOut();
+   	float tempIn = m_meteo.getTempIn();
+   	
+   	float temp = Float.NaN;
+   	
+   	for (int i = 1; i <= 3; i++) {
+   		
+   		if (i == 1) {    			 
+   			
 				out.println("<canvas class='cnv1' data-type='radial-gauge'");						
 				out.println("data-value='" + tempOut + "'");
 				out.println("data-title='Outside Temp'");
 				
-    		} else {    			
+   		} else {    			
 				out.println("<canvas class='cnv2' data-type='radial-gauge'");						
 				out.println("data-value='" + tempIn + "'");
 				out.println("data-title='Inside Temp'");    			    			
-    		}    		
+   		}    		
 			
 			out.println("data-width='300'");
 			out.println("data-height='300'");
@@ -146,13 +141,13 @@ public class MeteoStationServlet extends HttpServlet {
 			out.println("data-color-value-box-rect='#222'");
 			out.println("data-color-value-box-rect-end='#333'");
 			out.println("></canvas>");
-    	}    	
-    	
-    	out.println("</body>");
-    	out.println("</html>");    	
-    }    
-  
-  public float getTempOut(){
+   	}    	
+   	
+   	out.println("</body>");
+   	out.println("</html>");    	
+   }    
+ 
+ public float getTempOut(){
 	  
 	  float tmp = -5f;
 	  
@@ -165,6 +160,6 @@ public class MeteoStationServlet extends HttpServlet {
 	 // System.out.println("\n.....TEMP.........>:" + tmp);
 	  	  
 	  return tmp;
-  }
-
+ }	
+	
 }

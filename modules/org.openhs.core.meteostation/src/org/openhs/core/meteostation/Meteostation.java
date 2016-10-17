@@ -9,7 +9,6 @@
 package org.openhs.core.meteostation;
 
 import java.util.ArrayList;
-
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
@@ -25,10 +24,10 @@ public class Meteostation {
     /*
      * Basic data structure.
      */
-    public ISiteService m_siteService = null;
-    
+    public ISiteService m_siteService = null;    
     
     public OpenhsWeather m_weather = null;
+    
 
     /*
      * What sensors we deal with.
@@ -45,11 +44,9 @@ public class Meteostation {
      * [1]: Day/Night time
      * [2]: Intruder outside
      */
-    
-    
-
+        
     public void activate() {
-    	msg.println("org.openhs.core.meteostation: activate");
+    	msg.println("org.openhs.core.meteostation: activate"); 	    	
     }
 
     public void deactivate() {

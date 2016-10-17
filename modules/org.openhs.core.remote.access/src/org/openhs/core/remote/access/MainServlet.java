@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
 import org.openhs.core.meteostation.Meteostation;
+//import org.openhs.core.meteostation.ServletGauge;
 import org.openhs.core.clock.OhsClock;
 import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
@@ -41,7 +42,8 @@ public class MainServlet {
     private WelcomeServlet welcomeServlet = null;
     private StatisticsServlet statisticsServlet = null;
     private ClockServlet clockServlet = null;
-    private MeteoStationServlet meteoStatServlet = null;
+    //private MeteoStationServlet meteoStatServlet = null;
+    //private ServletGauge meteoStatServlet = null;
 
     private HttpService m_httpService = null;
     private ISiteService m_siteService = null;
@@ -69,7 +71,8 @@ public class MainServlet {
         welcomeServlet = new WelcomeServlet();
         statisticsServlet = new StatisticsServlet();
         clockServlet = new ClockServlet();
-        meteoStatServlet = new MeteoStationServlet(m_meteo);
+        //meteoStatServlet = new MeteoStationServlet(m_meteo);
+      //  meteoStatServlet = m_meteo.m_servlet1;
         
 
         try {
@@ -84,7 +87,8 @@ public class MainServlet {
             m_httpService.registerServlet("/", welcomeServlet, null, null);
             m_httpService.registerServlet("/stats", statisticsServlet, null, null);
             m_httpService.registerServlet("/clock", clockServlet, null, null);
-            m_httpService.registerServlet("/meteo", meteoStatServlet, null, null);
+           // m_httpService.registerServlet("/meteo", meteoStatServlet, null, null);
+         //   m_httpService.registerServlet("/meteo", m_meteo.m_servlet1, null, null);
             
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
@@ -106,7 +110,7 @@ public class MainServlet {
         m_httpService.unregister("/image2");
         m_httpService.unregister("/image3");
         m_httpService.unregister("/btn");
-        m_httpService.unregister("/meteo");
+        //m_httpService.unregister("/meteo");
         m_httpService.unregister("/time");
         m_httpService.unregister("/test");
         m_httpService.unregister("/web");

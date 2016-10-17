@@ -1,0 +1,41 @@
+
+h1 {
+	font: 15px arial, sans-serif;
+	font-size: 28px;color: #ff6600;
+}
+
+h2 {
+	font: 20px arial, sans-serif;
+	color: #ff6600;
+}
+
+body {
+    background-image: url("/web/welcome/bkg.png");
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;     
+}
+
+.cnv1,.cnv2 {
+    height: 300px;
+    width: 300px;
+    padding: 0;
+    border: none;
+    color: transparent; 
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 10px;
+    position:absolute;
+    left: 50%;
+	top: 50%;
+    margin-left:-310px;
+	margin-top:-310px;	
+	background-position:center left, center left;
+}
+
+.cnv2 {
+    margin-left:10px;		
+}
