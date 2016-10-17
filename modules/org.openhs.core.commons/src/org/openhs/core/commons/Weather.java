@@ -15,14 +15,12 @@ public class Weather {
 	public String location = "Brno";
 	
     protected float pressure;
-    protected float cloudsPercent;
-        
-    float humidity;
-    float windSpeed;
-    float windDegree;
-    
-    float rain;
-    float snow;	
+    protected float cloudsPercent;        
+    protected float humidity;
+    protected float windSpeed;
+    protected float windDegree;    
+    protected float rain;
+    protected float snow;	
     
     public Weather () {
     	this.pressure = Float.NaN;

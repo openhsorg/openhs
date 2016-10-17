@@ -14,6 +14,7 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.weather.OpenhsWeather;
 
@@ -166,6 +167,21 @@ public class Meteostation {
     
     public Weather getCurrentWeather() {
     	return this.m_weather.getCurrentWeather();
+    }
+    
+    public float getTempIn() {
+    	float temp = Float.NaN;
+    	
+    	try {
+    		Temperature tIn =  this.getSensorIn().getTemperature();
+    	
+    		temp = (float) tIn.getCelsius();
+    	
+    	} catch (Exception ex) {
+    		return Float.NaN;    		
+    	}
+    	
+    	return temp;
     }
 
 }

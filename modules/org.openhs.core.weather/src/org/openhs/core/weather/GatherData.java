@@ -43,6 +43,7 @@ public class GatherData extends Thread {
     
     private void gatherCurrentWeather () {
     	try {
+    		
     		CurrentWeather cwd = owm.currentWeatherByCityName(currWeather.location);
     		
     		currWeather.tempMax.set(cwd.getMainInstance().getMaxTemperature());
@@ -53,14 +54,12 @@ public class GatherData extends Thread {
     		currWeather.setPressure(cwd.getMainInstance().getPressure());
     		    		
     		Clouds clds = cwd.getCloudsInstance();    		
-    		currWeather.setPercentageOfClouds(clds.getPercentageOfClouds());
-    		    		    		    		
+    		currWeather.setPercentageOfClouds(clds.getPercentageOfClouds());    		    		    		    		
     		
     	} catch (Exception ex) {
     		
     	}
-    	
-    	
+    	    	
     }
     
     private void gatherForecastWeather () {
