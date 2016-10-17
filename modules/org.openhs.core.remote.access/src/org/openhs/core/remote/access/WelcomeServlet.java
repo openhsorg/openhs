@@ -82,7 +82,7 @@ public class WelcomeServlet extends HttpServlet {
         "<input type='submit' class='button1' name='Meteo' value='Meteo'>" +
         "</form>");  
         
-        out.println("<form name='stats' method='' action='/stats'>" +
+        out.println("<form name='stats' method=	'' action='/stats'>" +
         "<input type='submit' class='button2' name='Statisticss' value=''>" +
         "</form>");          
 
