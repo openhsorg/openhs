@@ -8,8 +8,7 @@ Import-Package: org.openhs.core.commons,
  org.openhs.core.site.data,
  org.openhs.core.site.services,
  org.openhs.core.weather,
- org.osgi.framework;version="1.3.0",
- org.osgi.util.tracker;version="1.5.1"
+ org.osgi.framework;version="1.3.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.openhs.core.meteostation
 Service-Component: OSGI-INF/component.xml
