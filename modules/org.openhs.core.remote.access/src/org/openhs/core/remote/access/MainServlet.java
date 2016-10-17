@@ -34,7 +34,7 @@ public class MainServlet {
     private ImageServlet2 imageServlet2 = null;
     private ImageServlet3 imageServlet3 = null;
     private ButtonServlet btnSrv = null;
-    private MeteoServlet meteoServlet = null;
+    //private MeteoServlet meteoServlet = null;
     private TimeServlet timeServlet = null;
     private TimeServlet2 timeServlet2 = null;
     private TestServlet testServlet = null;
@@ -62,7 +62,7 @@ public class MainServlet {
         imageServlet2 = new ImageServlet2();
         imageServlet3 = new ImageServlet3();
         btnSrv = new ButtonServlet();
-        meteoServlet = new MeteoServlet(m_meteo);
+       // meteoServlet = new MeteoServlet(m_meteo);
         timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
@@ -78,13 +78,13 @@ public class MainServlet {
             m_httpService.registerServlet("/image2", imageServlet2, null, null);
             m_httpService.registerServlet("/image3", imageServlet3, null, null);
             m_httpService.registerServlet("/btn", btnSrv, null, null);
-            m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
+           // m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
             m_httpService.registerServlet("/time", timeServlet2, null, null);
             m_httpService.registerServlet("/test", testServlet, null, null);
             m_httpService.registerServlet("/", welcomeServlet, null, null);
             m_httpService.registerServlet("/stats", statisticsServlet, null, null);
             m_httpService.registerServlet("/clock", clockServlet, null, null);
-            m_httpService.registerServlet("/meteo2", meteoStatServlet, null, null);
+            m_httpService.registerServlet("/meteo", meteoStatServlet, null, null);
             
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
