@@ -17,6 +17,8 @@ public class ServletGauge extends HttpServlet {
 
 	private Meteostation m_meteo = null;
 	
+	String address = "org.openhs.core.meteostation";
+	
 	int i = 0;
 	
 	ServletGauge(Meteostation meteo) {
@@ -142,6 +144,10 @@ public class ServletGauge extends HttpServlet {
 			out.println("data-color-value-box-rect-end='#333'");
 			out.println("></canvas>");
    	}    	
+   	
+    out.println("<form name='clock' method='' action='/org.openhs.core.meteostation.digital'>" +
+    "<input type='submit' class='button' name='next' value=''>" +
+    "</form>");      	
    	
    	out.println("</body>");
    	out.println("</html>");    	

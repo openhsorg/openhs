@@ -17,6 +17,23 @@ body {
     background-position: center;     
 }
 
+.button {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: none;
+    color: transparent; 
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 75px;
+    position:absolute;
+    left: 0%;
+	top: 50%;
+	background-position:center left, center left;
+}
+
 .cnv1,.cnv2 {
     height: 300px;
     width: 300px;
@@ -27,7 +44,7 @@ body {
     outline: none;
     display: block;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-    border-radius: 10px;
+    border-radius: 150px;
     position:absolute;
     left: 50%;
 	top: 50%;

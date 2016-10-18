@@ -14,15 +14,18 @@ public class MeteostationServlet {
 	private Meteostation m_meteo = null;
 	
 	public ServletGauge m_servletGauge = null;
+	public ServletDigital m_servletDigital = null;
 	
-	public String address = "org.openhs.core.meteostation";	
+	//public String address = "org.openhs.core.meteostation";	
 	
 	public void activate() {
 		
-		m_servletGauge = new ServletGauge(m_meteo); 
+		m_servletGauge = new ServletGauge(m_meteo);
+		m_servletDigital = new ServletDigital(m_meteo);
 		
         try {
-            m_httpService.registerServlet("/" + address, m_servletGauge, null, null);            
+            m_httpService.registerServlet("/" + m_servletGauge.address, m_servletGauge, null, null);
+            m_httpService.registerServlet("/" +  m_servletDigital.address, m_servletDigital, null, null); 
             m_httpService.registerResources("/res", "/res", null);            
                         
         } catch (ServletException e) {

@@ -1,0 +1,94 @@
+
+
+/*
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	border: 0;
+	overflow: hidden;
+	display: block;  
+}
+*/
+
+body {
+    background-image:none;
+    background-color: #000000;    
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+       
+}
+
+.button {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: 1px solid #ffffff;
+    color: transparent; 
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 75px;
+    position:absolute;
+    left: 0%;
+	top: 50%;
+	background-position:center left, center left;
+}
+
+.canvas0 {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+    margin-left:-250px;
+	margin-top:-150px;		
+    border: 1px solid #ffffff;
+    color: transparent; 
+    background-color: black;	
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+     border-radius: 50px;
+}
+
+.canvas, .canvas1, .canvas2 {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+    height: 400px;
+    width: 500px;    
+    padding: 0;
+    border: 1px solid #ffffff;
+    color: transparent; 
+    background-color: blue;
+    /*
+    outline: none;
+    display: block;
+    */
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  /*  border-radius: 50px;*/  
+    margin-left:-250px;
+	margin-top:-250px;	
+	
+/*	background-position:center left, center left;*/
+	
+}
+
+.canvas1 {
+    height: 100px;
+    width: 200px;        
+    left: 10px;
+	top: 10px;  	    
+    margin-left:0px;
+	margin-top:0px;		 
+	background-color: red;
+}
+
+.canvas2 {
+    height: 100px;
+    width: 200px;        
+    left: 100px;
+	top: 100px;  	    
+    margin-left:0px;
+	margin-top:0px;		 
+	background-color: green;  
+}
