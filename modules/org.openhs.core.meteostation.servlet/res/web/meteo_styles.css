@@ -29,9 +29,12 @@ body {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     border-radius: 75px;
     position:absolute;
-    left: 0%;
+    left: 50%;
 	top: 50%;
+	margin-left:-85px;
+	margin-top:80px;
 	background-position:center left, center left;
+	background-image: url("/web/welcome/meteo.png");
 }
 
 .cnv1,.cnv2 {
@@ -48,11 +51,11 @@ body {
     position:absolute;
     left: 50%;
 	top: 50%;
-    margin-left:-310px;
-	margin-top:-310px;	
+    margin-left:-350px;
+	margin-top:-160px;	
 	background-position:center left, center left;
 }
 
 .cnv2 {
-    margin-left:10px;		
+    margin-left:35px;		
 }

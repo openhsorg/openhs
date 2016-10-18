@@ -32,7 +32,7 @@ body {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     border-radius: 75px;
     position:absolute;
-    left: 0%;
+    left: 50%;
 	top: 50%;
 	background-position:center left, center left;
 }
@@ -41,8 +41,8 @@ body {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-    margin-left:-250px;
-	margin-top:-150px;		
+    margin-left:-400px;
+	margin-top:-300px;		
     border: 1px solid #ffffff;
     color: transparent; 
     background-color: black;	

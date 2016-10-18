@@ -81,7 +81,7 @@ public class ServletDigital extends HttpServlet {
    	out.print("</head>\n");
    	out.print("<body>\n");
    	
-   	out.println("<canvas id='canvas' class='canvas0' width=500 height=350></canvas>");
+   	out.println("<canvas id='canvas' class='canvas0' width=800 height=600></canvas>");
    	//out.println("<canvas id='canvas1' class='canvas1'></canvas>");
    	//out.println("<canvas id='canvas2' class='canvas2'></canvas>");
     Date curDate = new Date();
