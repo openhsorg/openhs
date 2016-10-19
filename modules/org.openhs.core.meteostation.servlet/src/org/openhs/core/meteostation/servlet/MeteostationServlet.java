@@ -1,7 +1,6 @@
 package org.openhs.core.meteostation.servlet;
 
 import javax.servlet.ServletException;
-
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.meteostation.servlet.ServletGauge;
 import org.osgi.service.http.HttpService;
@@ -9,20 +8,23 @@ import org.osgi.service.http.NamespaceException;
 
 public class MeteostationServlet {
 	
-	private HttpService m_httpService = null;
-	
-	private Meteostation m_meteo = null;
-	
+	private HttpService m_httpService = null;	
+	public Meteostation m_meteo = null;	
 	public ServletGauge m_servletGauge = null;
 	public ServletDigital m_servletDigital = null;
 	
+			
 	//public String address = "org.openhs.core.meteostation";	
 	
 	public void activate() {
 		
-		m_servletGauge = new ServletGauge(m_meteo);
-		m_servletDigital = new ServletDigital(m_meteo);
+		m_servletGauge = new ServletGauge (this);
+		m_servletDigital = new ServletDigital (this);
 		
+		/* Make adress references */
+		m_servletGauge.addressNext = m_servletDigital.address;
+		m_servletDigital.addressNext = m_servletGauge.address;
+								
         try {
             m_httpService.registerServlet("/" + m_servletGauge.address, m_servletGauge, null, null);
             m_httpService.registerServlet("/" +  m_servletDigital.address, m_servletDigital, null, null); 
@@ -39,7 +41,8 @@ public class MeteostationServlet {
 	}
 	
 	public void deactivate() {
-		m_httpService.unregister("/org.openhs.core.meteostation");		
+		m_httpService.unregister("/" + m_servletGauge.address);
+		m_httpService.unregister("/" + m_servletDigital.address);		
 	}
 	
     public void setService(Meteostation ser) {
@@ -65,4 +68,6 @@ public class MeteostationServlet {
             m_httpService = null;
         }
     }   	
+    
+ 
 }

@@ -24,17 +24,60 @@ body {
     border: none;
     color: transparent; 
     background-color: transparent;
+    background-repeat: no-repeat;
     outline: none;
     display: block;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    /*box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);*/
     border-radius: 75px;
     position:absolute;
     left: 50%;
 	top: 50%;
-	margin-left:-85px;
+	margin-left:-60px;
 	margin-top:80px;
 	background-position:center left, center left;
-	background-image: url("/web/welcome/meteo.png");
+	background-image: url("/res/web/home2.png");
+}
+
+.buttonHome {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: none;
+    color: transparent; 
+    background-color: transparent;
+    background-repeat: no-repeat;
+    outline: none;
+    display: block;
+    /*box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);*/
+    border-radius: 75px;
+    position:absolute;
+    left: 50%;
+	top: 50%;
+	margin-left:-60px;
+	margin-top:80px;
+	background-position:center left, center left;
+	background-image: url("/res/web/home2.png");
+}
+
+.buttonNext {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: none;
+    color: transparent; 
+    background-color: transparent;
+    background-repeat: no-repeat;
+    outline: none;
+    display: block;
+    /*box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);*/
+    border-radius: 75px;
+    position:absolute;
+    left: 100%;
+	top: 50%;
+	margin-left:-150px;
+	margin-top:-75px;
+	background-position:center left, center left;
+	background-image: url("/res/web/next.png");
 }
 
 .cnv1,.cnv2 {

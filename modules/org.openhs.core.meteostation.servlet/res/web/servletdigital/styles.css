@@ -24,7 +24,7 @@ body {
     height: 150px;
     width: 150px;
     padding: 0;
-    border: 1px solid #ffffff;
+    border: 1px solid #000000;
     color: transparent; 
     background-color: transparent;
     outline: none;
@@ -35,7 +35,27 @@ body {
     left: 50%;
 	top: 50%;
 	background-position:center left, center left;
+	/*background-image: url("/res/web/bulb2.png");*/
 }
+
+.buttonHome {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: 1px solid #000000;
+    color: transparent; 
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 75px;
+    position:absolute;
+    left: 50%;
+	top: 50%;
+	background-position:center left, center left;
+	/*background-image: url("/res/web/bulb2.png");*/
+}
+
 
 .canvas0 {
 	position: absolute;
