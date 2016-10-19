@@ -38,7 +38,7 @@ public class ServletGauge  extends ServletTemplate {
 	   	out.println("</canvas>"); 
 	   	*/    	
 	   	
-	   	float tempOut = getTempOut();
+	   	float tempOut = m_meteo.getTempOut();
 	   	float tempIn = m_meteo.getTempIn();
 	   	
 	   	float temp = Float.NaN;
@@ -107,6 +107,13 @@ public class ServletGauge  extends ServletTemplate {
 	    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
 	    "<input type='submit' class='buttonNext' name='next' value=''>" +
 	    "</form>");  	
+	    
+	    // Indicator of day/night time
+	    if (m_meteo.isDayTime()) {
+	    	out.println("<img src='/res/web/servletdigital/indicatorDay.png' class='imageDayTime' alt='Smiley face'>");
+	    } else {
+	    	out.println("<img src='/res/web/servletdigital/indicatorNight.png' class='imageNightTime' alt='Smiley face'>");
+	    }
 	   	
 	   	out.println("</body>");
 	   	out.println("</html>");    	

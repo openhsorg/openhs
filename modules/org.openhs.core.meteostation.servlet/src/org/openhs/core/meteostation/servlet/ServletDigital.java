@@ -44,7 +44,7 @@ public class ServletDigital extends ServletTemplate {
 		out.println("var TempInDesc = 'In:';");
 		out.println("var TempInVal = '" + m_meteo.getTempIn() + "';");	
 		out.println("var TempOutDesc = 'Out:';");
-		out.println("var TempOutVal = '" + getTempOut() + "';");
+		out.println("var TempOutVal = '" + m_meteo.getTempOut() + "';");
 		out.println("var Time = '" + TimeToStr + "';");
 		out.println("</script>");
 	   	
@@ -57,6 +57,13 @@ public class ServletDigital extends ServletTemplate {
 	    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
 	    "<input type='submit' class='buttonNext' name='next' value=''>" +
 	    "</form>"); 	    
+	    
+	    // Indicator of day/night time
+	    if (m_meteo.isDayTime()) {
+	    	out.println("<img src='/res/web/servletdigital/indicatorDay.png' class='imageDayTime' alt='Smiley face'>");
+	    } else {
+	    	out.println("<img src='/res/web/servletdigital/indicatorNight.png' class='imageNightTime' alt='Smiley face'>");
+	    }
 	   	
 	   	out.println("</body>");
 	   	out.println("</html>");    	

@@ -120,6 +120,14 @@ public class Meteostation {
 
         return list;
     }
+    
+    public boolean isFrost() {
+    	return (getTempOut() <= 0.0);
+    }
+    
+    public boolean isDayTime() {
+    	return true;
+    }    
 
     /*
      * Set Frost indicator based on outside temperature.
@@ -180,5 +188,18 @@ public class Meteostation {
     	
     	return temp;
     }
+    
+    public float getTempOut(){
+  	  
+  	  float tmp = -5f;
+  	  
+  	  Weather wet = getCurrentWeather();
+  	  
+  	  Temperature temp = wet.getTemperature();
+  	  
+  	  tmp = (float) temp.getCelsius();
+  	  	  
+  	  return tmp;
+   }	    
 
 }

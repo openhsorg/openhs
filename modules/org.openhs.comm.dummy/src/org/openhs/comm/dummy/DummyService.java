@@ -85,7 +85,7 @@ public class DummyService implements ICommService, Runnable {
 					temp2 += 1.0;
 					hum2 += 1.0;
 					if (temp2 > 20.0)
-						temp2 = -10.0;
+						temp2 = -15.0;
 					if (hum2 > 101.0)
 						hum2 = 80.0;
 					m_msg2.setTemp(temp2);

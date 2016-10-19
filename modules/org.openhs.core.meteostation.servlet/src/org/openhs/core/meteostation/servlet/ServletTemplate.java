@@ -73,20 +73,5 @@ public class ServletTemplate extends HttpServlet {
    	out.println("</body>");
    	out.println("</html>");    	
    }    
- 
- public float getTempOut(){
-	  
-	  float tmp = -5f;
-	  
-	  Weather wet = m_meteo.getCurrentWeather();
-	  
-	  Temperature temp = wet.getTemperature();
-	  
-	  tmp = (float) temp.getCelsius();
-	  
-	 // System.out.println("\n.....TEMP.........>:" + tmp);
-	  	  
-	  return tmp;
- }		
 
 }
