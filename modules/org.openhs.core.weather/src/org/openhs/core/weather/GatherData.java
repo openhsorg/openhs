@@ -20,7 +20,7 @@ public class GatherData extends Thread {
 	private ArrayList<Weather> forecast = new ArrayList<Weather> ();	
 	private OpenWeatherMap owm = new OpenWeatherMap(Units.METRIC, API_Key);
 	
-	private volatile boolean running = true;
+	private volatile boolean running = true; //
 
 	public void run() {
 		
