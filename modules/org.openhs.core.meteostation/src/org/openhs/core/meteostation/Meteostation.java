@@ -127,7 +127,21 @@ public class Meteostation {
     
     public boolean isDayTime() {
     	return true;
+    }   
+    
+    public float getCloudsForecast() {
+    	Weather fcs = getForecastWeather6();
+    	
+    	return fcs.getPercentageOfClouds();
     }    
+    
+    public float getTempForecast() {
+    	Weather fcs = getForecastWeather6();
+    	
+    	Temperature temp = fcs.getTemperature();
+    	
+    	return (float) temp.getCelsius();
+    }      
 
     /*
      * Set Frost indicator based on outside temperature.
@@ -173,6 +187,11 @@ public class Meteostation {
     public Weather getCurrentWeather() {
     	return this.m_weather.getCurrentWeather();
     }
+    
+    public Weather getForecastWeather6() {    	    	    
+    	return this.m_weather.getForecastWeather6();
+    }
+        
     
     public float getTempIn() {
     	float temp = Float.NaN;

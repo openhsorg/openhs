@@ -30,4 +30,10 @@ public class OpenhsWeather implements IOpenhsWeather {
 		return this.m_gather.getCurrentWeather();
 	}
 
+	/**
+	 * Get Weather Forecast object.
+	 */
+	public Weather getForecastWeather6() {
+		return this.m_gather.getForecastWeather6();
+	}	
 }

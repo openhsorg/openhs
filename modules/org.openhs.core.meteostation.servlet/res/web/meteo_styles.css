@@ -99,6 +99,25 @@ body {
 	/*background-image: url("/res/web/bulb2.png");*/
 }
 
+.imageForecast {
+    height: 140px;
+    width: 140px;
+    padding: 0;
+    border: none; /*1px solid #000000;*/    
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 70px;
+    position:absolute;
+    left: 50%;
+	top: 50%;
+	margin-left: -80px;
+	margin-top: -320px;		
+	background-position:center left, center left;
+	/*background-image: url("/res/web/bulb2.png");*/
+}
+
 .cnv1,.cnv2 {
     height: 300px;
     width: 300px;
@@ -121,3 +140,31 @@ body {
 .cnv2 {
     margin-left:35px;		
 }
+
+
+tempTextBox {
+    height: 80px;
+    width: 160px;
+    padding: 0;
+    border: none;
+    color: #3333cc; 
+    background-color: white;
+    
+    outline: none;
+    display: flex;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 80px;
+    
+    position:absolute;
+    left: 50%;
+	top: 50%;
+    margin-left:-90px;
+	margin-top:-170px;		
+    /*text-align: center;*/
+   /* vertical-align: middle;*/    
+	justify-content: center;
+	align-items: center;
+	font: 26px arial, sans-serif;
+	
+}
+

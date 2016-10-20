@@ -61,6 +61,10 @@ public class HourlyForecast extends AbstractForecast {
     public Forecast getForecastInstance(int index) {
         return this.forecastList.get(index);
     }
+    
+    public int getNumberForecasts() {
+    	return this.forecastList.size();
+    }
 
     /**
      * <p>

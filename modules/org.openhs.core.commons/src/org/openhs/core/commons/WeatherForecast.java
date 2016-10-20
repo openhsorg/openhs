@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 public class WeatherForecast {
 	
-	ArrayList<Weather> list = new ArrayList<Weather> ();
+	private ArrayList<Weather> list = new ArrayList<Weather> ();
+	
+	public ArrayList<Weather> getForecastList() {
+		return list;
+	}
 
 }

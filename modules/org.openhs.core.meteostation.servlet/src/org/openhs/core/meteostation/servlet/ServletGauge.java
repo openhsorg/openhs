@@ -109,12 +109,34 @@ public class ServletGauge  extends ServletTemplate {
 	    "</form>");  	
 	    
 	    // Indicator of day/night time
+	    /*
 	    if (m_meteo.isDayTime()) {
 	    	out.println("<img src='/res/web/servletdigital/indicatorDay.png' class='imageDayTime' alt='Smiley face'>");
 	    } else {
 	    	out.println("<img src='/res/web/servletdigital/indicatorNight.png' class='imageNightTime' alt='Smiley face'>");
 	    }
-	   	
+	    */
+	    
+	    //Forecast indicator
+	    float cloudPerc = m_meteo.getCloudsForecast();
+	    float tempForecast = m_meteo.getTempForecast();
+	    String imageFcs = "";
+	    
+	    if (cloudPerc <= 25.0) {
+	    	imageFcs = "/res/web/sunny.png"; 
+	    } else if (cloudPerc > 25.0 && cloudPerc <= 75.0) {
+	    	imageFcs = "/res/web/clouds.png";
+	    } else {
+	    	imageFcs = "/res/web/rainy.png";
+	    }
+	    	    	    
+	    out.println("<img src='" + imageFcs + "' class='imageForecast' alt='Smiley face'>");
+	    
+	    out.println("<tempTextBox>" + "Temp: " + tempForecast + " °C </tempTextBox>");
+	    
+	    out.println("Perc cloud:" + cloudPerc);
+	    out.println("Temp:" + tempForecast);
+	    	    	   	
 	   	out.println("</body>");
 	   	out.println("</html>");    	
 	   }    

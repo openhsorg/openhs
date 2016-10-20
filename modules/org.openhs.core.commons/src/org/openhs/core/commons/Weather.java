@@ -54,4 +54,11 @@ public class Weather {
     	return this.temp;
     }
     
+    public void setWindSpeed(float windSpeed) {
+    	this.windSpeed = windSpeed;
+    }    
+    
+    public void setWindDegree(float windDegree) {
+    	this.windDegree = windDegree;
+    }       
 }
