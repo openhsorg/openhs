@@ -1,3 +1,7 @@
+/**
+ * Test
+ */
+
 package org.openhs.core.weather;
 
 import java.util.ArrayList;
