@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
 import org.openhs.core.meteostation.Meteostation;
+//import org.openhs.core.meteostation.ServletGauge;
 import org.openhs.core.clock.OhsClock;
 import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
@@ -34,13 +35,15 @@ public class MainServlet {
     private ImageServlet2 imageServlet2 = null;
     private ImageServlet3 imageServlet3 = null;
     private ButtonServlet btnSrv = null;
-    private MeteoServlet meteoServlet = null;
+    //private MeteoServlet meteoServlet = null;
     private TimeServlet timeServlet = null;
     private TimeServlet2 timeServlet2 = null;
     private TestServlet testServlet = null;
     private WelcomeServlet welcomeServlet = null;
     private StatisticsServlet statisticsServlet = null;
     private ClockServlet clockServlet = null;
+    //private MeteoStationServlet meteoStatServlet = null;
+    //private ServletGauge meteoStatServlet = null;
 
     private HttpService m_httpService = null;
     private ISiteService m_siteService = null;
@@ -61,13 +64,15 @@ public class MainServlet {
         imageServlet2 = new ImageServlet2();
         imageServlet3 = new ImageServlet3();
         btnSrv = new ButtonServlet();
-        meteoServlet = new MeteoServlet(m_meteo);
+       // meteoServlet = new MeteoServlet(m_meteo);
         timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
         welcomeServlet = new WelcomeServlet();
         statisticsServlet = new StatisticsServlet();
         clockServlet = new ClockServlet();
+        //meteoStatServlet = new MeteoStationServlet(m_meteo);
+      //  meteoStatServlet = m_meteo.m_servlet1;
         
 
         try {
@@ -76,12 +81,14 @@ public class MainServlet {
             m_httpService.registerServlet("/image2", imageServlet2, null, null);
             m_httpService.registerServlet("/image3", imageServlet3, null, null);
             m_httpService.registerServlet("/btn", btnSrv, null, null);
-            m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
+           // m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
             m_httpService.registerServlet("/time", timeServlet2, null, null);
             m_httpService.registerServlet("/test", testServlet, null, null);
             m_httpService.registerServlet("/", welcomeServlet, null, null);
             m_httpService.registerServlet("/stats", statisticsServlet, null, null);
             m_httpService.registerServlet("/clock", clockServlet, null, null);
+           // m_httpService.registerServlet("/meteo", meteoStatServlet, null, null);
+         //   m_httpService.registerServlet("/meteo", m_meteo.m_servlet1, null, null);
             
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
@@ -103,13 +110,14 @@ public class MainServlet {
         m_httpService.unregister("/image2");
         m_httpService.unregister("/image3");
         m_httpService.unregister("/btn");
-        m_httpService.unregister("/meteo");
+        //m_httpService.unregister("/meteo");
         m_httpService.unregister("/time");
         m_httpService.unregister("/test");
         m_httpService.unregister("/web");
         m_httpService.unregister("/");
         m_httpService.unregister("/stats");
         m_httpService.unregister("/clock");
+        m_httpService.unregister("/meteo2");
     }
 
     public void setService(ISiteService ser) {

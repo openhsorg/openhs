@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Weather
+Bundle-SymbolicName: org.openhs.core.weather
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/component.xml
+Import-Package: org.json;version="20160810.0.0",
+ org.openhs.comm.api,
+ org.openhs.core.commons
+Export-Package: org.openhs.core.weather

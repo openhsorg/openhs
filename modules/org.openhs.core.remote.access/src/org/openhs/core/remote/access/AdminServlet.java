@@ -717,7 +717,7 @@ public class AdminServlet extends HttpServlet{
     	out.println("<h2>Meteo station application</h2>");
 
     	out.println("<info2>Application:&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");    	
-    	out.println("<a href=\"/meteo\" accesskey=\"1\" title=\"\">Meteo station page</a>");
+    	out.println("<a href='/org.openhs.core.meteostation' accesskey=\"1\" title=\"\">Meteo station page</a>");
     	out.println("<br>");
     	
     	out.println("<info2>Check for updates:&emsp;&emsp;&emsp;");    	
