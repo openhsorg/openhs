@@ -130,12 +130,12 @@ public class ServletGauge  extends ServletTemplate {
 	    	imageFcs = "/res/web/rainy.png";
 	    }
 	    	    	    
-	    out.println("<img src='" + imageFcs + "' class='imageForecast' alt='Smiley face'>");
+	    out.println("<img src='" + imageFcs + "' class='imageForecast' alt='Weather'>");
 	    
 	    out.println("<tempTextBox>" + "Temp: " + tempForecast + " °C </tempTextBox>");
 	    
-	    out.println("Perc cloud:" + cloudPerc);
-	    out.println("Temp:" + tempForecast);
+	    //out.println("Perc cloud:" + cloudPerc);
+	    //out.println("Temp:" + tempForecast);
 	    	    	   	
 	   	out.println("</body>");
 	   	out.println("</html>");    	

@@ -28,7 +28,7 @@ public class GatherData extends Thread {
 			gatherData();		
 			
           	try {
-				Thread.sleep (10000);
+				Thread.sleep (1000 * 60 * 15); //every 15 minutes 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -108,7 +108,7 @@ public class GatherData extends Thread {
     	try {    		
     		HourlyForecast fcst = owm.hourlyForecastByCityName(cityName);   		    		
     		
-    		System.out.println("\n\n------Number forecasts: " + fcst.getNumberForecasts());
+    		//System.out.println("\n\n------Number forecasts: " + fcst.getNumberForecasts());
     		
     		forecast.clear();
     		

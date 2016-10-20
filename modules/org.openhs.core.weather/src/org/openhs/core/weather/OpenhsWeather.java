@@ -7,13 +7,11 @@ public class OpenhsWeather implements IOpenhsWeather {
 			
 	private GatherData m_gather = new GatherData ();
 	
-	public void activate (){
-		
+	public void activate (){		
 		m_gather.start();
 	}
 	
-	public void deactivate (){
-		
+	public void deactivate (){		
 		m_gather.stopThread();
         try {
         	m_gather.join();
