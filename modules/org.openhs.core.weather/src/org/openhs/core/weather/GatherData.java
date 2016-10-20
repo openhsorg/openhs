@@ -1,5 +1,5 @@
 /**
- * Test
+ * Test number 2...
  */
 
 package org.openhs.core.weather;
