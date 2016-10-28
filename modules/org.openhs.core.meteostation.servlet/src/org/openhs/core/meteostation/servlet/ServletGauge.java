@@ -21,11 +21,11 @@ public class ServletGauge  extends ServletTemplate {
 	   	out.println("<html>");
 	   	out.println("<head>");  
 	   	    	    	
-	   	out.println("<script src='res/web/gauge.min.js'></script>");
+	   	out.println("<script src='ores/web/gauge.min.js'></script>");
 	   	    	
 	   //	out.println("<script src='web/meteo/meteo.jsp'></script>");    
 	   	
-	   	out.println("<link href='/res/web/meteo_styles.css' rel='stylesheet' type='text/css'>");
+	   	out.println("<link href='/ores/web/meteo_styles.css' rel='stylesheet' type='text/css'>");
 	   
 	   	out.println("<title>Meteo</title>");
 	   	
@@ -59,7 +59,7 @@ public class ServletGauge  extends ServletTemplate {
 				
 				out.println("data-width='300'");
 				out.println("data-height='300'");
-				out.println("data-units='°C'");			
+				out.println("data-units='ï¿½C'");			
 				out.println("data-min-value='-50'");
 				out.println("data-max-value='50'");
 				out.println("data-major-ticks='[-50,-40,-30,-20,-10,0,10,20,30,40,50]'");
@@ -123,16 +123,16 @@ public class ServletGauge  extends ServletTemplate {
 	    String imageFcs = "";
 	    
 	    if (cloudPerc <= 25.0) {
-	    	imageFcs = "/res/web/sunny.png"; 
+	    	imageFcs = "/ores/web/sunny.png"; 
 	    } else if (cloudPerc > 25.0 && cloudPerc <= 75.0) {
-	    	imageFcs = "/res/web/clouds.png";
+	    	imageFcs = "/ores/web/clouds.png";
 	    } else {
-	    	imageFcs = "/res/web/rainy.png";
+	    	imageFcs = "/ores/web/rainy.png";
 	    }
 	    	    	    
 	    out.println("<img src='" + imageFcs + "' class='imageForecast' alt='Weather'>");
 	    
-	    out.println("<tempTextBox>" + "Temp: " + tempForecast + " °C </tempTextBox>");
+	    out.println("<tempTextBox>" + "Temp: " + tempForecast + " ï¿½C </tempTextBox>");
 	    
 	    //out.println("Perc cloud:" + cloudPerc);
 	    //out.println("Temp:" + tempForecast);

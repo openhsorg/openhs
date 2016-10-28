@@ -28,7 +28,7 @@ public class MeteostationServlet {
         try {
             m_httpService.registerServlet("/" + m_servletGauge.address, m_servletGauge, null, null);
             m_httpService.registerServlet("/" +  m_servletDigital.address, m_servletDigital, null, null); 
-            m_httpService.registerResources("/res", "/res", null);            
+            m_httpService.registerResources("/ores", "/res", null);            
                         
         } catch (ServletException e) {
             // TODO Auto-generated catch block
