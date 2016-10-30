@@ -23,7 +23,7 @@ public class InfostationServlet {
 										
         try {
             m_httpService.registerServlet("/" + m_white.address, m_white, null, null);            
-           // m_httpService.registerResources("/res", "/res", null);            
+            m_httpService.registerResources("/infores", "/res", null);            
                         
         } catch (ServletException e) {
             // TODO Auto-generated catch block
