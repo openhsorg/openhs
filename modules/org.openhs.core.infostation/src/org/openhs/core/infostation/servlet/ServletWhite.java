@@ -48,7 +48,7 @@ public class ServletWhite extends ServletTemplate {
 	    out.println("<img src='" + imageDrop + "' class='imageDrop' alt=''>");
 	    
 	    
-	    out.println("<tempText>" + "-16 Â°C </tempText>");
+	    out.println("<tempText>" + "-16 °C </tempText>");
 	    out.println("<windText>" + "160 m/s </windText>");
 	    
 	    Date curDate = new Date();
@@ -63,7 +63,7 @@ public class ServletWhite extends ServletTemplate {
 	    
 	    out.println("<dateText>" + timeStrDate + "</dateText>");
 	    
-	    out.println("<mainTempText>-16 Â°C" + "</mainTempText>");
+	    out.println("<mainTempText>-16 °C" + "</mainTempText>");
 	    out.println("<humText>48" + "</humText>");
 	   	
 	   	out.println("</body>");

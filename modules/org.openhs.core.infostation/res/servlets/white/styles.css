@@ -169,7 +169,7 @@ tempText {
 
 windText {	
     height: 40px;
-    width: 120px;	
+    width: 140px;	
 	font: 30px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     margin-left:-110px;
 	margin-top:-230px;
@@ -178,7 +178,7 @@ windText {
 
 timeText {	
     height: 80px;
-    width: 250px;	
+    width: 280px;	
 	font: 70px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     margin-left:40px;
 	margin-top:-320px;			
@@ -187,7 +187,7 @@ timeText {
 
 dateText {	
     height: 40px;
-    width: 250px;	
+    width: 280px;	
 	font: 30px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     margin-left:40px;
 	margin-top:-230px;
