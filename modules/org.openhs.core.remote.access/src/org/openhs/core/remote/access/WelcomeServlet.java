@@ -27,7 +27,7 @@ public class WelcomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String value = request.getParameter("helloValue");
-        System.out.println("doPost,helloValue=" + value);
+        System.out.println("Welcome: doPost,helloValue=" + value);
 /*
         System.out.println("...doPost");
 	       

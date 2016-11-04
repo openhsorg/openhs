@@ -31,7 +31,7 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String value = request.getParameter("helloValue");
-        System.out.println("doPost,helloValue=" + value);
+        System.out.println("Test: doPost,helloValue=" + value);
        // response.setContentType("text/html");
        // response.getWriter().print("<html><body>helloValue=" + value + "</body></html>");
         

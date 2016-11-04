@@ -748,7 +748,7 @@ public class AdminServlet extends HttpServlet{
 		*/   	
     	
     	 out.print("<canvas id='myCanvas' width='578' height='200'></canvas>");
-     	 out.println("<script src='web/canvas1.jsp'></script>");
+     	 out.println("<script src='web/canvas1.js'></script>");
     	//URL  url = this.getClass().getResource("/web/canvas1.txt");
     	
     	//fileToPage(out, url.getPath());
