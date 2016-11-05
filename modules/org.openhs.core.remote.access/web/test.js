@@ -63,16 +63,39 @@ var StationClock;
             this.r = Math.min(this.width, this.height) * 7 / 16;
             this.centerX = this.width / 2;
             this.centerY = this.height / 2;
+            this.ni = 0;
         }
         ClockImagePainter.prototype.getData = function () {
+            var n = 6;
+            var myJson;
             $(document).ready(function () {
-                //    $("p").click(function() {
-                //var orderId =  $("#orderId").val();
-                $.get("clock", function (data, status) {
-                    alert("Data: " + data + "\nStatus: " + status);
+                /*
+                $.get("clock", { orderId : "John"},
+                   function (data, textStatus, jqXHR){
+                       // $('p').append(data.firstName);
+                       //alert("Data: ");
+                        
+                       var json = JSON.parse(data);
+                        alert(json["city"]); //mkyong
+                    }, 'json');
+                
+                */
+                $.getJSON('clock', { orderId: "John" }, function (data) {
+                    var items = [];
+                    myJson = data;
+                    /*
+                                
+                                      $.each(data, function(key, val) {
+                                         // alert(val);
+                                          items.push(val);
+                                      });
+                                    */
+                    //alert(items[0]);
+                    var day = data['order'];
+                    alert(data['order']);
                 });
-                //    });
             });
+            //  this.ni = myJson['order'];
         };
         ClockImagePainter.prototype.paintStaticImage = function () {
             // Paint outer background.
@@ -117,12 +140,22 @@ var StationClock;
             */
             var ctx = this.ctx;
             this.getData();
+            //   alert(this.ni);
             ctx.save();
             ctx.beginPath();
             ctx.lineWidth = 5;
             ctx.strokeStyle = "green";
             ctx.rect(30, 30, 100, 100);
             ctx.stroke();
+            ctx.restore();
+            ctx.save();
+            var fontSize = 20;
+            ctx.font = fontSize + "px Helvetica, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = borderColor;
+            var txt = "Num:" + this.ni;
+            ctx.fillText(txt, 50, 50);
             ctx.restore();
         };
         ClockImagePainter.prototype.drawRadial = function (alpha, r1, r2, width1, width2, color) {

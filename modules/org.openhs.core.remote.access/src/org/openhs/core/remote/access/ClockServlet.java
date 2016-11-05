@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
 
 public class ClockServlet  extends HttpServlet {
 	
@@ -20,7 +21,42 @@ public class ClockServlet  extends HttpServlet {
 	 @Override
 	    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		 	System.out.println("\n\n...GET:" + m_thread.i);
+		 	System.out.println("\n\n...GET:" + m_thread.i + " >>" + request.toString() + " <<<");
+		 	
+		 	String value = request.getParameter("orderId");
+	        
+	    	if (value != null) {
+	    		System.out.println("Value:=" + value.toString());
+	    		
+	    		if (value.toString().equals("John")) {
+	   		 
+		    	response.setContentType("application/json");
+		    	response.setCharacterEncoding("UTF-8");
+		    	response.setHeader("cache-control", "no-cache");
+		    	//response.setHeader("Refresh", "1");  
+
+				 PrintWriter out = response.getWriter();
+		        
+				 //out.println("OKOKOK..... mnam!");
+				 
+				 JSONObject json = new JSONObject();
+				 json.put("city", "Mumbai");
+				 json.put("country", "India");				 				 				 
+				 json.put("order", m_thread.i);
+
+				// String output = json.toString();	
+				 System.out.println("\nJSON:" + json.toString());
+				 
+				 out.println(json.toString());
+		    	        
+				 out.flush();
+		         out.close();
+	    		}
+	    		
+	    	}
+	    	else {
+	    		System.out.println("Value:= null");
+	    	
 		 
 	    	response.setContentType("text/html");
 	    	//response.setHeader("Refresh", "1");  
@@ -30,6 +66,9 @@ public class ClockServlet  extends HttpServlet {
 	    	 print (out);
 	    	        
 	         out.close();
+	         
+	    	}
+	    	
 	        /* 
 	         try{
 	         Thread.sleep(1000);
