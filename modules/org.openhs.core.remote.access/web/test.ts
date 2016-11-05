@@ -67,6 +67,8 @@ const whiteColor       = "#FFFFFF";
 const blackColor       = "#000000";
 const borderColor      = "#C0C0C0";
 const secPtrColor      = "#CC0000";
+        
+var ni = 0;
 
 class ClockImagePainter {
 
@@ -76,8 +78,8 @@ private height:              number;
 private r:                   number;
 private centerX:             number;
 private centerY:             number;
-    
-private ni: number;
+
+
 
 constructor (canvas: HTMLCanvasElement) {
    this.ctx = canvas.getContext("2d");
@@ -86,14 +88,11 @@ constructor (canvas: HTMLCanvasElement) {
    this.r = Math.min(this.width, this.height) * 7 / 16;
    this.centerX = this.width / 2;
    this.centerY = this.height / 2;
-   this.ni = 0; 
+  // ni = 0; 
 }
  
 public getData() {
     
-    var n = 6;
-    var myJson;
-
     
         $(document).ready(function() {
  
@@ -111,30 +110,24 @@ public getData() {
             
             $.getJSON('clock', { orderId : "John"}, function(data) {
  
-                  var items = [];
-                
-                  myJson = data;
+                //  var items = [];
+                                
+                ni = parseInt(data['order']);
 /*
             
                   $.each(data, function(key, val) {
                      // alert(val);
                       items.push(val);
                   });
-                */
+                
                 //alert(items[0]);
                 
                 var day = data['order'];
-                
-                alert(data['order']);
-                                                                                     
+                */                                                                     
               
                 });           
          });
        
-    
-    
-  //  this.ni = myJson['order'];
-
     }      
 
 public paintStaticImage() {
@@ -182,27 +175,29 @@ public paintDynamicImage() {
     
    this.getData();
     
-  //   alert(this.ni);
+   //alert(this.ni);
 
    ctx.save();
    ctx.beginPath();
    ctx.lineWidth=5;
    ctx.strokeStyle="green";
-   ctx.rect(30,30,100,100);
+   ctx.rect(30,30,400,200);
    ctx.stroke();
    ctx.restore();
     
     
    ctx.save();
-   let fontSize: number = 20;
+   let fontSize: number = 62;
    ctx.font = fontSize + "px Helvetica, sans-serif";
    ctx.textAlign = "center";
    ctx.textBaseline = "middle";
    ctx.fillStyle = borderColor;
-
-    var txt = "Num:" + this.ni;
     
-   ctx.fillText(txt, 50, 50);
+  //  this.ni = APP.myData['order'];4
+
+    var txt = "N:" + ni;
+    
+   ctx.fillText(txt, 400, 150);
    ctx.restore();     
     
  }

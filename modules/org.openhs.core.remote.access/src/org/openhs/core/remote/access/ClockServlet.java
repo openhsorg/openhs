@@ -119,7 +119,7 @@ public class ClockServlet  extends HttpServlet {
 	    	
 
  			//CLOCK 2
-	    	out.println("<canvas id='clockCanvas' width='200' height='200' style='margin-top: 15px; margin-bottom:20px'>");
+	    	out.println("<canvas id='clockCanvas' width='800' height='600' style='margin-top: 15px; margin-bottom:20px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 
