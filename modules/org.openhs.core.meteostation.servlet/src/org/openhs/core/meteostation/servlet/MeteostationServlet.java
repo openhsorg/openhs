@@ -19,7 +19,7 @@ public class MeteostationServlet {
 	public void activate() {
 		
 		m_servletGauge = new ServletGauge (this);
-		m_servletDigital = new ServletDigital (this);
+		m_servletDigital = new ServletDigital (this.m_meteo);
 		
 		/* Make adress references */
 		m_servletGauge.addressNext = m_servletDigital.address;

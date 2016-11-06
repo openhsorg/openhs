@@ -11,9 +11,15 @@
 //
 // Home page: http://www.source-code.biz/snippets/typescript
 /// <reference path="jquery.d.ts" />
-var StationClock;
-(function (StationClock) {
+var DigiMeteoStation;
+(function (DigiMeteoStation) {
     //------------------------------------------------------------------------------
+    var rect = {
+        x: 0,
+        y: 0,
+        width: 200,
+        heigth: 100
+    };
     var Temperature = (function () {
         function Temperature(clockCanvas) {
             this.clockCanvas = clockCanvas;
@@ -24,6 +30,15 @@ var StationClock;
                  return new Date().getTime(); }; }
            this.timerEvent();
             */
+            clockCanvas.addEventListener('click', function (evt) {
+                var mousePos = getMousePos(clockCanvas, evt);
+                if (isInside(mousePos, rect)) {
+                    alert('clicked inside rect');
+                }
+                else {
+                    alert('clicked outside rect');
+                }
+            }, false);
         }
         Temperature.prototype.timerEvent = function () {
             var _this = this;
@@ -47,7 +62,7 @@ var StationClock;
         };
         return Temperature;
     }());
-    StationClock.Temperature = Temperature; // end class Temperature
+    DigiMeteoStation.Temperature = Temperature; // end class Temperature
     //------------------------------------------------------------------------------
     var clockLabel = "source-code.biz";
     var transparentColor = "rgba(0,0,0,0)";
@@ -56,6 +71,18 @@ var StationClock;
     var borderColor = "#C0C0C0";
     var secPtrColor = "#CC0000";
     var ni = 0;
+    var tempIn = 0;
+    var tempOut = 0;
+    var timeString = "";
+    var dateString = "";
+    var frostOutside = false;
+    var frostOutsideString = "false";
+    var imgFrost = new Image();
+    var imgFrostLoaded = false;
+    imgFrost.src = 'ores/web/servletdigital/indicatorFrost.png';
+    imgFrost.onload = function () {
+        imgFrostLoaded = true;
+    };
     var ClockImagePainter = (function () {
         function ClockImagePainter(canvas) {
             this.ctx = canvas.getContext("2d");
@@ -68,20 +95,13 @@ var StationClock;
         }
         ClockImagePainter.prototype.getData = function () {
             $(document).ready(function () {
-                /*
-                $.get("clock", { orderId : "John"},
-                   function (data, textStatus, jqXHR){
-                       // $('p').append(data.firstName);
-                       //alert("Data: ");
-                        
-                       var json = JSON.parse(data);
-                        alert(json["city"]); //mkyong
-                    }, 'json');
-                
-                */
-                $.getJSON('clock', { orderId: "John" }, function (data) {
-                    //  var items = [];
+                $.getJSON('org.openhs.core.meteostation.digital', { orderId: "John" }, function (data) {
                     ni = parseInt(data['order']);
+                    tempIn = parseFloat(data['tempIn']);
+                    tempOut = parseFloat(data['tempOut']);
+                    timeString = data['time'];
+                    dateString = data['date'];
+                    frostOutside = JSON.parse(data['frostOutside']);
                     /*
                                 
                                       $.each(data, function(key, val) {
@@ -104,27 +124,54 @@ var StationClock;
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
             // Paint inner background and border.
-            var borderWidth = this.r / 54;
+            var width = 4;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(this.centerX, this.centerY, this.r + borderWidth / 2, 0, 2 * Math.PI);
-            ctx.fillStyle = whiteColor;
+            ctx.rect(0, 0, this.width, this.height);
+            ctx.fillStyle = blackColor;
             ctx.fill();
-            ctx.lineWidth = borderWidth;
-            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = width;
+            ctx.strokeStyle = whiteColor;
             ctx.stroke();
             ctx.restore();
-            // Draw 60 clock marks.
-            for (var i = 0; i < 60; i++) {
-                var big = i % 5 == 0;
-                var rLength = big ? this.r * 10 / 44 : this.r * 3 / 44;
-                var rWidth = big ? this.r * 3 / 44 : this.r / 44;
-                var r2 = this.r * 42 / 44;
-                var angle = 2 * Math.PI / 60 * i;
-                this.drawRadial(angle, r2 - rLength, r2, rWidth, rWidth, blackColor);
-            }
-            // Draw text.
-            this.drawClockLabel();
+            ctx.save();
+            var fontSize = 80;
+            ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "white";
+            ctx.fillText("In:", 20, 50);
+            ctx.restore();
+            ctx.save();
+            ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "white";
+            ctx.fillText("Out:", 20, 150);
+            ctx.restore();
+            /*
+           const borderWidth = this.r / 54;
+           ctx.save();
+           ctx.beginPath();
+           ctx.arc(this.centerX, this.centerY, this.r + borderWidth / 2, 0, 2 * Math.PI);
+           ctx.fillStyle = whiteColor;
+           ctx.fill();
+           ctx.lineWidth = borderWidth;
+           ctx.strokeStyle = borderColor;
+           ctx.stroke();
+           ctx.restore();
+            
+           // Draw 60 clock marks.
+           for (let i = 0; i < 60; i++) {
+              let big: boolean = i % 5 == 0;
+              let rLength: number = big ? this.r * 10 / 44 : this.r * 3 / 44;
+              let rWidth: number = big ? this.r * 3 / 44 : this.r / 44;
+              let r2: number = this.r * 42 / 44;
+              let angle: number = 2 * Math.PI / 60 * i;
+              this.drawRadial(angle, r2 - rLength, r2, rWidth, rWidth, blackColor); }
+           // Draw text.
+           this.drawClockLabel();
+            */
         };
         ClockImagePainter.prototype.paintDynamicImage = function () {
             /*
@@ -139,24 +186,53 @@ var StationClock;
             */
             var ctx = this.ctx;
             this.getData();
-            //alert(this.ni);
             ctx.save();
-            ctx.beginPath();
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = "green";
-            ctx.rect(30, 30, 600, 200);
-            ctx.stroke();
-            ctx.restore();
-            ctx.save();
-            var fontSize = 62;
-            ctx.font = fontSize + "px Helvetica, sans-serif";
-            ctx.textAlign = "center";
+            var fontSize = 80;
+            ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "right";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = borderColor;
-            //  this.ni = APP.myData['order'];4
-            var txt = "N:" + ni;
-            ctx.fillText(txt, 400, 150);
+            ctx.fillStyle = "white";
+            ctx.fillText(tempIn + " °C", 550, 50);
             ctx.restore();
+            ctx.save();
+            ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "white";
+            ctx.fillText(tempOut + " °C", 550, 150);
+            ctx.restore();
+            ctx.save();
+            ctx.font = 80 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "white";
+            ctx.fillText(timeString, 20, 350);
+            ctx.restore();
+            ctx.save();
+            ctx.font = 27 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "bottom";
+            ctx.fillStyle = "white";
+            ctx.fillText(dateString, 550, 380);
+            ctx.restore();
+            if (imgFrostLoaded && frostOutside) {
+                ctx.save();
+                ctx.drawImage(imgFrost, 20, 200, 50, 50);
+                ctx.restore();
+            }
+            /*
+           ctx.save();
+           let fontSize: number = 62;
+           ctx.font = fontSize + "px Helvetica, sans-serif";
+           ctx.textAlign = "center";
+           ctx.textBaseline = "middle";
+           ctx.fillStyle = "blue";
+        
+           var txt = "N:" + ni;
+            
+           ctx.fillText(txt, 10, 150);
+           ctx.restore();
+            */
         };
         ClockImagePainter.prototype.drawRadial = function (alpha, r1, r2, width1, width2, color) {
             var sin = Math.sin(alpha);
@@ -213,4 +289,16 @@ var StationClock;
         };
         return ClockImagePainter;
     }()); // end class ClockImagePainter
-})(StationClock || (StationClock = {})); // end module StationClock
+    //Function to get the mouse position
+    function getMousePos(canvas, event) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    }
+    //Function to check whether a point is inside a rectangle
+    function isInside(pos, rect) {
+        return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.heigth && pos.y > rect.y;
+    }
+})(DigiMeteoStation || (DigiMeteoStation = {})); // end module DigiMeteoStation
