@@ -55,6 +55,7 @@ var StationClock;
     var blackColor = "#000000";
     var borderColor = "#C0C0C0";
     var secPtrColor = "#CC0000";
+    var ni = 0;
     var ClockImagePainter = (function () {
         function ClockImagePainter(canvas) {
             this.ctx = canvas.getContext("2d");
@@ -63,15 +64,36 @@ var StationClock;
             this.r = Math.min(this.width, this.height) * 7 / 16;
             this.centerX = this.width / 2;
             this.centerY = this.height / 2;
+            // ni = 0; 
         }
         ClockImagePainter.prototype.getData = function () {
             $(document).ready(function () {
-                //    $("p").click(function() {
-                //var orderId =  $("#orderId").val();
-                $.get("clock", function (data, status) {
-                    alert("Data: " + data + "\nStatus: " + status);
+                /*
+                $.get("clock", { orderId : "John"},
+                   function (data, textStatus, jqXHR){
+                       // $('p').append(data.firstName);
+                       //alert("Data: ");
+                        
+                       var json = JSON.parse(data);
+                        alert(json["city"]); //mkyong
+                    }, 'json');
+                
+                */
+                $.getJSON('clock', { orderId: "John" }, function (data) {
+                    //  var items = [];
+                    ni = parseInt(data['order']);
+                    /*
+                                
+                                      $.each(data, function(key, val) {
+                                         // alert(val);
+                                          items.push(val);
+                                      });
+                                    
+                                    //alert(items[0]);
+                                    
+                                    var day = data['order'];
+                                    */
                 });
-                //    });
             });
         };
         ClockImagePainter.prototype.paintStaticImage = function () {
@@ -117,12 +139,23 @@ var StationClock;
             */
             var ctx = this.ctx;
             this.getData();
+            //alert(this.ni);
             ctx.save();
             ctx.beginPath();
             ctx.lineWidth = 5;
             ctx.strokeStyle = "green";
-            ctx.rect(30, 30, 100, 100);
+            ctx.rect(30, 30, 600, 200);
             ctx.stroke();
+            ctx.restore();
+            ctx.save();
+            var fontSize = 62;
+            ctx.font = fontSize + "px Helvetica, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = borderColor;
+            //  this.ni = APP.myData['order'];4
+            var txt = "N:" + ni;
+            ctx.fillText(txt, 400, 150);
             ctx.restore();
         };
         ClockImagePainter.prototype.drawRadial = function (alpha, r1, r2, width1, width2, color) {

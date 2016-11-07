@@ -25,18 +25,26 @@ var btnRect = {
     heigth:100
 };    
     
+var nextServlet = "";    
+    
 export class Temperature {
 
 private clockCanvas:         HTMLCanvasElement;
 private staticImageCanvas:   HTMLCanvasElement;
+ns: string;
+aa : string;
     
 element: JQuery;
 span: JQuery;    
      
 
-constructor (clockCanvas: HTMLCanvasElement) {
+constructor (clockCanvas: HTMLCanvasElement, next: string) {
    this.clockCanvas = clockCanvas;
+   this.ns = "/org.openhs.core.meteostation"; //next;
    this.timerEvent();
+    
+    nextServlet = next; //next;
+    
     /*
    if (!Date.now) {
       Date.now = function() {
@@ -51,7 +59,8 @@ constructor (clockCanvas: HTMLCanvasElement) {
                 //alert('clicked inside rect');
                 //Go to next screen
                 $(document).ready(function() {
-                       $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
+                      // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
+                    window.location.replace(nextServlet);
                     
                     });
                 
@@ -290,7 +299,7 @@ public paintDynamicImage() {
     
     if (imgFrostLoaded  && frostOutside) {     
         ctx.save();
-        ctx.drawImage(imgFrost, 20, 200, 50, 50);
+        ctx.drawImage(imgFrost, 20, 220, 50, 50);
         ctx.restore();        
      }
     

@@ -20,10 +20,13 @@ var DigiMeteoStation;
         width: 200,
         heigth: 100
     };
+    var nextServlet = "";
     var Temperature = (function () {
-        function Temperature(clockCanvas) {
+        function Temperature(clockCanvas, next) {
             this.clockCanvas = clockCanvas;
+            this.ns = "/org.openhs.core.meteostation"; //next;
             this.timerEvent();
+            nextServlet = next; //next;
             /*
            if (!Date.now) {
               Date.now = function() {
@@ -36,7 +39,8 @@ var DigiMeteoStation;
                     //alert('clicked inside rect');
                     //Go to next screen
                     $(document).ready(function () {
-                        $.post("org.openhs.core.meteostation.digital", { orderId: "next" });
+                        // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
+                        window.location.replace(nextServlet);
                     });
                 }
                 else {
@@ -232,7 +236,7 @@ var DigiMeteoStation;
             ctx.restore();
             if (imgFrostLoaded && frostOutside) {
                 ctx.save();
-                ctx.drawImage(imgFrost, 20, 200, 50, 50);
+                ctx.drawImage(imgFrost, 20, 220, 50, 50);
                 ctx.restore();
             }
             /*

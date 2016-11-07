@@ -152,7 +152,7 @@ public class ServletDigital extends HttpServlet {
 	    			System.out.println(">>>REDIRECT...: " + response.toString());
 
 //	    			response.setContentType("text/html; charset=gb2312"); 
-	    		//	response.sendRedirect("org.openhs.core.meteostation"); //-->works
+	    			response.sendRedirect("org.openhs.core.meteostation"); //-->works
 	    			
 	    			//response.sendRedirect("http://localhost:7070/org.openhs.core.meteostation");
 	    			
@@ -178,7 +178,7 @@ public class ServletDigital extends HttpServlet {
 	    			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("org.openhs.core.meteostation");
   					dispatcher.forward(request,response);	    			
 */
-	    			doGet(request, response);
+	    	//		doGet(request, response);
 
 	    			
 	    		}	    		
@@ -212,16 +212,17 @@ public class ServletDigital extends HttpServlet {
 	    	out.println("<script src='ores/web/ServletDigital.js'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new DigiMeteoStation.Temperature(document.getElementById('clockCanvas'));");
+	    	out.println("new DigiMeteoStation.Temperature(document.getElementById('clockCanvas'), '/org.openhs.core.meteostation');");
 	    	out.println("</script>");
 	    	
 		    out.println("<form name='clock' method='' action='" + addressHome + "'>" +
 		    	    "<input type='submit' class='buttonHome' name='next' value=''>" +
 		    	    "</form>"); 
-		    
+		    /*
 		    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
 		    	    "<input type='submit' class='buttonNext' name='next' value=''>" +
-		    	    "</form>");  		    
+		    	    "</form>");  
+		    */
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	
