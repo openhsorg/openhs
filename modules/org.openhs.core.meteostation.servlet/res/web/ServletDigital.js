@@ -36,9 +36,7 @@ var DigiMeteoStation;
                     //alert('clicked inside rect');
                     //Go to next screen
                     $(document).ready(function () {
-                        $.post("org.openhs.core.meteostation.digital", { orderId: "next" }, function (data) {
-                            //alert("Data Loaded: " + data);
-                        });
+                        $.post("org.openhs.core.meteostation.digital", { orderId: "next" });
                     });
                 }
                 else {
@@ -49,8 +47,8 @@ var DigiMeteoStation;
         Temperature.prototype.timerEvent = function () {
             var _this = this;
             this.paintTemp();
-            var t = 10000 - Date.now() % 1000;
-            window.setTimeout(function () { return _this.timerEvent(); }, t);
+            var t = 1000 - Date.now() % 1000;
+            window.setTimeout(function () { return _this.timerEvent(); }, 1000);
         };
         Temperature.prototype.paintTemp = function () {
             if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {

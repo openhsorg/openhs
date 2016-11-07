@@ -51,10 +51,7 @@ constructor (clockCanvas: HTMLCanvasElement) {
                 //alert('clicked inside rect');
                 //Go to next screen
                 $(document).ready(function() {
-                       $.post("org.openhs.core.meteostation.digital", { orderId : "next"},
-                           function(data) {
-                             //alert("Data Loaded: " + data);
-                           });
+                       $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
                     
                     });
                 
@@ -67,8 +64,11 @@ constructor (clockCanvas: HTMLCanvasElement) {
     
 private timerEvent() {
    this.paintTemp();
-   let t = 10000 - Date.now() % 1000;
-   window.setTimeout(() => this.timerEvent(), t); }
+    
+   let t = 1000 - Date.now() % 1000;
+   window.setTimeout(() => this.timerEvent(), 1000); 
+    
+}
 
 private paintTemp() {    
    if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
@@ -380,27 +380,7 @@ function getMousePos(canvas, event) {
 function isInside(pos, rect){
     return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.heigth && pos.y > rect.y
 }
-/*
-var canvas = document.getElementById('myCanvas');
-var context = canvas.getContext('2d');
-//The rectangle should have x,y,width,height properties
-var rect = {
-    x:250,
-    y:350,
-    width:200,
-    heigth:100
-};
-//Binding the click event on the canvas
-canvas.addEventListener('click', function(evt) {
-    var mousePos = getMousePos(canvas, evt);
 
-    if (isInside(mousePos,rect)) {
-        alert('clicked inside rect');
-    }else{
-        alert('clicked outside rect');
-    }   
-}, false);  
-*/
 } // end module DigiMeteoStation
 
 

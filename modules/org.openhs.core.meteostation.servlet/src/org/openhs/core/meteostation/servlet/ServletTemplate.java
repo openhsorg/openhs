@@ -39,7 +39,7 @@ public class ServletTemplate extends HttpServlet {
 	   // resp.setHeader("Location", "/org.openhs.core.meteostation");    	    			
 		//resp.setHeader("Cache-Control", "no-cache"); 		
 		
-		System.out.println(">>>xxxGET...");
+		System.out.println(">>>xxxGET...: ");
        
       	PrintWriter out = resp.getWriter(); 
 	        
