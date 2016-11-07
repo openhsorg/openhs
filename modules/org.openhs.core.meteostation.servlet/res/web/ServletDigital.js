@@ -14,7 +14,7 @@
 var DigiMeteoStation;
 (function (DigiMeteoStation) {
     //------------------------------------------------------------------------------
-    var rect = {
+    var btnRect = {
         x: 0,
         y: 0,
         width: 200,
@@ -32,8 +32,14 @@ var DigiMeteoStation;
             */
             clockCanvas.addEventListener('click', function (evt) {
                 var mousePos = getMousePos(clockCanvas, evt);
-                if (isInside(mousePos, rect)) {
-                    alert('clicked inside rect');
+                if (isInside(mousePos, btnRect)) {
+                    //alert('clicked inside rect');
+                    //Go to next screen
+                    $(document).ready(function () {
+                        $.post("org.openhs.core.meteostation.digital", { orderId: "next" }, function (data) {
+                            //alert("Data Loaded: " + data);
+                        });
+                    });
                 }
                 else {
                     alert('clicked outside rect');
@@ -43,7 +49,7 @@ var DigiMeteoStation;
         Temperature.prototype.timerEvent = function () {
             var _this = this;
             this.paintTemp();
-            var t = 1000 - Date.now() % 1000;
+            var t = 10000 - Date.now() % 1000;
             window.setTimeout(function () { return _this.timerEvent(); }, t);
         };
         Temperature.prototype.paintTemp = function () {
@@ -148,6 +154,17 @@ var DigiMeteoStation;
             ctx.textBaseline = "middle";
             ctx.fillStyle = "white";
             ctx.fillText("Out:", 20, 150);
+            ctx.restore();
+            btnRect.width = 40;
+            btnRect.heigth = 100;
+            btnRect.x = this.width - btnRect.width;
+            btnRect.y = (this.height / 2) - (btnRect.heigth / 2);
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = whiteColor;
+            ctx.stroke();
             ctx.restore();
             /*
            const borderWidth = this.r / 54;

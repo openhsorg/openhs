@@ -9,13 +9,15 @@ public class ServletGauge  extends ServletTemplate {
 	ServletGauge(MeteostationServlet m_main) {
 		super(m_main);
 		
-		address = "org.openhs.core.meteostation";
+		this.address = "org.openhs.core.meteostation";
 		
 	}   	
 	
 	private static final long serialVersionUID = 1L;	
    
 	 protected void print (PrintWriter out){
+		 
+		 System.out.println(">>>xxxPrint...");
 	   	
 	   	out.println("\n<!DOCTYPE html>");
 	   	out.println("<html>");

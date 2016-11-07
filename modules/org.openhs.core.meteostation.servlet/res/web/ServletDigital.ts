@@ -18,7 +18,7 @@ module DigiMeteoStation {
 
 //------------------------------------------------------------------------------
 
-var rect = {
+var btnRect = {
     x:0,
     y:0,
     width:200,
@@ -47,8 +47,17 @@ constructor (clockCanvas: HTMLCanvasElement) {
         clockCanvas.addEventListener('click', function(evt) {
             var mousePos = getMousePos(clockCanvas, evt);
         
-            if (isInside(mousePos,rect)) {
-                alert('clicked inside rect');
+            if (isInside(mousePos, btnRect)) {
+                //alert('clicked inside rect');
+                //Go to next screen
+                $(document).ready(function() {
+                       $.post("org.openhs.core.meteostation.digital", { orderId : "next"},
+                           function(data) {
+                             //alert("Data Loaded: " + data);
+                           });
+                    
+                    });
+                
             }else{
                 alert('clicked outside rect');
             }   
@@ -58,7 +67,7 @@ constructor (clockCanvas: HTMLCanvasElement) {
     
 private timerEvent() {
    this.paintTemp();
-   let t = 1000 - Date.now() % 1000;
+   let t = 10000 - Date.now() % 1000;
    window.setTimeout(() => this.timerEvent(), t); }
 
 private paintTemp() {    
@@ -186,7 +195,20 @@ public paintStaticImage() {
    ctx.textBaseline = "middle";
    ctx.fillStyle = "white";          
    ctx.fillText("Out:", 20, 150);
-   ctx.restore();           
+   ctx.restore(); 
+    
+    btnRect.width = 40;
+    btnRect.heigth = 100;
+    btnRect.x = this.width - btnRect.width;
+    btnRect.y = (this.height / 2) - (btnRect.heigth / 2);    
+    
+   ctx.save();   
+   ctx.beginPath();
+   ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
+   ctx.lineWidth = 2;
+   ctx.strokeStyle = whiteColor;
+   ctx.stroke();    
+   ctx.restore();    
 
     
     /*
@@ -248,16 +270,14 @@ public paintDynamicImage() {
    ctx.fillStyle = "white";          
    ctx.fillText(tempOut + " °C", 550, 150);
    ctx.restore();     
-    
-    
+        
    ctx.save();
    ctx.font = 80 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "left";
    ctx.textBaseline = "middle";
    ctx.fillStyle = "white";              
    ctx.fillText(timeString, 20, 350);
-   ctx.restore();      
-    
+   ctx.restore();          
     
    ctx.save();
    ctx.font = 27 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
