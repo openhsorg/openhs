@@ -3,6 +3,7 @@ package org.openhs.core.infostation.servlet;
 import javax.servlet.ServletException;
 
 import org.openhs.core.infostation.Infostation;
+import org.openhs.core.meteostation.Meteostation;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
@@ -41,5 +42,6 @@ public class InfostationServlet {
 		this.m_httpService.unregister("/" + m_white.address);
 		this.m_httpService.unregister("/" + m_kitchen.address);
 	}
+	
 
 }

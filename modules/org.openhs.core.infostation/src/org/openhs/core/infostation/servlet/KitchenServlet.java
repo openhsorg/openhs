@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.openhs.core.infostation.Infostation;
+import org.openhs.core.meteostation.Meteostation;
 
 
 public class KitchenServlet extends HttpServlet {
 
 	Infostation	m_infostation = null;
+	Meteostation m_meteo = null;	
 	
 	String address = "kitchen";
 	String addressHome = "/";
@@ -36,6 +38,7 @@ public class KitchenServlet extends HttpServlet {
 	
 	KitchenServlet(Infostation m_infostation) {
 		this.m_infostation = m_infostation;		
+		this.m_meteo = m_infostation.getMeteostation();
 	}   	
 
 	 @Override
@@ -49,7 +52,7 @@ public class KitchenServlet extends HttpServlet {
 	    	if (value != null) {
 	    		System.out.println("Value:=" + value.toString());
 	    		
-	    		if (value.toString().equals("John")) {
+	    		if (value.toString().equals("InfoData")) {
 	    				    		
 	    			/*
 	    			 * Get data from meteo module.
@@ -82,8 +85,8 @@ public class KitchenServlet extends HttpServlet {
 	    			json.put("frostOutside", new Boolean(frostOutside));
 
 	    			
-	    		//	System.out.println("tempIn:=" + tempIn);
-	    		//	System.out.println("tempOut:=" + tempOut);
+	    			System.out.println("tempIn:=" + tempIn);
+	    			System.out.println("tempOut:=" + tempOut);
 
 	    			//String output = json.toString();	
 	    			System.out.println("\nJSON:" + json.toString());
@@ -141,29 +144,32 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("\n<!DOCTYPE html>");
 	    	out.println("<html>");
 	    	out.println("<head>");
-	    	out.println("<title>Digital meteo</title>");	
+	    	out.println("<meta http-equiv='content-type' content='text/html; charset=UTF8'>");
+	    	//out.println("<title>Digital meteo</title>");	
 	    	//out.println("<meta HTTP-EQUIV='Pragma' content='no-cache'>");
 	    	//out.println("<meta HTTP-EQUIV='Expires' content='-1'>");
 	    	
-	    	out.println("<script src='/infores/servlets/kitchen/jquery-3.1.1.min.js'></script>");
-	    	out.println("<link href='/infores/servlets/kitchen/styles.css' rel='stylesheet' type='text/css'>");
+	    	out.println("<script src='infores/servlets/kitchen/jquery-3.1.1.min.js'></script>");
+	    	out.println("<link href='infores/servlets/kitchen/styles.css' rel='stylesheet' type='text/css'>");
 	    	    	
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='clockCanvas' class=canvasDigital width='600' height='400' style='margin-top: -200px; margin-left: -300px'>");
+	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='600' height='400' style='margin-top: -200px; margin-left: -300px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 
-	    	out.println("<script src='/infores/servlets/kitchen/KitchenServlet.js'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('clockCanvas'), '/org.openhs.core.meteostation');");
+	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('infoCanvas'), '/org.openhs.core.meteostation');");
 	    	out.println("</script>");
 	    	
+	    	/*
 		    out.println("<form name='clock' method='' action='" + addressHome + "'>" +
 		    	    "<input type='submit' class='buttonHome' name='next' value=''>" +
 		    	    "</form>"); 
+		    */
 		    /*
 		    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
 		    	    "<input type='submit' class='buttonNext' name='next' value=''>" +
@@ -175,8 +181,7 @@ public class KitchenServlet extends HttpServlet {
 	    }  
 	    
 	    protected void getInfoData() {
-	    	
-	    	/*
+	    		    	
 	    	 
 		   	tempOut = m_meteo.getTempOut();
 		   	tempIn = m_meteo.getTempIn();	   
@@ -208,7 +213,7 @@ public class KitchenServlet extends HttpServlet {
 		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
 		    date = format2.format(curDate); 	
 		    
-		    */
+		    
 	    	
 	    }
  	

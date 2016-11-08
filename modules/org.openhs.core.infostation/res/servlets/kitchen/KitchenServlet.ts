@@ -18,14 +18,22 @@ module KitchenInfoStation {
 
 //------------------------------------------------------------------------------
 
-var btnRect = {
+var stopwatchRect = {
     x:0,
     y:0,
-    width:200,
-    heigth:100
-};    
+    width:0,
+    heigth:0
+};  
     
+var stopwatchAppRect = {
+    x:0,
+    y:0,
+    width:0,
+    heigth:0
+};     
+        
 var nextServlet = "";    
+var stopwatchApp = false;    
     
 export class Infoscreen {
 
@@ -44,7 +52,7 @@ constructor (clockCanvas: HTMLCanvasElement, next: string) {
    this.timerEvent();
     
     nextServlet = next; //next;
-    
+        
     /*
    if (!Date.now) {
       Date.now = function() {
@@ -55,42 +63,59 @@ constructor (clockCanvas: HTMLCanvasElement, next: string) {
         clockCanvas.addEventListener('click', function(evt) {
             var mousePos = getMousePos(clockCanvas, evt);
         
-            if (isInside(mousePos, btnRect)) {
+            if (isInside(mousePos, stopwatchRect)) {
                 //alert('clicked inside rect');
                 //Go to next screen
+                /*
                 $(document).ready(function() {
                       // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
                     window.location.replace(nextServlet);
                     
                     });
+                */
                 
-            }else{
-                alert('clicked outside rect');
+                //alert('STOPWATCH clicked...');
+                
+                stopwatchApp = true;
+                
+                this.paintTemp();  
+                
+            } else if (isInside(mousePos, stopwatchAppRect) && stopwatchApp) {
+                
+                stopwatchApp = false;
+                
+                this.paintTemp();  
+                                
+              }
+            else {
+                //alert('clicked outside rect');
             }   
         }, false);      
 
     }  
     
 private timerEvent() {
-   this.paintTemp();
-    
+   this.paintTemp();    
    let t = 1000 - Date.now() % 1000;
    window.setTimeout(() => this.timerEvent(), 1000); 
     
 }
 
-private paintTemp() {    
+private paintTemp() {
+    
    if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
       this.createStaticImageCanvas(); }    
+    
    this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
-   new ClockImagePainter(this.clockCanvas).paintDynamicImage();
+   new ImagePainter(this.clockCanvas).paintDynamicImage();
+    
  }
 
 private createStaticImageCanvas() {
    let canvas: HTMLCanvasElement = document.createElement("canvas");
    canvas.width = this.clockCanvas.width;
    canvas.height = this.clockCanvas.height;
-   new ClockImagePainter(canvas).paintStaticImage();
+   new ImagePainter(canvas).paintStaticImage();
    this.staticImageCanvas = canvas; }
 
 } // end class Temperature
@@ -103,7 +128,16 @@ const whiteColor       = "#FFFFFF";
 const blackColor       = "#000000";
 const borderColor      = "#C0C0C0";
 const secPtrColor      = "#CC0000";
-        
+const textColor        = "#000000";
+const circleColor        = "#c0c0c0";
+let fontSizeTempIn:      number = 54;
+let fontSizeTempOut:      number = 40;    
+let fontSizeWind:      number = 24;      
+let fontSizeHum:      number = 27;
+let fontSizeTime:      number = fontSizeTempOut;
+let fontSizeDate:      number = fontSizeWind;         
+    
+    
 var ni = 0;
 var tempIn = 0;
 var tempOut = 0;
@@ -111,16 +145,53 @@ var timeString = "";
 var dateString = "";
 var frostOutside = false;
 var frostOutsideString = "false";
+  
+var cloudPerc = 22.6;    
+var imgSunny = new Image();
+var imgCloudy = new Image();    
+var imgWind = new Image();
+var imgHum = new Image();
+var imgVoiceMessage = new Image();
+var imgStopwatch = new Image();           
+var imgSunnyLoaded = false;
+var imgCloudyLoaded = false;    
+var imgWindLoaded = false;
+var imgHumLoaded = false;
+var imgVoiceMessageLoaded = false;
+var imgStopwatchLoaded = false;
+imgSunny.src = '/infores/servlets/kitchen/sunny.png';
+imgCloudy.src = '/infores/servlets/kitchen/cloudy.png';    
+imgWind.src = '/infores/servlets/kitchen/wind.png';
+imgHum.src = '/infores/servlets/kitchen/drop.png';
+imgVoiceMessage.src = '/infores/servlets/kitchen/voicemessage.png';
+imgStopwatch.src = '/infores/servlets/kitchen/stopwatch.png';            
+
+
+imgSunny.onload = function(){
+  imgSunnyLoaded = true;
+}   
     
-var imgFrost = new Image();
-var imgFrostLoaded = false;
-imgFrost.src = '/infores/servlets/kitchen/indicatorFrost.png';
+imgCloudy.onload = function(){
+  imgCloudyLoaded = true;
+}     
+    
+imgWind.onload = function(){
+  imgWindLoaded = true;
+} 
 
-imgFrost.onload = function(){
-  imgFrostLoaded = true;
-}    
-
-class ClockImagePainter {
+imgHum.onload = function(){
+  imgHumLoaded = true;
+}     
+    
+imgVoiceMessage.onload = function(){
+  imgVoiceMessageLoaded = true;
+} 
+    
+imgStopwatch.onload = function(){
+  imgStopwatchLoaded = true;
+}     
+        
+class ImagePainter {
 
 private ctx:                 CanvasRenderingContext2D;
 private width:               number;
@@ -129,7 +200,6 @@ private r:                   number;
 private centerX:             number;
 private centerY:             number;
 
-
 constructor (canvas: HTMLCanvasElement) {
    this.ctx = canvas.getContext("2d");
    this.width = canvas.width;
@@ -137,6 +207,18 @@ constructor (canvas: HTMLCanvasElement) {
    this.r = Math.min(this.width, this.height) * 7 / 16;
    this.centerX = this.width / 2;
    this.centerY = this.height / 2;
+    
+    stopwatchRect.x = (this.width / 2) + 180;
+    stopwatchRect.y = (this.height / 2) + 20;    
+    stopwatchRect.width = 60;
+    stopwatchRect.heigth = 60;
+
+    stopwatchAppRect.width = 300;
+    stopwatchAppRect.heigth = 150;       
+    stopwatchAppRect.x = (this.width / 2) - (stopwatchAppRect.width / 2);
+    stopwatchAppRect.y = (this.height / 2) - (stopwatchAppRect.heigth / 2);    
+ 
+    
   // ni = 0; 
 }
  
@@ -144,7 +226,7 @@ public getData() {
         
         $(document).ready(function() {
             
-            $.getJSON('org.openhs.core.meteostation.digital', { orderId : "John"}, function(data) {
+            $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
                 ni = parseInt(data['order']);
                 tempIn = parseFloat(data['tempIn']);
                 tempOut = parseFloat(data['tempOut']);
@@ -173,28 +255,32 @@ public paintStaticImage() {
    // Paint outer background.
    const ctx = this.ctx;
    ctx.save();
-   ctx.fillStyle = transparentColor;
+   ctx.fillStyle = whiteColor;
    ctx.fillRect(0, 0, this.width, this.height);
    ctx.restore();
     
    // Paint inner background and border.
    const width = 4;
+    
    ctx.save();
    ctx.beginPath();
    ctx.rect(0, 0, this.width, this.height);
-   ctx.fillStyle = blackColor;
+   ctx.fillStyle = whiteColor;
    ctx.fill();   
    ctx.lineWidth = width;
-   ctx.strokeStyle = whiteColor;
+ //  ctx.strokeStyle = blackColor;
+   ctx.strokeStyle = transparentColor;
    ctx.stroke();
-   ctx.restore();   
+   ctx.restore(); 
+     
+     /*
     
    ctx.save();
    let fontSize: number = 80;
-   ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.font = fontSizeTemp + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "left";
    ctx.textBaseline = "middle";
-   ctx.fillStyle = "white";          
+   ctx.fillStyle = textColor;          
    ctx.fillText("In:", 20, 50);
    ctx.restore();       
     
@@ -202,10 +288,11 @@ public paintStaticImage() {
    ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "left";
    ctx.textBaseline = "middle";
-   ctx.fillStyle = "white";          
+   ctx.fillStyle = textColor;          
    ctx.fillText("Out:", 20, 150);
    ctx.restore(); 
-    
+    */
+    /*
     btnRect.width = 40;
     btnRect.heigth = 100;
     btnRect.x = this.width - btnRect.width;
@@ -215,10 +302,10 @@ public paintStaticImage() {
    ctx.beginPath();
    ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
    ctx.lineWidth = 2;
-   ctx.strokeStyle = whiteColor;
+   ctx.strokeStyle = 'green';
    ctx.stroke();    
    ctx.restore();    
-
+*/
     
     /*
    const borderWidth = this.r / 54;
@@ -262,29 +349,126 @@ public paintDynamicImage() {
    const ctx = this.ctx;
     
    this.getData();
+    
+    //Prediction
+    if (imgSunnyLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgSunny, 0, 0, 150, 150);
+        ctx.restore();        
+     }    
+    
+    //Wind
+    if (imgWindLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgWind, 140, 70, 50, 50);
+        ctx.restore();        
+     }     
+    
+    //Hum
+    if (imgHumLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgHum,  (this.width / 2) + 10 , (this.height / 2) + 70, 60, 60);
+        ctx.restore();        
+     }      
+    
+    //Voice message
+    if (imgVoiceMessageLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgVoiceMessage,  (this.width / 2) - 220 , (this.height / 2) + 20, 60, 60);
+        ctx.restore();        
+     }   
+    
+    //Stopwatch
+    if (imgStopwatchLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgStopwatch,  (this.width / 2) + 180 , (this.height / 2) + 20, 60, 60);
+        ctx.restore();        
+     }     
         
+   //Outside temperature 
    ctx.save();
-   let fontSize: number = 80;
-   ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.font = fontSizeTempOut + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
-   ctx.fillStyle = "white";          
-   ctx.fillText(tempIn + " °C", 550, 50);
+   ctx.fillStyle = textColor;          
+   ctx.fillText(tempOut + " \u00B0C", 290, 50);
    ctx.restore();  
     
+    //Wind outside
    ctx.save();
-   ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
-   ctx.fillStyle = "white";          
-   ctx.fillText(tempOut + " °C", 550, 150);
+   ctx.fillStyle = textColor;          
+   ctx.fillText("120 m/s", 300, 90);
+   ctx.restore();          
+    
+    //Time
+   ctx.save();
+   ctx.font = fontSizeTime + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(timeString, 580, 50);
+   ctx.restore();    
+    
+    //Date
+   ctx.save();
+   ctx.font = fontSizeDate + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(dateString, 580, 90);
    ctx.restore();     
+    
+    
+    //Inside temperature
+   ctx.save();
+   ctx.font = fontSizeTempIn + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "center";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(tempIn + " \u00B0C", (this.width / 2) , (this.height / 2) + 50);
+   ctx.restore();       
+    
+    //Humidity
+   ctx.save();
+   ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText("44", (this.width / 2) , (this.height / 2) + 105);
+   ctx.restore();       
+    
+   //Draw arc...
+   ctx.save();
+   ctx.beginPath();
+   ctx.arc(this.width / 2, this.height / 2 + 50, 120, 0, 2 * Math.PI, false); 
+   ctx.lineWidth = 1;
+   ctx.strokeStyle = circleColor;
+   ctx.stroke();
+   ctx.restore(); 
+    
+    if (stopwatchApp) {
         
+           ctx.save();
+           ctx.beginPath();
+           ctx.rect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth);
+           ctx.fillStyle = "blue";
+           ctx.fill();   
+           ctx.lineWidth = 5;
+           ctx.strokeStyle = transparentColor;
+           ctx.stroke();
+           ctx.restore();         
+        
+        }
+       
+    /*
    ctx.save();
    ctx.font = 80 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "left";
    ctx.textBaseline = "middle";
-   ctx.fillStyle = "white";              
+   ctx.fillStyle = textColor;              
    ctx.fillText(timeString, 20, 350);
    ctx.restore();          
     
@@ -292,7 +476,7 @@ public paintDynamicImage() {
    ctx.font = 27 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "right";
    ctx.textBaseline = "bottom";
-   ctx.fillStyle = "white";              
+   ctx.fillStyle = textColor;              
    ctx.fillText(dateString, 550, 380);
    ctx.restore();          
  
@@ -302,7 +486,7 @@ public paintDynamicImage() {
         ctx.drawImage(imgFrost, 20, 220, 50, 50);
         ctx.restore();        
      }
-    
+    */
     
 
     /*
