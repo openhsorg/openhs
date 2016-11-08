@@ -15,7 +15,7 @@ public class ServletTemplate extends HttpServlet {
 
 	Infostation	m_infostation = null;
 	
-	String address = "";
+	String address = "kitchen";
 	String addressHome = "/";
 	String addressPrev = "/";
 	String addressNext = "/";	

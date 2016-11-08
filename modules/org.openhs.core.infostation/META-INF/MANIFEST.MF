@@ -7,5 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/component.xml
 Import-Package: javax.servlet;version="3.1.0",
  javax.servlet.http;version="3.1.0",
+ org.json;version="20160810.0.0",
  org.openhs.core.commons,
  org.osgi.service.http;version="1.2.1"
