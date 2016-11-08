@@ -254,14 +254,16 @@ public getData() {
 public paintStaticImage() {
    // Paint outer background.
    const ctx = this.ctx;
+    
    ctx.save();
    ctx.fillStyle = whiteColor;
    ctx.fillRect(0, 0, this.width, this.height);
    ctx.restore();
     
+    
    // Paint inner background and border.
    const width = 4;
-    
+    /*
    ctx.save();
    ctx.beginPath();
    ctx.rect(0, 0, this.width, this.height);
@@ -272,7 +274,7 @@ public paintStaticImage() {
    ctx.strokeStyle = transparentColor;
    ctx.stroke();
    ctx.restore(); 
-     
+     */
      /*
     
    ctx.save();
@@ -401,10 +403,10 @@ public paintDynamicImage() {
    ctx.textBaseline = "middle";
    ctx.fillStyle = textColor;          
    ctx.fillText("120 m/s", 300, 90);
-   ctx.restore();          
+  // ctx.restore();          
     
     //Time
-   ctx.save();
+   //ctx.save();
    ctx.font = fontSizeTime + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
@@ -413,7 +415,7 @@ public paintDynamicImage() {
    ctx.restore();    
     
     //Date
-   ctx.save();
+  // ctx.save();
    ctx.font = fontSizeDate + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
@@ -453,13 +455,23 @@ public paintDynamicImage() {
         
            ctx.save();
            ctx.beginPath();
-           ctx.rect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth);
-           ctx.fillStyle = "blue";
+           //ctx.rect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth);
+           this.roundRect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth, 40) 
+           ctx.fillStyle = "grey";
            ctx.fill();   
            ctx.lineWidth = 5;
            ctx.strokeStyle = transparentColor;
            ctx.stroke();
-           ctx.restore();         
+           ctx.restore();     
+        
+           ctx.save();
+           ctx.font = 38 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+           ctx.textAlign = "left";
+           ctx.textBaseline = "middle";
+           ctx.fillStyle = whiteColor;          
+           ctx.fillText("Stopwatch...", stopwatchAppRect.x + 40, stopwatchAppRect.y + 40);
+           ctx.restore();          
+          
         
         }
        
@@ -558,6 +570,23 @@ private drawClockLabel() {
    ctx.fillStyle = borderColor;
    ctx.fillText(clockLabel, this.centerX, this.centerY + this.r / 2);
    ctx.restore(); }
+    
+private roundRect(x: number, y: number, width: number, height: number, radius: number) {
+  const ctx = this.ctx;
+      
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+      
+}
         
 } // end class ClockImagePainter
     
