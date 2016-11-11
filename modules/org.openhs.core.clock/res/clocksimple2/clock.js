@@ -2,8 +2,6 @@
 document.addEventListener('DOMContentLoaded', startTimer);
 function startTimer()
 {
-	//setInterval(updateClocks, 1000);
-	
 	var canvas = document.getElementById("clockCanvas");
 	//var context = canvas.getContext("2d");
 	var nextAddress = document.getElementById("myScript").getAttribute("next");	
@@ -34,7 +32,6 @@ function startTimer()
 		  BBoffsetX=BB.left;
 		  BBoffsetY=BB.top;
 		}	
-	
 	
 	setInterval(updateClocks, 1000);
 }
