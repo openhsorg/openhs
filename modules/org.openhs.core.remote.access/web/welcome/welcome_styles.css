@@ -17,7 +17,7 @@ body {
     background-position: center;     
 }
 
-.button, .button1, .button2, .button3 {
+.button, .button1, .button2, .button3, .buttonKitchen {
     height: 150px;
     width: 150px;
     padding: 0;
@@ -35,8 +35,8 @@ body {
 }
 
 .button {
-    margin-left:-175px;
-	margin-top:-175px;
+    margin-left:-87px;
+	margin-top:175px;
     background-image: url(/web/welcome/admin.png);
 	background-repeat:no-repeat;	
 }
@@ -58,3 +58,9 @@ body {
 	background-repeat:no-repeat;        
 }
 
+.buttonKitchen {
+    margin-left:-175px;
+	margin-top:-175px;	
+    background-image: url(/web/welcome/home.png);
+	background-repeat:no-repeat;        
+}

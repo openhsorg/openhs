@@ -133,8 +133,20 @@ public class KitchenServlet extends HttpServlet {
 	    				    			
 	    		}	    		
 	    	}
+	    	
+	    	
+	    	value = request.getParameter("Kitchen");
+	    	
+	    	if (value != null) {
+	    		System.out.println("Value:=" + value.toString());
+	    		
+	    		if (value.toString().equals("Kitchen")) {
+	    			
+	    			  doGet(request, response);			    			
+	    		}	    		
+	    	}	    	
 	        
-	    //    doGet(request, response);
+	      
 	        
 	    }
 	    

@@ -61,18 +61,13 @@ public class WelcomeServlet extends HttpServlet {
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
     	out.println("<head>");  
-    	    	    	
-    	//out.println("<script src='web/statistics/RGraph.common.core.js'></script>");
-    	//out.println("<script src='web/statistics/RGraph.line.js'></script>");
 
-   // 	out.println("<script src='web/statistics/graph.jsp'></script>");  
     	out.println("<link href='/web/welcome/welcome_styles.css' rel='stylesheet' type='text/css'>");
     
     	out.println("<title>OpenHS Welcome...</title>");
     	
     	out.print("</head>\n");
-    	out.print("<body>\n");
-    	
+    	out.print("<body>\n");        	    	
     	
         out.println("<form name='admin' method='post' action='/openhs'>" +
         "<input type='submit' class='button' name='Administration' value='Administration'>" +
@@ -89,8 +84,10 @@ public class WelcomeServlet extends HttpServlet {
         out.println("<form name='clock' method='' action='/clock'>" +
         "<input type='submit' class='button3' name='Clock' value=''>" +
         "</form>");   
-    	
-    	//out.println("Testing...asfsdfdsf");
+        
+        out.println("<form name='kitchen' method='post' action='/kitchen'>" +
+        "<input type='submit' class='buttonKitchen' name='Kitchen' value='Kitchen'>" +
+        "</form>");     	        
     	
     	out.println("</body>");
     	out.println("</html>");    	

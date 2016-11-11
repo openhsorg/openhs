@@ -11,7 +11,6 @@ public class InfostationServlet {
 	
 	Infostation	m_infostation = null;
 	HttpService m_httpService = null;
-	ServletWhite	m_white = null;
 	KitchenServlet	m_kitchen = null;
 	
 	public InfostationServlet(Infostation m_infostation, HttpService m_httpService) {
@@ -19,13 +18,11 @@ public class InfostationServlet {
 		this.m_infostation = m_infostation;
 		this.m_httpService = m_httpService;
 			
-		m_white = new ServletWhite (m_infostation);
 		m_kitchen = new KitchenServlet (m_infostation);
 				
 		/* Make adress references */
 										
         try {
-            m_httpService.registerServlet("/" + m_white.address, m_white, null, null);   
             m_httpService.registerServlet("/" + m_kitchen.address, m_kitchen, null, null);  
             m_httpService.registerResources("/infores", "/res", null);            
                         
@@ -39,7 +36,6 @@ public class InfostationServlet {
 	}
 	
 	public void unregister() {
-		this.m_httpService.unregister("/" + m_white.address);
 		this.m_httpService.unregister("/" + m_kitchen.address);
 	}
 	
