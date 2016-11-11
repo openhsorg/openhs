@@ -81,7 +81,7 @@ public class WelcomeServlet extends HttpServlet {
         "<input type='submit' class='button2' name='Statisticss' value=''>" +
         "</form>");          
 
-        out.println("<form name='clock' method='' action='/clock'>" +
+        out.println("<form name='clock' method='' action='/org.openhs.core.clock.servlet.ClockSimpleServlet'>" +
         "<input type='submit' class='button3' name='Clock' value=''>" +
         "</form>");   
         
