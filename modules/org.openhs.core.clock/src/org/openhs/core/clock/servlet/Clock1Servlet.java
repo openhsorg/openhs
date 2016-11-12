@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ClockSimpleServlet extends HttpServlet {
+public class Clock1Servlet extends HttpServlet {
 	
-	String address = "org.openhs.core.clock.servlet.ClockSimpleServlet";
+	String address = "org.openhs.core.clock.servlet.Clock1Servlet";
 	String addressHome = "/";
 	String addressPrev = "/";
 	String addressNext = "/";		
@@ -42,22 +42,21 @@ public class ClockSimpleServlet extends HttpServlet {
 	    	out.println("<html>");
 	    	out.println("<head>");
 	    	out.println("<meta http-equiv='content-type' content='text/html; charset=UTF8'>");
-
-	    //	out.println("<script src='org.openhs.core.clock.servlet.res/jquery-3.1.1.min.js'></script>");
-	    	out.println("<link href='org.openhs.core.clock.servlet.res/clocksimple/styles.css' rel='stylesheet' type='text/css'>");		    	    	
-	    	out.println("<script src='org.openhs.core.clock.servlet.res/clocksimple/march.js' type='text/javascript'></script>");
+	    	out.println("<link href='org.openhs.core.clock.servlet.res/clock1/styles.css' rel='stylesheet' type='text/css'>");		    	    	
+			
+			out.println("<script type='text/javascript' src='org.openhs.core.clock.servlet.res/clock1/canvas_clock.js'></script>");					  	
 	    	
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='clockCanvas' class=canvasScreen charset='utf-8' width='600' height='600' style='margin-top: -300px; margin-left: -300px'>");		    			    	
+	    	out.println("<canvas id='clock1_' class=canvasScreen charset='utf-8' width='600' height='600' style='margin-top: -300px; margin-left: -300px'>");		    			    	
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
-
-	    	out.println("<script id='myScript' src='org.openhs.core.clock.servlet.res/clocksimple/start.js' next='" + addressNext +"' charset='utf-8'></script>");
+	    	
+	    	out.println("<script id='clock1script' type='text/javascript' src='org.openhs.core.clock.servlet.res/clock1/start.js' next='" + addressNext + "'></script>");	    	
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-
+	
 }

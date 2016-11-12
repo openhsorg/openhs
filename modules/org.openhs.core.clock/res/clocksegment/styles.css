@@ -10,10 +10,9 @@ h2 {
 }
 
 body {
-	/*
-    background-image: url("/infores/servlets/white/bkg.png");
-    */
-    background-color: #000000;
+	
+    background-image: url("/org.openhs.core.clock.servlet.res/clocksegment/plexiglas.png");    
+    background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;     
@@ -47,16 +46,3 @@ body {
 	
 }
 
-
-#current-time {
-    display: block;
-    font-weight: bold;
-    text-align: center;
-    width: 200px;
-    padding: 10px;
-}
-
-#clock {
-    padding: 10px;
-    border:1px solid #000000;
-}

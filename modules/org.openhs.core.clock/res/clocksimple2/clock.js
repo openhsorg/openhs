@@ -61,39 +61,13 @@ function updateClocks()
 	Math.TAU = 2 * Math.PI;
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	
 
-	
-	/*
-    canvas.addEventListener('click', function(evt) {
-        var mousePos = getMousePos(canvas, evt);
-    
-        if (isInside(mousePos, rectTst)) {            
-            alert('STOPWATCH clicked...');
-            
-        } else {
-            alert('clicked outside rect');
-        }   
-    }, false); 	
-	
-	function getMousePos(canvas, event) {
-	    var rect = canvas.getBoundingClientRect();
-	    return {
-	        x: event.clientX - rect.left,
-	        y: event.clientY - rect.top
-	    };
-	}	
-	
-	function isInside(pos, rect){
-	    return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.heigth && pos.y > rect.y;
-	}	
-	*/
 	// Draw background
 
 	for (var i = 0; i < 12; i++)
 	{
-		var innerDist		= (i % 3) ? 0.75 : 0.7;
-		var outerDist		= (i % 3) ? 0.95 : 1.0;
+		var innerDist		= (i % 3) ? 0.85 : 0.75;
+		var outerDist		= (i % 3) ? 1.0 : 1.0;
 		context.lineWidth 	= (i % 3) ? 4 : 10;
 		context.strokeStyle = '#999999';
 		
@@ -130,11 +104,11 @@ function updateClocks()
 	var mProgress =                 (m/60) +        (1/60)*(s/60);
 	var sProgress =                                        (s/60);
 	
-	drawArm( hProgress, 10, 1/2, '#000000'); // Hour
-	drawArm( hProgress, 10, -5/clockRadius, '#000000'); // Hour
+	drawArm( hProgress, 10, 1/2, '#FFFFFF'); // Hour
+	drawArm( hProgress, 10, -5/clockRadius, '#FFFFFF'); // Hour
 
-	drawArm( mProgress,  4, 3/4, '#000000'); // Minute
-	drawArm( mProgress,  4, -2/clockRadius, '#000000'); // Minute
+	drawArm( mProgress,  4, 3/4, '#FFFFFF'); // Minute
+	drawArm( mProgress,  4, -2/clockRadius, '#FFFFFF'); // Minute
 
 	drawArm( sProgress,  2,   1, '#FF0000'); // Second
 	drawArm( sProgress,  2, -10/clockRadius, '#FF0000'); // Second

@@ -16,8 +16,7 @@ public class ClockSimple2Servlet extends HttpServlet {
 	String addressNext = "/";		
 
 	 @Override
-	    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {   	
-	 
+	    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {   		 
     		response.setContentType("text/html");
 	    	response.setCharacterEncoding("UTF-8");
 	    	response.setHeader("cache-control", "no-cache");		    	
@@ -31,33 +30,7 @@ public class ClockSimple2Servlet extends HttpServlet {
 	    }
 
 	    @Override
-	    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	        /*
-	    	System.out.println("\n\n...POST");
-	        
-		 	String value = request.getParameter("orderId");
-	        
-	    	if (value != null) {
-	    		System.out.println("Value:=" + value.toString());
-	    		
-	    		if (value.toString().equals("next")) {
-	    			
-	    				    			
-	    		}	    		
-	    	}
-	    	
-	    	
-	    	value = request.getParameter("Kitchen");
-	    	
-	    	if (value != null) {
-	    		System.out.println("Value:=" + value.toString());
-	    		
-	    		if (value.toString().equals("Kitchen")) {
-	    			
-	    			  doGet(request, response);			    			
-	    		}	    		
-	    	}	    	
-	        */
+	    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	        
 	    	doGet(request, response);
 	        
 	    }
@@ -72,60 +45,18 @@ public class ClockSimple2Servlet extends HttpServlet {
 
 	    //	out.println("<script src='org.openhs.core.clock.servlet.res/jquery-3.1.1.min.js'></script>");
 	    	out.println("<link href='org.openhs.core.clock.servlet.res/clocksimple2/styles.css' rel='stylesheet' type='text/css'>");		    	    	
-	   // 	out.println("<script src='org.openhs.core.clock.servlet.res/clocksimple2/march.js' type='text/javascript'></script>");
 	    	
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='clockCanvas' class=canvasScreen charset='utf-8' width='800' height='600' style='margin-top: -250px; margin-left: -350px'>");		    			    	
+	    	out.println("<canvas id='clockCanvas' class=canvasScreen charset='utf-8' width='600' height='600' style='margin-top: -300px; margin-left: -300px'>");		    			    	
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 
 	    	out.println("<script id='myScript' src='org.openhs.core.clock.servlet.res/clocksimple2/clock.js' next='" + addressNext +"' charset='utf-8'></script>");
-/*		    	
-	    	out.println("<script type='text/javascript'>");
-	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('infoCanvas'), '/org.openhs.core.meteostation');");
-	    	out.println("</script>");
-	    	*/
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	    
-	    protected void getInfoData() {
-	    		    	
-	    	 /*
-		   	tempOut = m_meteo.getTempOut();
-		   	tempIn = m_meteo.getTempIn();	   
-		   	
-		    //Forecast indicator
-		    cloudPerc = m_meteo.getCloudsForecast();
-		    tempForecast = m_meteo.getTempForecast();
-		    		    		    
-		    if (cloudPerc <= 25.0) {
-		    	imageFcs = "/ores/web/sunny.png"; 
-		    } else if (cloudPerc > 25.0 && cloudPerc <= 75.0) {
-		    	imageFcs = "/ores/web/clouds.png";
-		    } else {
-		    	imageFcs = "/ores/web/rainy.png";
-		    }		   
-		    
-		    //Frost indicator
-		    
-		    if (tempOut <= 0 || tempIn <= 0.0) {
-		    	frostOutside = true;		    
-		    } else {
-		    	frostOutside = false;
-		    }
-		    
-		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-		    time = format.format(curDate); 	 		  
-		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
-		    date = format2.format(curDate); 	
-		    */
-		    
-	    	
-	    }
+
 }
