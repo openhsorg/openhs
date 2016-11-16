@@ -73,7 +73,7 @@ public class WelcomeServlet extends HttpServlet {
         "<input type='submit' class='button' name='Administration' value='Administration'>" +
         "</form>");     	
         
-        out.println("<form name='meteo' method='' action='/org.openhs.core.meteostation'>" +
+        out.println("<form name='meteo' method='' action='/org.openhs.core.meteostation.digital'>" +
         "<input type='submit' class='button1' name='Meteo' value='Meteo'>" +
         "</form>");  
         

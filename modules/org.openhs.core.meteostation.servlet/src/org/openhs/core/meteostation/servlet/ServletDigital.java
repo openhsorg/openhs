@@ -60,16 +60,9 @@ public class ServletDigital extends HttpServlet {
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
-	    		//	response.setHeader("cache-control", "no-cache");
-	    	//		response.setHeader("Pragma", "No-cache"); 
-	    		//	response.setHeader("Cache-Control", "no-cache"); 
-	    	//		response.setDateHeader("Expires", 1);	    			
-	    			//response.setHeader("Refresh", "1");  
 
 	    			PrintWriter out = response.getWriter();
-		        
-	    			//out.println("OKOKOK..... mnam!");
-				 
+		        				 
 	    			JSONObject json = new JSONObject();
 	    			json.put("city", "Mumbai");
 	    			json.put("country", "India");				 				 				 
@@ -83,11 +76,6 @@ public class ServletDigital extends HttpServlet {
 	    			json.put("date", date);
 	    			json.put("frostOutside", new Boolean(frostOutside));
 
-	    			
-	    		//	System.out.println("tempIn:=" + tempIn);
-	    		//	System.out.println("tempOut:=" + tempOut);
-
-	    			//String output = json.toString();	
 	    			System.out.println("\nJSON:" + json.toString());
 				 
 	    			out.println(json.toString());
@@ -96,24 +84,9 @@ public class ServletDigital extends HttpServlet {
 	    			out.close();
 	    			
 	    		} else if (value.toString().equals("next")) {
-	    			//request.getRequestDispatcher("/openhs").forward(request, response);
-	    		//	response.sendRedirect("org.openhs.core.meteostation");
-	    			/*
-	    			RequestDispatcher dispatcher = 
-	    					getServletContext().getRequestDispatcher("/org.openhs.core.meteostation");
-	    					dispatcher.forward(request, response);
-	    					*/
-	    			
-	    			//response.setContentType("text/html");  
-	    			//PrintWriter pw=response.getWriter();  
-	    			  
-	    			//response.setContentType("text/html;charset=UTF-8");
-	    			//response.sendRedirect("org.openhs.core.meteostation");  
 	    			
 	    			response.setStatus(response.SC_MOVED_TEMPORARILY);
 	    			response.setHeader("Location", "org.openhs.core.meteostation");
-	    			  
-	    			//pw.close(); 
 	    		}
 	    		
 	    	}
@@ -121,13 +94,8 @@ public class ServletDigital extends HttpServlet {
 	    		
 	    		System.out.println("Value:= null");	    	
 		 
-	    		response.setContentType("text/html");
-	    		//response.setHeader("Refresh", "1");  
+	    		response.setContentType("text/html"); 
 		    	response.setCharacterEncoding("UTF-8");
-		    //	response.setHeader("cache-control", "no-cache");	
-    		//	response.setHeader("Pragma", "No-cache"); 
-    		//	response.setHeader("Cache-Control", "no-cache"); 
-    		//	response.setDateHeader("Expires", 1);		    	
 
 	    		PrintWriter out = response.getWriter();
 	        
@@ -150,36 +118,8 @@ public class ServletDigital extends HttpServlet {
 	    		if (value.toString().equals("next")) {
 	    			
 	    			System.out.println(">>>REDIRECT...: " + response.toString());
-
-//	    			response.setContentType("text/html; charset=gb2312"); 
-	    			response.sendRedirect("org.openhs.core.meteostation"); //-->works
-	    			
-	    			//response.sendRedirect("http://localhost:7070/org.openhs.core.meteostation");
-	    			
-	    		//	request.getRequestDispatcher("org.openhs.core.meteostation").forward(request, response);
-	    			
-	    			/*
-	    	        request.setAttribute("Request-Attribute", "Value of Attribute ");
-	    	        RequestDispatcher rd = request.getRequestDispatcher("http://localhost:7070/org.openhs.core.meteostation");
-	    	        rd.forward(request, response);
-	    	        */
-	    			/*
-	    		    response.setStatus(response.SC_MOVED_PERMANENTLY);
-	    		    response.setHeader("Location", "/org.openhs.core.meteostation");    	    			
-	    			response.setHeader("Cache-Control", "no-cache"); 
-	    			  */ 			
-	    			
-	    			//response.sendRedirect(request.getContextPath() + "/org.openhs.core.meteostation");
-	    	
-	    			
-	    			//response.sendRedirect( response.encodeRedirectURL( "http://localhost:7070/org.openhs.core.meteostation" ) );
-	    			
-	    			/*
-	    			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("org.openhs.core.meteostation");
-  					dispatcher.forward(request,response);	    			
-*/
+    			
 	    	//		doGet(request, response);
-
 	    			
 	    		}	    		
 	    	}
@@ -195,8 +135,6 @@ public class ServletDigital extends HttpServlet {
 	    	out.println("<html>");
 	    	out.println("<head>");
 	    	out.println("<title>Digital meteo</title>");	
-	    	//out.println("<meta HTTP-EQUIV='Pragma' content='no-cache'>");
-	    	//out.println("<meta HTTP-EQUIV='Expires' content='-1'>");
 	    	
 	    	out.println("<script src='ores/web/jquery-3.1.1.min.js'></script>");
 	    	out.println("<link href='/ores/web/meteo_styles.css' rel='stylesheet' type='text/css'>");
@@ -212,17 +150,8 @@ public class ServletDigital extends HttpServlet {
 	    	out.println("<script src='ores/web/ServletDigital.js'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new DigiMeteoStation.Temperature(document.getElementById('clockCanvas'), '/org.openhs.core.meteostation');");
-	    	out.println("</script>");
-	    	
-		    out.println("<form name='clock' method='' action='" + addressHome + "'>" +
-		    	    "<input type='submit' class='buttonHome' name='next' value=''>" +
-		    	    "</form>"); 
-		    /*
-		    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
-		    	    "<input type='submit' class='buttonNext' name='next' value=''>" +
-		    	    "</form>");  
-		    */
+	    	out.println("new DigiMeteoStation.Temperature(document.getElementById('clockCanvas'), '" + addressNext + "');");
+	    	out.println("</script>");	 
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	

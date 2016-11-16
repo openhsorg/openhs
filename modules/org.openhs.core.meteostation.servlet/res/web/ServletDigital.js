@@ -35,17 +35,21 @@ var DigiMeteoStation;
             */
             clockCanvas.addEventListener('click', function (evt) {
                 var mousePos = getMousePos(clockCanvas, evt);
-                if (isInside(mousePos, btnRect)) {
-                    //alert('clicked inside rect');
-                    //Go to next screen
-                    $(document).ready(function () {
-                        // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
-                        window.location.replace(nextServlet);
-                    });
-                }
-                else {
-                    alert('clicked outside rect');
-                }
+                /*
+                    if (isInside(mousePos, btnRect)) {
+                        //alert('clicked inside rect');
+                        //Go to next screen
+                        $(document).ready(function() {
+                              // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
+                            window.location.replace(nextServlet);
+                            
+                            });
+                        
+                    }else{
+                        alert('clicked outside rect');
+                    }
+                    */
+                window.location.replace(nextServlet);
             }, false);
         }
         Temperature.prototype.timerEvent = function () {
@@ -139,7 +143,7 @@ var DigiMeteoStation;
             ctx.fillStyle = blackColor;
             ctx.fill();
             ctx.lineWidth = width;
-            ctx.strokeStyle = whiteColor;
+            ctx.strokeStyle = transparentColor;
             ctx.stroke();
             ctx.restore();
             ctx.save();
@@ -157,17 +161,20 @@ var DigiMeteoStation;
             ctx.fillStyle = "white";
             ctx.fillText("Out:", 20, 150);
             ctx.restore();
-            btnRect.width = 40;
-            btnRect.heigth = 100;
-            btnRect.x = this.width - btnRect.width;
-            btnRect.y = (this.height / 2) - (btnRect.heigth / 2);
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = whiteColor;
-            ctx.stroke();
-            ctx.restore();
+            /*
+              btnRect.width = 40;
+              btnRect.heigth = 100;
+              btnRect.x = this.width - btnRect.width;
+              btnRect.y = (this.height / 2) - (btnRect.heigth / 2);
+              
+             ctx.save();
+             ctx.beginPath();
+             ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
+             ctx.lineWidth = 2;
+             ctx.strokeStyle = whiteColor;
+             ctx.stroke();
+             ctx.restore();
+          */
             /*
            const borderWidth = this.r / 54;
            ctx.save();
@@ -193,16 +200,6 @@ var DigiMeteoStation;
             */
         };
         ClockImagePainter.prototype.paintDynamicImage = function () {
-            /*
-           let date: Date = new Date();
-           let hour: number = date.getHours();
-           let min:  number = date.getMinutes();
-           let sec:  number = date.getSeconds();
-           this.drawRadial(2 * Math.PI * ( (hour % 12) * 60 + min) / (12 * 60), -this.r * 10 / 44, this.r * 27 / 44, this.r * 5 / 44, this.r * 4 / 44, blackColor);
-           this.drawRadial(2 * Math.PI * min / 60, -this.r * 10 / 44, this.r * 40 / 44, this.r * 9 / 88, this.r * 3 / 44, blackColor);
-           this.drawRadial(2 * Math.PI * sec / 60, -this.r * 14 / 44, this.r * 27 / 44, this.r / 44, this.r / 44, secPtrColor);
-           this.drawRadialFilledCircle(2 * Math.PI / 60 * sec, this.r * 27 / 44, this.r * 9 / 88, secPtrColor);
-            */
             var ctx = this.ctx;
             this.getData();
             ctx.save();
