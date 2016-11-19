@@ -61,11 +61,6 @@ public class KitchenServlet extends HttpServlet {
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
-	    		//	response.setHeader("cache-control", "no-cache");
-	    	//		response.setHeader("Pragma", "No-cache"); 
-	    		//	response.setHeader("Cache-Control", "no-cache"); 
-	    	//		response.setDateHeader("Expires", 1);	    			
-	    			//response.setHeader("Refresh", "1");  
 
 	    			PrintWriter out = response.getWriter();
 		        
@@ -85,8 +80,8 @@ public class KitchenServlet extends HttpServlet {
 	    			json.put("frostOutside", new Boolean(frostOutside));
 
 	    			
-	    			System.out.println("tempIn:=" + tempIn);
-	    			System.out.println("tempOut:=" + tempOut);
+	    			//System.out.println("tempIn:=" + tempIn);
+	    			//System.out.println("tempOut:=" + tempOut);
 
 	    			//String output = json.toString();	
 	    			System.out.println("\nJSON:" + json.toString());
@@ -94,21 +89,16 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
-	    			out.close();
-	    			
-	    		} 
-	    		
+	    			out.close();	    			
+	    		} 	    		
 	    	}
 	    	else {
 	    		
-	    		System.out.println("Value:= null");	    	
+	    		//System.out.println("Value:= null");	    	
 		 
 	    		response.setContentType("text/html");
 		    	response.setCharacterEncoding("UTF-8");
-		    	response.setHeader("cache-control", "no-cache");	
-    		//	response.setHeader("Pragma", "No-cache"); 
-    		//	response.setHeader("Cache-Control", "no-cache"); 
-    		//	response.setDateHeader("Expires", 1);		    	
+		    	response.setHeader("cache-control", "no-cache");		    	
 
 	    		PrintWriter out = response.getWriter();
 	        
@@ -157,10 +147,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<html>");
 	    	out.println("<head>");
 	    	out.println("<meta http-equiv='content-type' content='text/html; charset=UTF8'>");
-	    	//out.println("<title>Digital meteo</title>");	
-	    	//out.println("<meta HTTP-EQUIV='Pragma' content='no-cache'>");
-	    	//out.println("<meta HTTP-EQUIV='Expires' content='-1'>");
-	    	
+
 	    	out.println("<script src='infores/servlets/kitchen/jquery-3.1.1.min.js'></script>");
 	    	out.println("<link href='infores/servlets/kitchen/styles.css' rel='stylesheet' type='text/css'>");
 	    	    	
@@ -176,17 +163,6 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<script type='text/javascript'>");
 	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('infoCanvas'), '/org.openhs.core.meteostation');");
 	    	out.println("</script>");
-	    	
-	    	/*
-		    out.println("<form name='clock' method='' action='" + addressHome + "'>" +
-		    	    "<input type='submit' class='buttonHome' name='next' value=''>" +
-		    	    "</form>"); 
-		    */
-		    /*
-		    out.println("<form name='clock' method='' action='/" + addressNext + "'>" +
-		    	    "<input type='submit' class='buttonNext' name='next' value=''>" +
-		    	    "</form>");  
-		    */
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	
