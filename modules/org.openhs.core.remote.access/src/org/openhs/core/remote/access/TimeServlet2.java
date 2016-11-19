@@ -231,7 +231,7 @@ public class TimeServlet2 extends HttpServlet{
 		        Image imgDay = ImageIO.read(imageFile);
 		        imageFile = new File(location.getFile() + "images/indicatorIntruder.png");
 		        Image imgIntruder = ImageIO.read(imageFile);		        
-		        
+		        /*
 		        ArrayList<Boolean> list = m_meteo.getIndicatorsList();
 	
 		        Rectangle rect = new Rectangle(width/2 - 100,  height/2 + 250, 50, 50);
@@ -249,6 +249,7 @@ public class TimeServlet2 extends HttpServlet{
 		        	rect.x = rect.x + 60;
 		            g.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);
 		        }
+		        */
 	        }
 	        catch (Exception e)
 	        {
