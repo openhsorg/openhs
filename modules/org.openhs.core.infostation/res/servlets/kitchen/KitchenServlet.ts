@@ -50,6 +50,8 @@ constructor (clockCanvas: HTMLCanvasElement, next: string) {
    this.clockCanvas = clockCanvas;
    this.ns = "/org.openhs.core.meteostation"; //next;
    this.timerEvent();
+   //this.timerEventFast();
+  //  window.setInterval(()=>this.timerEventFast(), 250); 
     
     nextServlet = next; //next;
         
@@ -60,46 +62,41 @@ constructor (clockCanvas: HTMLCanvasElement, next: string) {
    this.timerEvent();
     */ 
     
+    clockCanvas.addEventListener('click',() => this.MouseClickHandler(event));
+    
+    /*
         clockCanvas.addEventListener('click', function(evt) {
             var mousePos = getMousePos(clockCanvas, evt);
         
             if (isInside(mousePos, stopwatchRect)) {
-                //alert('clicked inside rect');
-                //Go to next screen
-                /*
-                $(document).ready(function() {
-                      // $.post("org.openhs.core.meteostation.digital", { orderId : "next"});
-                    window.location.replace(nextServlet);
-                    
-                    });
-                */
                 
                 //alert('STOPWATCH clicked...');
                 
                 stopwatchApp = true;
                 
-                this.paintTemp();  
+                this.paintTemp2();
+                clicked = true;
                 
-            } else if (isInside(mousePos, stopwatchAppRect) && stopwatchApp) {
-                
+            } else if (isInside(mousePos, stopwatchAppRect) && stopwatchApp) {               
+                                               
                 stopwatchApp = false;
                 
-                this.paintTemp();  
+                this.paintTemp2();
+                
+                clicked = true;
                                 
-              }
-            else {
+            } else {
                 //alert('clicked outside rect');
             }   
         }, false);      
-
+*/
     }  
     
 private timerEvent() {
+   this.getData();
    this.paintTemp();    
-   let t = 1000 - Date.now() % 1000;
-   window.setTimeout(() => this.timerEvent(), 1000); 
-    
-}
+   window.setTimeout(() => this.timerEvent(), 1000 * 3); 
+} 
 
 private paintTemp() {
     
@@ -110,6 +107,34 @@ private paintTemp() {
    new ImagePainter(this.clockCanvas).paintDynamicImage();
     
  }
+    
+private MouseClickHandler(event) {
+    
+    var mousePos = getMousePos(this.clockCanvas, event);
+
+    if (isInside(mousePos, stopwatchRect)) {        
+        stopwatchApp = true;
+        
+    } else if (isInside(mousePos, stopwatchAppRect) && stopwatchApp) {               
+                                       
+        stopwatchApp = false;
+        
+                                
+    } else {
+        //alert('clicked outside rect');
+    } 
+    
+    this.paintTemp();
+    
+    /*
+   if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
+      this.createStaticImageCanvas(); }    
+    
+   this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
+   new ImagePainter(this.clockCanvas).paintDynamicImage();
+    */
+    
+ }    
 
 private createStaticImageCanvas() {
    let canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -117,6 +142,23 @@ private createStaticImageCanvas() {
    canvas.height = this.clockCanvas.height;
    new ImagePainter(canvas).paintStaticImage();
    this.staticImageCanvas = canvas; }
+    
+//Get data from server...    
+private getData() {
+        
+        $(document).ready(function() {
+            
+            $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
+                ni = parseInt(data['order']);
+                tempIn = parseFloat(data['tempIn']);
+                tempOut = parseFloat(data['tempOut']);
+                timeString = data['time'];
+                dateString = data['date'];               
+                frostOutside = JSON.parse(data['frostOutside']);                                                                                   
+                });           
+         });
+       
+    }     
 
 } // end class Temperature
 
@@ -137,59 +179,97 @@ let fontSizeHum:      number = 27;
 let fontSizeTime:      number = fontSizeTempOut;
 let fontSizeDate:      number = fontSizeWind;         
     
-    
+//Meteorological data    
 var ni = 0;
 var tempIn = 0;
 var tempOut = 0;
 var timeString = "";
 var dateString = "";
 var frostOutside = false;
-var frostOutsideString = "false";
-  
-var cloudPerc = 22.6;    
-var imgSunny = new Image();
-var imgCloudy = new Image();    
-var imgWind = new Image();
-var imgHum = new Image();
-var imgVoiceMessage = new Image();
-var imgStopwatch = new Image();           
-var imgSunnyLoaded = false;
-var imgCloudyLoaded = false;    
-var imgWindLoaded = false;
-var imgHumLoaded = false;
-var imgVoiceMessageLoaded = false;
-var imgStopwatchLoaded = false;
+var frostOutsideString = "false"; 
+var cloudPerc = 0.0;    
+
+//Sunny image
+var imgSunny = new Image(); 
 imgSunny.src = '/infores/servlets/kitchen/sunny.png';
-imgCloudy.src = '/infores/servlets/kitchen/cloudy.png';    
-imgWind.src = '/infores/servlets/kitchen/wind.png';
-imgHum.src = '/infores/servlets/kitchen/drop.png';
-imgVoiceMessage.src = '/infores/servlets/kitchen/voicemessage.png';
-imgStopwatch.src = '/infores/servlets/kitchen/stopwatch.png';            
-
-
+var imgSunnyLoaded = false;       
 imgSunny.onload = function(){
   imgSunnyLoaded = true;
-}   
+}
+
+//Cloud Rain image    
+var imgCloudRain = new Image();        
+imgCloudRain.src = '/infores/servlets/kitchen/cloudRain.png';
+var imgCloudRainLoaded = false;    
+        
+imgCloudRain.onload = function(){
+  imgCloudRainLoaded = true;
+}  
     
-imgCloudy.onload = function(){
-  imgCloudyLoaded = true;
+//Cloud Snow image    
+var imgCloudSnow = new Image();        
+imgCloudSnow.src = '/infores/servlets/kitchen/cloudSnow.png';
+var imgCloudSnowLoaded = false;    
+        
+imgCloudSnow.onload = function(){
+  imgCloudSnowLoaded = true;
+}  
+    
+//Cloud Storm image    
+var imgCloudStorm = new Image();        
+imgCloudStorm.src = '/infores/servlets/kitchen/cloudStorm.png';
+var imgCloudStormLoaded = false;    
+        
+imgCloudStorm.onload = function(){
+  imgCloudStormLoaded = true;
+}    
+    
+//Partial cloudy image    
+var imgPartCloudy = new Image();        
+imgPartCloudy.src = '/infores/servlets/kitchen/partcloudy.png';
+var imgPartCloudyLoaded = false;    
+        
+imgPartCloudy.onload = function(){
+  imgPartCloudyLoaded = true;
 }     
+        
+//Wind image    
+var imgWind = new Image();  
+imgWind.src = '/infores/servlets/kitchen/wind.png';
+var imgWindLoaded = false;      
     
 imgWind.onload = function(){
   imgWindLoaded = true;
-} 
+}     
 
+//Hum image    
+var imgHum = new Image();
+imgHum.src = '/infores/servlets/kitchen/drop.png';
+var imgHumLoaded = false;
+    
 imgHum.onload = function(){
   imgHumLoaded = true;
-}     
+}      
+    
+//Voice message Image    
+var imgVoiceMessage = new Image();
+imgVoiceMessage.src = '/infores/servlets/kitchen/voicemessage.png';
+var imgVoiceMessageLoaded = false;
     
 imgVoiceMessage.onload = function(){
   imgVoiceMessageLoaded = true;
-} 
+}     
+        
+//Stop watch image    
+var imgStopwatch = new Image(); 
+imgStopwatch.src = '/infores/servlets/kitchen/stopwatch.png'; 
+var imgStopwatchLoaded = false;    
     
 imgStopwatch.onload = function(){
   imgStopwatchLoaded = true;
-}     
+}        
+   
+   
         
 class ImagePainter {
 
@@ -221,35 +301,6 @@ constructor (canvas: HTMLCanvasElement) {
     
   // ni = 0; 
 }
- 
-public getData() {
-        
-        $(document).ready(function() {
-            
-            $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
-                ni = parseInt(data['order']);
-                tempIn = parseFloat(data['tempIn']);
-                tempOut = parseFloat(data['tempOut']);
-                timeString = data['time'];
-                dateString = data['date'];               
-                frostOutside = JSON.parse(data['frostOutside']); 
-
-/*
-            
-                  $.each(data, function(key, val) {
-                     // alert(val);
-                      items.push(val);
-                  });
-                
-                //alert(items[0]);
-                
-                var day = data['order'];
-                */                                                                     
-              
-                });           
-         });
-       
-    }      
 
 public paintStaticImage() {
    // Paint outer background.
@@ -349,13 +400,11 @@ public paintDynamicImage() {
     */
     
    const ctx = this.ctx;
-    
-   this.getData();
-    
+           
     //Prediction
     if (imgSunnyLoaded) {     
         ctx.save();
-        ctx.drawImage(imgSunny, 0, 0, 150, 150);
+        ctx.drawImage(imgCloudStorm, 0, 0, 150, 150);
         ctx.restore();        
      }    
     
@@ -470,50 +519,8 @@ public paintDynamicImage() {
            ctx.textBaseline = "middle";
            ctx.fillStyle = whiteColor;          
            ctx.fillText("Stopwatch...", stopwatchAppRect.x + 40, stopwatchAppRect.y + 40);
-           ctx.restore();          
-          
-        
-        }
-       
-    /*
-   ctx.save();
-   ctx.font = 80 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "left";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;              
-   ctx.fillText(timeString, 20, 350);
-   ctx.restore();          
-    
-   ctx.save();
-   ctx.font = 27 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "right";
-   ctx.textBaseline = "bottom";
-   ctx.fillStyle = textColor;              
-   ctx.fillText(dateString, 550, 380);
-   ctx.restore();          
- 
-    
-    if (imgFrostLoaded  && frostOutside) {     
-        ctx.save();
-        ctx.drawImage(imgFrost, 20, 220, 50, 50);
-        ctx.restore();        
-     }
-    */
-    
-
-    /*
-   ctx.save();
-   let fontSize: number = 62;
-   ctx.font = fontSize + "px Helvetica, sans-serif";
-   ctx.textAlign = "center";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = "blue";   
-
-   var txt = "N:" + ni;
-    
-   ctx.fillText(txt, 10, 150);
-   ctx.restore();     
-    */
+           ctx.restore();                           
+        }   
     
  }
     
