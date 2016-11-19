@@ -149,12 +149,14 @@ private getData() {
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
-                ni = parseInt(data['order']);
+               // ni = parseInt(data['order']);
                 tempIn = parseFloat(data['tempIn']);
                 tempOut = parseFloat(data['tempOut']);
                 timeString = data['time'];
                 dateString = data['date'];               
-                frostOutside = JSON.parse(data['frostOutside']);                                                                                   
+                frostOutside = JSON.parse(data['frostOutside']);
+                weatherSymbol = JSON.parse(data['weatherSymbol']);
+                windSpeed = parseFloat(data['windSpeed']);                                                                                    
                 });           
          });
        
@@ -173,21 +175,22 @@ const secPtrColor      = "#CC0000";
 const textColor        = "#000000";
 const circleColor        = "#c0c0c0";
 let fontSizeTempIn:      number = 54;
-let fontSizeTempOut:      number = 40;    
+let fontSizeTempOut:      number = 50;    
 let fontSizeWind:      number = 24;      
 let fontSizeHum:      number = 27;
 let fontSizeTime:      number = fontSizeTempOut;
 let fontSizeDate:      number = fontSizeWind;         
     
 //Meteorological data    
-var ni = 0;
 var tempIn = 0;
 var tempOut = 0;
 var timeString = "";
 var dateString = "";
 var frostOutside = false;
 var frostOutsideString = "false"; 
-var cloudPerc = 0.0;    
+var cloudPerc = 0.0;   
+var weatherSymbol = 0; 
+var windSpeed = 0;    
 
 //Sunny image
 var imgSunny = new Image(); 
@@ -231,7 +234,16 @@ var imgPartCloudyLoaded = false;
         
 imgPartCloudy.onload = function(){
   imgPartCloudyLoaded = true;
-}     
+}  
+    
+//Cloudy image    
+var imgCloudy = new Image();        
+imgCloudy.src = '/infores/servlets/kitchen/cloudy.png';
+var imgCloudyLoaded = false;    
+        
+imgCloudy.onload = function(){
+  imgCloudyLoaded = true;
+}      
         
 //Wind image    
 var imgWind = new Image();  
@@ -309,82 +321,7 @@ public paintStaticImage() {
    ctx.save();
    ctx.fillStyle = whiteColor;
    ctx.fillRect(0, 0, this.width, this.height);
-   ctx.restore();
-    
-    
-   // Paint inner background and border.
-   const width = 4;
-    /*
-   ctx.save();
-   ctx.beginPath();
-   ctx.rect(0, 0, this.width, this.height);
-   ctx.fillStyle = whiteColor;
-   ctx.fill();   
-   ctx.lineWidth = width;
- //  ctx.strokeStyle = blackColor;
-   ctx.strokeStyle = transparentColor;
-   ctx.stroke();
-   ctx.restore(); 
-     */
-     /*
-    
-   ctx.save();
-   let fontSize: number = 80;
-   ctx.font = fontSizeTemp + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "left";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText("In:", 20, 50);
-   ctx.restore();       
-    
-   ctx.save();   
-   ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "left";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText("Out:", 20, 150);
-   ctx.restore(); 
-    */
-    /*
-    btnRect.width = 40;
-    btnRect.heigth = 100;
-    btnRect.x = this.width - btnRect.width;
-    btnRect.y = (this.height / 2) - (btnRect.heigth / 2);    
-    
-   ctx.save();   
-   ctx.beginPath();
-   ctx.rect(btnRect.x, btnRect.y, btnRect.width, btnRect.heigth);
-   ctx.lineWidth = 2;
-   ctx.strokeStyle = 'green';
-   ctx.stroke();    
-   ctx.restore();    
-*/
-    
-    /*
-   const borderWidth = this.r / 54;
-   ctx.save();
-   ctx.beginPath();
-   ctx.arc(this.centerX, this.centerY, this.r + borderWidth / 2, 0, 2 * Math.PI);
-   ctx.fillStyle = whiteColor;
-   ctx.fill();
-   ctx.lineWidth = borderWidth;
-   ctx.strokeStyle = borderColor;
-   ctx.stroke();
-   ctx.restore();
-    
-   // Draw 60 clock marks.
-   for (let i = 0; i < 60; i++) {
-      let big: boolean = i % 5 == 0;
-      let rLength: number = big ? this.r * 10 / 44 : this.r * 3 / 44;
-      let rWidth: number = big ? this.r * 3 / 44 : this.r / 44;
-      let r2: number = this.r * 42 / 44;
-      let angle: number = 2 * Math.PI / 60 * i;
-      this.drawRadial(angle, r2 - rLength, r2, rWidth, rWidth, blackColor); }
-   // Draw text.
-   this.drawClockLabel();
-    */
-    
-
+   ctx.restore();   
 }
 
 public paintDynamicImage() {
@@ -400,13 +337,40 @@ public paintDynamicImage() {
     */
     
    const ctx = this.ctx;
-           
+    
+   var imageFcs = imgSunny;
+   var imgLoaded = false;
+
     //Prediction
-    if (imgSunnyLoaded) {     
+    if (weatherSymbol == 1) {
+        imageFcs = imgSunny;
+        imgLoaded = imgSunnyLoaded;
+    } else if (weatherSymbol == 2) {
+        imageFcs = imgPartCloudy;  
+        imgLoaded = imgPartCloudyLoaded;
+    } else if (weatherSymbol == 3) {
+        imageFcs = imgCloudy;
+        imgLoaded = imgCloudyLoaded;    
+    } else if (weatherSymbol == 4) {
+        imageFcs = imgCloudRain;  
+        imgLoaded = imgCloudRainLoaded;
+    } else if (weatherSymbol == 5) {
+        imageFcs = imgCloudStorm;  
+        imgLoaded = imgCloudStormLoaded;
+    } else if (weatherSymbol == 6) {
+        imageFcs = imgCloudSnow;  
+        imgLoaded = imgCloudSnowLoaded;
+    } else {
+        imageFcs = imgSunny;
+        imgLoaded = imgSunnyLoaded;
+    }  
+    
+    //Draw image...
+    if (imgLoaded) {     
         ctx.save();
-        ctx.drawImage(imgCloudStorm, 0, 0, 150, 150);
+        ctx.drawImage(imageFcs, 0, 0, 150, 150);
         ctx.restore();        
-     }    
+    }      
     
     //Wind
     if (imgWindLoaded) {     
@@ -442,7 +406,7 @@ public paintDynamicImage() {
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
    ctx.fillStyle = textColor;          
-   ctx.fillText(tempOut + " \u00B0C", 290, 50);
+   ctx.fillText(tempOut + " \u00B0C", 320, 50);
    ctx.restore();  
     
     //Wind outside
@@ -451,7 +415,7 @@ public paintDynamicImage() {
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
    ctx.fillStyle = textColor;          
-   ctx.fillText("120 m/s", 300, 90);
+   ctx.fillText(windSpeed + " m/s", 320, 100);
   // ctx.restore();          
     
     //Time
@@ -469,7 +433,7 @@ public paintDynamicImage() {
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
    ctx.fillStyle = textColor;          
-   ctx.fillText(dateString, 580, 90);
+   ctx.fillText(dateString, 580, 100);
    ctx.restore();     
     
     

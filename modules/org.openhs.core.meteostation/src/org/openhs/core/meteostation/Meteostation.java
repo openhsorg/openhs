@@ -109,18 +109,6 @@ public class Meteostation {
         return sensor;
     }
 
-    public ArrayList<Boolean> getIndicatorsList() {
-        try {
-            setFrostIndicator();
-
-            setDaylightTimeIndicator();
-        } catch (Exception ex) {
-
-        }
-
-        return list;
-    }
-    
     public boolean isFrost() {
     	return (getTempOut() <= 0.0);
     }
@@ -158,30 +146,6 @@ public class Meteostation {
         // System.out.println("\nTemp: " + tempOut);
 
         list.set(0, (tempOut < 0.0));
-    }
-
-    /*
-     * Set daylight time based on global time.
-     */
-    void setDaylightTimeIndicator() {
-
-        // list.set(1, true);
-
-    }
-
-    /*
-     * Set movedetection outside.
-     */
-    void setIntruderOutsideIndicator() throws SiteException {
-        boolean intruder = false;
-
-        try {
-            intruder = getSensorOut().getMovedetection().getDetection();
-        } catch (Exception ex) {
-            throw ex;
-        }
-
-        list.set(2, intruder);
     }
     
     public Weather getCurrentWeather() {

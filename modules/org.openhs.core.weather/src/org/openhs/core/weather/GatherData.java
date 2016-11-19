@@ -59,17 +59,6 @@ public class GatherData extends Thread {
     		CurrentWeather cwd = owm.currentWeatherByCityName(cityName);
     		
     		currWeather = fillCurrWeather(cwd);
-    		/*
-    		currWeather.tempMax.set(cwd.getMainInstance().getMaxTemperature());
-    		currWeather.tempMin.set(cwd.getMainInstance().getMinTemperature());
-    		currWeather.temp.set(cwd.getMainInstance().getTemperature());
-    		
-    		currWeather.hum.set(cwd.getMainInstance().getHumidity());
-    		currWeather.setPressure(cwd.getMainInstance().getPressure());
-    		    		
-    		Clouds clds = cwd.getCloudsInstance();    		
-    		currWeather.setPercentageOfClouds(clds.getPercentageOfClouds());  
-    		*/
     		
     	} catch (Exception ex) {
     		
@@ -90,6 +79,9 @@ public class GatherData extends Thread {
 		    		
 		Clouds clds = curr.getCloudsInstance();    		
 		wth.setPercentageOfClouds(clds.getPercentageOfClouds());       
+		
+    	//Add some additional logic...
+    	setWeatherSymbol (wth);		
 					
     	return wth;    	
     }
@@ -103,9 +95,25 @@ public class GatherData extends Thread {
     	wth.setPercentageOfClouds(fcs.getCloudsInstance().getPercentageOfClouds());
     	wth.setWindDegree(fcs.getWindInstance().getWindDegree());
     	wth.setWindSpeed(fcs.getWindInstance().getWindSpeed());
+    	    	
+    	//Add some additional logic...
+    	setWeatherSymbol (wth);
 
     	return wth;    	
-    }    
+    }  
+    
+    private void setWeatherSymbol (Weather m_weather) {
+    	
+    	if (m_weather.getPercentageOfClouds() != Float.NaN) {
+    		if (m_weather.getPercentageOfClouds() <= 20) {
+    			m_weather.setWeatherSymbol(1);
+    		} else if (m_weather.getPercentageOfClouds() > 20 && m_weather.getPercentageOfClouds() <= 70) {
+    			m_weather.setWeatherSymbol(2);
+    		} else {
+    			m_weather.setWeatherSymbol(3);
+    		}
+    	}    	
+    }
     
     private void gatherForecastWeather () {    	
     	

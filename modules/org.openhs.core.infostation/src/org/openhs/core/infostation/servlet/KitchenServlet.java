@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.openhs.core.commons.Weather;
 import org.openhs.core.infostation.Infostation;
 import org.openhs.core.meteostation.Meteostation;
 
@@ -24,18 +25,7 @@ public class KitchenServlet extends HttpServlet {
 	String addressHome = "/";
 	String addressPrev = "/";
 	String addressNext = "/";		
-	
-	boolean frostOutside = false;
-	
-	float	tempIn = Float.NaN;
-	float	tempOut = Float.NaN;
-	float	cloudPerc = Float.NaN;
-	float	tempForecast = Float.NaN;
-	
-	String	imageFcs = "";
-	String	time = "";
-	String	date = "";
-	
+
 	KitchenServlet(Infostation m_infostation) {
 		this.m_infostation = m_infostation;		
 		this.m_meteo = m_infostation.getMeteostation();
@@ -53,38 +43,20 @@ public class KitchenServlet extends HttpServlet {
 	    		System.out.println("Value:=" + value.toString());
 	    		
 	    		if (value.toString().equals("InfoData")) {
+	    			
+	    			
 	    				    		
 	    			/*
 	    			 * Get data from meteo module.
 	    			 */
-	    			getInfoData();
+	    			JSONObject json = getDataToJSON();
+
+	    			System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
 
-	    			PrintWriter out = response.getWriter();
-		        
-	    			//out.println("OKOKOK..... mnam!");
-				 
-	    			JSONObject json = new JSONObject();
-	    			json.put("city", "Mumbai");
-	    			json.put("country", "India");				 				 				 
-	    			json.put("order", 44);
-	    			json.put("tempOut", String.format("%.2f", tempOut));
-	    			json.put("tempIn", String.format("%.2f", tempIn));
-	    			json.put("cloudPerc", cloudPerc);
-	    			json.put("tempForecast", tempForecast);
-	    			json.put("imageFcs", imageFcs);
-	    			json.put("time", time);
-	    			json.put("date", date);
-	    			json.put("frostOutside", new Boolean(frostOutside));
-
-	    			
-	    			//System.out.println("tempIn:=" + tempIn);
-	    			//System.out.println("tempOut:=" + tempOut);
-
-	    			//String output = json.toString();	
-	    			System.out.println("\nJSON:" + json.toString());
+	    			PrintWriter out = response.getWriter();	    			
 				 
 	    			out.println(json.toString());
 		    	        
@@ -134,10 +106,7 @@ public class KitchenServlet extends HttpServlet {
 	    			
 	    			  doGet(request, response);			    			
 	    		}	    		
-	    	}	    	
-	        
-	      
-	        
+	    	}	    	 
 	    }
 	    
 	    
@@ -167,43 +136,35 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	    
-	    protected void getInfoData() {
-	    		    	
-	    	 
-		   	tempOut = m_meteo.getTempOut();
-		   	tempIn = m_meteo.getTempIn();	   
-		   	
-		    //Forecast indicator
-		    cloudPerc = m_meteo.getCloudsForecast();
-		    tempForecast = m_meteo.getTempForecast();
-		    		    		    
-		    if (cloudPerc <= 25.0) {
-		    	imageFcs = "/ores/web/sunny.png"; 
-		    } else if (cloudPerc > 25.0 && cloudPerc <= 75.0) {
-		    	imageFcs = "/ores/web/clouds.png";
-		    } else {
-		    	imageFcs = "/ores/web/rainy.png";
-		    }		   
-		    
-		    //Frost indicator
-		    
-		    if (tempOut <= 0 || tempIn <= 0.0) {
-		    	frostOutside = true;		    
-		    } else {
-		    	frostOutside = false;
-		    }
-		    
+	   
+	    protected JSONObject getDataToJSON() {
+	    	
+	    	Weather wth = m_meteo.getForecastWeather6();
+	    	
 		    Date curDate = new Date();
 		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-		    time = format.format(curDate); 	 		  
+		    String time = format.format(curDate); 	 		  
 		    
 		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
-		    date = format2.format(curDate); 	
-		    
-		    
+		    String date = format2.format(curDate); 	    	
 	    	
+			JSONObject json = new JSONObject();
+			json.put("city", "Mumbai");
+			json.put("country", "India");				 				 				 
+			json.put("order", 44);
+			json.put("tempOut", String.format("%.2f", m_meteo.getTempOut()));
+			json.put("tempIn", String.format("%.2f", m_meteo.getTempIn()));
+			json.put("cloudPerc", m_meteo.getCloudsForecast());
+			json.put("tempForecast", m_meteo.getTempForecast());
+			json.put("time", time);
+			json.put("date", date);
+			json.put("frostOutside", new Boolean(m_meteo.isFrost()));
+			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
+			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+			
+			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
+			
+			return json;
+
 	    }
- 	
-	
 }
