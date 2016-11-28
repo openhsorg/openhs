@@ -22,6 +22,8 @@ public class Weather {
     protected float rain;
     protected float snow;	
     
+    protected int weatherSymbol; //0: not set, 1:Sunny, 2:Sunny with Cloud, 3: Cloudy, 4: Cloudy+Rain, 5:Cloudy+Storm, 6: Cloudy+Snow  
+    
     public Weather () {
     	this.pressure = Float.NaN;
         this.windSpeed = Float.NaN;
@@ -29,6 +31,8 @@ public class Weather {
         this.cloudsPercent = Float.NaN;
         this.rain = Float.NaN;
         this.snow = Float.NaN;       
+        
+        this.weatherSymbol = 0;
     }    
     
     /**
@@ -56,9 +60,21 @@ public class Weather {
     
     public void setWindSpeed(float windSpeed) {
     	this.windSpeed = windSpeed;
-    }    
+    }
+    
+    public float getWindSpeed() {
+    	return this.windSpeed;
+    }     
     
     public void setWindDegree(float windDegree) {
     	this.windDegree = windDegree;
-    }       
+    }
+    
+    public void setWeatherSymbol(int weatherSymbol) {
+    	this.weatherSymbol = weatherSymbol;
+    }  
+    public int getWeatherSymbol() {
+    	return this.weatherSymbol;
+    }     
+    
 }

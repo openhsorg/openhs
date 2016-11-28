@@ -72,7 +72,7 @@ public class DummyService implements ICommService, Runnable {
 					temp += 1.0;
 					hum += 1.0;
 					if (temp > 25.0)
-						temp = 19.0;
+						temp = -4.0;
 					if (hum > 50.0)
 						hum = 40.0;
 					m_msg1.setTemp(temp);

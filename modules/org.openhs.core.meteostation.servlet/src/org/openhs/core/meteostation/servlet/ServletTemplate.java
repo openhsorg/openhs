@@ -36,6 +36,10 @@ public class ServletTemplate extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html");
 		resp.setHeader("Refresh", "1");
+	   // resp.setHeader("Location", "/org.openhs.core.meteostation");    	    			
+		//resp.setHeader("Cache-Control", "no-cache"); 		
+		
+		System.out.println(">>>xxxGET...: ");
        
       	PrintWriter out = resp.getWriter(); 
 	        
@@ -46,7 +50,10 @@ public class ServletTemplate extends HttpServlet {
    
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-   	
+   		
+	   System.out.println(">>>xxxPOST...");
+	   
+	   doGet(request, response);
    }	  
 	
    

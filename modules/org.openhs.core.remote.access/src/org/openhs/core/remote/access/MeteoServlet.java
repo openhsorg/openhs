@@ -48,7 +48,7 @@ public class MeteoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException, ServletException {
 
-        ArrayList<Boolean> list = m_meteo.getIndicatorsList();
+       // ArrayList<Boolean> list = m_meteo.getIndicatorsList();
 
         // Get toolkit
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -148,12 +148,12 @@ public class MeteoServlet extends HttpServlet {
         
         /*
         imageFile = new File(location.getFile() + "images/indicatorDay.png");
-        Image imgDay = ImageIO.read(imageFile);
+        Image imgDay = ImageIO.read(imageFile)
         imageFile = new File(location.getFile() + "images/indicatorIntruder.png");
         Image imgIntruder = ImageIO.read(imageFile);
 */
         Rectangle rect = new Rectangle(10, 300, 50, 50);
-
+/*
         if (list.get(0)) {
             graphics2D.drawImage(imgFrost, rect.x, rect.y, rect.width, rect.height, null);
         }
@@ -167,7 +167,7 @@ public class MeteoServlet extends HttpServlet {
             rect = new Rectangle(150, 300, 50, 50);
             graphics2D.drawImage(imgIntruder, rect.x, rect.y, rect.width, rect.height, null);
         }
-        
+        */
 
         Toolkit.getDefaultToolkit().sync();
 

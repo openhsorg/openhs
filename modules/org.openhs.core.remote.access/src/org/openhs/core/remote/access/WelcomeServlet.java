@@ -27,7 +27,7 @@ public class WelcomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String value = request.getParameter("helloValue");
-        System.out.println("doPost,helloValue=" + value);
+        System.out.println("Welcome: doPost,helloValue=" + value);
 /*
         System.out.println("...doPost");
 	       
@@ -61,24 +61,19 @@ public class WelcomeServlet extends HttpServlet {
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
     	out.println("<head>");  
-    	    	    	
-    	//out.println("<script src='web/statistics/RGraph.common.core.js'></script>");
-    	//out.println("<script src='web/statistics/RGraph.line.js'></script>");
 
-   // 	out.println("<script src='web/statistics/graph.jsp'></script>");  
     	out.println("<link href='/web/welcome/welcome_styles.css' rel='stylesheet' type='text/css'>");
     
     	out.println("<title>OpenHS Welcome...</title>");
     	
     	out.print("</head>\n");
-    	out.print("<body>\n");
-    	
+    	out.print("<body>\n");        	    	
     	
         out.println("<form name='admin' method='post' action='/openhs'>" +
         "<input type='submit' class='button' name='Administration' value='Administration'>" +
         "</form>");     	
         
-        out.println("<form name='meteo' method='' action='/org.openhs.core.meteostation'>" +
+        out.println("<form name='meteo' method='' action='/org.openhs.core.meteostation.digital'>" +
         "<input type='submit' class='button1' name='Meteo' value='Meteo'>" +
         "</form>");  
         
@@ -86,11 +81,13 @@ public class WelcomeServlet extends HttpServlet {
         "<input type='submit' class='button2' name='Statisticss' value=''>" +
         "</form>");          
 
-        out.println("<form name='clock' method='' action='/clock'>" +
+        out.println("<form name='clock' method='' action='/org.openhs.core.clock.servlet.ClockSimpleServlet'>" +
         "<input type='submit' class='button3' name='Clock' value=''>" +
         "</form>");   
-    	
-    	//out.println("Testing...asfsdfdsf");
+        
+        out.println("<form name='kitchen' method='post' action='/kitchen'>" +
+        "<input type='submit' class='buttonKitchen' name='Kitchen' value='Kitchen'>" +
+        "</form>");     	        
     	
     	out.println("</body>");
     	out.println("</html>");    	
