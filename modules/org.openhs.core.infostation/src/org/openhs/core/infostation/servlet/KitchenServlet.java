@@ -3,6 +3,7 @@ package org.openhs.core.infostation.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -42,10 +43,7 @@ public class KitchenServlet extends HttpServlet {
 	    	if (value != null) {
 	    		System.out.println("Value:=" + value.toString());
 	    		
-	    		if (value.toString().equals("InfoData")) {
-	    			
-	    			
-	    				    		
+	    		if (value.toString().equals("InfoData")) {	    		
 	    			/*
 	    			 * Get data from meteo module.
 	    			 */
@@ -61,8 +59,62 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
+	    			out.close();
+	    			
+	    		} else if (value.toString().equals("Day1")) {			    		
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Day(1);
+
+	    			System.out.println("\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	    		
+	    			
+	    		} else if (value.toString().equals("Day2")) {		    		
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Day(2);
+
+	    			System.out.println("\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	  
+	    			
+	    		} else if (value.toString().equals("Day3")) {		    		
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Day(3);
+
+	    			System.out.println("\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
 	    			out.close();	    			
-	    		} 	    		
+		    	} 	 	    		
 	    	}
 	    	else {
 	    		
@@ -146,8 +198,8 @@ public class KitchenServlet extends HttpServlet {
 		    String time = format.format(curDate); 	 		  
 		    
 		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
-		    String date = format2.format(curDate); 	    	
-	    	
+		    String date = format2.format(curDate); 	  		    
+		    		    
 			JSONObject json = new JSONObject();
 			json.put("city", "Mumbai");
 			json.put("country", "India");				 				 				 
@@ -166,5 +218,37 @@ public class KitchenServlet extends HttpServlet {
 			
 			return json;
 
+	    }
+	    
+	    protected JSONObject getDataToJSON_Day(int nDay) {
+	    		    	
+	    	ArrayList<Weather> forecasts = m_meteo.getForecasts();
+	    	
+	    	if (nDay <= 0 || nDay > 4) { 
+	    		nDay = 4;
+	    	}
+	    	
+	    	int n = nDay * 8;
+	    	
+	    	if (forecasts.size() < n) {
+	    		return null;
+	    	}
+	    	
+	    	Weather wth = forecasts.get(n);
+	    	
+	    	JSONObject json = getWeatherToJSON(wth);
+	    		    	
+			return json;
+	    }	
+	    
+	    protected JSONObject getWeatherToJSON(Weather wth) {
+	    	
+			JSONObject json = new JSONObject();
+			json.put("temp", String.format("%.2f", wth.getTemperature().getCelsius()));
+			json.put("cloudPerc", wth.getPercentageOfClouds());
+			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
+			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+						
+			return json;
 	    }
 }

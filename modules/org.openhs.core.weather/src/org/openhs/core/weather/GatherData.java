@@ -141,5 +141,9 @@ public class GatherData extends Thread {
     
     public Weather getForecastWeather6() {
     	return forecast.get(1);    	
-    }      
+    }  
+    
+    public ArrayList<Weather> getForecasts() {
+    	return forecast;
+    }
 }

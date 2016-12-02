@@ -109,7 +109,13 @@ private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();
     
 }
     
-let weatherForecast = new WeatherData();     
+let weatherForecast: Array<WeatherData> = new Array<WeatherData>();  
+     
+weatherForecast.push(new WeatherData()); //today
+weatherForecast.push(new WeatherData()); //today + 1
+weatherForecast.push(new WeatherData()); //today + 2
+weatherForecast.push(new WeatherData()); //today + 3
+weatherForecast.push(new WeatherData()); //today + 4      
     
 var appMode = Application.None;  //Mode of application     
 var nextServlet = "";        
@@ -150,7 +156,7 @@ private paintScreen() {
     
    this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
    this.imPainter = new ImagePainter(this.clockCanvas);
-   this.imPainter.weatherForecast = weatherForecast;//.fillData(weatherForecast);
+   this.imPainter.weatherToday = weatherForecast[0];//.fillData(weatherForecast);
    this.imPainter.paint();    
 }
     
@@ -200,25 +206,43 @@ private getData() {
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
-               /*
-                tempIn = parseFloat(data['tempIn']);
-                tempOut = parseFloat(data['tempOut']);
-                timeString = data['time'];
-                dateString = data['date'];               
-                frostOutside = JSON.parse(data['frostOutside']);
-                weatherSymbol = JSON.parse(data['weatherSymbol']);
-                windSpeed = parseFloat(data['windSpeed']);        
-                */
                 timeString = data['time'];
                 dateString = data['date'];   
-                weatherForecast.tempIn = parseFloat(data['tempIn']);
-                weatherForecast.tempOut = parseFloat(data['tempOut']);
-                weatherForecast.frostOutside = JSON.parse(data['frostOutside']);
-                weatherForecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
-                weatherForecast.windSpeed = parseFloat(data['windSpeed']);                                                                           
+                weatherForecast[0].tempIn = parseFloat(data['tempIn']);
+                weatherForecast[0].tempOut = parseFloat(data['tempOut']);
+                weatherForecast[0].frostOutside = JSON.parse(data['frostOutside']);
+                weatherForecast[0].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                weatherForecast[0].windSpeed = parseFloat(data['windSpeed']);                                                                           
                 });           
          });
        
+        $(document).ready(function() {
+            
+            $.getJSON('kitchen', { orderId : "Day1"}, function(data) {  
+                weatherForecast[1].tempOut = parseFloat(data['temp']);
+                weatherForecast[1].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                weatherForecast[1].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                });           
+         });    
+    
+        $(document).ready(function() {
+            
+            $.getJSON('kitchen', { orderId : "Day2"}, function(data) {  
+                weatherForecast[2].tempOut = parseFloat(data['temp']);
+                weatherForecast[2].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                weatherForecast[2].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                });           
+         }); 
+    
+        $(document).ready(function() {
+            
+            $.getJSON('kitchen', { orderId : "Day3"}, function(data) {  
+                weatherForecast[3].tempOut = parseFloat(data['temp']);
+                weatherForecast[3].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                weatherForecast[3].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                });           
+         });     
+    
     }     
 
 } // end class Temperature
@@ -586,7 +610,7 @@ private r:                   number;
 private centerX:             number;
 private centerY:             number;
     
-public weatherForecast : WeatherData = null; 
+public weatherToday : WeatherData = null; 
         
 public tmpInText:  Text;
 public tmpOutText:  Text;      
@@ -628,10 +652,10 @@ constructor (canvas: HTMLCanvasElement) {
     this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
     this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
     
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast));
+    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[0]));
+    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[1]));
+    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[2]));
+    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[3]));
  
                 
   // ni = 0; 
@@ -691,12 +715,12 @@ public paintFloors() {
 
     //Outside mark
     this.TempMarks[0].setSize(250, 350, 80, 40);
-    this.TempMarks[0].paint(this.weatherForecast.tempOut + " \u00B0C");    
+    this.TempMarks[0].paint(this.weatherToday.tempOut + " \u00B0C");    
     
     
     //Inside mark
     this.TempMarks[1].setSize(280, 200, 80, 40);
-    this.TempMarks[1].paint(this.weatherForecast.tempIn + " \u00B0C");
+    this.TempMarks[1].paint(this.weatherToday.tempIn + " \u00B0C");
     
  }    
     
@@ -710,7 +734,7 @@ public paintBasic() {
         var img:HTMLImageElement = new Image();
         img.src = this.weatherForecast.getImagePath();    
     */
-        var img:HTMLImageElement = this.weatherForecast.getImage();
+        var img:HTMLImageElement = this.weatherToday.getImage();
         
         ctx.save();
         ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
@@ -752,7 +776,7 @@ public paintBasic() {
    ctx.textAlign = "right";
    ctx.textBaseline = "middle";
    ctx.fillStyle = textColor;          
-   ctx.fillText(this.weatherForecast.windSpeed + " m/s", 320, 100);
+   ctx.fillText(this.weatherToday.windSpeed + " m/s", 320, 100);
    ctx.restore();          
     
     //Time
@@ -779,14 +803,14 @@ public paintBasic() {
    this.tmpInText.fontColor = textColor;
    this.tmpInText.textAlign = "center";
    this.tmpInText.textBaseline = "middle";   
-   this.tmpInText.paint(this.weatherForecast.tempIn + " \u00B0C");
+   this.tmpInText.paint(this.weatherToday.tempIn + " \u00B0C");
     
     //Outside temperature    
    this.tmpOutText.copyFrom(this.tmpInText);    
    this.tmpOutText.x = 320;
    this.tmpOutText.y =  50;     
    this.tmpOutText.textAlign = "right";   
-   this.tmpOutText.paint(this.weatherForecast.tempOut + " \u00B0C");    
+   this.tmpOutText.paint(this.weatherToday.tempOut + " \u00B0C");    
         
     //Humidity
    ctx.save();
