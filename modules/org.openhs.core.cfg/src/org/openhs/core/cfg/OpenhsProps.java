@@ -50,6 +50,65 @@ public class OpenhsProps {
     //loading props file and distribute via ConfigAdmin
     void loadProps()
     {
+
+    	InputStream input = null;
+
+    	try {
+    		input = new FileInputStream(m_openhsPropsFile);
+
+    		// load a properties file
+    		m_properties.load(input);
+            
+    		logger.info("===================== openhs properties =====================");
+    		logger.info(logger.getName());
+
+            if(m_properties != null && !m_properties.isEmpty()) {
+                Iterator<Entry<Object, Object>> it = m_properties.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<Object, Object> entry = it.next();
+                    logger.info(entry.getKey() + " = " +
+                    	entry.getValue() + " of type " + entry.getValue().getClass().toString());
+                }
+            }
+    		
+    		// get the property values for communication
+    		String commComponent = m_properties.getProperty(OHS_COMM_COMPONENT);
+    		String commConfigFile = m_properties.getProperty(OHS_COMM_CONFIG_FILE);
+    		
+    		System.out.println("\n\n------> Starting...." + commComponent);
+    	
+    		Configuration config = null;
+			config = m_ca.getConfiguration(commComponent);
+		
+			Dictionary<String, Object> dict = config.getProperties();
+		    if (dict == null) {
+		       dict = new Hashtable<String, Object>();
+		    }
+		    
+		    // configure the Dictionary
+		    dict.put(OHS_COMM_CONFIG_FILE, commConfigFile);
+		
+		    //push the configuration dictionary to the comm component
+		    config.update(dict);		    		    
+		    
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+    	} finally {
+    		if (input != null) {
+    			try {
+    				input.close();
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    				return;
+    			}
+    		}
+    	}
+    }
+
+    
+    //loading props file and distribute via ConfigAdmin
+    void loadProps1()
+    {
         
         //xmlConfiguration = "config.xml";
         //xmlSite = "site.xml"; 
@@ -94,6 +153,7 @@ public class OpenhsProps {
 		    //push the configuration dictionary to the comm component
 		    config.update(dict);		    		    
 		    
+		    /*
 		    String comp = "org.openhs.comm.rxtx";
 		    
     		Configuration config2 = null;
@@ -109,7 +169,8 @@ public class OpenhsProps {
 		
 		    //push the configuration dictionary to the comm component
 		    config2.update(dict2);			
-			
+			*/
+		    
 		    /*
 		    try {
 		    	
