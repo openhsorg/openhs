@@ -155,8 +155,19 @@ public class Meteostation {
     public Weather getForecastWeather6() {    	    	    
     	return this.m_weather.getForecastWeather6();
     }
-        
     
+    /**
+     * Get all forecasts...
+     * @return
+     */
+    public ArrayList<Weather> getForecasts() {    	    	    
+    	return this.m_weather.getForecasts();
+    }    
+        
+    /**
+     * Temperature in one room.
+     * @return
+     */
     public float getTempIn() {
     	float temp = Float.NaN;
     	
@@ -172,6 +183,10 @@ public class Meteostation {
     	return temp;
     }
     
+    /**
+     * Temp outside...
+     * @return
+     */
     public float getTempOut(){
   	  
   	  float tmp = -5f;

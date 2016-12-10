@@ -1,5 +1,7 @@
 package org.openhs.core.weather;
 
+import java.util.ArrayList;
+
 import org.openhs.comm.api.IOpenhsWeather;
 import org.openhs.core.commons.Weather;
 
@@ -34,4 +36,13 @@ public class OpenhsWeather implements IOpenhsWeather {
 	public Weather getForecastWeather6() {
 		return this.m_gather.getForecastWeather6();
 	}	
+	
+	/**
+	 * Get all forecasts...
+	 * @return
+	 */
+	public ArrayList<Weather> getForecasts() {
+		return this.m_gather.getForecasts();
+	}		
+
 }
