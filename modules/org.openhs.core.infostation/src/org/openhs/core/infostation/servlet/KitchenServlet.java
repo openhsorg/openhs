@@ -49,7 +49,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON();
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -67,7 +67,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(1);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -85,7 +85,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(2);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -103,7 +103,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(3);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");

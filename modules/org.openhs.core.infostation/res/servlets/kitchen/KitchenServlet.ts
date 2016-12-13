@@ -43,7 +43,8 @@ enum Application {
     None,
     Watch,    
     Floor,
-    WeatherForecast
+    WeatherForecast,
+    Room
 }    
         
 class WeatherData {
@@ -86,14 +87,7 @@ private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();
         
         this.img = new Image();
         this.img.src="/infores/servlets/kitchen/cloudSnow.png";        
-        this.images.push(this.img);                
-        
-        /*
-        imgWind.onload = function(){
-          imgWindLoaded = true;
-        }        
-*/ 
-      
+        this.images.push(this.img);                          
     }    
     
     getImage() {
@@ -117,7 +111,8 @@ weatherForecast.push(new WeatherData()); //today + 2
 weatherForecast.push(new WeatherData()); //today + 3
 weatherForecast.push(new WeatherData()); //today + 4      
     
-var appMode = Application.None;  //Mode of application     
+var appMode = Application.None;  //Mode of application
+var roomNum = 1; //number of selected room for Application.Room
 var nextServlet = "";        
     
 export class Infoscreen {
@@ -316,7 +311,7 @@ imgFloor.onload = function(){
 }  
     
     
-class Rect {
+class Rect2 {
 
     private x:  number = 0;
     private y:  number = 0;
@@ -425,7 +420,7 @@ class Text {
         
         }
     
-}    
+}           
     
 class TempMark {
     
@@ -600,6 +595,58 @@ class ForecastPanel {
     
 }
     
+class Floor {
+    
+    private ctx:                 CanvasRenderingContext2D;
+    private width:               number;
+    private height:              number;
+        
+    private TempMarks: Array<TempMark> = new Array<TempMark>();
+    
+    private imgFloor:HTMLImageElement = null;
+    
+    private imgFloorLoaded: boolean = false;
+    
+    constructor (canvas: HTMLCanvasElement) {
+        
+        this.ctx = canvas.getContext("2d");
+        this.width = canvas.width;
+        this.height = canvas.height;
+        
+        this.imgFloor = new Image();
+        this.imgFloor.src="/infores/servlets/kitchen/floor.png";      
+                
+        this.imgFloor.onload = function(){
+          this.imgFloorLoaded = true;
+        }          
+        
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));               
+    }     
+    
+    public paint(weatherToday : WeatherData) {
+        const ctx = this.ctx;
+        
+        //Draw image...
+        if (imgFloorLoaded) {     
+            ctx.save();
+            ctx.drawImage(imgFloor, 0, 0, this.width, this.height);
+            ctx.restore();        
+        }      
+    
+        //Outside mark
+        this.TempMarks[0].setSize(250, 350, 80, 40);
+        this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
+            
+        //Inside mark
+        this.TempMarks[1].setSize(280, 200, 80, 40);
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
+    }
+    
+    
+    
+}
+    
         
 class ImagePainter {
 
@@ -615,9 +662,11 @@ public weatherToday : WeatherData = null;
 public tmpInText:  Text;
 public tmpOutText:  Text;      
 
-private roomTmps: Array<Text> = new Array<Text>();
-private TempMarks: Array<TempMark> = new Array<TempMark>();
-private forecastPanels: Array<ForecastPanel> = new Array<ForecastPanel>();           
+//private roomTmps: Array<Text> = new Array<Text>();
+//private TempMarks: Array<TempMark> = new Array<TempMark>();
+private forecastPanels: Array<ForecastPanel> = new Array<ForecastPanel>();      
+    
+private floor: Floor = null;    
 
 constructor (canvas: HTMLCanvasElement) {
     
@@ -642,21 +691,23 @@ constructor (canvas: HTMLCanvasElement) {
         
     this.tmpInText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
     this.tmpOutText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
-    
+    /*
     this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
     this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
     this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
     this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
     this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    
+    */
+    /*
     this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
     this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-    
+    */
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[0]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[1]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[2]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[3]));
  
+    this.floor = new Floor (canvas);
                 
   // ni = 0; 
 }
@@ -675,7 +726,8 @@ public paint() {
     if (appMode == Application.None || appMode == Application.Watch) {       
         this.paintBasic();        
     } else if (appMode == Application.Floor) {        
-        this.paintFloors();        
+        //this.paintFloors();
+          this.floor.paint(this.weatherToday);       
     } else if (appMode == Application.WeatherForecast) {
         this.paintWeatherForecast();
     }
@@ -697,11 +749,9 @@ public paintWeatherForecast() {
     this.forecastPanels[1].paint(ctx);
     this.forecastPanels[2].paint(ctx);
     this.forecastPanels[3].paint(ctx);
-    
-
-    
+        
 }
-    
+    /*
 public paintFloors() {
     
    const ctx = this.ctx;
@@ -716,13 +766,33 @@ public paintFloors() {
     //Outside mark
     this.TempMarks[0].setSize(250, 350, 80, 40);
     this.TempMarks[0].paint(this.weatherToday.tempOut + " \u00B0C");    
-    
-    
+        
     //Inside mark
     this.TempMarks[1].setSize(280, 200, 80, 40);
     this.TempMarks[1].paint(this.weatherToday.tempIn + " \u00B0C");
     
  }    
+    */
+public paintRoom() {
+    
+   const ctx = this.ctx;
+       /* 
+    //Draw image...
+    if (imgFloorLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgFloor, 0, 0, this.width, this.height);
+        ctx.restore();        
+    }      
+
+    //Outside mark
+    this.TempMarks[0].setSize(250, 350, 80, 40);
+    this.TempMarks[0].paint(this.weatherToday.tempOut + " \u00B0C");    
+        
+    //Inside mark
+    this.TempMarks[1].setSize(280, 200, 80, 40);
+    this.TempMarks[1].paint(this.weatherToday.tempIn + " \u00B0C");
+    */
+ }       
     
 
 public paintBasic() {
@@ -854,59 +924,6 @@ public paintBasic() {
     
  }
           
-
-private drawRadial (alpha: number, r1: number, r2: number, width1: number, width2: number, color: string) {
-   let sin: number = Math.sin(alpha);
-   let cos: number = Math.cos(alpha);
-   let pm1X: number = this.centerX + sin * r1;
-   let pm1Y: number = this.centerY - cos * r1;
-   let pm2X: number = this.centerX + sin * r2;
-   let pm2Y: number = this.centerY - cos * r2;
-   let px: number[] = [];
-   let py: number[] = [];
-   px[0] = pm1X - cos * width1 / 2;
-   py[0] = pm1Y - sin * width1 / 2;
-   px[3] = pm1X + cos * width1 / 2;
-   py[3] = pm1Y + sin * width1 / 2;
-   px[1] = pm2X - cos * width2 / 2;
-   py[1] = pm2Y - sin * width2 / 2;
-   px[2] = pm2X + cos * width2 / 2;
-   py[2] = pm2Y + sin * width2 / 2;
-   this.drawFilledPolygon(px, py, color); }
-
-private drawFilledPolygon (px: number[], py: number[], color: string) {
-   const ctx = this.ctx;
-   ctx.save();
-   ctx.beginPath();
-   ctx.moveTo(px[0], py[0]);
-   for (let i = 1; i < px.length; i++) {
-      ctx.lineTo(px[i], py[i]); }
-   ctx.fillStyle = color;
-   ctx.fill();
-   ctx.restore(); }
-
-private drawRadialFilledCircle (alpha: number, r1: number, circR: number, color: string) {
-   const ctx = this.ctx;
-   let p0X: number = this.centerX + Math.sin(alpha) * r1;
-   let p0Y: number = this.centerY - Math.cos(alpha) * r1;
-   ctx.save();
-   ctx.beginPath();
-   ctx.arc(p0X, p0Y, circR, 0, 2 * Math.PI);
-   ctx.fillStyle = color;
-   ctx.fill();
-   ctx.restore(); }
-
-private drawClockLabel() {
-   const ctx = this.ctx;
-   ctx.save();
-   let fontSize: number = Math.round(this.r * 20 / 200);
-   ctx.font = fontSize + "px Helvetica, sans-serif";
-   ctx.textAlign = "center";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = borderColor;
-   ctx.fillText(clockLabel, this.centerX, this.centerY + this.r / 2);
-   ctx.restore(); }
-    
 private roundRect(x: number, y: number, width: number, height: number, radius: number) {
   const ctx = this.ctx;
       
