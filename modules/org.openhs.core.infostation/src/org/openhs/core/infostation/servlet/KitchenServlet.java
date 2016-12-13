@@ -194,7 +194,7 @@ public class KitchenServlet extends HttpServlet {
 	    	Weather wth = m_meteo.getForecastWeather6();
 	    	
 		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		    String time = format.format(curDate); 	 		  
 		    
 		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
