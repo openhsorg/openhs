@@ -482,7 +482,7 @@ var KitchenInfoStation;
                 ctx.fillStyle = "grey";
                 ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);
             }
-            var dots = "........................";
+            var dots = "------------------------------";
             var str = dots.substring(0, this.dotCounter);
             ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
             var text = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);

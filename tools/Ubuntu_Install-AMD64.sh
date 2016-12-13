@@ -98,28 +98,10 @@ apt-get -y update
 apt-get -y install kate
 
 #Chrome
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 apt-get update
-#apt-get -y purge google-chrome-stable
-#apt-get -y autoremove
-apt-get -y install libxss1 libappindicator1 libindicator7
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-dpkg -i ./google-chrome*.deb
-apt-get -y install -f
-rm -f google-chrome-stable_current_amd64.deb
-rm -f google-chrome*.deb
-copy_shortcut "google-chrome.desktop"
-
-#Eclipse
-apt-get -y update
-rm -f -r eclipse
-rm -f -r /opt/eclipse
-rm -f -r /usr/bin/eclipse
-rm -f -r $HOME/.local/share/applications/eclipse.desktop
-wget "$ECLIPSE" -O eclipse.tar.gz
-tar -xf eclipse.tar.gz
-rm eclipse.tar.gz
-mv -f eclipse /opt/eclipse
-ln -s /opt/eclipse/eclipse /usr/bin/eclipse
+sudo apt-get install google-chrome-stable
 
 #GIT
 apt-get -y update

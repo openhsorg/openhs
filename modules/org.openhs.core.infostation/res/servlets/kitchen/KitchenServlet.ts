@@ -637,7 +637,7 @@ class StopWatch {
         ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
        }
     
-       let dots: string = "........................"; 
+       let dots: string = "------------------------------"; 
        let str: string = dots.substring(0, this.dotCounter);        
         
        ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
