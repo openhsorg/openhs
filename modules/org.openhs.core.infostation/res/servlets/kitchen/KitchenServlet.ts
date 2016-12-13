@@ -338,6 +338,16 @@ var imgStopwatchLoaded = false;
 imgStopwatch.onload = function(){
   imgStopwatchLoaded = true;
 }        
+    
+//Fingerprint image    
+var imgFingerprint = new Image(); 
+imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png'; 
+var imgFingerprintLoaded = false;    
+    
+imgFingerprint.onload = function(){
+  imgFingerprintLoaded = true;
+}        
+       
    
     
 class Rect {
@@ -594,7 +604,9 @@ class StopWatch {
     public paint() {
        const ctx = this.ctx;
         
-       this.paintEffect (); 
+       if (this.getStatus()) { 
+        this.paintEffect ();           
+       } 
                                 
        ctx.save();
        ctx.beginPath();
@@ -603,16 +615,27 @@ class StopWatch {
        ctx.fillStyle = "white";
        ctx.fill();   
        ctx.lineWidth = 1;
-       ctx.strokeStyle = "green";
+        
+       if (this.getStatus()) { 
+        ctx.strokeStyle = "green";           
+       } else {
+        ctx.strokeStyle = "grey";            
+       }        
+        
        ctx.stroke();
 
        ctx.font = 32 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
        ctx.textAlign = "left";
        ctx.textBaseline = "middle";
-       ctx.fillStyle = "green";  
+       
         
-        
-       ctx.fillText("stopwatch", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30); 
+       if (this.getStatus()) {
+        ctx.fillStyle = "green";            
+        ctx.fillText("running", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                     
+       } else {           
+        ctx.fillStyle = "grey";            
+        ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
+       }
     
        let dots: string = "........................"; 
        let str: string = dots.substring(0, this.dotCounter);        
@@ -623,6 +646,12 @@ class StopWatch {
     
        ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
        ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
+        
+       if (imgFingerprintLoaded) { 
+        ctx.save();
+        ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
+        ctx.restore();        
+       }
                                              
     }    
     

@@ -260,6 +260,13 @@ var KitchenInfoStation;
     imgStopwatch.onload = function () {
         imgStopwatchLoaded = true;
     };
+    //Fingerprint image    
+    var imgFingerprint = new Image();
+    imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png';
+    var imgFingerprintLoaded = false;
+    imgFingerprint.onload = function () {
+        imgFingerprintLoaded = true;
+    };
     var Rect = (function () {
         function Rect(x, y, w, h) {
             this.x = 0;
@@ -448,26 +455,44 @@ var KitchenInfoStation;
         };
         StopWatch.prototype.paint = function () {
             var ctx = this.ctx;
-            this.paintEffect();
+            if (this.getStatus()) {
+                this.paintEffect();
+            }
             ctx.save();
             ctx.beginPath();
             this.roundRect(this.stopwatchRect.x, this.stopwatchRect.y, this.stopwatchRect.width(), this.stopwatchRect.height(), 40);
             ctx.fillStyle = "white";
             ctx.fill();
             ctx.lineWidth = 1;
-            ctx.strokeStyle = "green";
+            if (this.getStatus()) {
+                ctx.strokeStyle = "green";
+            }
+            else {
+                ctx.strokeStyle = "grey";
+            }
             ctx.stroke();
             ctx.font = 32 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = "green";
-            ctx.fillText("stopwatch", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);
+            if (this.getStatus()) {
+                ctx.fillStyle = "green";
+                ctx.fillText("running", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);
+            }
+            else {
+                ctx.fillStyle = "grey";
+                ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);
+            }
             var dots = "........................";
             var str = dots.substring(0, this.dotCounter);
             ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
             var text = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);
             ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
+            if (imgFingerprintLoaded) {
+                ctx.save();
+                ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
+                ctx.restore();
+            }
         };
         StopWatch.prototype.paintEffect = function () {
             var ctx = this.ctx;
