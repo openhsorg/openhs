@@ -31,6 +31,19 @@ enum Application {
     WeatherForecast,
     Room
 }    
+    
+function getAjax(urlAdr: string, id: string) {
+       
+    var result = null;
+            
+    $.ajax({async: false, url: urlAdr, data: { orderId: id}, dataType: "json", success: function(data) {
+        
+        result = data;
+                                      
+        }});
+    
+    return result;    
+    }      
         
 class WeatherData {
 
@@ -119,7 +132,6 @@ public forecastScreen: WeatherForecastScreen = null; //forecast screen
 public stopWatch: StopWatch = null;        
 public floor: Floor = null;    
 private room: Array<Room> = new Array<Room>();
- 
 
 constructor (canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -237,7 +249,7 @@ private createStaticImageCanvas() {
     
     private getData(url: string) {
     
-        var data = this.getAjax(url, 'InfoData');
+        var data = getAjax(url, 'InfoData');
                 
         if (data != null) {
                     timeString = data['time'];
@@ -256,23 +268,7 @@ private createStaticImageCanvas() {
     
     }
     
-private getAjax(urlAdr: string, id: string) {
-       
-    var result = null;
-    
-  //      $(document).ready(function() {
-            
-            $.ajax({async: false, url: urlAdr, data: { orderId: id}, dataType: "json", success: function(data) {
-                
-                result = data;
-                                              
-                }});
-            
-     //       });
-    
-    return result;
 
-}
     /*
 //Get data from server...    
 private getData() {
@@ -521,11 +517,8 @@ class WeatherForecastScreen {
             panel.getData(url, "Day" + i);
             
             i++;
-        }
-        
-    }
-    
- 
+        }        
+    }    
 }
     
     
@@ -746,8 +739,7 @@ class TempMark {
         this.txt.fontSize = 20;
         
         this.img = new Image();                                
-        this.img.src = "/infores/servlets/kitchen/tempSymbol.png";
-              
+        this.img.src = "/infores/servlets/kitchen/tempSymbol.png";              
     }      
     
     setSize (x: number, y: number, width: number, height: number) {
@@ -783,8 +775,7 @@ class TempMark {
             this.ctx.save();
             this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
             this.ctx.restore();        
-       // }         
-                
+       // }                         
     }     
     
     getRect() {
@@ -898,8 +889,7 @@ class StopWatch {
         ctx.save();
         ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
         ctx.restore();        
-       }
-                                             
+       }                                
     }    
     
     private paintEffect () {
@@ -1084,30 +1074,15 @@ class WeatherForecastPanel {
     
     public getData(url: string, id: string) {   
      
-        var data = this.getAjax(url, id);
+        var data = getAjax(url, id);
                 
         if (data != null) {
                     this.forecast.tempOut = parseFloat(data['temp']);
                     this.forecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
                     this.forecast.windSpeed = parseFloat(data['windSpeed']);   
             }                     
-    }
-    
-    private getAjax(urlAdr: string, id: string) {
-           
-        var result = null;
-                
-        $.ajax({async: false, url: urlAdr, data: { orderId: id}, dataType: "json", success: function(data) {
-            
-            result = data;
-                                          
-            }});
-        
-        return result;    
-    }       
-}
-    
-    
+    }         
+}        
     
     
 class Floor {
@@ -1241,8 +1216,7 @@ class Room {
         //alert("hello: "+cId);
                 
         return cId;
-    }    
-    
+    }        
 }    
  
 //Function to get the mouse position

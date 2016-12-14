@@ -26,6 +26,13 @@ var KitchenInfoStation;
         Application[Application["WeatherForecast"] = 3] = "WeatherForecast";
         Application[Application["Room"] = 4] = "Room";
     })(Application || (Application = {}));
+    function getAjax(urlAdr, id) {
+        var result = null;
+        $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
+                result = data;
+            } });
+        return result;
+    }
     var WeatherData = (function () {
         function WeatherData() {
             this.tempIn = 0.0;
@@ -175,7 +182,7 @@ var KitchenInfoStation;
            this.staticImageCanvas = canvas; }
             */
         BasicScreen.prototype.getData = function (url) {
-            var data = this.getAjax(url, 'InfoData');
+            var data = getAjax(url, 'InfoData');
             if (data != null) {
                 timeString = data['time'];
                 dateString = data['date'];
@@ -187,15 +194,6 @@ var KitchenInfoStation;
             }
             //Other objects...
             this.forecastScreen.getData(url);
-        };
-        BasicScreen.prototype.getAjax = function (urlAdr, id) {
-            var result = null;
-            //      $(document).ready(function() {
-            $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
-                    result = data;
-                } });
-            //       });
-            return result;
         };
         /*
     //Get data from server...
@@ -607,7 +605,7 @@ var KitchenInfoStation;
             this.ctx.save();
             this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
             this.ctx.restore();
-            // }         
+            // }                         
         };
         TempMark.prototype.getRect = function () {
             var rect = {
@@ -826,19 +824,12 @@ var KitchenInfoStation;
             this.txtWind.paint(this.forecast.windSpeed + " \u00B0C");
         };
         WeatherForecastPanel.prototype.getData = function (url, id) {
-            var data = this.getAjax(url, id);
+            var data = getAjax(url, id);
             if (data != null) {
                 this.forecast.tempOut = parseFloat(data['temp']);
                 this.forecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
                 this.forecast.windSpeed = parseFloat(data['windSpeed']);
             }
-        };
-        WeatherForecastPanel.prototype.getAjax = function (urlAdr, id) {
-            var result = null;
-            $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
-                    result = data;
-                } });
-            return result;
         };
         return WeatherForecastPanel;
     }());
