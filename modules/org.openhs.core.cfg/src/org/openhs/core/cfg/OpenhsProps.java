@@ -15,37 +15,30 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Bundle;
-import java.io.File;
-import java.util.ArrayList;
+import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.commons.OhsConfig;
 
 public class OpenhsProps {
 	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(OpenhsProps.class);
-	
-	private String m_openhsDir = null;
-	private String m_openhsPropsFile = null;
-	private String m_fileSep = null;
+
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
-	
-	private final String OHS_DIR = "openhs";
-	private final String OHS_PROPS = "openhs.properties";
+    private ISiteService m_siteService = null;	
+    private OhsConfig m_config = null;
+
 	private final String OHS_COMM_COMPONENT = "commComponent";
 	private final String OHS_COMM_CONFIG_FILE = "commConfigFile";
 	
-	public OpenhsBundles m_bundles = new OpenhsBundles();
+	public OpenhsBundles m_bundles = new OpenhsBundles();	
+	OpenhsDataStructure m_builder = new OpenhsDataStructure();
+	
 
     public OpenhsProps() {
-    	String currentUsersHomeDir = System.getProperty("user.home");
-        m_fileSep = System.getProperty( "file.separator"); 
-        m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;
-        m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
     	m_properties = new Properties();
+    	m_config = new OhsConfig ();	
+
     }
 
     //loading props file and distribute via ConfigAdmin
@@ -55,7 +48,7 @@ public class OpenhsProps {
     	InputStream input = null;
 
     	try {
-    		input = new FileInputStream(m_openhsPropsFile);
+    		input = new FileInputStream(m_config.m_openhsPropsFile);
 
     		// load a properties file
     		m_properties.load(input);
@@ -72,7 +65,7 @@ public class OpenhsProps {
     		System.out.println("\n\n------> Starting...." + commComponent);
     	
     		// load properties from comConfigFile
-    		input = new FileInputStream(m_openhsPropsFile = m_openhsDir + m_fileSep + commConfigFile);
+    		input = new FileInputStream(m_config.m_openhsDir + System.getProperty( "file.separator") + commConfigFile);
     		Properties commProperties = new Properties();
     		commProperties.load(input);
 
@@ -136,6 +129,22 @@ public class OpenhsProps {
 		if(m_ca == ca)
 			m_ca = null;
     }
+    
+    void setService(ISiteService ser) {
+        m_siteService = ser;
+        /*
+         * Initialize config and data structure...
+         */
+        m_builder.m_config = m_config;
+        m_builder.m_siteService = m_siteService;
+        m_builder.initialize();                
+    }
+
+    void unsetService(ISiteService ser) {
+        if (m_siteService == ser) {
+            ser = null;
+        }
+    }	    
 
    
 }
