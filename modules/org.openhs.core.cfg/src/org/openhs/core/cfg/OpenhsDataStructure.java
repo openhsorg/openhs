@@ -19,7 +19,6 @@ public class OpenhsDataStructure {
 	 * Configuration.
 	 */
     public OhsConfig m_config = null;	
-
 	
     /*
      * Initialize configuration...
