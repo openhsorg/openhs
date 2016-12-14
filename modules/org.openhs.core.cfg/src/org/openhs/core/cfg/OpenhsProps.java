@@ -38,13 +38,11 @@ public class OpenhsProps {
     public OpenhsProps() {
     	m_properties = new Properties();
     	m_config = new OhsConfig ();	
-
     }
 
     //loading props file and distribute via ConfigAdmin
     private void loadProps()
     {
-
     	InputStream input = null;
 
     	try {
