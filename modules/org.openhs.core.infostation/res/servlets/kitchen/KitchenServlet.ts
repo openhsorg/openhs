@@ -1,15 +1,7 @@
-// Copyright 2015 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
-// www.source-code.biz, www.inventec.ch/chdh
+// Copyright 2016 
 //
-// This module is multi-licensed and may be used under the terms of any of the following licenses:
 //
-//  LGPL, GNU Lesser General Public License, V2.1 or later, http://www.gnu.org/licenses/lgpl.html
-//  EPL, Eclipse Public License, V1.0 or later, http://www.eclipse.org/legal
-//
-// Please contact the author if you need another license.
-// This module is provided "as is", without warranties of any kind.
-//
-// Home page: http://www.source-code.biz/snippets/typescript
+// Home page: ***
 
 /// <reference path="jquery.d.ts" />
 
@@ -31,19 +23,13 @@ var stopwatchRect = {
     width:0,
     heigth:0
 };  
-    
-var stopwatchAppRect = {
-    x:0,
-    y:0,
-    width:0,
-    heigth:0
-};
              
 enum Application {
     None,
     Watch,    
     Floor,
-    WeatherForecast
+    WeatherForecast,
+    Room
 }    
         
 class WeatherData {
@@ -86,14 +72,7 @@ private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();
         
         this.img = new Image();
         this.img.src="/infores/servlets/kitchen/cloudSnow.png";        
-        this.images.push(this.img);                
-        
-        /*
-        imgWind.onload = function(){
-          imgWindLoaded = true;
-        }        
-*/ 
-      
+        this.images.push(this.img);                          
     }    
     
     getImage() {
@@ -117,7 +96,8 @@ weatherForecast.push(new WeatherData()); //today + 2
 weatherForecast.push(new WeatherData()); //today + 3
 weatherForecast.push(new WeatherData()); //today + 4      
     
-var appMode = Application.None;  //Mode of application     
+var appMode = Application.None;  //Mode of application
+var roomNum = 1; //number of selected room for Application.Room
 var nextServlet = "";        
     
 export class Infoscreen {
@@ -129,35 +109,58 @@ aa : string;
     
 element: JQuery;
 span: JQuery;    
-imPainter : ImagePainter;    
-     
+imPainter : ImagePainter;
 
-constructor (clockCanvas: HTMLCanvasElement, next: string) {       
+private timerPaint;
+private timerData;           
+private timerPaintStep = 3000;
+    
+//protected stopWatch: StopWatch = null;           
+//private timerStopWatch;   
+
+constructor (clockCanvas: HTMLCanvasElement, next: string) {
+        
    this.clockCanvas = clockCanvas;
+   this.imPainter = new ImagePainter(this.clockCanvas);    
    this.ns = "/org.openhs.core.meteostation"; //next;
-   this.timerEvent();
    
+   this.timerGetData();
+   this.timerEvent();
+           
    nextServlet = next; //next;
  
    clockCanvas.addEventListener('click',() => this.MouseClickHandler(event));
-
+        
 }  
+
+private timerGetData() {
+   this.getData();
+ // this.paintScreen();    
+   this.timerData = window.setTimeout(() => this.timerGetData(), 5000); 
+}     
     
 private timerEvent() {
    this.getData();
    this.paintScreen();    
-   window.setTimeout(() => this.timerEvent(), 1000 * 3); 
+   this.timerPaint = window.setTimeout(() => this.timerEvent(), this.timerPaintStep); 
 } 
-
+   /* 
+private timerEventStopWatch() {
+        
+    this.imPainter.stopWatch.paint();    
+    this.timerStopWatch = window.setTimeout(() => this.timerEventStopWatch(), 50);         
+}     
+*/
 private paintScreen() {
     
    if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
       this.createStaticImageCanvas(); }    
     
    this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
-   this.imPainter = new ImagePainter(this.clockCanvas);
    this.imPainter.weatherToday = weatherForecast[0];//.fillData(weatherForecast);
-   this.imPainter.paint();    
+   this.imPainter.paint();  
+    
+  //  this.imPainter.gameLoop();
 }
     
 private MouseClickHandler(event) {
@@ -167,9 +170,13 @@ private MouseClickHandler(event) {
     if (appMode == Application.None) {
 
         if (isInside(mousePos, stopwatchRect)) {            
-            appMode = Application.Watch;            
-        } else if (isInside(mousePos, stopwatchRect)) {
-            appMode = Application.Watch;    
+            appMode = Application.Watch;          
+            this.imPainter.stopWatch.start();
+           // this.timerEventStopWatch();
+            window.clearTimeout(this.timerPaint);
+            this.timerPaintStep = 40;
+            this.timerEvent();
+                        
         } else if (isInside(mousePos, this.imPainter.tmpInText.getRect())) {
             appMode = Application.Floor;    
         } else if (isInside(mousePos, forecastRect)) {
@@ -178,14 +185,40 @@ private MouseClickHandler(event) {
         
         
      } else if (appMode == Application.Watch) {
+               
+                       
+        if (this.imPainter.stopWatch.getStatus()) {
+            if(this.imPainter.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {                                
+                this.imPainter.stopWatch.stop();
+                //clearTimeout(this.timerStopWatch);                 
+                //this.timerStopWatch = null;
+                
+                window.clearTimeout(this.timerPaint);
+                this.timerPaintStep = 3000;
+                this.timerEvent();                
+                
+             }
+        }
+        else {
         
-        if (isInside(mousePos, stopwatchAppRect)) {               
-            appMode = Application.None;                                                
-        } else {
-            //alert('clicked outside rect');
-        }           
+            appMode = Application.None;
+        }
+        
+        
      } else if (appMode == Application.Floor) {     
-        appMode = Application.None;
+       
+        var room = this.imPainter.floor.clickedTempMark(mousePos.x, mousePos.y);
+        
+        if (room != -1) {            
+            appMode = Application.Room;
+            roomNum = room;            
+           } else {
+            appMode = Application.None;
+            }
+        
+        
+     } else if (appMode == Application.Room) {     
+        appMode = Application.Floor;        
      } else if (appMode == Application.WeatherForecast) {     
         appMode = Application.None;
      }
@@ -305,21 +338,22 @@ var imgStopwatchLoaded = false;
 imgStopwatch.onload = function(){
   imgStopwatchLoaded = true;
 }        
+    
+//Fingerprint image    
+var imgFingerprint = new Image(); 
+imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png'; 
+var imgFingerprintLoaded = false;    
+    
+imgFingerprint.onload = function(){
+  imgFingerprintLoaded = true;
+}        
+       
    
-//Stop watch image    
-var imgFloor = new Image(); 
-imgFloor.src = '/infores/servlets/kitchen/floor1.jpg'; 
-var imgFloorLoaded = false;    
-    
-imgFloor.onload = function(){
-  imgFloorLoaded = true;
-}  
-    
     
 class Rect {
 
-    private x:  number = 0;
-    private y:  number = 0;
+    public x:  number = 0;
+    public y:  number = 0;
     private w:  number = 0;    
     private h:  number = 0;
     
@@ -331,13 +365,25 @@ class Rect {
         this.h = h;
     }
     
-   width() {        
+   public width() {        
         return this.w;
     }
     
-   height() {        
+   public height() {        
         return this.h;
     }        
+    
+   public setWidth(w: number) {        
+        this.w = w;
+    }
+    
+   public setHeight(h: number) {        
+        this.h = h;
+    }
+    
+    public isClicked (clx:number, cly:number) {                
+        return (clx > this.x && clx < this.x+this.w && cly < this.y+this.h && cly > this.y);        
+    }    
 }
     
    
@@ -425,7 +471,7 @@ class Text {
         
         }
     
-}    
+}           
     
 class TempMark {
     
@@ -508,7 +554,202 @@ class TempMark {
         rect.heigth = this.height;                
         
         return rect;        
-    }           
+    }         
+    
+    public isClicked (clx:number, cly:number) {                
+        return (clx > this.x && clx < this.x+this.width && cly < this.y+this.height && cly > this.y);        
+    }
+}
+    
+class StopWatch {
+    
+    private ctx:                 CanvasRenderingContext2D;
+    private width:               number;
+    private height:              number;    
+    public stopwatchRect:        Rect = null;
+    
+    private timer;
+    
+    private sec:    number = 0;
+    private min:    number = 0;
+    private hrs:    number = 0;
+    
+    private dotCounter: number = 0;
+    private angle: number = 0;
+    
+    public arcCenterX:          number;
+    public arcCenterY:          number;
+    public arcRadius:           number;    
+    
+    constructor (canvas: HTMLCanvasElement) {
+        
+        this.ctx = canvas.getContext("2d");
+        this.width = canvas.width;
+        this.height = canvas.height;
+                
+        this.stopwatchRect = new Rect ((this.width / 2) - (300 / 2) + 0, (this.height / 2) - (150 / 2) + 70, 300, 120);
+        
+        this.sec.toExponential(2);
+        this.min.toFixed(2);
+        this.hrs.toFixed(2)
+        
+        this.angle = 90 * (Math.PI / 180);
+    }     
+    
+    public zeroPad(num: number, places: number) {
+      var zero = places - num.toString().length + 1;
+      return Array(+(zero > 0 && zero)).join("0") + num;
+    }    
+    
+    public paint() {
+       const ctx = this.ctx;
+        
+       if (this.getStatus()) { 
+        this.paintEffect ();           
+       } 
+                                
+       ctx.save();
+       ctx.beginPath();
+       this.roundRect(this.stopwatchRect.x,this.stopwatchRect.y,this.stopwatchRect.width(),this.stopwatchRect.height(), 40); 
+    
+       ctx.fillStyle = "white";
+       ctx.fill();   
+       ctx.lineWidth = 1;
+        
+       if (this.getStatus()) { 
+        ctx.strokeStyle = "green";           
+       } else {
+        ctx.strokeStyle = "grey";            
+       }        
+        
+       ctx.stroke();
+
+       ctx.font = 32 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+       ctx.textAlign = "left";
+       ctx.textBaseline = "middle";
+       
+        
+       if (this.getStatus()) {
+        ctx.fillStyle = "green";            
+        ctx.fillText("running", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                     
+       } else {           
+        ctx.fillStyle = "grey";            
+        ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
+       }
+    
+       let dots: string = "------------------------------"; 
+       let str: string = dots.substring(0, this.dotCounter);        
+        
+       ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
+        
+       let text: string = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);                                        
+    
+       ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+       ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
+        
+       if (imgFingerprintLoaded) { 
+        ctx.save();
+        ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
+        ctx.restore();        
+       }
+                                             
+    }    
+    
+    private paintEffect () {
+        
+        const ctx = this.ctx;
+                
+        var dx: number;
+        var dy: number; 
+        
+        var dAngle: number = 0.5 * (Math.PI / 180);
+        
+        this.angle = this.angle + dAngle; 
+        
+        if (this.angle > 2 * Math.PI) this.angle = 0;
+        
+        
+        dx = this.arcRadius * Math.cos(this.angle);
+        dy = this.arcRadius * Math.sin(this.angle);
+        
+        ctx.save();               
+        ctx.beginPath();
+        ctx.moveTo(this.arcCenterX, this.arcCenterY);
+        ctx.lineTo(this.arcCenterX + dx, this.arcCenterY + dy);
+        ctx.moveTo(this.arcCenterX, this.arcCenterY);
+        ctx.lineTo(this.arcCenterX - dx, this.arcCenterY - dy);        
+        ctx.strokeStyle = 'grey';
+        ctx.lineWidth = 1;
+        ctx.stroke();                        
+        
+        ctx.restore();           
+        
+    }
+    
+    private roundRect(x: number, y: number, width: number, height: number, radius: number) {
+      const ctx = this.ctx;
+          
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+          
+    }  
+     
+    public stop () {        
+        clearTimeout(this.timer);      
+        
+        this.timer = 0;
+        
+        this.dotCounter = 0;
+        
+       // alert("***stopping...");
+    }
+                
+    public start () {
+        
+        this.sec = 0;
+        this.min = 0;
+        this.hrs = 0;
+        
+        this.stop();
+        
+        this.add();
+    }
+        
+    private add () {
+                
+        this.sec ++;
+        
+        if (this.sec >= 60) {
+            this.sec = 0;
+            this.min ++;
+            
+            if (this.min >= 60) {
+                this.min = 0;
+                this.hrs ++;                
+                }                        
+            }     
+        
+        this.dotCounter++ ;
+        
+        if (this.dotCounter > 17) this.dotCounter = 1;
+        
+        this.timer = setTimeout(() => this.add(), 1000);
+    }
+    
+    public getStatus() {
+        if (this.timer != 0) return true;
+        else return false;
+    }
+    
 }
 
 class ForecastPanel {
@@ -517,7 +758,7 @@ class ForecastPanel {
          
     public x:  number = 0.0;
     public y:  number = 0.0;
-    public width:  number = 0.0;  
+    public width:  number = 0.0;
     public height:  number = 0.0;    
     public lineWidth: number = 2.0;
     
@@ -600,6 +841,141 @@ class ForecastPanel {
     
 }
     
+class Floor {
+    
+    private ctx:                 CanvasRenderingContext2D;
+    private width:               number;
+    private height:              number;
+        
+    private TempMarks: Array<TempMark> = new Array<TempMark>();
+    
+    private imgFloor:HTMLImageElement = null;
+    
+    private imgFloorLoaded: boolean = false;
+    
+    constructor (canvas: HTMLCanvasElement) {
+        
+        this.ctx = canvas.getContext("2d");
+        this.width = canvas.width;
+        this.height = canvas.height;
+        
+        this.imgFloor = new Image();
+        this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";      
+                
+       // this.imgFloor.onload = function(){
+      //    this.imgFloorLoaded = true;
+     //   }          
+        
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));               
+    }     
+    
+    public paint(weatherToday : WeatherData) {
+        const ctx = this.ctx;
+        
+        //Draw image...
+     //   if (this.imgFloorLoaded) {     
+            ctx.save();
+            ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
+            ctx.restore();        
+     //   }      
+    
+        //Outside mark
+        this.TempMarks[0].setSize(250, 350, 80, 40);
+        this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
+            
+        //Inside mark
+        this.TempMarks[1].setSize(280, 200, 80, 40);
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
+    }
+    
+    public clickedTempMark (clx:number, cly:number) {
+        
+        let cId: number = -1;
+        let n:   number = -1;
+        
+        for (let id in this.TempMarks) {
+             
+            n++;
+            
+            if (this.TempMarks[id].isClicked(clx, cly)) {
+                cId = n;
+             }
+        }        
+                
+        return cId;
+    }    
+    
+}
+    
+class Room {
+    
+    private ctx:                 CanvasRenderingContext2D;
+    private width:               number;
+    private height:              number;
+        
+    private TempMarks: Array<TempMark> = new Array<TempMark>();
+    
+    private imgRoom:HTMLImageElement = null;
+    
+    private imgRoomLoaded: boolean = false;
+    
+    constructor (canvas: HTMLCanvasElement, imgSrc:string) {
+        
+        this.ctx = canvas.getContext("2d");
+        this.width = canvas.width;
+        this.height = canvas.height;
+        
+        this.imgRoom = new Image();
+        this.imgRoom.src=imgSrc; //"/infores/servlets/kitchen/room1.png";  
+                        
+        this.imgRoom.onload = function(){
+          this.imgRoomLoaded = true;
+        }          
+        
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));               
+    }     
+    
+    public paint(weatherToday : WeatherData) {
+        const ctx = this.ctx;
+        
+        //Draw image...
+      //  if (this.imgRoomLoaded) {     
+            ctx.save();           
+            ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
+            ctx.restore();        
+     //   }      
+    
+        //Outside mark
+        this.TempMarks[0].setSize(250, 350, 80, 40);
+        this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
+            
+        //Inside mark
+        this.TempMarks[1].setSize(280, 200, 80, 40);
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
+    }
+    
+    public clickedTempMark (clx:number, cly:number) {
+        
+        let cId: number = -1;
+        let n:   number = 0;
+        
+        for (let id in this.TempMarks) {
+             
+            n++;
+            
+            if (this.TempMarks[id].isClicked(clx, cly)) {
+                cId = n;
+             }
+        }        
+        //alert("hello: "+cId);
+                
+        return cId;
+    }    
+    
+}    
+    
         
 class ImagePainter {
 
@@ -607,58 +983,61 @@ private ctx:                 CanvasRenderingContext2D;
 private width:               number;
 private height:              number;
 private r:                   number;
-private centerX:             number;
-private centerY:             number;
+private arcCenterX:          number;
+private arcCenterY:          number;
+private arcRadius:           number;
     
 public weatherToday : WeatherData = null; 
         
 public tmpInText:  Text;
 public tmpOutText:  Text;      
 
-private roomTmps: Array<Text> = new Array<Text>();
-private TempMarks: Array<TempMark> = new Array<TempMark>();
-private forecastPanels: Array<ForecastPanel> = new Array<ForecastPanel>();           
+//private roomTmps: Array<Text> = new Array<Text>();
+//private TempMarks: Array<TempMark> = new Array<TempMark>();
+private forecastPanels: Array<ForecastPanel> = new Array<ForecastPanel>();      
+    
+public stopWatch: StopWatch = null;    
+    
+public floor: Floor = null;    
+private room: Array<Room> = new Array<Room>();
 
 constructor (canvas: HTMLCanvasElement) {
     
  //  this.weatherForecast = new WeatherData();
+           
+    this.ctx = canvas.getContext("2d");
+    this.width = canvas.width;
+    this.height = canvas.height;
+    this.r = Math.min(this.width, this.height) * 7 / 16;
+    this.arcCenterX = this.width / 2;
+    this.arcCenterY = this.height / 2 + 50;
+    this.arcRadius = 120;
     
-   this.ctx = canvas.getContext("2d");
-   this.width = canvas.width;
-   this.height = canvas.height;
-   this.r = Math.min(this.width, this.height) * 7 / 16;
-   this.centerX = this.width / 2;
-   this.centerY = this.height / 2;
-    
+    this.stopWatch = new StopWatch (canvas);
+    this.stopWatch.arcCenterX = this.arcCenterX;
+    this.stopWatch.arcCenterY = this.arcCenterY;
+    this.stopWatch.arcRadius = this.arcRadius;    
+        
     stopwatchRect.x = (this.width / 2) + 180;
     stopwatchRect.y = (this.height / 2) + 20;    
     stopwatchRect.width = 60;
     stopwatchRect.heigth = 60;
-
-    stopwatchAppRect.width = 300;
-    stopwatchAppRect.heigth = 150;       
-    stopwatchAppRect.x = (this.width / 2) - (stopwatchAppRect.width / 2);
-    stopwatchAppRect.y = (this.height / 2) - (stopwatchAppRect.heigth / 2);   
         
     this.tmpInText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
     this.tmpOutText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
-    
-    this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    this.roomTmps.push(new Text (this.ctx, 0, 0, 0, 0));
-    
-    this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-    this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-    
+ 
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[0]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[1]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[2]));
     this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[3]));
  
-                
-  // ni = 0; 
+    this.floor = new Floor (canvas);
+    
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room2.png"));
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
+
 }
 
 public paintStaticImage() {
@@ -675,7 +1054,9 @@ public paint() {
     if (appMode == Application.None || appMode == Application.Watch) {       
         this.paintBasic();        
     } else if (appMode == Application.Floor) {        
-        this.paintFloors();        
+          this.floor.paint(this.weatherToday);       
+    } else if (appMode == Application.Room) {        
+          this.room[roomNum].paint(this.weatherToday);              
     } else if (appMode == Application.WeatherForecast) {
         this.paintWeatherForecast();
     }
@@ -697,32 +1078,9 @@ public paintWeatherForecast() {
     this.forecastPanels[1].paint(ctx);
     this.forecastPanels[2].paint(ctx);
     this.forecastPanels[3].paint(ctx);
-    
-
-    
-}
-    
-public paintFloors() {
-    
-   const ctx = this.ctx;
         
-    //Draw image...
-    if (imgFloorLoaded) {     
-        ctx.save();
-        ctx.drawImage(imgFloor, 0, 0, this.width, this.height);
-        ctx.restore();        
-    }      
-
-    //Outside mark
-    this.TempMarks[0].setSize(250, 350, 80, 40);
-    this.TempMarks[0].paint(this.weatherToday.tempOut + " \u00B0C");    
-    
-    
-    //Inside mark
-    this.TempMarks[1].setSize(280, 200, 80, 40);
-    this.TempMarks[1].paint(this.weatherToday.tempIn + " \u00B0C");
-    
- }    
+}
+   
     
 
 public paintBasic() {
@@ -730,17 +1088,12 @@ public paintBasic() {
    const ctx = this.ctx;
 
     //Draw image...
-    /*
-        var img:HTMLImageElement = new Image();
-        img.src = this.weatherForecast.getImagePath();    
-    */
-        var img:HTMLImageElement = this.weatherToday.getImage();
-        
-        ctx.save();
-        ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
-        ctx.restore();  
-       // }
 
+    var img:HTMLImageElement = this.weatherToday.getImage();
+        
+    ctx.save();
+    ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
+    ctx.restore();  
     
     //Wind
     if (imgWindLoaded) {     
@@ -824,106 +1177,50 @@ public paintBasic() {
    //Draw arc...
    ctx.save();
    ctx.beginPath();
-   ctx.arc(this.width / 2, this.height / 2 + 50, 120, 0, 2 * Math.PI, false); 
+   ctx.arc(this.arcCenterX, this.arcCenterY, this.arcRadius, 0, 2 * Math.PI, false); 
    ctx.lineWidth = 1;
    ctx.strokeStyle = circleColor;
    ctx.stroke();
    ctx.restore(); 
     
-    if (appMode == Application.Watch) {
-        
-           ctx.save();
-           ctx.beginPath();
-           //ctx.rect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth);
-           this.roundRect(stopwatchAppRect.x, stopwatchAppRect.y, stopwatchAppRect.width, stopwatchAppRect.heigth, 40) 
-           ctx.fillStyle = "grey";
-           ctx.fill();   
-           ctx.lineWidth = 5;
-           ctx.strokeStyle = transparentColor;
-           ctx.stroke();
-           ctx.restore();     
-        
-           ctx.save();
-           ctx.font = 38 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-           ctx.textAlign = "left";
-           ctx.textBaseline = "middle";
-           ctx.fillStyle = whiteColor;          
-           ctx.fillText("Stopwatch...", stopwatchAppRect.x + 40, stopwatchAppRect.y + 40);
-           ctx.restore();                           
-        }   
+    if (appMode == Application.Watch) {        
+             this.stopWatch.paint();    
+    }   
     
- }
+ }    
           
-
-private drawRadial (alpha: number, r1: number, r2: number, width1: number, width2: number, color: string) {
-   let sin: number = Math.sin(alpha);
-   let cos: number = Math.cos(alpha);
-   let pm1X: number = this.centerX + sin * r1;
-   let pm1Y: number = this.centerY - cos * r1;
-   let pm2X: number = this.centerX + sin * r2;
-   let pm2Y: number = this.centerY - cos * r2;
-   let px: number[] = [];
-   let py: number[] = [];
-   px[0] = pm1X - cos * width1 / 2;
-   py[0] = pm1Y - sin * width1 / 2;
-   px[3] = pm1X + cos * width1 / 2;
-   py[3] = pm1Y + sin * width1 / 2;
-   px[1] = pm2X - cos * width2 / 2;
-   py[1] = pm2Y - sin * width2 / 2;
-   px[2] = pm2X + cos * width2 / 2;
-   py[2] = pm2Y + sin * width2 / 2;
-   this.drawFilledPolygon(px, py, color); }
-
-private drawFilledPolygon (px: number[], py: number[], color: string) {
-   const ctx = this.ctx;
-   ctx.save();
-   ctx.beginPath();
-   ctx.moveTo(px[0], py[0]);
-   for (let i = 1; i < px.length; i++) {
-      ctx.lineTo(px[i], py[i]); }
-   ctx.fillStyle = color;
-   ctx.fill();
-   ctx.restore(); }
-
-private drawRadialFilledCircle (alpha: number, r1: number, circR: number, color: string) {
-   const ctx = this.ctx;
-   let p0X: number = this.centerX + Math.sin(alpha) * r1;
-   let p0Y: number = this.centerY - Math.cos(alpha) * r1;
-   ctx.save();
-   ctx.beginPath();
-   ctx.arc(p0X, p0Y, circR, 0, 2 * Math.PI);
-   ctx.fillStyle = color;
-   ctx.fill();
-   ctx.restore(); }
-
-private drawClockLabel() {
-   const ctx = this.ctx;
-   ctx.save();
-   let fontSize: number = Math.round(this.r * 20 / 200);
-   ctx.font = fontSize + "px Helvetica, sans-serif";
-   ctx.textAlign = "center";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = borderColor;
-   ctx.fillText(clockLabel, this.centerX, this.centerY + this.r / 2);
-   ctx.restore(); }
+    private roundRect(x: number, y: number, width: number, height: number, radius: number) {
+      const ctx = this.ctx;
+          
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+          
+    }
     
-private roundRect(x: number, y: number, width: number, height: number, radius: number) {
-  const ctx = this.ctx;
-      
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
-      
-}
+    /*
+ public gameLoop() {
+     const ctx = this.ctx;
+     
+   requestAnimationFrame(this.gameLoop);
+   ctx.fillStyle = "black";
+   ctx.fillRect(0, 0, 1280, 720);
+   ctx.beginPath();
+   ctx.strokeStyle = "red";
+   ctx.lineWidth = 5;
+   ctx.arc(400, 400, 100, 0, 2 * Math.PI);
+   ctx.stroke();
+    }    
         
+    */
 } // end class ClockImagePainter
     
 //Function to get the mouse position

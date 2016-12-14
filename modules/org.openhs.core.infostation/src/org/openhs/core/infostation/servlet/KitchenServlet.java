@@ -49,7 +49,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON();
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -67,7 +67,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(1);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -85,7 +85,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(2);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -103,7 +103,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Day(3);
 
-	    			System.out.println("\nJSON:" + json.toString());
+	    			//System.out.println("\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -194,7 +194,7 @@ public class KitchenServlet extends HttpServlet {
 	    	Weather wth = m_meteo.getForecastWeather6();
 	    	
 		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		    String time = format.format(curDate); 	 		  
 		    
 		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
