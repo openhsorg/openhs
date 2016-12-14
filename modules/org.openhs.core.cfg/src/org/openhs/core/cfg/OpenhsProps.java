@@ -29,6 +29,7 @@ public class OpenhsProps {
 	
 	private String m_openhsDir = null;
 	private String m_openhsPropsFile = null;
+	private String m_fileSep = null;
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
 	
@@ -41,18 +42,15 @@ public class OpenhsProps {
 
     public OpenhsProps() {
     	String currentUsersHomeDir = System.getProperty("user.home");
-        String fileSep = System.getProperty( "file.separator"); 
-        m_openhsDir = currentUsersHomeDir + fileSep + OHS_DIR;
-        m_openhsPropsFile = m_openhsDir + fileSep + OHS_PROPS;
+        m_fileSep = System.getProperty( "file.separator"); 
+        m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;
+        m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
     	m_properties = new Properties();
     }
 
     //loading props file and distribute via ConfigAdmin
-    void loadProps()
+    private void loadProps()
     {
-        
-        //xmlConfiguration = "config.xml";
-        //xmlSite = "site.xml"; 
 
     	InputStream input = null;
 
@@ -65,21 +63,19 @@ public class OpenhsProps {
     		logger.info("===================== openhs properties =====================");
     		logger.info(logger.getName());
 
-            if(m_properties != null && !m_properties.isEmpty()) {
-                Iterator<Entry<Object, Object>> it = m_properties.entrySet().iterator();
-                while (it.hasNext()) {
-                    Entry<Object, Object> entry = it.next();
-                    logger.info(entry.getKey() + " = " +
-                    	entry.getValue() + " of type " + entry.getValue().getClass().toString());
-                }
-            }
+            listProps(m_properties);
     		
     		// get the property values for communication
     		String commComponent = m_properties.getProperty(OHS_COMM_COMPONENT);
     		String commConfigFile = m_properties.getProperty(OHS_COMM_CONFIG_FILE);
     		
-//    		System.out.println("\n\n------> Starting...." + commComponent);
+    		System.out.println("\n\n------> Starting...." + commComponent);
     	
+    		// load properties from comConfigFile
+    		input = new FileInputStream(m_openhsPropsFile = m_openhsDir + m_fileSep + commConfigFile);
+    		Properties commProperties = new Properties();
+    		commProperties.load(input);
+
     		Configuration config = null;
 			config = m_ca.getConfiguration(commComponent);
 		
@@ -88,44 +84,13 @@ public class OpenhsProps {
 		       dict = new Hashtable<String, Object>();
 		    }
 		    
-		    // configure the Dictionary
-		    dict.put(OHS_COMM_CONFIG_FILE, commConfigFile);
+		    // put properties to the Dictionary
+		    for (final String name: commProperties.stringPropertyNames())
+		        dict.put(name, commProperties.getProperty(name));		    
 		
-		    //push the configuration dictionary to the comm component
+		    // update configuration with dictionary => starts commComponent via ConfigAdmin 
 		    config.update(dict);		    		    
 		    
-		    String comp = "org.openhs.comm.rxtx";
-		    
-    		Configuration config2 = null;
-			config2 = m_ca.getConfiguration(comp);
-			
-			Dictionary<String, Object> dict2 = config2.getProperties();
-		    if (dict2 == null) {
-		       dict2 = new Hashtable<String, Object>();
-		    }
-		    
-		    // configure the Dictionary
-		    dict2.put(OHS_COMM_CONFIG_FILE, commConfigFile);
-		
-		    //push the configuration dictionary to the comm component
-		    config2.update(dict2);			
-			
-		    /*
-		    try {
-		    	
-		    System.out.println("\n\n------> Starting....rxtx");
-		    	
-		    BundleContext bundlecontext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-		 //   Bundle b = bundlecontext.installBundle("file:plugins" + File.separator + "org.openhs.comm.rxtx");
-		    Bundle b = bundlecontext.installBundle("file:C:\\Users\\E454551\\openhs\\plugins\\org.openhs.comm.rxtx_1.0.0.201610061057.jar");
-		    b.start();
-		    
-		    } catch(Exception ex){
-		    	
-		    	System.out.println("\n>>>:" + ex.toString());
-		    }
-		    */
-
     	} catch (IOException ex) {
     		ex.printStackTrace();
     	} finally {
@@ -140,6 +105,18 @@ public class OpenhsProps {
     	}
     }
     
+    private void listProps(Properties props)
+    {
+        if(props != null && ! props.isEmpty()) {
+            Iterator<Entry<Object, Object>> it = props.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Object, Object> entry = it.next();
+                logger.info(entry.getKey() + " = " +
+                	entry.getValue() + " of type " + entry.getValue().getClass().toString());
+            }
+        }
+    }
+
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();
