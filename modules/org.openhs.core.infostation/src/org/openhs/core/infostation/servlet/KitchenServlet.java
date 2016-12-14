@@ -182,7 +182,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('infoCanvas'), '/org.openhs.core.meteostation');");
+	    	out.println("new KitchenInfoStation.BasicScreen(document.getElementById('infoCanvas'));");
 	    	out.println("</script>");
 	    	
 	    	out.println("</body>");
