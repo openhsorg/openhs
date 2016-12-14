@@ -61,6 +61,24 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
+	    		} else if (value.toString().equals("Day0")) {			    		
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Day(0);
+
+	    			//System.out.println("\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();		    			
+	    			
 	    		} else if (value.toString().equals("Day1")) {			    		
 	    			/*
 	    			 * Get data from meteo module.
@@ -182,7 +200,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new KitchenInfoStation.Infoscreen(document.getElementById('infoCanvas'), '/org.openhs.core.meteostation');");
+	    	out.println("new KitchenInfoStation.BasicScreen(document.getElementById('infoCanvas'));");
 	    	out.println("</script>");
 	    	
 	    	out.println("</body>");
@@ -224,7 +242,7 @@ public class KitchenServlet extends HttpServlet {
 	    		    	
 	    	ArrayList<Weather> forecasts = m_meteo.getForecasts();
 	    	
-	    	if (nDay <= 0 || nDay > 4) { 
+	    	if (nDay < 0 || nDay > 4) { 
 	    		nDay = 4;
 	    	}
 	    	

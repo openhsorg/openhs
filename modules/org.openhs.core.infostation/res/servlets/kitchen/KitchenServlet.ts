@@ -31,6 +31,19 @@ enum Application {
     WeatherForecast,
     Room
 }    
+    
+function getAjax(urlAdr: string, id: string) {
+       
+    var result = null;
+            
+    $.ajax({async: false, url: urlAdr, data: { orderId: id}, dataType: "json", success: function(data) {
+        
+        result = data;
+                                      
+        }});
+    
+    return result;    
+    }      
         
 class WeatherData {
 
@@ -87,97 +100,102 @@ private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();
     }
     
 }
-    
-let weatherForecast: Array<WeatherData> = new Array<WeatherData>();  
-     
-weatherForecast.push(new WeatherData()); //today
-weatherForecast.push(new WeatherData()); //today + 1
-weatherForecast.push(new WeatherData()); //today + 2
-weatherForecast.push(new WeatherData()); //today + 3
-weatherForecast.push(new WeatherData()); //today + 4      
-    
-var appMode = Application.None;  //Mode of application
-var roomNum = 1; //number of selected room for Application.Room
-var nextServlet = "";        
-    
-export class Infoscreen {
 
-private clockCanvas:         HTMLCanvasElement;
-private staticImageCanvas:   HTMLCanvasElement;
-ns: string;
-aa : string;
+var appMode = Application.None;  //Mode of application
+var roomNum = 1; //number of selected room for Application.Room       
     
-element: JQuery;
-span: JQuery;    
-imPainter : ImagePainter;
+     
+    
+    
+export class BasicScreen {
+
+private canvas:              HTMLCanvasElement;
+private staticImageCanvas:   HTMLCanvasElement;
+private ctx:                 CanvasRenderingContext2D;    
+private width:               number;
+private height:              number;    
 
 private timerPaint;
 private timerData;           
-private timerPaintStep = 3000;
+private timerPaintStep = 3000; 
     
-//protected stopWatch: StopWatch = null;           
-//private timerStopWatch;   
-
-constructor (clockCanvas: HTMLCanvasElement, next: string) {
-        
-   this.clockCanvas = clockCanvas;
-   this.imPainter = new ImagePainter(this.clockCanvas);    
-   this.ns = "/org.openhs.core.meteostation"; //next;
+private r:                   number;
+private arcCenterX:          number;
+private arcCenterY:          number;
+private arcRadius:           number;   
+            
+public tmpInText:  Text;
+public tmpOutText:  Text;       
    
-   this.timerGetData();
-   this.timerEvent();
-           
-   nextServlet = next; //next;
- 
-   clockCanvas.addEventListener('click',() => this.MouseClickHandler(event));
+public weather: WeatherData = new WeatherData(); //current weather today    
+public forecastScreen: WeatherForecastScreen = null; //forecast screen      
+public stopWatch: StopWatch = null;        
+public floor: Floor = null;    
+private room: Array<Room> = new Array<Room>();
+
+constructor (canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.width = canvas.width;
+    this.height = canvas.height;    
+    this.r = Math.min(this.width, this.height) * 7 / 16;
+    this.arcCenterX = this.width / 2;
+    this.arcCenterY = this.height / 2 + 50;
+    this.arcRadius = 120;
+    
+    this.stopWatch = new StopWatch (canvas);
+    this.stopWatch.arcCenterX = this.arcCenterX;
+    this.stopWatch.arcCenterY = this.arcCenterY;
+    this.stopWatch.arcRadius = this.arcRadius;    
         
+    stopwatchRect.x = (this.width / 2) + 180;
+    stopwatchRect.y = (this.height / 2) + 20;    
+    stopwatchRect.width = 60;
+    stopwatchRect.heigth = 60;
+        
+    this.tmpInText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
+    this.tmpOutText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
+ 
+    this.forecastScreen = new WeatherForecastScreen (canvas);
+    this.floor = new Floor (canvas);
+    
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room2.png"));
+    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
+    
+    this.getData('kitchen');
+    this.timerGetData();
+    this.timerEvent();
+    
+    canvas.addEventListener('click',() => this.MouseClickHandler(event));                
 }  
 
 private timerGetData() {
-   this.getData();
- // this.paintScreen();    
+   this.getData('kitchen');
    this.timerData = window.setTimeout(() => this.timerGetData(), 5000); 
 }     
     
 private timerEvent() {
-   this.getData();
-   this.paintScreen();    
+ 
+   this.paint();  
    this.timerPaint = window.setTimeout(() => this.timerEvent(), this.timerPaintStep); 
 } 
-   /* 
-private timerEventStopWatch() {
-        
-    this.imPainter.stopWatch.paint();    
-    this.timerStopWatch = window.setTimeout(() => this.timerEventStopWatch(), 50);         
-}     
-*/
-private paintScreen() {
-    
-   if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
-      this.createStaticImageCanvas(); }    
-    
-   this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
-   this.imPainter.weatherToday = weatherForecast[0];//.fillData(weatherForecast);
-   this.imPainter.paint();  
-    
-  //  this.imPainter.gameLoop();
-}
     
 private MouseClickHandler(event) {
     
-    var mousePos = getMousePos(this.clockCanvas, event);
+    var mousePos = getMousePos(this.canvas, event);
     
     if (appMode == Application.None) {
 
         if (isInside(mousePos, stopwatchRect)) {            
             appMode = Application.Watch;          
-            this.imPainter.stopWatch.start();
-           // this.timerEventStopWatch();
+            this.stopWatch.start();
             window.clearTimeout(this.timerPaint);
             this.timerPaintStep = 40;
             this.timerEvent();
                         
-        } else if (isInside(mousePos, this.imPainter.tmpInText.getRect())) {
+        } else if (isInside(mousePos, this.tmpInText.getRect())) {
             appMode = Application.Floor;    
         } else if (isInside(mousePos, forecastRect)) {
             appMode = Application.WeatherForecast;    
@@ -187,35 +205,29 @@ private MouseClickHandler(event) {
      } else if (appMode == Application.Watch) {
                
                        
-        if (this.imPainter.stopWatch.getStatus()) {
-            if(this.imPainter.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {                                
-                this.imPainter.stopWatch.stop();
-                //clearTimeout(this.timerStopWatch);                 
-                //this.timerStopWatch = null;
-                
+        if (this.stopWatch.getStatus()) {
+            if(this.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {                                
+                this.stopWatch.stop();
+               
                 window.clearTimeout(this.timerPaint);
                 this.timerPaintStep = 3000;
-                this.timerEvent();                
-                
+                this.timerEvent();                                
              }
         }
-        else {
-        
+        else {        
             appMode = Application.None;
-        }
-        
+        }        
         
      } else if (appMode == Application.Floor) {     
        
-        var room = this.imPainter.floor.clickedTempMark(mousePos.x, mousePos.y);
+        var room = this.floor.clickedTempMark(mousePos.x, mousePos.y);
         
         if (room != -1) {            
             appMode = Application.Room;
             roomNum = room;            
            } else {
             appMode = Application.None;
-            }
-        
+            }        
         
      } else if (appMode == Application.Room) {     
         appMode = Application.Floor;        
@@ -223,63 +235,291 @@ private MouseClickHandler(event) {
         appMode = Application.None;
      }
         
-    this.paintScreen();    
+    this.paint();    
 }    
-
+/*
 private createStaticImageCanvas() {
    let canvas: HTMLCanvasElement = document.createElement("canvas");
-   canvas.width = this.clockCanvas.width;
-   canvas.height = this.clockCanvas.height;
-   new ImagePainter(canvas).paintStaticImage();
+   canvas.width = this.canvas.width;
+   canvas.height = this.canvas.height;
+
+   this.paintStaticImage();
    this.staticImageCanvas = canvas; }
+    */
     
+    private getData(url: string) {
+    
+        var data = getAjax(url, 'InfoData');
+                
+        if (data != null) {
+                    timeString = data['time'];
+                    dateString = data['date'];           
+                    this.weather.tempIn = parseFloat(data['tempIn']);
+                    this.weather.tempOut = parseFloat(data['tempOut']);
+                    this.weather.frostOutside = JSON.parse(data['frostOutside']);
+                    this.weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
+                    this.weather.windSpeed = parseFloat(data['windSpeed']);   
+            }
+        
+        //Other objects...
+        
+        this.forecastScreen.getData(url);
+        
+    
+    }
+    
+
+    /*
 //Get data from server...    
 private getData() {
         
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "InfoData"}, function(data) {
+                
+                gData = data;
+                
                 timeString = data['time'];
                 dateString = data['date'];   
-                weatherForecast[0].tempIn = parseFloat(data['tempIn']);
-                weatherForecast[0].tempOut = parseFloat(data['tempOut']);
-                weatherForecast[0].frostOutside = JSON.parse(data['frostOutside']);
-                weatherForecast[0].weatherSymbol = JSON.parse(data['weatherSymbol']);
-                weatherForecast[0].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                this.weatherForecast[0].tempIn = parseFloat(data['tempIn']);
+                this.weatherForecast[0].tempOut = parseFloat(data['tempOut']);
+                this.weatherForecast[0].frostOutside = JSON.parse(data['frostOutside']);
+                this.weatherForecast[0].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                this.weatherForecast[0].windSpeed = parseFloat(data['windSpeed']);                                                                           
                 });           
          });
+    
        
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "Day1"}, function(data) {  
-                weatherForecast[1].tempOut = parseFloat(data['temp']);
-                weatherForecast[1].weatherSymbol = JSON.parse(data['weatherSymbol']);
-                weatherForecast[1].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                this.weatherForecast[1].tempOut = parseFloat(data['temp']);
+                this.weatherForecast[1].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                this.weatherForecast[1].windSpeed = parseFloat(data['windSpeed']);                                                                           
                 });           
          });    
     
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "Day2"}, function(data) {  
-                weatherForecast[2].tempOut = parseFloat(data['temp']);
-                weatherForecast[2].weatherSymbol = JSON.parse(data['weatherSymbol']);
-                weatherForecast[2].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                this.weatherForecast[2].tempOut = parseFloat(data['temp']);
+                this.weatherForecast[2].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                this.weatherForecast[2].windSpeed = parseFloat(data['windSpeed']);                                                                           
                 });           
          }); 
     
         $(document).ready(function() {
             
             $.getJSON('kitchen', { orderId : "Day3"}, function(data) {  
-                weatherForecast[3].tempOut = parseFloat(data['temp']);
-                weatherForecast[3].weatherSymbol = JSON.parse(data['weatherSymbol']);
-                weatherForecast[3].windSpeed = parseFloat(data['windSpeed']);                                                                           
+                this.weatherForecast[3].tempOut = parseFloat(data['temp']);
+                this.weatherForecast[3].weatherSymbol = JSON.parse(data['weatherSymbol']);
+                this.weatherForecast[3].windSpeed = parseFloat(data['windSpeed']);                                                                           
                 });           
-         });     
-    
+         });         
     }     
+*/
+public paintStaticImage() {
+   const ctx = this.ctx;
+    
+   ctx.save();
+   ctx.fillStyle = whiteColor;
+   ctx.fillRect(0, 0, this.width, this.height);
+   ctx.restore();   
+}
+    
+public paint() { 
 
-} // end class Temperature
+    this.paintStaticImage();
+    
+    if (appMode == Application.None || appMode == Application.Watch) {       
+        this.paintBasic();        
+    } else if (appMode == Application.Floor) {        
+          this.floor.paint(this.weather);       
+    } else if (appMode == Application.Room) {        
+          this.room[roomNum].paint(this.weather);              
+    } else if (appMode == Application.WeatherForecast) {
+        this.forecastScreen.paint();
+    }
+} 
+    
 
+public paintBasic() {
+    
+   const ctx = this.ctx;
+
+    //Draw image...
+
+    var img:HTMLImageElement = this.weather.getImage();
+        
+    ctx.save();
+    ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
+    ctx.restore();  
+    
+    //Wind
+    if (imgWindLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgWind, 140, 70, 50, 50);
+        ctx.restore();        
+     }     
+    
+    //Hum
+    if (imgHumLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgHum,  (this.width / 2) + 10 , (this.height / 2) + 70, 60, 60);
+        ctx.restore();        
+     }      
+    
+    //Voice message
+    if (imgVoiceMessageLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgVoiceMessage,  (this.width / 2) - 220 , (this.height / 2) + 20, 60, 60);
+        ctx.restore();        
+     }   
+    
+    //Stopwatch
+    if (imgStopwatchLoaded) {     
+        ctx.save();
+        ctx.drawImage(imgStopwatch,  (this.width / 2) + 180 , (this.height / 2) + 20, 60, 60);
+        ctx.restore();        
+     }     
+        
+    //Wind outside
+   ctx.save();
+   ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(this.weather.windSpeed + " m/s", 320, 100);
+   ctx.restore();          
+    
+    //Time
+   //ctx.save();
+   ctx.font = fontSizeTime + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(timeString, 580, 50);
+   ctx.restore();    
+    
+    //Date
+  // ctx.save();
+   ctx.font = fontSizeDate + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText(dateString, 580, 100);
+   ctx.restore();         
+    
+    //Inside temperature
+   this.tmpInText.fontSize = fontSizeTempIn;
+   this.tmpInText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   this.tmpInText.fontColor = textColor;
+   this.tmpInText.textAlign = "center";
+   this.tmpInText.textBaseline = "middle";   
+   this.tmpInText.paint(this.weather.tempIn + " \u00B0C");
+    
+    //Outside temperature    
+   this.tmpOutText.copyFrom(this.tmpInText);    
+   this.tmpOutText.x = 320;
+   this.tmpOutText.y =  50;     
+   this.tmpOutText.textAlign = "right";   
+   this.tmpOutText.paint(this.weather.tempOut + " \u00B0C");    
+        
+    //Humidity
+   ctx.save();
+   ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+   ctx.textAlign = "right";
+   ctx.textBaseline = "middle";
+   ctx.fillStyle = textColor;          
+   ctx.fillText("44", (this.width / 2) , (this.height / 2) + 105);
+   ctx.restore();       
+    
+   //Draw arc...
+   ctx.save();
+   ctx.beginPath();
+   ctx.arc(this.arcCenterX, this.arcCenterY, this.arcRadius, 0, 2 * Math.PI, false); 
+   ctx.lineWidth = 1;
+   ctx.strokeStyle = circleColor;
+   ctx.stroke();
+   ctx.restore(); 
+    
+    if (appMode == Application.Watch) {        
+             this.stopWatch.paint();    
+    }   
+    
+ }    
+          
+    private roundRect(x: number, y: number, width: number, height: number, radius: number) {
+      const ctx = this.ctx;
+          
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+          
+    }    
+
+} // end class Infoscreen
+
+    
+class WeatherForecastScreen {
+           
+    private canvas:              HTMLCanvasElement;
+    private staticImageCanvas:   HTMLCanvasElement;
+    private ctx:                 CanvasRenderingContext2D;    
+    private width:               number;
+    private height:              number;    
+            
+    private forecastPanels: Array<WeatherForecastPanel> = new Array<WeatherForecastPanel>();        
+        
+    constructor (canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.width = canvas.width;
+        this.height = canvas.height;      
+     
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));        
+    }        
+    
+    public paint () {
+        const ctx = this.ctx;
+        
+        let segment: number = this.width / 4;
+        let seg: number = segment - (2 * this.forecastPanels[1].lineWidth);
+        //var lineW = this.forecastPanels[1].lineWidth;
+            
+        this.forecastPanels[0].setSize(0, 0, seg, this.height);
+        this.forecastPanels[1].setSize(segment, 0, seg, this.height);
+        this.forecastPanels[2].setSize((2 * segment), 0, seg, this.height);
+        this.forecastPanels[3].setSize((3 * segment), 0, seg, this.height);
+        
+        this.forecastPanels[0].paint(ctx);
+        this.forecastPanels[1].paint(ctx);
+        this.forecastPanels[2].paint(ctx);
+        this.forecastPanels[3].paint(ctx);        
+    }     
+    
+    public getData (url: string) {
+        
+        var i: number = 0;
+        
+        for (var panel of this.forecastPanels) {
+            panel.getData(url, "Day" + i);
+            
+            i++;
+        }        
+    }    
+}
     
     
 //------------------------------------------------------------------------------
@@ -499,8 +739,7 @@ class TempMark {
         this.txt.fontSize = 20;
         
         this.img = new Image();                                
-        this.img.src = "/infores/servlets/kitchen/tempSymbol.png";
-              
+        this.img.src = "/infores/servlets/kitchen/tempSymbol.png";              
     }      
     
     setSize (x: number, y: number, width: number, height: number) {
@@ -536,8 +775,7 @@ class TempMark {
             this.ctx.save();
             this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
             this.ctx.restore();        
-       // }         
-                
+       // }                         
     }     
     
     getRect() {
@@ -637,7 +875,7 @@ class StopWatch {
         ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
        }
     
-       let dots: string = "------------------------------"; 
+       let dots: string = "..........................."; 
        let str: string = dots.substring(0, this.dotCounter);        
         
        ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
@@ -651,8 +889,7 @@ class StopWatch {
         ctx.save();
         ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
         ctx.restore();        
-       }
-                                             
+       }                                
     }    
     
     private paintEffect () {
@@ -699,8 +936,7 @@ class StopWatch {
       ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
       ctx.lineTo(x, y + radius);
       ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-          
+      ctx.closePath();          
     }  
      
     public stop () {        
@@ -709,8 +945,6 @@ class StopWatch {
         this.timer = 0;
         
         this.dotCounter = 0;
-        
-       // alert("***stopping...");
     }
                 
     public start () {
@@ -752,7 +986,7 @@ class StopWatch {
     
 }
 
-class ForecastPanel {
+class WeatherForecastPanel {
     
     private ctx:    CanvasRenderingContext2D;  
          
@@ -762,14 +996,14 @@ class ForecastPanel {
     public height:  number = 0.0;    
     public lineWidth: number = 2.0;
     
-    private forecast: WeatherData = null;
+    public forecast: WeatherData = null;
     private txt:  Text;
     private txtWind:  Text;        
     imgWind:HTMLImageElement = null;
     
-    constructor (ctx: CanvasRenderingContext2D, fcs: WeatherData) {
+    constructor (ctx: CanvasRenderingContext2D) {
          
-        this.forecast = fcs;
+        this.forecast = new WeatherData ();
         this.txtWind = new Text (ctx, 0, 0, 0, 0);
         this.txt = new Text (ctx, 0, 0, 0, 0);
         this.txt.textAlign = "left";
@@ -836,10 +1070,20 @@ class ForecastPanel {
         this.txtWind.fontSize = 15;
         this.txtWind.textBaseline = "hanging";
         this.txtWind.paint(this.forecast.windSpeed + " \u00B0C");        
-    }     
-
+    }
     
-}
+    public getData(url: string, id: string) {   
+     
+        var data = getAjax(url, id);
+                
+        if (data != null) {
+                    this.forecast.tempOut = parseFloat(data['temp']);
+                    this.forecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
+                    this.forecast.windSpeed = parseFloat(data['windSpeed']);   
+            }                     
+    }         
+}        
+    
     
 class Floor {
     
@@ -972,257 +1216,9 @@ class Room {
         //alert("hello: "+cId);
                 
         return cId;
-    }    
-    
+    }        
 }    
-    
-        
-class ImagePainter {
-
-private ctx:                 CanvasRenderingContext2D;
-private width:               number;
-private height:              number;
-private r:                   number;
-private arcCenterX:          number;
-private arcCenterY:          number;
-private arcRadius:           number;
-    
-public weatherToday : WeatherData = null; 
-        
-public tmpInText:  Text;
-public tmpOutText:  Text;      
-
-//private roomTmps: Array<Text> = new Array<Text>();
-//private TempMarks: Array<TempMark> = new Array<TempMark>();
-private forecastPanels: Array<ForecastPanel> = new Array<ForecastPanel>();      
-    
-public stopWatch: StopWatch = null;    
-    
-public floor: Floor = null;    
-private room: Array<Room> = new Array<Room>();
-
-constructor (canvas: HTMLCanvasElement) {
-    
- //  this.weatherForecast = new WeatherData();
-           
-    this.ctx = canvas.getContext("2d");
-    this.width = canvas.width;
-    this.height = canvas.height;
-    this.r = Math.min(this.width, this.height) * 7 / 16;
-    this.arcCenterX = this.width / 2;
-    this.arcCenterY = this.height / 2 + 50;
-    this.arcRadius = 120;
-    
-    this.stopWatch = new StopWatch (canvas);
-    this.stopWatch.arcCenterX = this.arcCenterX;
-    this.stopWatch.arcCenterY = this.arcCenterY;
-    this.stopWatch.arcRadius = this.arcRadius;    
-        
-    stopwatchRect.x = (this.width / 2) + 180;
-    stopwatchRect.y = (this.height / 2) + 20;    
-    stopwatchRect.width = 60;
-    stopwatchRect.heigth = 60;
-        
-    this.tmpInText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
-    this.tmpOutText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
  
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[0]));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[1]));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[2]));
-    this.forecastPanels.push(new ForecastPanel (this.ctx, weatherForecast[3]));
- 
-    this.floor = new Floor (canvas);
-    
-    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
-    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
-    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room2.png"));
-    this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
-
-}
-
-public paintStaticImage() {
-   // Paint outer background.
-   const ctx = this.ctx;
-    
-   ctx.save();
-   ctx.fillStyle = whiteColor;
-   ctx.fillRect(0, 0, this.width, this.height);
-   ctx.restore();   
-}
-    
-public paint() {    
-    if (appMode == Application.None || appMode == Application.Watch) {       
-        this.paintBasic();        
-    } else if (appMode == Application.Floor) {        
-          this.floor.paint(this.weatherToday);       
-    } else if (appMode == Application.Room) {        
-          this.room[roomNum].paint(this.weatherToday);              
-    } else if (appMode == Application.WeatherForecast) {
-        this.paintWeatherForecast();
-    }
-} 
-    
-public paintWeatherForecast() {
-   const ctx = this.ctx;
-    
-    let segment: number = this.width / 4;
-    let seg: number = segment - (2 * this.forecastPanels[1].lineWidth);
-    //var lineW = this.forecastPanels[1].lineWidth;
-        
-    this.forecastPanels[0].setSize(0, 0, seg, this.height);
-    this.forecastPanels[1].setSize(segment, 0, seg, this.height);
-    this.forecastPanels[2].setSize((2 * segment), 0, seg, this.height);
-    this.forecastPanels[3].setSize((3 * segment), 0, seg, this.height);
-    
-    this.forecastPanels[0].paint(ctx);
-    this.forecastPanels[1].paint(ctx);
-    this.forecastPanels[2].paint(ctx);
-    this.forecastPanels[3].paint(ctx);
-        
-}
-   
-    
-
-public paintBasic() {
-    
-   const ctx = this.ctx;
-
-    //Draw image...
-
-    var img:HTMLImageElement = this.weatherToday.getImage();
-        
-    ctx.save();
-    ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
-    ctx.restore();  
-    
-    //Wind
-    if (imgWindLoaded) {     
-        ctx.save();
-        ctx.drawImage(imgWind, 140, 70, 50, 50);
-        ctx.restore();        
-     }     
-    
-    //Hum
-    if (imgHumLoaded) {     
-        ctx.save();
-        ctx.drawImage(imgHum,  (this.width / 2) + 10 , (this.height / 2) + 70, 60, 60);
-        ctx.restore();        
-     }      
-    
-    //Voice message
-    if (imgVoiceMessageLoaded) {     
-        ctx.save();
-        ctx.drawImage(imgVoiceMessage,  (this.width / 2) - 220 , (this.height / 2) + 20, 60, 60);
-        ctx.restore();        
-     }   
-    
-    //Stopwatch
-    if (imgStopwatchLoaded) {     
-        ctx.save();
-        ctx.drawImage(imgStopwatch,  (this.width / 2) + 180 , (this.height / 2) + 20, 60, 60);
-        ctx.restore();        
-     }     
-        
-    //Wind outside
-   ctx.save();
-   ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "right";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText(this.weatherToday.windSpeed + " m/s", 320, 100);
-   ctx.restore();          
-    
-    //Time
-   //ctx.save();
-   ctx.font = fontSizeTime + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "right";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText(timeString, 580, 50);
-   ctx.restore();    
-    
-    //Date
-  // ctx.save();
-   ctx.font = fontSizeDate + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "right";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText(dateString, 580, 100);
-   ctx.restore();         
-    
-    //Inside temperature
-   this.tmpInText.fontSize = fontSizeTempIn;
-   this.tmpInText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   this.tmpInText.fontColor = textColor;
-   this.tmpInText.textAlign = "center";
-   this.tmpInText.textBaseline = "middle";   
-   this.tmpInText.paint(this.weatherToday.tempIn + " \u00B0C");
-    
-    //Outside temperature    
-   this.tmpOutText.copyFrom(this.tmpInText);    
-   this.tmpOutText.x = 320;
-   this.tmpOutText.y =  50;     
-   this.tmpOutText.textAlign = "right";   
-   this.tmpOutText.paint(this.weatherToday.tempOut + " \u00B0C");    
-        
-    //Humidity
-   ctx.save();
-   ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-   ctx.textAlign = "right";
-   ctx.textBaseline = "middle";
-   ctx.fillStyle = textColor;          
-   ctx.fillText("44", (this.width / 2) , (this.height / 2) + 105);
-   ctx.restore();       
-    
-   //Draw arc...
-   ctx.save();
-   ctx.beginPath();
-   ctx.arc(this.arcCenterX, this.arcCenterY, this.arcRadius, 0, 2 * Math.PI, false); 
-   ctx.lineWidth = 1;
-   ctx.strokeStyle = circleColor;
-   ctx.stroke();
-   ctx.restore(); 
-    
-    if (appMode == Application.Watch) {        
-             this.stopWatch.paint();    
-    }   
-    
- }    
-          
-    private roundRect(x: number, y: number, width: number, height: number, radius: number) {
-      const ctx = this.ctx;
-          
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-      ctx.lineTo(x + radius, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-          
-    }
-    
-    /*
- public gameLoop() {
-     const ctx = this.ctx;
-     
-   requestAnimationFrame(this.gameLoop);
-   ctx.fillStyle = "black";
-   ctx.fillRect(0, 0, 1280, 720);
-   ctx.beginPath();
-   ctx.strokeStyle = "red";
-   ctx.lineWidth = 5;
-   ctx.arc(400, 400, 100, 0, 2 * Math.PI);
-   ctx.stroke();
-    }    
-        
-    */
-} // end class ClockImagePainter
-    
 //Function to get the mouse position
 function getMousePos(canvas, event) {
     var rect = canvas.getBoundingClientRect();
