@@ -32,8 +32,8 @@ public class Meteostation {
     /*
      * What sensors we deal with.
      */
-    public String sensorInString = "Room1/Sensor1";
-    public String sensorOutString = "Outside/Sensor2";
+    public String sensorInString = "Room0/Room0_Sensor1";
+    public String sensorOutString = "Room1/Room1_Sensor1";
 
     /*
      * Indicators.

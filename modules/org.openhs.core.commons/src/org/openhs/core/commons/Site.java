@@ -16,12 +16,17 @@ public class Site {
 	private static String id = "My First Crazy Site :):)";
 	
 	/*
+	 * Floors
+	 */
+	public TreeMap<String, Floor> floors = 
+            new TreeMap<String, Floor>();			
+	
+	/*
 	 * Rooms.
 	 */
 	public TreeMap<String, Room> rooms = 
             new TreeMap<String, Room>();		
 	
-	//TimeProfile timeprofile = new TimeProfile ();
 	
 	public String getId ()
 	{

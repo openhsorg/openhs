@@ -27,30 +27,30 @@ public interface ISiteService {
 	
 	int getNumberSensors (String roomKey);
 	
-	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;	
+	Site getSite ();	
 	
-	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp) throws SiteException;		
+	public Room getRoom(String keyRoom) throws SiteException; 
+	
+	public Sensor getSensor (String keyRoom, String keySensor)  throws SiteException;	
+	
+	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;
 	
 	Humidity getSensorHumidity (String keyRoom, String keySensor)  throws SiteException;
 	
+	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp) throws SiteException;			
+		
 	boolean setSensorHumidity (String keyRoom, String keySensor, Humidity hum);		
 	
-	boolean addRoom (String key);
+	public Room addRoom (String key);
 	
 	boolean addSensor (String keyRoom, String keySensor);
-	
-	Sensor getSensor (String keyRoom, String keySensor)  throws SiteException;
-	
-	TreeMap<String, Room> getRooms ();
-	
-	TreeMap<String, Sensor> getSensors (String keyRoom);
 	
 	boolean setSite (Site siteIn);
 	
 	boolean setRoomKey (String oldKey, String newKey);
 	
-	boolean setSensorKey (String oldKey, String newKey);
+	boolean setSensorKey (String oldKey, String newKey);	
 	
-	Site getSite ();
+	public void buildHouse(int rooms);
 
 }

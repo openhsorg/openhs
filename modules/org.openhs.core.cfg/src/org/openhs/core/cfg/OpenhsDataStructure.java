@@ -163,11 +163,15 @@ public class OpenhsDataStructure {
      */
     void basicStructure ()
     {
+    	/*
         m_siteService.addRoom("Room1");
         m_siteService.addRoom("Outside");
 
         m_siteService.addSensor("Room1", "Sensor1");
-        m_siteService.addSensor("Outside", "Sensor2");	    	
+        m_siteService.addSensor("Outside", "Sensor2");	  
+        */
+        
+        m_siteService.buildHouse(6);
     }
             
     public boolean setConfiguration (OhsConfig configIn)

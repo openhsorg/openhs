@@ -41,25 +41,15 @@ public class MySiteServiceImpl implements ISiteService {
     }
 
     @Override
-    public TreeMap<String, Room> getRooms() {
-        return ss.rooms;
-    }
-
-    @Override
-    public TreeMap<String, Sensor> getSensors(String keyRoom) {
-        TreeMap<String, Room> rooms = getRooms();
+    public void buildHouse(int rooms) {
         
-        Room room = rooms.get(keyRoom);
-       /* 
-        if (room == null) {
-            throw new SiteException("Room Key doesn't exists...");
-        } else {
-            return room.sensors;
-        }
-        */
-        
-        return room.sensors;
+    	for (int i = 0; i <= rooms; i++) {
+    	
+    		addRoom("Room" + i);    		
+    		addSensor("Room" + i, "Room" + i + "_Sensor1");
+    	}    	
     }
+    
 
     @Override
     public int getNumberSensors(String roomKey) {
@@ -79,10 +69,10 @@ public class MySiteServiceImpl implements ISiteService {
     }    
 
     @Override
-    public boolean addRoom(String key) {
-        ss.rooms.put(key, new Room());
+    public Room addRoom(String key) {
+        return ss.rooms.put(key, new Room());
 
-        return true;
+        //return true;
     }
 
     @Override
@@ -197,33 +187,35 @@ public class MySiteServiceImpl implements ISiteService {
     }
     
     public boolean setRoomKey (String oldKey, String newKey)
-    {
-    	TreeMap<String, Room> rooms = getRooms();
+    {    	
+    	Room room = ss.rooms.remove(oldKey);
     	
-    	Room room = rooms.remove(oldKey);
-    	
-    	rooms.put(newKey, room);
+    	ss.rooms.put(newKey, room);
     	
     	return true;
     }
     
     public boolean setSensorKey (String oldKey, String newKey)
-    {    	
-    	//TODO    	    	 	    	    	
-    	TreeMap<String, Room> rooms = getRooms();
-    	
-    	Set<String> roomKeys = rooms.keySet();
+    {    	    	    	 	    	    	   	
+    	Set<String> roomKeys = ss.rooms.keySet();
     	
     	for (String roomKey : roomKeys){
     		
-    		TreeMap<String, Sensor> sensors = getSensors(roomKey);
-    		
-    		if(sensors.containsKey(oldKey)){
+    		//TreeMap<String, Sensor> sensors = getSensors(roomKey);
+    		try {
+	    		Room room = getRoom(roomKey);
+	    		
+	    		//TreeMap<String, Sensor> sensors = getSensors(roomKey);
+	    		
+	    		if(room.sensors.containsKey(oldKey)){
+	    			
+	    	    	Sensor sensor = room.sensors.remove(oldKey);
+	    	    	
+	    	    	room.sensors.put(newKey, sensor);    			
+    		}
+    		} catch (Exception ex) {
     			
-    	    	Sensor sensor = sensors.remove(oldKey);
-    	    	
-    	    	sensors.put(newKey, sensor);    			
-    		}    		
+    		}
     	}
     	
     	return true;

@@ -85,24 +85,24 @@ public class Dataupdate implements IMessageHandler, Runnable {
   				try {
   					
 		  			//TODO link - sensor room?
-		  			if (smsg.getName().compareTo("Sensor1") == 0) {	  					  				
+		  			if (smsg.getName().compareTo("Room0_Sensor1") == 0) {	  					  				
 		  				  						  				
+			    		if (!this.m_siteService.setSensorTemperature("Room0", smsg.getName(), temp)) {
+				  			System.out.println("Cannot write temp :(");
+						} 	  		
+			    	
+				  		if (!this.m_siteService.setSensorHumidity("Room0", smsg.getName(), hum)) {
+				  			System.out.println("Cannot write temp :(");
+				  		}					
+		  				
+		  			}
+		  			else if (smsg.getName().compareTo("Room1_Sensor1") == 0) {
+			  			
 			    		if (!this.m_siteService.setSensorTemperature("Room1", smsg.getName(), temp)) {
 				  			System.out.println("Cannot write temp :(");
 						} 	  		
 			    	
 				  		if (!this.m_siteService.setSensorHumidity("Room1", smsg.getName(), hum)) {
-				  			System.out.println("Cannot write temp :(");
-				  		}					
-		  				
-		  			}
-		  			else if (smsg.getName().compareTo("Sensor2") == 0) {
-			  			
-			    		if (!this.m_siteService.setSensorTemperature("Outside", smsg.getName(), temp)) {
-				  			System.out.println("Cannot write temp :(");
-						} 	  		
-			    	
-				  		if (!this.m_siteService.setSensorHumidity("Outside", smsg.getName(), hum)) {
 				  			System.out.println("Cannot write temp :(");
 						}
 		  			}
