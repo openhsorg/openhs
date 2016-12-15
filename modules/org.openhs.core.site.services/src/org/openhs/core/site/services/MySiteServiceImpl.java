@@ -71,52 +71,7 @@ public class MySiteServiceImpl implements ISiteService {
     public void setId(String newID) {
         ss.setId(newID);
     }    
-/*
-    @Override
-    public Room addRoom(String keyPath) {
-        return ss.rooms.put(keyPath, new Room());
 
-        //return true;
-    }
-*/
-    /*
-    @Override
-    public boolean addSensor(String keyRoom, String keySensor) {
-        Room room = ss.rooms.get(keyRoom);
-
-        if (room == null) {
-            return false;
-        }
-
-        room.sensors.put(keySensor, new Sensor());
-
-        return true;
-    }
-    */
-    /*
-    public Floor getFloor(String keyPath) throws SiteException {
-        
-    	Floor floor = ss.floors.get(keyPath);
-    	
-    	if (floor == null) {
-            throw new SiteException("Cannot get floor.");
-        } else {
-            return floor;
-        }
-    }  
-    */
-/*
-    public Room getRoom(String keyPath) throws SiteException {
-    	
-    	Room room = ss.rooms.get(keyPath);
-    	
-        if (room == null) {
-            throw new SiteException("Cannot get room...");
-        } else {
-            return room;
-        }
-    }
-    */
     public Object getThing (String keyPath) throws SiteException {
     	if (keyPath.equals("")) {
     		throw new SiteException("Bad keyPath");
@@ -161,13 +116,69 @@ public class MySiteServiceImpl implements ISiteService {
     	else return null;
     }
     
-    public Object addThing (String keyPath, Object obj) throws SiteException {
+    public boolean addThing (String keyPath, String key, Object obj) throws SiteException {    	
     	
-    	return null;
+    	if (keyPath.equals("")) {
+    		throw new SiteException("Bad keyPath");
+    	}
+    	
+    	String delim ="[/]+";    	
+    	String [] parts = keyPath.split(delim);
+    	
+    	//Check for empty parts...
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			throw new SiteException("keyPath contaims empty strings...");    			 
+    		}
+    	}    	
+    	
+    	Object item = (Site) ss;
+    	
+    	int i = 0;
+    	    	
+    	for (String str : parts) {
+    		   		
+    		if (item instanceof Site) {
+    			Site site = (Site) item;
+    			
+    			item = site.getThing(parts[i]);
+    			
+    		} else if (item instanceof Room) {
+    			Room room = (Room) item;
+    			
+    			item = room.getThing(parts[i]);    			
+    		}    			
+    		
+    		i ++;
+    		
+    		if (item == null) {
+    			throw new SiteException("KeyPath wrong...");  
+    		}
+    	}
+    	
+    	// Add object...
+		if (item instanceof Site) {
+			Site site = (Site) item;
+			
+			site.addThing(key, obj);
+			
+			return true;
+			
+		} else if (item instanceof Room) {
+			Room room = (Room) item;
+			
+			room.addThing(key, obj);
+			
+			return true;			
+		}  
+    	    	
+    	return false;
     }
     
     
     public Object addThing (String keyPath) throws SiteException {
+    	//keyPath:  Room/Sensor
+    	
     	System.out.println("\n\n addThing...");   
     	
     	if (keyPath.equals("")) {
@@ -290,7 +301,7 @@ public class MySiteServiceImpl implements ISiteService {
     	Object obj = removeThing(keyPathOld);
     	if (obj == null) return false;
     	
-    	Object obj2 = addThing(keyPathNew, obj);
+    	//Object obj2 = addThing(keyPathNew, obj);
  
     	return true;
     }

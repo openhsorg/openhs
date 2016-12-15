@@ -18,6 +18,24 @@ public class Room{
 	 * Set of sensors in room
 	 */
 	public TreeMap<String, Sensor> sensors = 
-            new TreeMap<String, Sensor>();		
+            new TreeMap<String, Sensor>();	
+	
+	public Object getThing (String key) {		
+		if(key.equals("")) return null;
+		
+		return sensors.get(key);
+	}
+	
+	public boolean addThing (String key, Object object) {		
+		if(key.equals("")) return false;
+		
+		if (object instanceof Sensor) {
+			sensors.put(key, (Sensor) object);
+			
+			return true;
+		}
+		
+		return false;
+	}	
 
 }

@@ -37,5 +37,23 @@ public class Site {
 	{
 		id = newID;
 	}	
+	
+	public Object getThing (String key) {		
+		if(key.equals("")) return null;
+		
+		return rooms.get(key);
+	}
+	
+	public boolean addThing (String key, Object object) {		
+		if(key.equals("")) return false;
+		
+		if (object instanceof Room) {
+			rooms.put(key, (Room) object);
+			
+			return true;
+		}
+		
+		return false;
+	}		
 
 }
