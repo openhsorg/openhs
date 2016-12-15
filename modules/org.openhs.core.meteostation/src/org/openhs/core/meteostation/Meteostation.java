@@ -98,10 +98,11 @@ public class Meteostation {
         Sensor sensor;
 
         try {
-            String delims = "[/]";
-            String[] tokens = key.split(delims);
+         //   String delims = "[/]";
+         //   String[] tokens = key.split(delims);
 
-            sensor = m_siteService.getSensor(tokens[0], tokens[1]);
+            //sensor = m_siteService.getSensor(tokens[0], tokens[1]);
+            sensor = (Sensor) m_siteService.getThing(key);
         } catch (Exception ex) {
             throw ex;
         }

@@ -15,6 +15,7 @@ import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.SiteException;
 
 public interface ISiteService {		
@@ -29,21 +30,33 @@ public interface ISiteService {
 	
 	Site getSite ();	
 	
-	public Room getRoom(String keyRoom) throws SiteException; 
+	public Object getThing (String keyPath) throws SiteException;
 	
-	public Sensor getSensor (String keyRoom, String keySensor)  throws SiteException;	
+	public Object addThing (String keyPath) throws SiteException;
 	
-	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;
+	public Object addThing (String keyPath, Object obj) throws SiteException;
 	
-	Humidity getSensorHumidity (String keyRoom, String keySensor)  throws SiteException;
+	public Object getParentThing (String keyPath) throws SiteException;
 	
-	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp) throws SiteException;			
+	public boolean setThingKey (String keyPathOld, String keyPathNew) throws SiteException;
+	
+	//public Floor getFloor(String keyPath) throws SiteException; 
+	
+	//public Room getRoom(String keyPath) throws SiteException; 
+	
+	//public Sensor getSensor (String keyPath)  throws SiteException;	
+	
+	Temperature getSensorTemperature (String keyPath)  throws SiteException;
+	
+	Humidity getSensorHumidity (String keyPath)  throws SiteException;
+	
+	boolean setSensorTemperature (String keyPath, Temperature temp) throws SiteException;			
 		
-	boolean setSensorHumidity (String keyRoom, String keySensor, Humidity hum);		
+	boolean setSensorHumidity (String keyPath, Humidity hum);		
 	
-	public Room addRoom (String key);
+	//public Room addRoom (String keyPath);
 	
-	boolean addSensor (String keyRoom, String keySensor);
+	//boolean addSensor (String keyRoom, String keySensor);
 	
 	boolean setSite (Site siteIn);
 	

@@ -19,6 +19,7 @@ import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.SiteException;
 
 public class MySiteServiceImpl implements ISiteService {
@@ -43,13 +44,16 @@ public class MySiteServiceImpl implements ISiteService {
     @Override
     public void buildHouse(int rooms) {
         
+    	try {
     	for (int i = 0; i <= rooms; i++) {
     	
-    		addRoom("Room" + i);    		
-    		addSensor("Room" + i, "Room" + i + "_Sensor1");
-    	}    	
-    }
-    
+    		addThing("Room" + i);    		
+    		addThing("Room" + i + "/" + "Room" + i + "_Sensor1");
+    	}    
+    	} catch (Exception ex) {
+    		System.out.println("\n\n EX:" + ex);   
+    	}
+    }    
 
     @Override
     public int getNumberSensors(String roomKey) {
@@ -67,14 +71,15 @@ public class MySiteServiceImpl implements ISiteService {
     public void setId(String newID) {
         ss.setId(newID);
     }    
-
+/*
     @Override
-    public Room addRoom(String key) {
-        return ss.rooms.put(key, new Room());
+    public Room addRoom(String keyPath) {
+        return ss.rooms.put(keyPath, new Room());
 
         //return true;
     }
-
+*/
+    /*
     @Override
     public boolean addSensor(String keyRoom, String keySensor) {
         Room room = ss.rooms.get(keyRoom);
@@ -87,40 +92,226 @@ public class MySiteServiceImpl implements ISiteService {
 
         return true;
     }
-
-    public Room getRoom(String keyRoom) throws SiteException {
-        if (ss.rooms.size() <= 0) {
-            throw new SiteException("aaaaa");
-        } else {
-            return ss.rooms.get(keyRoom);
-        }
-    }
-
-    @Override
-    public Sensor getSensor(String keyRoom, String keySensor) throws SiteException {
-        Room room = null;
-        TreeMap<String, Sensor> sensors;
-
-        try {
-            room = getRoom(keyRoom);
-        } catch (SiteException ex) {
-            throw ex;
-        }    
+    */
+    /*
+    public Floor getFloor(String keyPath) throws SiteException {
         
-        if (room == null){
-        	throw new SiteException("Room does not exist!");
+    	Floor floor = ss.floors.get(keyPath);
+    	
+    	if (floor == null) {
+            throw new SiteException("Cannot get floor.");
+        } else {
+            return floor;
         }
-
-        return room.sensors.get(keySensor);
+    }  
+    */
+/*
+    public Room getRoom(String keyPath) throws SiteException {
+    	
+    	Room room = ss.rooms.get(keyPath);
+    	
+        if (room == null) {
+            throw new SiteException("Cannot get room...");
+        } else {
+            return room;
+        }
     }
-
+    */
+    public Object getThing (String keyPath) throws SiteException {
+    	if (keyPath.equals("")) {
+    		throw new SiteException("Bad keyPath");
+    	}
+    	
+    	String delim ="[/]+";    	
+    	String [] parts = keyPath.split(delim);
+    	
+    //	System.out.println("\n\n------+++>: " + parts[0] + " : " + parts.length);
+    	    	
+    	Room room = null;
+    	Sensor sensor = null;
+    	
+    	int i = 0;
+    	
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			throw new SiteException("keyPath contaims empty strings...");
+    		}
+    		
+    		if (i == 0) { //room...
+    			room = ss.rooms.get(parts[0]);
+    			
+    			if (room == null) {
+    				throw new SiteException("Wrong Room...");
+    			}
+    		}
+    		
+    		if (i == 1) { //Sensor...
+    			sensor = room.sensors.get(parts[1]);
+    			
+    			if (sensor == null) {
+    				throw new SiteException("Wrong Sensor...");
+    			}
+    		}    		
+    		
+    		i ++;
+    	}
+    	
+    	if (sensor != null) return sensor;
+    	else if (room  != null) return room;
+    	else return null;
+    }
+    
+    public Object addThing (String keyPath, Object obj) throws SiteException {
+    	
+    	return null;
+    }
+    
+    
+    public Object addThing (String keyPath) throws SiteException {
+    	System.out.println("\n\n addThing...");   
+    	
+    	if (keyPath.equals("")) {
+    		System.out.println("\n\n eeeee");   
+    		throw new SiteException("Bad keyPath");
+    	}
+    	
+    	String delim ="[/]+";    	
+    	String [] parts = keyPath.split(delim);
+    	
+    	//Check for empty parts...
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			System.out.println("\n\n eeeee");   
+    			throw new SiteException("keyPath contaims empty strings...");    			 
+    		}
+    	}
+    	
+    	System.out.println("\n\n------+++>: " + parts[0] + " : " + parts.length);    	    	    	
+    	    	
+    	Room room = null;
+    	Sensor sensor = null;
+    	
+    	int i = 0;
+    	
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			throw new SiteException("keyPath contaims empty strings...");
+    		}
+    		
+    		if (i == 0) { //room...
+    			room = ss.rooms.get(parts[0]);
+    			
+    			if (room == null) {    				
+    				room = new Room ();
+    				ss.rooms.put(parts[0], room);
+    			}   			
+    		}
+    		
+    		if (i == 1) { //Sensor...
+    			sensor = room.sensors.get(parts[1]);
+    			
+    			if (sensor == null) {
+    				sensor = new Sensor();
+    				room.sensors.put(parts[1], sensor);
+    			}    			
+    		}    		
+    		
+    		i ++;
+    	}
+    	
+    	if (sensor != null) return sensor;
+    	else if (room  != null) return room;
+    	else return null;
+    }  
+    
+    public Object getParentThing (String keyPath) throws SiteException {
+    	if (keyPath.equals("")) {
+    		throw new SiteException("Bad keyPath");    		    		
+    	}
+    	
+    	String delim ="[/]+";    	
+    	String [] parts = keyPath.split(delim);
+    	
+    	//Check for empty parts...
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			throw new SiteException("keyPath contaims empty strings...");    			 
+    		}
+    	}    
+    	
+    	if (parts.length <= 1) return null;
+    	
+    	// Get parent path
+    	String prevPath = "";    	
+    	for (int i = 0; i < parts.length - 1; i++) {
+    		prevPath = prevPath + parts[i];
+    	}    	
+    	
+    	return getThing(prevPath);    	
+    }
+    
+    public Object removeThing (String keyPath) throws SiteException {
+    	
+    	if (keyPath.equals("")) {
+    		throw new SiteException("Bad keyPath");
+    	}
+    	
+    	if (keyPath.contains("/")) {
+    		throw new SiteException("Bad keyNew specification...");
+    	}    	
+    	
+    	String delim ="[/]+";    	
+    	String [] parts = keyPath.split(delim);
+    	
+    	//Check for empty parts...
+    	for (String str : parts) {
+    		if (str.equals("")) {
+    			throw new SiteException("keyPath contaims empty strings...");    			 
+    		}
+    	}
+    	
+    	//No parent thing...
+    	Object parentThing = getParentThing(keyPath);    	
+    	if (parentThing == null) {
+    		return ss.rooms.remove(parts[0]);
+    	} else {
+    		
+    		if (parentThing instanceof Room) {    			
+    			Room room = (Room) parentThing;    			
+    			return room.sensors.remove(parts[parts.length - 1]);
+    		}    		    		    		
+    	}
+    	    	    	
+    	return null;
+    }    
+    
+    public boolean setThingKey (String keyPathOld, String keyPathNew) throws SiteException { 
+    	
+    	Object obj = removeThing(keyPathOld);
+    	if (obj == null) return false;
+    	
+    	Object obj2 = addThing(keyPathNew, obj);
+ 
+    	return true;
+    }
+    
     @Override
-    public Temperature getSensorTemperature(String keyRoom, String keySensor) throws SiteException {
+    public Temperature getSensorTemperature(String keyPath) throws SiteException {
         Sensor sensor = null;
-
+             //  keyPath = "rrr";
         try {
-            sensor = getSensor(keyRoom, keySensor);
-        } catch (SiteException ex) {
+            Object obj = getThing(keyPath);
+            
+            if (obj == null) throw new SiteException("Cannot get thing!");
+            
+            if (!(obj instanceof Sensor)) {
+            	throw new SiteException("Sensor path required!");
+            } else {            
+            	sensor = (Sensor) obj;
+            }
+            
+        } catch (SiteException ex) {        	
+        	
             throw ex;
         }
 
@@ -128,17 +319,23 @@ public class MySiteServiceImpl implements ISiteService {
     }  
 
     @Override
-    public boolean setSensorTemperature(String roomKey, String sensorKey, Temperature temp) throws SiteException{
+    public boolean setSensorTemperature(String keyPath, Temperature temp) throws SiteException{
         Sensor sensor = null;
 
         try {
-            sensor = getSensor(roomKey, sensorKey);
+
+            Object obj = getThing(keyPath);
+            
+            if (obj == null) throw new SiteException("Cannot get thing!");
+            
+            if (!(obj instanceof Sensor)) {
+            	throw new SiteException("Sensor path required!");
+            } else {            
+            	sensor = (Sensor) obj;
+            }
+        	
         } catch (SiteException ex) {
             return false;
-        }
-        
-        if (sensor == null) {
-        	throw new SiteException("Sensor does not exist!");
         }
 
         sensor.setTemperature(temp);
@@ -147,11 +344,19 @@ public class MySiteServiceImpl implements ISiteService {
     }
     
     @Override
-    public Humidity getSensorHumidity(String keyRoom, String keySensor) throws SiteException {
+    public Humidity getSensorHumidity(String keyPath) throws SiteException {
         Sensor sensor = null;
 
         try {
-            sensor = getSensor(keyRoom, keySensor);
+            Object obj = getThing(keyPath);
+            
+            if (obj == null) throw new SiteException("Cannot get thing!");
+            
+            if (!(obj instanceof Sensor)) {
+            	throw new SiteException("Sensor path required!");
+            } else {            
+            	sensor = (Sensor) obj;
+            }
         } catch (SiteException ex) {
             throw ex;
         }
@@ -160,11 +365,19 @@ public class MySiteServiceImpl implements ISiteService {
     }
 
     @Override
-    public boolean setSensorHumidity(String roomKey, String sensorKey, Humidity hum) {
+    public boolean setSensorHumidity(String keyPath, Humidity hum) {
         Sensor sensor = null;
 
         try {
-            sensor = getSensor(roomKey, sensorKey);
+            Object obj = getThing(keyPath);
+            
+            if (obj == null) throw new SiteException("Cannot get thing!");
+            
+            if (!(obj instanceof Sensor)) {
+            	throw new SiteException("Sensor path required!");
+            } else {            
+            	sensor = (Sensor) obj;
+            }
         } catch (SiteException ex) {
             return false;
         }
@@ -200,19 +413,17 @@ public class MySiteServiceImpl implements ISiteService {
     	Set<String> roomKeys = ss.rooms.keySet();
     	
     	for (String roomKey : roomKeys){
-    		
-    		//TreeMap<String, Sensor> sensors = getSensors(roomKey);
+
     		try {
-	    		Room room = getRoom(roomKey);
-	    		
-	    		//TreeMap<String, Sensor> sensors = getSensors(roomKey);
+	    		//Room room = getRoom(roomKey);
+	    		Room room = ss.rooms.get(roomKey);
 	    		
 	    		if(room.sensors.containsKey(oldKey)){
 	    			
 	    	    	Sensor sensor = room.sensors.remove(oldKey);
 	    	    	
 	    	    	room.sensors.put(newKey, sensor);    			
-    		}
+	    		}
     		} catch (Exception ex) {
     			
     		}

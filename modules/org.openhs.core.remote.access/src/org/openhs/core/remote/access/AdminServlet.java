@@ -266,7 +266,8 @@ public class AdminServlet extends HttpServlet{
            // TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
             
             try {
-	            Room room = m_siteService.getRoom(key);
+	            //Room room = m_siteService.getRoom(key);
+            	 Room room = (Room) m_siteService.getThing(key);
 	
 	            Set<String> keysSensors = room.sensors.keySet();
 	
@@ -275,8 +276,8 @@ public class AdminServlet extends HttpServlet{
 	            
 	            for (String keyS : keysSensors) {
 	                try {
-	                    temp = m_siteService.getSensorTemperature(key, keyS);
-	                    hum = m_siteService.getSensorHumidity(key, keyS);
+	                    temp = m_siteService.getSensorTemperature(key + "/" + keyS);
+	                    hum = m_siteService.getSensorHumidity(key + "/" + keyS);
 	
 	                    out.println("<br/>|&nbsp;&nbsp;&nbsp;|- Sensor:" + keyS);
 	                    out.println("  ...Temperature: " + temp.getCelsiusString() + " C" + "; ");
@@ -539,7 +540,8 @@ public class AdminServlet extends HttpServlet{
             //TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
             
             try {
-	            Room room = m_siteService.getRoom(key);
+	         //   Room room = m_siteService.getRoom(key);
+            	Room room = (Room) m_siteService.getThing(key);
 	
 	            Set<String> keysSensors = room.sensors.keySet();
 	
@@ -548,8 +550,8 @@ public class AdminServlet extends HttpServlet{
 	            
 	            for (String keyS : keysSensors) {
 	            //    try {
-	                    temp = m_siteService.getSensorTemperature(key, keyS);
-	                    hum = m_siteService.getSensorHumidity(key, keyS);
+	                    temp = m_siteService.getSensorTemperature(key + "/" + keyS);
+	                    hum = m_siteService.getSensorHumidity(key + "/" + keyS);
 	                                        
 	                //    out.print("<li><info2>Sensor:</info2>" + "<info>" + keyS + "</info>");
 	                    
@@ -634,8 +636,8 @@ public class AdminServlet extends HttpServlet{
             Humidity hum;
             
             try {
-            	temp = m_siteService.getSensorTemperature("Room1", dataItemID);
-            	hum = m_siteService.getSensorHumidity("Room1", dataItemID);
+            	temp = m_siteService.getSensorTemperature("Room1/" + dataItemID);
+            	hum = m_siteService.getSensorHumidity("Room1/" + dataItemID);
             	
             	out.print("<br>");
                 out.print("<info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info>");
@@ -675,7 +677,8 @@ public class AdminServlet extends HttpServlet{
             //TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
         	try {
         		        	
-	        	Room room = m_siteService.getRoom(key);
+	        	//Room room = m_siteService.getRoom(key);
+        		Room room = (Room) m_siteService.getThing(key);
 	
 	            Set<String> keysSensors = room.sensors.keySet();
 	
