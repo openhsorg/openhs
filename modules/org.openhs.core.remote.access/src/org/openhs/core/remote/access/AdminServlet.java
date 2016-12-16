@@ -16,10 +16,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.data.ISiteService;
@@ -209,7 +211,7 @@ public class AdminServlet extends HttpServlet{
             String value = request.getParameter(AdminScreensButtons.ROOM_NAME.toString());
             System.out.println("Room Name changing =" + value);    
             
-            m_siteService.setRoomKey (dataItemID, value);
+           // m_siteService.setRoomKey (dataItemID, value);
                         
             
         } else if (request.getParameter(AdminScreensButtons.SENSOR_NAME.toString()) != null) {
@@ -218,7 +220,7 @@ public class AdminServlet extends HttpServlet{
             String value = request.getParameter(AdminScreensButtons.SENSOR_NAME.toString());
             System.out.println("Sensor Name changing =" + value);    
             
-            m_siteService.setSensorKey (dataItemID, value);                         
+           // m_siteService.setSensorKey (dataItemID, value);                         
             
         } else if (request.getParameter(AdminScreensButtons.METEO_IN_TEMP.toString()) != null) {
         	System.out.println("in temp settings...");
@@ -247,40 +249,57 @@ public class AdminServlet extends HttpServlet{
     
     protected void getHouseData(PrintWriter out) {
 
-
-        out.println("<info2>Site:</info2> " + "<info>" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms() + "</info>");
+        try {
+        	
+        out.println("<info2>Site:</info2> " + "<info>" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberThings("floors/Floor1/rooms") + "</info>");
       //  out.println("<br/>Number rooms is: " + m_siteService.getNumberRooms());
 
-        TreeMap<String, Room> rooms = m_siteService.getRooms();
-
+        //TreeMap<String, Room> rooms = m_siteService.getRooms();
+        
+    //    Site site = m_siteService.getSite();
+      //  Set<String> keys = site.rooms.keySet();
+        
+        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing2("floors/Floor1/rooms");
         Set<String> keys = rooms.keySet();
 
         for (String key : keys) {
             out.println(" ");
             out.println("<br/>|<br/>|");
-            out.println("-- <info2>Room:</info2>" + key + "   ..." + "Num Sensors:" + m_siteService.getNumberSensors(key));
+            out.println("-- <info2>Room:</info2>" + key + "   ..." + "Num Sensors:" + m_siteService.getNumberThings("floors/Floor1/rooms/" + key + "/sensors"));
 
-            TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
-
-            Set<String> keysSensors = sensors.keySet();
-
-            Temperature temp;
-            Humidity 	hum;
+           // TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
             
-            for (String keyS : keysSensors) {
-                try {
-                    temp = m_siteService.getSensorTemperature(key, keyS);
-                    hum = m_siteService.getSensorHumidity(key, keyS);
-
-                    out.println("<br/>|&nbsp;&nbsp;&nbsp;|- Sensor:" + keyS);
-                    out.println("  ...Temperature: " + temp.getCelsiusString() + " C" + "; ");
-                    out.println(" Humidity: " + hum.getString() + " %" + "; ");
-                } catch (SiteException ex) {
-
-                }
-
-                // out.println("<br><tr/> -" + keyS + " Temperature: " + temp.get() + " C");
-            }
+          //  try {
+	            //Room room = m_siteService.getRoom(key);
+            	 Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+	
+	            Set<String> keysSensors = room.sensors.keySet();
+	
+	            Temperature temp;
+	            Humidity 	hum;
+	            
+	            for (String keyS : keysSensors) {
+	                try {
+	                    temp = m_siteService.getSensorTemperature("floors/Floor1/rooms/" + key + "/sensors/" + keyS);
+	                    hum = m_siteService.getSensorHumidity("floors/Floor1/rooms/" + key + "/sensors/" + keyS);
+	
+	                    out.println("<br/>|&nbsp;&nbsp;&nbsp;|- Sensor:" + keyS);
+	                    out.println("  ...Temperature: " + temp.getCelsiusString() + " C" + "; ");
+	                    out.println(" Humidity: " + hum.getString() + " %" + "; ");
+	                } catch (SiteException ex) {
+	
+	                }
+	
+	                // out.println("<br><tr/> -" + keyS + " Temperature: " + temp.get() + " C");
+	            }
+            
+         //   }catch (Exception ex) {
+            	
+          //  }
+        }
+        
+        } catch (Exception ex) {
+        	System.out.println(ex);
         }
 
     }    
@@ -494,6 +513,9 @@ public class AdminServlet extends HttpServlet{
     protected void getHouseData2(PrintWriter out) {
 
     	out.println("<ul>");
+    	
+    	//System.out.println("\n\n--->>>");
+    	
         //out.println("<li>Site:" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms());
     	//out.println("<li><info2>Site:</info2>" + "<info>" + m_siteService.getId() + "</info>");
    // 	if (!edit){
@@ -511,64 +533,59 @@ public class AdminServlet extends HttpServlet{
         out.println("<ul>");
       //  out.println("<br/>Number rooms is: " + m_siteService.getNumberRooms());
 
-        TreeMap<String, Room> rooms = m_siteService.getRooms();
-
-        Set<String> keys = rooms.keySet();
-
-        for (String key : keys) {            
-            
-            //out.println("<li>Room:" + key + "   ..." + "Num Sensors:" + m_siteService.getNumberSensors(key));
-        	//out.println("<li><info2>Room:</info2>" + "<info>" + key + "</info>");
-        	
-            out.print("<li><form name='admin' method='post' action=''>" +
-                    "<input type='submit' class='buttonSensorEdit' name='" + btn.ROOM.toString() + "' value='" + key + "'>" +
-                    "</form>");           	
-        	
-            out.println("<ul>");
-            TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
-
-            Set<String> keysSensors = sensors.keySet();
-
-            Temperature temp;
-            Humidity 	hum;
-            
-            for (String keyS : keysSensors) {
-                try {
-                    temp = m_siteService.getSensorTemperature(key, keyS);
-                    hum = m_siteService.getSensorHumidity(key, keyS);
-                                        
-                //    out.print("<li><info2>Sensor:</info2>" + "<info>" + keyS + "</info>");
-                    
-                 //   out.print("<a href='/meteo' accesskey='1' title=''>Meteo station</a>");
-                    
-                    out.print("<li><form name='admin' method='post' action=''>" +
-                            "<input type='submit' class='buttonSensorEdit' name='" + btn.SENSOR.toString() + "' value='" + keyS + "'>" +
-                            "</form>");                    
-                    
-                //    out.print("<br>");
-                    
-                    out.println("<ul>");
-                    out.println("<li><info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info></li>");                    
-                    out.println("<li><info2>Humidity:</info2>" + "<info>" + hum.getString() + " %" + "; </info></li>");
-                                        
-                    out.println("</ul>");
-                    out.println("</li>");
-                } catch (SiteException ex) {
-
-                }
-            }    
-           out.println("</ul>"); 
-           out.println("</li>");
+        //TreeMap<String, Room> rooms = m_siteService.getRooms();
+        //Site site = m_siteService.getSite();
+        //Set<String> keys = site.rooms.keySet();
+      
+        try {
+	        Floor floor = (Floor) m_siteService.getThing2("floors/Floor1");
+	        Set<String> keys = floor.rooms.keySet();        	
+	
+	        for (String key : keys) {            
+	        	
+	            out.print("<li><form name='admin' method='post' action=''>" +
+	                    "<input type='submit' class='buttonSensorEdit' name='" + btn.ROOM.toString() + "' value='" + key + "'>" +
+	                    "</form>");           	
+	        	
+	            out.println("<ul>");
+	
+	        	Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+	            Set<String> keysSensors = room.sensors.keySet();
+	
+	            Temperature temp;
+	            Humidity 	hum;
+	            
+	            for (String keyS : keysSensors) {
+	
+	                temp = m_siteService.getSensorTemperature("floors/Floor1/rooms/" + key + "/sensors/" + keyS);
+	                hum = m_siteService.getSensorHumidity("floors/Floor1/rooms/" + key + "/sensors/" + keyS);
+	                
+	                out.print("<li><form name='admin' method='post' action=''>" +
+	                        "<input type='submit' class='buttonSensorEdit' name='" + btn.SENSOR.toString() + "' value='" + keyS + "'>" +
+	                        "</form>");                    
+	                
+	                out.println("<ul>");
+	                out.println("<li><info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info></li>");                    
+	                out.println("<li><info2>Humidity:</info2>" + "<info>" + hum.getString() + " %" + "; </info></li>");
+	                                    
+	                out.println("</ul>");
+	                out.println("</li>");
+	            }   
+	                    
+	           out.println("</ul>"); 
+	           out.println("</li>");
+	        }
+        
+        } catch (Exception ex) {
+        	System.out.println("\n\nException:" + ex);
         }
         
       	out.println("</ul>");
         out.println("</li></ul>");        
-        
-        
+                
         out.print("<br>");
         
-        html_detail(out);
-              
+        html_detail(out);              
     }      
     
     
@@ -586,7 +603,11 @@ public class AdminServlet extends HttpServlet{
                     ""); 
             
             out.print("<br>");
-            out.print("<info2>Number of rooms: </info2>" + "<info2>" + m_siteService.getNumberRooms() + "</info2>");
+            try {
+            out.print("<info2>Number of rooms: </info2>" + "<info2>" + m_siteService.getNumberThings("floors/Floor1/rooms/") + "</info2>");
+            } catch (Exception ex) {
+            	
+            }
         break;
         
     	case ROOM:
@@ -599,7 +620,7 @@ public class AdminServlet extends HttpServlet{
                     ""); 
             
             out.print("<br>");
-            out.print("<info2>Number of sensors: </info2>" + "<info2>" + m_siteService.getNumberSensors(dataItemID) + "</info2>");
+           // out.print("<info2>Number of sensors: </info2>" + "<info2>" + m_siteService.getNumberSensors(dataItemID) + "</info2>");
             
         break;    
         
@@ -616,8 +637,8 @@ public class AdminServlet extends HttpServlet{
             Humidity hum;
             
             try {
-            	temp = m_siteService.getSensorTemperature("Room1", dataItemID);
-            	hum = m_siteService.getSensorHumidity("Room1", dataItemID);
+            	temp = m_siteService.getSensorTemperature("floors/Floor1/Room1/sensors/" + dataItemID);
+            	hum = m_siteService.getSensorHumidity("floors/Floor1/Room1/sensors/" + dataItemID);
             	
             	out.print("<br>");
                 out.print("<info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info>");
@@ -646,22 +667,36 @@ public class AdminServlet extends HttpServlet{
     	
     	ArrayList<String> sensorList = new ArrayList<String>();
     	
-        TreeMap<String, Room> rooms = m_siteService.getRooms();
-
-        Set<String> keys = rooms.keySet();
+        //TreeMap<String, Room> rooms = m_siteService.getRooms();
+    	
+    	//Site site = m_siteService.getSite();
+        //Set<String> keys = site.rooms.keySet();
+        
+    	try {
+        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing2("floors/Floor1/rooms");
+        Set<String> keys = rooms.keySet();        
 
         for (String key : keys) {
         	
-            TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
-
-            Set<String> keysSensors = sensors.keySet();
-
-            for (String keyS : keysSensors) {
-            	sensorList.add(key + "/" + keyS);
-            }        
+            //TreeMap<String, Sensor> sensors = m_siteService.getSensors(key);
+        
+        		        	
+	        	//Room room = m_siteService.getRoom(key);
+        		Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+	
+	            Set<String> keysSensors = room.sensors.keySet();
+	
+	            for (String keyS : keysSensors) {
+	            	sensorList.add(key + "/" + keyS);
+	            }
+            
+        	
         }
     	
-    	
+        } catch (Exception ex){
+    		
+    	}
+        
     	out.println("<h2>Meteo station setup</h2>");
     	
     	//Inner temp

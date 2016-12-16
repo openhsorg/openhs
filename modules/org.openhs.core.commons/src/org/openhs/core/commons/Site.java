@@ -16,12 +16,10 @@ public class Site {
 	private static String id = "My First Crazy Site :):)";
 	
 	/*
-	 * Rooms.
+	 * Floors
 	 */
-	public TreeMap<String, Room> rooms = 
-            new TreeMap<String, Room>();		
-	
-	//TimeProfile timeprofile = new TimeProfile ();
+	public TreeMap<String, Floor> floors = 
+            new TreeMap<String, Floor>();			
 	
 	public String getId ()
 	{
@@ -31,6 +29,5 @@ public class Site {
 	public void setId (String newID)
 	{
 		id = newID;
-	}	
-
+	}		
 }

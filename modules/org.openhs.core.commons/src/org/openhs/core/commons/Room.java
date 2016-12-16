@@ -12,7 +12,7 @@ import java.util.TreeMap;
 
 import org.openhs.core.commons.Sensor;
 
-public class Room {
+public class Room{
 	
 	/*
 	 * Set of sensors in room

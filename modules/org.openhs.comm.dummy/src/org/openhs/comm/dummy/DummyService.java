@@ -11,8 +11,8 @@ public class DummyService implements ICommService, Runnable {
 	private IMessageHandler m_mh = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
-    private SensorMessage m_msg1 = new SensorMessage("dummyDev", "Sensor1", 0.0, 0.0);
-    private SensorMessage m_msg2 = new SensorMessage("dummyDev", "Sensor2", 0.0, 0.0);
+    private SensorMessage m_msg1 = new SensorMessage("dummyDev", "Room0_Sensor1", 0.0, 0.0);
+    private SensorMessage m_msg2 = new SensorMessage("dummyDev", "Room1_Sensor1", 0.0, 0.0);
 
 	public void activate() {
 		m_myThd = new Thread(this);

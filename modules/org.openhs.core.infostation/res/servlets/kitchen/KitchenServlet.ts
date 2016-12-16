@@ -1105,6 +1105,7 @@ class Floor {
         
         this.imgFloor = new Image();
         this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";      
+
                 
        // this.imgFloor.onload = function(){
       //    this.imgFloorLoaded = true;

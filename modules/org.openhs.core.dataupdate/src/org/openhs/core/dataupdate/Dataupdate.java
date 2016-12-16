@@ -85,25 +85,25 @@ public class Dataupdate implements IMessageHandler, Runnable {
   				try {
   					
 		  			//TODO link - sensor room?
-		  			if (smsg.getName().compareTo("Sensor1") == 0) {	  					  				
+		  			if (smsg.getName().compareTo("Room0_Sensor1") == 0) {	  					  				
 		  				  						  				
-			    		if (!this.m_siteService.setSensorTemperature("Room1", smsg.getName(), temp)) {
-				  			System.out.println("Cannot write temp :(");
+			    		if (!this.m_siteService.setSensorTemperature("floors/Floor1/rooms/Room0/sensors/" + smsg.getName(), temp)) {
+				  			System.out.println("Cannot write temp :( " + smsg.getName());
 						} 	  		
 			    	
-				  		if (!this.m_siteService.setSensorHumidity("Room1", smsg.getName(), hum)) {
-				  			System.out.println("Cannot write temp :(");
+				  		if (!this.m_siteService.setSensorHumidity("floors/Floor1/rooms/Room0/sensors/" + smsg.getName(), hum)) {
+				  			System.out.println("Cannot write temp :( " + smsg.getName());
 				  		}					
 		  				
 		  			}
-		  			else if (smsg.getName().compareTo("Sensor2") == 0) {
+		  			else if (smsg.getName().compareTo("Room1_Sensor1") == 0) {
 			  			
-			    		if (!this.m_siteService.setSensorTemperature("Outside", smsg.getName(), temp)) {
-				  			System.out.println("Cannot write temp :(");
+			    		if (!this.m_siteService.setSensorTemperature("floors/Floor1/rooms/Room1/sensors/" + smsg.getName(), temp)) {
+				  			System.out.println("Cannot write temp :( " + smsg.getName());
 						} 	  		
 			    	
-				  		if (!this.m_siteService.setSensorHumidity("Outside", smsg.getName(), hum)) {
-				  			System.out.println("Cannot write temp :(");
+				  		if (!this.m_siteService.setSensorHumidity("floors/Floor1/rooms/Room1/sensors/" + smsg.getName(), hum)) {
+				  			System.out.println("Cannot write temp :( " + smsg.getName());
 						}
 		  			}
 		  			else {
