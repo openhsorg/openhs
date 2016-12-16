@@ -27,7 +27,7 @@ public class OhsConfig {
         m_openhsDataFile = m_openhsDir + m_fileSep + OHS_XML_DATASRUCT;
         m_openhsConfigFile = m_openhsDir + m_fileSep + OHS_XML_CONFIG;
         
-        enableFiles = false;
+        enableFiles = true;
 	}	
 	
 }

@@ -18,10 +18,6 @@ public interface ISiteService {
 	
 	void setId (String newID);
 	
-	//int getNumberRooms ();
-	
-	//int getNumberSensors (String roomKey);
-	
 	Site getSite ();	
 	
 	public Object getThing2 (String keyPath) throws SiteException;

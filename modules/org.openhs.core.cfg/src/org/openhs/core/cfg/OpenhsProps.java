@@ -1,8 +1,15 @@
 package org.openhs.core.cfg;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+
 //***  !!!
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Dictionary;
@@ -17,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.OhsConfig;
+import org.openhs.core.commons.Site;
 
 public class OpenhsProps {
 	
@@ -32,8 +40,6 @@ public class OpenhsProps {
 	private final String OHS_COMM_CONFIG_FILE = "commConfigFile";
 	
 	public OpenhsBundles m_bundles = new OpenhsBundles();	
-	OpenhsDataStructure m_builder = new OpenhsDataStructure();
-	
 
     public OpenhsProps() {
     	m_properties = new Properties();
@@ -107,10 +113,67 @@ public class OpenhsProps {
             }
         }
     }
+    
+    private void loadData()
+    {
+        File xml = new File(m_config.m_openhsDataFile);
+                       
+    	if (xml.exists()) {
+    		
+    		try {
+    			Site siteTmp = (Site) xmlLoad (m_config.m_openhsDataFile);
+    			
+    			m_siteService.setSite(siteTmp);
+    		}
+    		catch (Exception ex) {
+
+    		}
+    	}
+    	else {
+    		
+    		m_siteService.buildHouse(6); //build some house....
+        	        	
+	        try {		        	
+	        	xmlSave (m_config.m_openhsDataFile, m_siteService.getSite());
+	        }
+	        catch (Exception ex) {
+	        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
+	        }
+	        finally
+	        {
+	        	System.out.println("Site XML not found ---> Created basic config and saved: " + m_config.m_openhsDataFile); 
+	        }
+    	}       	    	
+    }
+    
+    public void xmlSave (String path, Object o) throws Exception {
+    	FileOutputStream fileStream = new FileOutputStream(path);
+    	BufferedOutputStream buffStream = new BufferedOutputStream(fileStream);    	
+    	
+        XMLEncoder encoder = new XMLEncoder(buffStream);
+        
+        encoder.writeObject(o);
+        
+        encoder.close();
+    }   
+    
+    public Object xmlLoad (String path) throws Exception {
+    	FileInputStream fileStream = new FileInputStream(path);
+    	BufferedInputStream buffStream = new BufferedInputStream(fileStream);    	
+    	
+    	XMLDecoder decoder = new XMLDecoder(buffStream);
+
+        Object o = decoder.readObject();
+        
+        decoder.close();
+        
+        return o;      
+    }      
 
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();
+		loadData();
     }
     
     void deactivate() {
@@ -129,13 +192,7 @@ public class OpenhsProps {
     }
     
     void setService(ISiteService ser) {
-        m_siteService = ser;
-        /*
-         * Initialize config and data structure...
-         */
-        m_builder.m_config = m_config;
-        m_builder.m_siteService = m_siteService;
-        m_builder.initialize();                
+        m_siteService = ser;             
     }
 
     void unsetService(ISiteService ser) {
