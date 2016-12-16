@@ -3,8 +3,6 @@ package org.openhs.core.commons;
 import java.util.TreeMap;
 
 public class Floor {
-
-	String id = "";
 	
 	/*
 	 * Rooms.
