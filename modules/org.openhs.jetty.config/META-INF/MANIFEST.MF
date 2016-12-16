@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Jetty Config
-Bundle-SymbolicName: org.openhs.jetty.config
-Bundle-Version: 1.0.0.qualifier
-Fragment-Host: org.eclipse.jetty.osgi.boot;bundle-version="9.3.9.v20160517"
-Import-Package: org.osgi.framework;version="1.8.0"

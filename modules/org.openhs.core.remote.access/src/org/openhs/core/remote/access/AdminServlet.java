@@ -85,10 +85,10 @@ public class AdminServlet extends HttpServlet{
     	
     	//String[] c = request.getParameterValues("ccc");
     	
-    	System.out.println("...doPost...");
+    	//System.out.println("...doPost...");
     	       
         if (request.getParameter("Administration") != null) {
-        	System.out.println("...Administration");
+        	//System.out.println("...Administration");
         	
         	screen = AdminScreens.ADMIN;
         	
@@ -246,7 +246,7 @@ public class AdminServlet extends HttpServlet{
     	        
         out.close();
     }    
-    
+    /*
     protected void getHouseData(PrintWriter out) {
 
         try {
@@ -303,7 +303,7 @@ public class AdminServlet extends HttpServlet{
         }
 
     }    
-    
+    */
     protected void html_page(PrintWriter out){
     	    	    	
     	out.println("\n<!DOCTYPE html>");
@@ -513,6 +513,84 @@ public class AdminServlet extends HttpServlet{
     protected void getHouseData2(PrintWriter out) {
 
     	out.println("<ul>");
+
+		out.print("<li><form name='admin' method='post' action=''>" +
+				"<input type='submit' class='buttonSensorEdit' name='" + btn.SITE.toString() + "' value='" + m_siteService.getId() + "'>" +
+				"</form>");
+   	
+        out.println("<ul>");
+      
+        try {
+        	
+        	Site site = m_siteService.getSite();
+        	Set<String> keysF = site.floors.keySet();
+        	
+        	for (String keyF : keysF) {
+        		
+	            out.print("<li><form name='admin' method='post' action=''>" +
+	                    "<input type='submit' class='buttonSensorEdit' name='" + btn.FLOOR.toString() + "' value='" + keyF + "'>" +
+	                    "</form>");       
+	            
+	            out.println("<ul>");
+        	
+		        Floor floor = (Floor) m_siteService.getThing("floors/" + keyF);
+		        Set<String> keysR = floor.rooms.keySet();        	
+		
+		        for (String keyR : keysR) {            
+		        	
+		            out.print("<li><form name='admin' method='post' action=''>" +
+		                    "<input type='submit' class='buttonSensorEdit' name='" + btn.ROOM.toString() + "' value='" + keyR + "'>" +
+		                    "</form>");           	
+		        	
+		            out.println("<ul>");
+		
+		        	Room room = (Room) m_siteService.getThing("floors/" + keyF + "/rooms/"+ keyR);
+		            Set<String> keysS = room.sensors.keySet();
+		
+		            Temperature temp;
+		            Humidity 	hum;
+		            
+		            for (String keyS : keysS) {
+		
+		                temp = m_siteService.getSensorTemperature("floors/" + keyF + "/rooms/" + keyR + "/sensors/" + keyS);
+		                hum = m_siteService.getSensorHumidity("floors/" + keyF + "/rooms/" + keyR + "/sensors/" + keyS);
+		                
+		                out.print("<li><form name='admin' method='post' action=''>" +
+		                        "<input type='submit' class='buttonSensorEdit' name='" + btn.SENSOR.toString() + "' value='" + keyS + "'>" +
+		                        "</form>");                    
+		                
+		                out.println("<ul>");
+		                out.println("<li><info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info></li>");                    
+		                out.println("<li><info2>Humidity:</info2>" + "<info>" + hum.getString() + " %" + "; </info></li>");
+		                                    
+		                out.println("</ul>");
+		                out.println("</li>");
+		            }   
+		                    
+		           out.println("</ul>"); 
+		           out.println("</li>");
+		        }
+		        
+		        out.println("</ul>"); 
+		        out.println("</li>");		        
+	        
+        	}
+        
+        } catch (Exception ex) {
+        	System.out.println("\n\nException:" + ex);
+        }
+        
+      	out.println("</ul>");
+        out.println("</li></ul>");        
+                
+        out.print("<br>");
+        
+        html_detail(out);              
+    }      
+    
+    protected void getHouseData2_Z(PrintWriter out) {
+
+    	out.println("<ul>");
     	
     	//System.out.println("\n\n--->>>");
     	
@@ -538,7 +616,7 @@ public class AdminServlet extends HttpServlet{
         //Set<String> keys = site.rooms.keySet();
       
         try {
-	        Floor floor = (Floor) m_siteService.getThing2("floors/Floor1");
+	        Floor floor = (Floor) m_siteService.getThing("floors/Floor1");
 	        Set<String> keys = floor.rooms.keySet();        	
 	
 	        for (String key : keys) {            
@@ -549,7 +627,7 @@ public class AdminServlet extends HttpServlet{
 	        	
 	            out.println("<ul>");
 	
-	        	Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+	        	Room room = (Room) m_siteService.getThing("floors/Floor1/rooms/" + key);
 	            Set<String> keysSensors = room.sensors.keySet();
 	
 	            Temperature temp;
@@ -586,7 +664,7 @@ public class AdminServlet extends HttpServlet{
         out.print("<br>");
         
         html_detail(out);              
-    }      
+    }         
     
     
     void html_detail (PrintWriter out){
@@ -673,7 +751,7 @@ public class AdminServlet extends HttpServlet{
         //Set<String> keys = site.rooms.keySet();
         
     	try {
-        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing2("floors/Floor1/rooms");
+        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing("floors/Floor1/rooms");
         Set<String> keys = rooms.keySet();        
 
         for (String key : keys) {
@@ -682,7 +760,7 @@ public class AdminServlet extends HttpServlet{
         
         		        	
 	        	//Room room = m_siteService.getRoom(key);
-        		Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+        		Room room = (Room) m_siteService.getThing("floors/Floor1/rooms/" + key);
 	
 	            Set<String> keysSensors = room.sensors.keySet();
 	
@@ -719,7 +797,7 @@ public class AdminServlet extends HttpServlet{
     		    		
     		out.print("<option value='" + item + "'" + selected + ">" + item + "</option>\n");
     	}
-    	out.print("</select>\n");    	
+    	out.print("</select>\n");    	//
      	
      	//Out temp
    	    out.print("<br>");
@@ -729,7 +807,7 @@ public class AdminServlet extends HttpServlet{
     	
     	out.print("<option value='none' selected>none</option>\n");
     	
-    	selected = "";
+    	selected = "";//
     	
     	for (String item : sensorList) {
     		
