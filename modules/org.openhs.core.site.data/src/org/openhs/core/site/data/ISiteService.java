@@ -28,11 +28,7 @@ public interface ISiteService {
 	
 	public Object addThing (String keyPath) throws SiteException;
 	
-	public boolean addThing (String keyPath, String key, Object obj) throws SiteException;
-	
-	public Object getParentThing (String keyPath) throws SiteException;
-	
-	public boolean setThingKey (String keyPathOld, String keyPathNew) throws SiteException;
+	public boolean setThingKey (String keyPathOld, String keyNew) throws SiteException;
 	
 	Temperature getSensorTemperature (String keyPath)  throws SiteException;
 	

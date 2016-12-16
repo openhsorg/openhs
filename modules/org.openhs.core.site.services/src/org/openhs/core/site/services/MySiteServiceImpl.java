@@ -115,66 +115,7 @@ public class MySiteServiceImpl implements ISiteService {
     	else if (room  != null) return room;
     	else return null;
     }
-    
-    public boolean addThing (String keyPath, String key, Object obj) throws SiteException {    	
-    	
-    	if (keyPath.equals("")) {
-    		throw new SiteException("Bad keyPath");
-    	}
-    	
-    	String delim ="[/]+";    	
-    	String [] parts = keyPath.split(delim);
-    	
-    	//Check for empty parts...
-    	for (String str : parts) {
-    		if (str.equals("")) {
-    			throw new SiteException("keyPath contaims empty strings...");    			 
-    		}
-    	}    	
-    	
-    	Object item = (Site) ss;
-    	
-    	int i = 0;
-    	    	
-    	for (String str : parts) {
-    		   		
-    		if (item instanceof Site) {
-    			Site site = (Site) item;
-    			
-    			item = site.getThing(parts[i]);
-    			
-    		} else if (item instanceof Room) {
-    			Room room = (Room) item;
-    			
-    			item = room.getThing(parts[i]);    			
-    		}    			
-    		
-    		i ++;
-    		
-    		if (item == null) {
-    			throw new SiteException("KeyPath wrong...");  
-    		}
-    	}
-    	
-    	// Add object...
-		if (item instanceof Site) {
-			Site site = (Site) item;
-			
-			site.addThing(key, obj);
-			
-			return true;
-			
-		} else if (item instanceof Room) {
-			Room room = (Room) item;
-			
-			room.addThing(key, obj);
-			
-			return true;			
-		}  
-    	    	
-    	return false;
-    }
-    
+           
     
     public Object addThing (String keyPath) throws SiteException {
     	//keyPath:  Room/Sensor
@@ -233,75 +174,30 @@ public class MySiteServiceImpl implements ISiteService {
     	if (sensor != null) return sensor;
     	else if (room  != null) return room;
     	else return null;
-    }  
+    }           
     
-    public Object getParentThing (String keyPath) throws SiteException {
-    	if (keyPath.equals("")) {
-    		throw new SiteException("Bad keyPath");    		    		
+    public boolean setThingKey (String keyPathOld, String keyNew) throws SiteException { 
+    	
+    	Object thing = getThing(keyPathOld);
+    	if (thing == null) return false;
+    	
+    	if (thing instanceof Room) {
+    		Room room = ss.rooms.remove(keyPathOld);
+    		ss.rooms.put(keyNew, room);    		
+    		return true;
     	}
     	
-    	String delim ="[/]+";    	
-    	String [] parts = keyPath.split(delim);
+    	String keyPartParent = keyPathOld.substring(0, keyPathOld.lastIndexOf("/") - 1);
+    	String keyOld = keyPathOld.substring(keyPathOld.lastIndexOf("/") + 1, keyPathOld.length() - 1);
     	
-    	//Check for empty parts...
-    	for (String str : parts) {
-    		if (str.equals("")) {
-    			throw new SiteException("keyPath contaims empty strings...");    			 
-    		}
-    	}    
+    	Object thingParent = getThing(keyPartParent);
+    	if (thingParent == null) return false;  
     	
-    	if (parts.length <= 1) return null;
-    	
-    	// Get parent path
-    	String prevPath = "";    	
-    	for (int i = 0; i < parts.length - 1; i++) {
-    		prevPath = prevPath + parts[i];
-    	}    	
-    	
-    	return getThing(prevPath);    	
-    }
-    
-    public Object removeThing (String keyPath) throws SiteException {
-    	
-    	if (keyPath.equals("")) {
-    		throw new SiteException("Bad keyPath");
+    	if (thingParent instanceof Room) {
+    		Room room = (Room) thingParent;
+    		Sensor sensor = room.sensors.remove(keyOld);
+    		room.sensors.put(keyNew, sensor);  
     	}
-    	
-    	if (keyPath.contains("/")) {
-    		throw new SiteException("Bad keyNew specification...");
-    	}    	
-    	
-    	String delim ="[/]+";    	
-    	String [] parts = keyPath.split(delim);
-    	
-    	//Check for empty parts...
-    	for (String str : parts) {
-    		if (str.equals("")) {
-    			throw new SiteException("keyPath contaims empty strings...");    			 
-    		}
-    	}
-    	
-    	//No parent thing...
-    	Object parentThing = getParentThing(keyPath);    	
-    	if (parentThing == null) {
-    		return ss.rooms.remove(parts[0]);
-    	} else {
-    		
-    		if (parentThing instanceof Room) {    			
-    			Room room = (Room) parentThing;    			
-    			return room.sensors.remove(parts[parts.length - 1]);
-    		}    		    		    		
-    	}
-    	    	    	
-    	return null;
-    }    
-    
-    public boolean setThingKey (String keyPathOld, String keyPathNew) throws SiteException { 
-    	
-    	Object obj = removeThing(keyPathOld);
-    	if (obj == null) return false;
-    	
-    	//Object obj2 = addThing(keyPathNew, obj);
  
     	return true;
     }
