@@ -85,10 +85,10 @@ public class AdminServlet extends HttpServlet{
     	
     	//String[] c = request.getParameterValues("ccc");
     	
-    	System.out.println("...doPost...");
+    	//System.out.println("...doPost...");
     	       
         if (request.getParameter("Administration") != null) {
-        	System.out.println("...Administration");
+        	//System.out.println("...Administration");
         	
         	screen = AdminScreens.ADMIN;
         	
