@@ -114,6 +114,9 @@ public class OpenhsProps {
         }
     }
     
+    /*
+     * Loads datastructure...
+     */
     private void loadData()
     {
         File xml = new File(m_config.m_openhsDataFile);
