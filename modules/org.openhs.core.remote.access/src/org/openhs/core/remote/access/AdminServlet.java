@@ -513,29 +513,12 @@ public class AdminServlet extends HttpServlet{
     protected void getHouseData2(PrintWriter out) {
 
     	out.println("<ul>");
-    	
-    	//System.out.println("\n\n--->>>");
-    	
-        //out.println("<li>Site:" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms());
-    	//out.println("<li><info2>Site:</info2>" + "<info>" + m_siteService.getId() + "</info>");
-   // 	if (!edit){
-    		out.print("<li><form name='admin' method='post' action=''>" +
-    				"<input type='submit' class='buttonSensorEdit' name='" + btn.SITE.toString() + "' value='" + m_siteService.getId() + "'>" +
-    				"</form>");
-    	/*}
-    	else{
-          	
-            out.print("<li><form name=\"input\" method=\"post\">\n" +
-                    "Site: <input type=\"text\" name=\"siteID\" value=\"" + m_siteService.getId() + "\">" +
-                    "<input type=\"submit\" value=\"Submit\">");       		
-    	}
-    	*/    	
-        out.println("<ul>");
-      //  out.println("<br/>Number rooms is: " + m_siteService.getNumberRooms());
 
-        //TreeMap<String, Room> rooms = m_siteService.getRooms();
-        //Site site = m_siteService.getSite();
-        //Set<String> keys = site.rooms.keySet();
+		out.print("<li><form name='admin' method='post' action=''>" +
+				"<input type='submit' class='buttonSensorEdit' name='" + btn.SITE.toString() + "' value='" + m_siteService.getId() + "'>" +
+				"</form>");
+   	
+        out.println("<ul>");
       
         try {
         	
@@ -550,7 +533,7 @@ public class AdminServlet extends HttpServlet{
 	            
 	            out.println("<ul>");
         	
-		        Floor floor = (Floor) m_siteService.getThing2("floors/" + keyF);
+		        Floor floor = (Floor) m_siteService.getThing("floors/" + keyF);
 		        Set<String> keysR = floor.rooms.keySet();        	
 		
 		        for (String keyR : keysR) {            
@@ -561,7 +544,7 @@ public class AdminServlet extends HttpServlet{
 		        	
 		            out.println("<ul>");
 		
-		        	Room room = (Room) m_siteService.getThing2("floors/" + keyF + "/rooms/"+ keyR);
+		        	Room room = (Room) m_siteService.getThing("floors/" + keyF + "/rooms/"+ keyR);
 		            Set<String> keysS = room.sensors.keySet();
 		
 		            Temperature temp;
@@ -633,7 +616,7 @@ public class AdminServlet extends HttpServlet{
         //Set<String> keys = site.rooms.keySet();
       
         try {
-	        Floor floor = (Floor) m_siteService.getThing2("floors/Floor1");
+	        Floor floor = (Floor) m_siteService.getThing("floors/Floor1");
 	        Set<String> keys = floor.rooms.keySet();        	
 	
 	        for (String key : keys) {            
@@ -644,7 +627,7 @@ public class AdminServlet extends HttpServlet{
 	        	
 	            out.println("<ul>");
 	
-	        	Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+	        	Room room = (Room) m_siteService.getThing("floors/Floor1/rooms/" + key);
 	            Set<String> keysSensors = room.sensors.keySet();
 	
 	            Temperature temp;
@@ -768,7 +751,7 @@ public class AdminServlet extends HttpServlet{
         //Set<String> keys = site.rooms.keySet();
         
     	try {
-        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing2("floors/Floor1/rooms");
+        TreeMap<String, Room> rooms = (TreeMap<String, Room>) m_siteService.getThing("floors/Floor1/rooms");
         Set<String> keys = rooms.keySet();        
 
         for (String key : keys) {
@@ -777,7 +760,7 @@ public class AdminServlet extends HttpServlet{
         
         		        	
 	        	//Room room = m_siteService.getRoom(key);
-        		Room room = (Room) m_siteService.getThing2("floors/Floor1/rooms/" + key);
+        		Room room = (Room) m_siteService.getThing("floors/Floor1/rooms/" + key);
 	
 	            Set<String> keysSensors = room.sensors.keySet();
 	
@@ -824,7 +807,7 @@ public class AdminServlet extends HttpServlet{
     	
     	out.print("<option value='none' selected>none</option>\n");
     	
-    	selected = "";
+    	selected = "";//
     	
     	for (String item : sensorList) {
     		

@@ -20,9 +20,9 @@ public interface ISiteService {
 	
 	Site getSite ();	
 	
-	public Object getThing2 (String keyPath) throws SiteException;
+	public Object getThing (String keyPath) throws SiteException;
 	
-	public Object addThing2 (String keyPath) throws SiteException;
+	public Object addThing (String keyPath) throws SiteException;
 	
 	public int getNumberThings (String keyPath) throws SiteException;
 	
