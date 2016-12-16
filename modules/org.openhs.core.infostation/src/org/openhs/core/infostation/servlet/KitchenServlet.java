@@ -294,7 +294,7 @@ public class KitchenServlet extends HttpServlet {
 			
 			String floorPath = prop.getProperty("floorPath_1");
 			
-			int n = 0;
+			int n = -1;
 			
 			try {
 				n = this.m_infostation.m_siteService.getNumberThings(floorPath + "/rooms");
