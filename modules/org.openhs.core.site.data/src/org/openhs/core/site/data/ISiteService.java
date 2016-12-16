@@ -18,17 +18,19 @@ public interface ISiteService {
 	
 	void setId (String newID);
 	
-	int getNumberRooms ();
+	//int getNumberRooms ();
 	
-	int getNumberSensors (String roomKey);
+	//int getNumberSensors (String roomKey);
 	
 	Site getSite ();	
 	
-	public Object getThing (String keyPath) throws SiteException;
+	public Object getThing2 (String keyPath) throws SiteException;
 	
-	public Object addThing (String keyPath) throws SiteException;
+	public Object addThing2 (String keyPath) throws SiteException;
 	
-	public boolean setThingKey (String keyPathOld, String keyNew) throws SiteException;
+	public int getNumberThings (String keyPath) throws SiteException;
+	
+	//public boolean setThingKey (String keyPathOld, String keyNew) throws SiteException;
 	
 	Temperature getSensorTemperature (String keyPath)  throws SiteException;
 	
@@ -40,9 +42,9 @@ public interface ISiteService {
 	
 	boolean setSite (Site siteIn);
 	
-	boolean setRoomKey (String oldKey, String newKey);
+//	boolean setRoomKey (String oldKey, String newKey);
 	
-	boolean setSensorKey (String oldKey, String newKey);	
+//	boolean setSensorKey (String oldKey, String newKey);	
 	
 	public void buildHouse(int rooms);
 

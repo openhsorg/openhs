@@ -32,8 +32,8 @@ public class Meteostation {
     /*
      * What sensors we deal with.
      */
-    public String sensorInString = "Room0/Room0_Sensor1";
-    public String sensorOutString = "Room1/Room1_Sensor1";
+    public String sensorInString = "floors/Floor1/rooms/Room0/sensors/Room0_Sensor1";
+    public String sensorOutString = "floors/Floor1/rooms/Room1/sensors/Room1_Sensor1";
 
     /*
      * Indicators.
@@ -102,7 +102,7 @@ public class Meteostation {
          //   String[] tokens = key.split(delims);
 
             //sensor = m_siteService.getSensor(tokens[0], tokens[1]);
-            sensor = (Sensor) m_siteService.getThing(key);
+            sensor = (Sensor) m_siteService.getThing2(key);
         } catch (Exception ex) {
             throw ex;
         }

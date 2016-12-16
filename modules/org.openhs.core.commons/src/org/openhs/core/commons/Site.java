@@ -20,13 +20,14 @@ public class Site {
 	 */
 	public TreeMap<String, Floor> floors = 
             new TreeMap<String, Floor>();			
-	
+
 	/*
 	 * Rooms.
 	 */
+	/*
 	public TreeMap<String, Room> rooms = 
             new TreeMap<String, Room>();		
-	
+	*/
 	
 	public String getId ()
 	{
