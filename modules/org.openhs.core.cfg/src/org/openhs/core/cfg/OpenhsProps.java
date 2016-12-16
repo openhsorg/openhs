@@ -4,12 +4,12 @@ import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-
-//***  !!!
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Dictionary;
@@ -17,6 +17,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -26,6 +31,7 @@ import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.OhsConfig;
 import org.openhs.core.commons.Site;
 
+
 public class OpenhsProps {
 	
 	//initialize logger
@@ -34,9 +40,7 @@ public class OpenhsProps {
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
     private ISiteService m_siteService = null;	
-    private OhsConfig m_config = null;
-    
-
+    public OhsConfig m_config = null;    
     
     private final String OHS_DIR = "openhs";
     private final String OHS_PROPS = "openhs.properties";
@@ -138,10 +142,9 @@ public class OpenhsProps {
         //Load properties...
         String loadXml = m_properties.getProperty(OHS_XML_LOAD_ENABLE);
         String fileName = m_properties.getProperty(OHS_XML_FILE_NAME);
-        String fileCfgName = m_properties.getProperty(OHS_CONFIG_FILE);
+        //String fileCfgName = m_properties.getProperty(OHS_CONFIG_FILE);
         
-        m_openhsConfigFile = m_openhsDir + System.getProperty( "file.separator") + fileCfgName;
-
+        //m_openhsConfigFile = m_openhsDir + System.getProperty( "file.separator") + fileCfgName;        
                         
         if (loadXml.equals("yes") && !(fileName.equals(""))) {
         	
@@ -170,7 +173,6 @@ public class OpenhsProps {
 	        	        	
 		        try {		        	
 		        	xmlSave (m_openhsDataFile, m_siteService.getSite());	
-		        //	xmlSave (m_openhsConfigFile, m_config);
 		        }
 		        catch (Exception ex) {
 		        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
@@ -208,7 +210,7 @@ public class OpenhsProps {
         decoder.close();
         
         return o;      
-    }      
+    }          
 
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
@@ -239,7 +241,5 @@ public class OpenhsProps {
         if (m_siteService == ser) {
             ser = null;
         }
-    }	    
-
-   
+    }	       
 }

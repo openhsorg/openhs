@@ -246,7 +246,7 @@ public class AdminServlet extends HttpServlet{
     	        
         out.close();
     }    
-    
+    /*
     protected void getHouseData(PrintWriter out) {
 
         try {
@@ -303,7 +303,7 @@ public class AdminServlet extends HttpServlet{
         }
 
     }    
-    
+    */
     protected void html_page(PrintWriter out){
     	    	    	
     	out.println("\n<!DOCTYPE html>");
@@ -538,6 +538,101 @@ public class AdminServlet extends HttpServlet{
         //Set<String> keys = site.rooms.keySet();
       
         try {
+        	
+        	Site site = m_siteService.getSite();
+        	Set<String> keysF = site.floors.keySet();
+        	
+        	for (String keyF : keysF) {
+        		
+	            out.print("<li><form name='admin' method='post' action=''>" +
+	                    "<input type='submit' class='buttonSensorEdit' name='" + btn.FLOOR.toString() + "' value='" + keyF + "'>" +
+	                    "</form>");       
+	            
+	            out.println("<ul>");
+        	
+		        Floor floor = (Floor) m_siteService.getThing2("floors/" + keyF);
+		        Set<String> keysR = floor.rooms.keySet();        	
+		
+		        for (String keyR : keysR) {            
+		        	
+		            out.print("<li><form name='admin' method='post' action=''>" +
+		                    "<input type='submit' class='buttonSensorEdit' name='" + btn.ROOM.toString() + "' value='" + keyR + "'>" +
+		                    "</form>");           	
+		        	
+		            out.println("<ul>");
+		
+		        	Room room = (Room) m_siteService.getThing2("floors/" + keyF + "/rooms/"+ keyR);
+		            Set<String> keysS = room.sensors.keySet();
+		
+		            Temperature temp;
+		            Humidity 	hum;
+		            
+		            for (String keyS : keysS) {
+		
+		                temp = m_siteService.getSensorTemperature("floors/" + keyF + "/rooms/" + keyR + "/sensors/" + keyS);
+		                hum = m_siteService.getSensorHumidity("floors/" + keyF + "/rooms/" + keyR + "/sensors/" + keyS);
+		                
+		                out.print("<li><form name='admin' method='post' action=''>" +
+		                        "<input type='submit' class='buttonSensorEdit' name='" + btn.SENSOR.toString() + "' value='" + keyS + "'>" +
+		                        "</form>");                    
+		                
+		                out.println("<ul>");
+		                out.println("<li><info2>Temperature.</info2>" + "<info>" + temp.getCelsiusString() + " C" + "; </info></li>");                    
+		                out.println("<li><info2>Humidity:</info2>" + "<info>" + hum.getString() + " %" + "; </info></li>");
+		                                    
+		                out.println("</ul>");
+		                out.println("</li>");
+		            }   
+		                    
+		           out.println("</ul>"); 
+		           out.println("</li>");
+		        }
+		        
+		        out.println("</ul>"); 
+		        out.println("</li>");		        
+	        
+        	}
+        
+        } catch (Exception ex) {
+        	System.out.println("\n\nException:" + ex);
+        }
+        
+      	out.println("</ul>");
+        out.println("</li></ul>");        
+                
+        out.print("<br>");
+        
+        html_detail(out);              
+    }      
+    
+    protected void getHouseData2_Z(PrintWriter out) {
+
+    	out.println("<ul>");
+    	
+    	//System.out.println("\n\n--->>>");
+    	
+        //out.println("<li>Site:" + m_siteService.getId() + "; Number rooms: " + m_siteService.getNumberRooms());
+    	//out.println("<li><info2>Site:</info2>" + "<info>" + m_siteService.getId() + "</info>");
+   // 	if (!edit){
+    		out.print("<li><form name='admin' method='post' action=''>" +
+    				"<input type='submit' class='buttonSensorEdit' name='" + btn.SITE.toString() + "' value='" + m_siteService.getId() + "'>" +
+    				"</form>");
+    	/*}
+    	else{
+          	
+            out.print("<li><form name=\"input\" method=\"post\">\n" +
+                    "Site: <input type=\"text\" name=\"siteID\" value=\"" + m_siteService.getId() + "\">" +
+                    "<input type=\"submit\" value=\"Submit\">");       		
+    	}
+    	*/    	
+        out.println("<ul>");
+      //  out.println("<br/>Number rooms is: " + m_siteService.getNumberRooms());
+
+        //TreeMap<String, Room> rooms = m_siteService.getRooms();
+        //Site site = m_siteService.getSite();
+        //Set<String> keys = site.rooms.keySet();
+      
+        try {
 	        Floor floor = (Floor) m_siteService.getThing2("floors/Floor1");
 	        Set<String> keys = floor.rooms.keySet();        	
 	
@@ -586,7 +681,7 @@ public class AdminServlet extends HttpServlet{
         out.print("<br>");
         
         html_detail(out);              
-    }      
+    }         
     
     
     void html_detail (PrintWriter out){
