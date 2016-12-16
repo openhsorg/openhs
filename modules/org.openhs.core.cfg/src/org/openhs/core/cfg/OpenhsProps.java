@@ -210,7 +210,11 @@ public class OpenhsProps {
         decoder.close();
         
         return o;      
-    }          
+    }  
+    
+    public Properties getProperties () {
+    	return this.m_properties;
+    }
 
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");

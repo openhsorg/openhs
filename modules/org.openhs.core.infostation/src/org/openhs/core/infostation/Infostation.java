@@ -2,6 +2,7 @@ package org.openhs.core.infostation;
 
 import java.util.ArrayList;
 
+import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.infostation.servlet.InfostationServlet;
 import org.openhs.core.meteostation.Meteostation;
@@ -18,6 +19,7 @@ public class Infostation {
 	public ISiteService m_siteService = null;  
 	private Meteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
+	public OpenhsProps m_openhsProps = null;
         
     public void activate() {
     	msg.println("org.openhs.core.infostation: activate"); 	  
@@ -67,4 +69,14 @@ public class Infostation {
               ser = null;
           }
       }        
+      
+      public void setService(OpenhsProps ser) {
+          m_openhsProps = ser;
+      }
+
+      public void unsetService(OpenhsProps ser) {
+          if (m_openhsProps == ser) {
+              ser = null;
+          }
+      }         
 }

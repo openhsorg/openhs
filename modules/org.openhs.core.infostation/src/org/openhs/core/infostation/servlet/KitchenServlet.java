@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -288,11 +289,15 @@ public class KitchenServlet extends HttpServlet {
 	    protected JSONObject getDataToJSON_Data() {
 	    	
 			JSONObject json = new JSONObject();
-
+												
+			Properties prop = this.m_infostation.m_openhsProps.getProperties();
+			
+			String floorPath = prop.getProperty("floorPath_1");
+			
 			int n = 0;
 			
 			try {
-				n = this.m_infostation.m_siteService.getNumberThings("floors/Floor1/rooms");
+				n = this.m_infostation.m_siteService.getNumberThings(floorPath + "/rooms");
 			} catch (Exception ex) {	
 				//System.out.print("\nEXCPT: " + ex);
 			}
