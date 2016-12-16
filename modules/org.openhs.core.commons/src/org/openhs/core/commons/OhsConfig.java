@@ -1,33 +1,18 @@
 package org.openhs.core.commons;
 
+import java.util.ArrayList;
+
 public class OhsConfig {
 	
-	private final String OHS_DIR = "openhs";
-	private final String OHS_PROPS = "openhs.properties";
-	private final String OHS_XML_DATASRUCT = "ohs_data.xml";
-	private final String OHS_XML_CONFIG = "ohs_config.xml";
-
-	public String m_openhsDir;	
-	public String m_openhsPropsFile;
-	public String m_openhsDataFile;
-	public String m_openhsConfigFile;
-
+	public int c = 22;
 	
-	/*
-	 * Disk operations
-	 */
-	public boolean enableFiles; //enables saving & loading XML files
+	public ArrayList <String> adr = new ArrayList <String> ();
 
-	public OhsConfig () {
-
-    	String currentUsersHomeDir = System.getProperty("user.home");
-        String m_fileSep = System.getProperty( "file.separator"); 
-        m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;  
-        m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
-        m_openhsDataFile = m_openhsDir + m_fileSep + OHS_XML_DATASRUCT;
-        m_openhsConfigFile = m_openhsDir + m_fileSep + OHS_XML_CONFIG;
-        
-        enableFiles = true;
-	}	
+   public OhsConfig () {
+	   adr.add(new String ("lala"));
+	   adr.add(new String ("lala2"));
+	   adr.add(new String ("lala3"));
+	   adr.add(new String ("lala4"));
+   }
 	
 }
