@@ -797,7 +797,7 @@ public class AdminServlet extends HttpServlet{
     		    		
     		out.print("<option value='" + item + "'" + selected + ">" + item + "</option>\n");
     	}
-    	out.print("</select>\n");    	
+    	out.print("</select>\n");    	//
      	
      	//Out temp
    	    out.print("<br>");
