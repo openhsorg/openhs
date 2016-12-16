@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.infostation.servlet.InfostationServlet;
 import org.openhs.core.meteostation.Meteostation;
+import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
 
 
@@ -14,6 +15,7 @@ public class Infostation {
 	
 	InfostationServlet	m_servlet = null;
 	
+	public ISiteService m_siteService = null;  
 	private Meteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
         
@@ -55,4 +57,14 @@ public class Infostation {
       public Meteostation getMeteostation() {
     	  return m_meteo;
       }
+      
+      public void setService(ISiteService ser) {
+          m_siteService = ser;
+      }
+
+      public void unsetService(ISiteService ser) {
+          if (m_siteService == ser) {
+              ser = null;
+          }
+      }        
 }

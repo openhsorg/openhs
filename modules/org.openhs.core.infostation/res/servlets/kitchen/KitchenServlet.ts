@@ -264,6 +264,7 @@ private createStaticImageCanvas() {
         //Other objects...
         
         this.forecastScreen.getData(url);
+        this.floor.getData(url);
         
     
     }
@@ -1097,6 +1098,10 @@ class Floor {
     
     private imgFloorLoaded: boolean = false;
     
+    private numRooms: number = 0;
+    
+    private txtNumRooms:  Text;
+    
     constructor (canvas: HTMLCanvasElement) {
         
         this.ctx = canvas.getContext("2d");
@@ -1112,7 +1117,13 @@ class Floor {
      //   }          
         
         this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));               
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));       
+        
+        this.txtNumRooms = new Text (this.ctx, 0, 0, 250, 100);
+        this.txtNumRooms.textAlign = "left";
+        this.txtNumRooms.textBaseline = "middle";
+        this.txtNumRooms.fontSize = 40;
+                
     }     
     
     public paint(weatherToday : WeatherData) {
@@ -1131,7 +1142,17 @@ class Floor {
             
         //Inside mark
         this.TempMarks[1].setSize(280, 200, 80, 40);
-        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");       
+        
+         //Number rooms
+        this.txtNumRooms.x = this.width - 10;
+        this.txtNumRooms.y = this.height - 10;
+        this.txtNumRooms.width = this.width * 0.4;
+        this.txtNumRooms.textAlign = "right";
+        this.txtNumRooms.fontSize = 26;
+        this.txtNumRooms.textBaseline = "bottom";
+        this.txtNumRooms.paint("Number Rooms:" + this.numRooms);             
+        
     }
     
     public clickedTempMark (clx:number, cly:number) {
@@ -1150,6 +1171,17 @@ class Floor {
                 
         return cId;
     }    
+    
+    public getData(url: string) {   
+     
+        var id: string = "floor1";
+        
+        var data = getAjax(url, id);
+                
+        if (data != null) {
+            this.numRooms = parseFloat(data['nRooms']);
+            }                     
+    }      
     
 }
     
@@ -1217,7 +1249,9 @@ class Room {
         //alert("hello: "+cId);
                 
         return cId;
-    }        
+    }       
+    
+      
 }    
  
 //Function to get the mouse position

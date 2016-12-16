@@ -132,7 +132,24 @@ public class KitchenServlet extends HttpServlet {
 		    	        
 	    			out.flush();
 	    			out.close();	    			
-		    	} 	 	    		
+	    		} else if (value.toString().equals("floor1")) {		    		
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Data();
+
+	    			System.out.println("\n\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	    			
+		    	}	 	    		
 	    	}
 	    	else {
 	    		
@@ -161,8 +178,7 @@ public class KitchenServlet extends HttpServlet {
 	    		System.out.println("Value:=" + value.toString());
 	    		
 	    		if (value.toString().equals("next")) {
-	    			
-	    				    			
+	    				    				    			
 	    		}	    		
 	    	}
 	    	
@@ -235,7 +251,6 @@ public class KitchenServlet extends HttpServlet {
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
 			return json;
-
 	    }
 	    
 	    protected JSONObject getDataToJSON_Day(int nDay) {
@@ -269,4 +284,21 @@ public class KitchenServlet extends HttpServlet {
 						
 			return json;
 	    }
+	    
+	    protected JSONObject getDataToJSON_Data() {
+	    	
+			JSONObject json = new JSONObject();
+
+			int n = 0;
+			
+			try {
+				n = this.m_infostation.m_siteService.getNumberThings("floors/Floor1/rooms");
+			} catch (Exception ex) {	
+				//System.out.print("\nEXCPT: " + ex);
+			}
+	            						
+		    json.put("nRooms", String.format("%d",n));
+						
+			return json;
+	    }	    
 }

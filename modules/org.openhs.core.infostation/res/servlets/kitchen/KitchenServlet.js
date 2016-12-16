@@ -194,6 +194,7 @@ var KitchenInfoStation;
             }
             //Other objects...
             this.forecastScreen.getData(url);
+            this.floor.getData(url);
         };
         /*
     //Get data from server...
@@ -838,6 +839,7 @@ var KitchenInfoStation;
             this.TempMarks = new Array();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
+            this.numRooms = 0;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
             this.height = canvas.height;
@@ -848,6 +850,10 @@ var KitchenInfoStation;
             //   }          
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
+            this.txtNumRooms = new Text(this.ctx, 0, 0, 250, 100);
+            this.txtNumRooms.textAlign = "left";
+            this.txtNumRooms.textBaseline = "middle";
+            this.txtNumRooms.fontSize = 40;
         }
         Floor.prototype.paint = function (weatherToday) {
             var ctx = this.ctx;
@@ -863,6 +869,14 @@ var KitchenInfoStation;
             //Inside mark
             this.TempMarks[1].setSize(280, 200, 80, 40);
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
+            //Number rooms
+            this.txtNumRooms.x = this.width - 10;
+            this.txtNumRooms.y = this.height - 10;
+            this.txtNumRooms.width = this.width * 0.4;
+            this.txtNumRooms.textAlign = "right";
+            this.txtNumRooms.fontSize = 26;
+            this.txtNumRooms.textBaseline = "bottom";
+            this.txtNumRooms.paint("Number Rooms:" + this.numRooms);
         };
         Floor.prototype.clickedTempMark = function (clx, cly) {
             var cId = -1;
@@ -874,6 +888,13 @@ var KitchenInfoStation;
                 }
             }
             return cId;
+        };
+        Floor.prototype.getData = function (url) {
+            var id = "floor1";
+            var data = getAjax(url, id);
+            if (data != null) {
+                this.numRooms = parseFloat(data['nRooms']);
+            }
         };
         return Floor;
     }());

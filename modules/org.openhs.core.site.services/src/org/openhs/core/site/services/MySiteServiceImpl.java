@@ -72,12 +72,14 @@ public class MySiteServiceImpl implements ISiteService {
     	
 		Object item = getThing(keyPath);
 		if (item == null) {
-			throw new SiteException("Bad object cpecifications");
+			throw new SiteException("Bad object specifications");
 		}
 		
 		if (item instanceof TreeMap) {
 			
-	    	String key = keyPath.substring(keyPath.lastIndexOf("/") + 1, keyPath.length() - 1);
+	    	String key = keyPath.substring(keyPath.lastIndexOf("/") + 1, keyPath.length());
+	    	
+	    	//System.out.println("\n\nXXX: " + key + " : " + keyPath);
 	    				
 			if (key.equals("floors")) {
 				TreeMap<String, Floor> floors = (TreeMap<String, Floor>) item;
@@ -89,11 +91,11 @@ public class MySiteServiceImpl implements ISiteService {
 				TreeMap<String, Sensor> sensors = (TreeMap<String, Sensor>) item;
 				return sensors.size();				
 			} else {
-				throw new SiteException("Bad key specifications");
+				throw new SiteException("Bad key specifications -> doesn't exists");
 			}
 			
 		} else {
-			throw new SiteException("Bad object cpecifications");
+			throw new SiteException("Bad object specifications");
 		}
 		
 	}
