@@ -43,5 +43,9 @@ public interface ISiteService {
 //	boolean setSensorKey (String oldKey, String newKey);	
 	
 	public void buildHouse(int rooms);
+	
+	public void LoadXML (String path);
+	
+	void SaveXML (String path);
 
 }
