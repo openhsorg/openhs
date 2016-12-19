@@ -170,8 +170,8 @@ public class OpenhsProps {
 					
 					try {
 						System.out.println("\n++> LOADING XML...");	 
-						
-						LoadXML (m_openhsDataFile);
+
+						m_siteService.LoadXML(m_openhsDataFile);
 					}
 					catch (Exception ex) {
 				
@@ -183,8 +183,7 @@ public class OpenhsProps {
 		    		m_siteService.buildHouse(6); //build some house....
 		        	        	
 			        try {		        	
-			        	//xmlSave (m_openhsDataFile, m_siteService.getSite());
-			        	SaveXML(m_openhsDataFile);	 
+			        	m_siteService.SaveXML(m_openhsDataFile);
 			        }
 			        catch (Exception ex) {
 			        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
@@ -194,68 +193,12 @@ public class OpenhsProps {
 			        	System.out.println("Site XML not found ---> Created basic config and saved: " + m_openhsDataFile); 
 			        }
 		    	}  			   
-			   	        
-    		 //  SaveXML(m_openhsConfigFile);	        
-	        
-    		 //  LoadXML (m_openhsConfigFile);
     	   } else {
     		   
     		    System.out.println("\n++> File disabled -> I create some house :)");	 
     		   
            		m_siteService.buildHouse(6); //build some house....
-           }
-    	
-	        /*
-        //Load properties...
-        String loadXml = m_properties.getProperty(OHS_XML_LOAD_ENABLE);
-        String fileName = m_properties.getProperty(OHS_XML_FILE_NAME);
-        String fileCfgName = m_properties.getProperty(OHS_CONFIG_FILE);
-        
-        m_openhsConfigFile = m_openhsDir + System.getProperty( "file.separator") + fileCfgName;
-        
-      //  CreateXML(m_openhsConfigFile);
-                        
-        if (loadXml.equals("yes") && !(fileName.equals(""))) {
-        	
-        	m_openhsDataFile = m_openhsDir + System.getProperty( "file.separator") + fileName;
-        	
-        	
-        	System.out.println("\n\n------> Data structure loading from XML...: " + m_openhsDataFile);
-        	System.out.println("------> Config...: " + m_openhsConfigFile);
-        	
-	        File xml = new File(m_openhsDataFile);
-	                       
-	    	if (xml.exists()) {
-	    		
-	    		try {
-	    			Site siteTmp = (Site) xmlLoad (m_openhsDataFile);
-	    			
-	    			m_siteService.setSite(siteTmp);
-	    		}
-	    		catch (Exception ex) {
-	
-	    		}
-	    	}
-	    	else {
-	    		
-	    		m_siteService.buildHouse(6); //build some house....
-	        	        	
-		        try {		        	
-		        	xmlSave (m_openhsDataFile, m_siteService.getSite());	
-		        }
-		        catch (Exception ex) {
-		        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
-		        }
-		        finally
-		        {
-		        	System.out.println("Site XML not found ---> Created basic config and saved: " + m_openhsDataFile); 
-		        }
-	    	}       
-	    	
-        } else {
-        	m_siteService.buildHouse(6); //build some house....
-        }
-        */
+           }    
     }
     /*
     public void xmlSave (String path, Object o) throws Exception {
@@ -286,244 +229,6 @@ public class OpenhsProps {
     	return this.m_properties;
     }
     
-    public void SaveXML (String path) {
-    	
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder =  dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.newDocument();
-            
-            /*
-            
-            // root element
-            Element rootElement = doc.createElement("site");
-            doc.appendChild(rootElement);
-
-            //  floors element
-            Element floor = doc.createElement("floor");
-            rootElement.appendChild(floor);
-
-            // setting attribute to element
-            Attr attr = doc.createAttribute("name");
-            attr.setValue("Floor1");
-            floor.setAttributeNode(attr);
-
-            // room element
-            Element room = doc.createElement("room");
-            floor.appendChild(room);
-            
-            Attr attrRoom = doc.createAttribute("name");
-            attrRoom.setValue("Room1");
-            room.setAttributeNode(attrRoom);
-            
-            // sensor element
-            Element sensor = doc.createElement("sensor");
-            room.appendChild(sensor);
-            
-            Attr attrSensor = doc.createAttribute("name");
-            attrSensor.setValue("Sensor1");
-            sensor.setAttributeNode(attrSensor);  
-            
-            sensor.appendChild(doc.createTextNode("Nejaka blbost"));
-            */
-
-            
-            // root element
-            Element rootElement = doc.createElement("site");
-            doc.appendChild(rootElement);
-            
-        	Site site = m_siteService.getSite();
-        	Set<String> keysF = site.floors.keySet();
-        	
-        	for (String keyF : keysF) {        		
-        		
-                //  floors element
-                Element floor = doc.createElement("floor");
-                rootElement.appendChild(floor);      
-                
-                // setting attribute to element
-                Attr attr = doc.createAttribute("name");
-                attr.setValue(keyF);
-                floor.setAttributeNode(attr);      
-                
-		        Floor m_floor = (Floor) m_siteService.getThing("floors/" + keyF);
-		        Set<String> keysR = m_floor.rooms.keySet();   
-		        
-		        for (String keyR : keysR) {      
-		        	
-	                //  room element
-	                Element room = doc.createElement("room");
-	                floor.appendChild(room);      
-	                
-	                // setting attribute to element
-	                Attr attrR = doc.createAttribute("name");
-	                attrR.setValue(keyR);
-	                room.setAttributeNode(attrR);     		
-	                
-		        	Room m_room = (Room) m_siteService.getThing("floors/" + keyF + "/rooms/"+ keyR);
-		            Set<String> keysS = m_room.sensors.keySet();	 
-		            
-		            for (String keyS : keysS) {
-		                //  sensor element
-		                Element sensor = doc.createElement("sensor");
-		                room.appendChild(sensor);      
-		                
-		                // setting attribute to element
-		                Attr attrS = doc.createAttribute("name");
-		                attrS.setValue(keyS);
-		                sensor.setAttributeNode(attrS);     			            			            	
-		            }
-		        }        		
-        	}            
-
-            // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(path));
-            transformer.transform(source, result);
-            // Output to console for testing
-          //  StreamResult consoleResult = new StreamResult(System.out);
-            //transformer.transform(source, consoleResult);
-            
-         } catch (Exception e) {
-            e.printStackTrace();
-         }    	
-    }
-    
-  public void LoadXML (String path) {
-    	
-        try {
-        	File inputFile = new File(path);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder =  dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFile);
-            doc.getDocumentElement().normalize();
-            
-            NodeList listFloor = doc.getElementsByTagName("floor");
-            
-            for (int i1 = 0; i1 < listFloor.getLength(); i1++) {
-            	Node nFloor = listFloor.item(i1);
-            	System.out.println("\n+>Current Element:" + nFloor.getNodeName());
-            	
-            	if (nFloor.getNodeType() == Node.ELEMENT_NODE) {
-            		
-            		 Element eFloor = (Element) nFloor;
-            		 
-            		 String keyFloor = eFloor.getAttribute("name");
-            		 
-            		 //System.out.println("\n+>" + keyFloor);
-            		 
-            		 //Create Floor
-            		 m_siteService.addThing ("floors/" + keyFloor);
-            		 
-            		 NodeList listRoom = eFloor.getElementsByTagName("room");
-            		 
-            		 for (int i2 = 0; i2 < listRoom.getLength(); i2++){
-            			 Node nRoom = listRoom.item(i2);
-            			 
-            			 if (nRoom.getNodeType() == Node.ELEMENT_NODE) {
-            			 
-	            			 Element eRoom = (Element) nRoom;
-	            			 
-	            			 String keyRoom = eRoom.getAttribute("name");
-	            			 
-	            			 //System.out.println("\n+>" + keyRoom);
-	            			 
-	                		 //Create Room
-	                		 m_siteService.addThing ("floors/" + keyFloor + "/rooms/" + keyRoom);	            			 
-	            			 
-	                		 NodeList listSensor = eRoom.getElementsByTagName("sensor");
-	                		 
-	                		 for (int i3 = 0; i3 < listSensor.getLength(); i3++){	                			 
-	                			 Node nSensor = listSensor.item(i3);
-	                			 
-	                			 if (nSensor.getNodeType() == Node.ELEMENT_NODE) {
-	                				 
-	                				 Element eSensor = (Element) nSensor;
-	                				 
-	                				 String keySensor = eSensor.getAttribute("name");
-	                				 
-	                				 //System.out.println("\n++>" + keySensor);	 
-	                				 
-	    	                		 //Create Sensor
-	    	                		 m_siteService.addThing ("floors/" + keyFloor + "/rooms/" + keyRoom + "/sensors/" + keySensor);		                				 
-	                			 }	                			 	                			 
-	                		 }	                		                 		              		 	                		 	                		 
-            			 }            			             			            			             			 
-            		 }            			 
-            	}            	
-            }
-            	
-            
-            /*
-            
-            // root element
-            Element rootElement = doc.createElement("site");
-            doc.appendChild(rootElement);
-            
-        	Site site = m_siteService.getSite();
-        	Set<String> keysF = site.floors.keySet();
-        	
-        	for (String keyF : keysF) {        		
-        		
-                //  floors element
-                Element floor = doc.createElement("floor");
-                rootElement.appendChild(floor);      
-                
-                // setting attribute to element
-                Attr attr = doc.createAttribute("name");
-                attr.setValue(keyF);
-                floor.setAttributeNode(attr);      
-                
-		        Floor m_floor = (Floor) m_siteService.getThing("floors/" + keyF);
-		        Set<String> keysR = m_floor.rooms.keySet();   
-		        
-		        for (String keyR : keysR) {      
-		        	
-	                //  room element
-	                Element room = doc.createElement("room");
-	                floor.appendChild(room);      
-	                
-	                // setting attribute to element
-	                Attr attrR = doc.createAttribute("name");
-	                attrR.setValue(keyR);
-	                room.setAttributeNode(attrR);     		
-	                
-		        	Room m_room = (Room) m_siteService.getThing("floors/" + keyF + "/rooms/"+ keyR);
-		            Set<String> keysS = m_room.sensors.keySet();	 
-		            
-		            for (String keyS : keysS) {
-		                //  sensor element
-		                Element sensor = doc.createElement("sensor");
-		                room.appendChild(sensor);      
-		                
-		                // setting attribute to element
-		                Attr attrS = doc.createAttribute("name");
-		                attrS.setValue(keyS);
-		                sensor.setAttributeNode(attrS);     			            			            	
-		            }
-		        }        		
-        	}            
-*/
-            /*
-            // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(path));
-            transformer.transform(source, result);
-            // Output to console for testing
-            StreamResult consoleResult = new StreamResult(System.out);
-            transformer.transform(source, consoleResult);
-            */
-            
-         } catch (Exception e) {
-            e.printStackTrace();
-         }    	
-    }    
-
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();

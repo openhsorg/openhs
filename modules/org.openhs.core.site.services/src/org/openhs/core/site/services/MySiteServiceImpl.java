@@ -10,9 +10,23 @@ package org.openhs.core.site.services;
 
 import java.util.Set;
 import java.util.TreeMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import java.io.*;
 
 import org.openhs.core.site.data.ISiteService;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.TextOutput;
@@ -408,4 +422,242 @@ public class MySiteServiceImpl implements ISiteService {
     	return true;
     }    
 */
+    
+    public void LoadXML (String path) {
+       	
+        try {
+        	File inputFile = new File(path);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder =  dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFile);
+            doc.getDocumentElement().normalize();
+            
+            NodeList listFloor = doc.getElementsByTagName("floor");
+            
+            for (int i1 = 0; i1 < listFloor.getLength(); i1++) {
+            	Node nFloor = listFloor.item(i1);
+            	System.out.println("\n+>Current Element:" + nFloor.getNodeName());
+            	
+            	if (nFloor.getNodeType() == Node.ELEMENT_NODE) {
+            		
+            		 Element eFloor = (Element) nFloor;
+            		 
+            		 String keyFloor = eFloor.getAttribute("name");
+            		 
+            		 //System.out.println("\n+>" + keyFloor);
+            		 
+            		 //Create Floor
+            		 addThing ("floors/" + keyFloor);
+            		 
+            		 NodeList listRoom = eFloor.getElementsByTagName("room");
+            		 
+            		 for (int i2 = 0; i2 < listRoom.getLength(); i2++){
+            			 Node nRoom = listRoom.item(i2);
+            			 
+            			 if (nRoom.getNodeType() == Node.ELEMENT_NODE) {
+            			 
+	            			 Element eRoom = (Element) nRoom;
+	            			 
+	            			 String keyRoom = eRoom.getAttribute("name");
+	            			 
+	            			 //System.out.println("\n+>" + keyRoom);
+	            			 
+	                		 //Create Room
+	                		 addThing ("floors/" + keyFloor + "/rooms/" + keyRoom);	            			 
+	            			 
+	                		 NodeList listSensor = eRoom.getElementsByTagName("sensor");
+	                		 
+	                		 for (int i3 = 0; i3 < listSensor.getLength(); i3++){	                			 
+	                			 Node nSensor = listSensor.item(i3);
+	                			 
+	                			 if (nSensor.getNodeType() == Node.ELEMENT_NODE) {
+	                				 
+	                				 Element eSensor = (Element) nSensor;
+	                				 
+	                				 String keySensor = eSensor.getAttribute("name");
+	                				 
+	                				 //System.out.println("\n++>" + keySensor);	 
+	                				 
+	    	                		 //Create Sensor
+	    	                		 addThing ("floors/" + keyFloor + "/rooms/" + keyRoom + "/sensors/" + keySensor);		                				 
+	                			 }	                			 	                			 
+	                		 }	                		                 		              		 	                		 	                		 
+            			 }            			             			            			             			 
+            		 }            			 
+            	}            	
+            }
+            	
+            
+            /*
+            
+            // root element
+            Element rootElement = doc.createElement("site");
+            doc.appendChild(rootElement);
+            
+        	Site site = m_siteService.getSite();
+        	Set<String> keysF = site.floors.keySet();
+        	
+        	for (String keyF : keysF) {        		
+        		
+                //  floors element
+                Element floor = doc.createElement("floor");
+                rootElement.appendChild(floor);      
+                
+                // setting attribute to element
+                Attr attr = doc.createAttribute("name");
+                attr.setValue(keyF);
+                floor.setAttributeNode(attr);      
+                
+		        Floor m_floor = (Floor) m_siteService.getThing("floors/" + keyF);
+		        Set<String> keysR = m_floor.rooms.keySet();   
+		        
+		        for (String keyR : keysR) {      
+		        	
+	                //  room element
+	                Element room = doc.createElement("room");
+	                floor.appendChild(room);      
+	                
+	                // setting attribute to element
+	                Attr attrR = doc.createAttribute("name");
+	                attrR.setValue(keyR);
+	                room.setAttributeNode(attrR);     		
+	                
+		        	Room m_room = (Room) m_siteService.getThing("floors/" + keyF + "/rooms/"+ keyR);
+		            Set<String> keysS = m_room.sensors.keySet();	 
+		            
+		            for (String keyS : keysS) {
+		                //  sensor element
+		                Element sensor = doc.createElement("sensor");
+		                room.appendChild(sensor);      
+		                
+		                // setting attribute to element
+		                Attr attrS = doc.createAttribute("name");
+		                attrS.setValue(keyS);
+		                sensor.setAttributeNode(attrS);     			            			            	
+		            }
+		        }        		
+        	}            
+*/
+            /*
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(path));
+            transformer.transform(source, result);
+            // Output to console for testing
+            StreamResult consoleResult = new StreamResult(System.out);
+            transformer.transform(source, consoleResult);
+            */
+            
+         } catch (Exception e) {
+            e.printStackTrace();
+         }      	
+    }
+    
+    public void SaveXML (String path) {
+    	
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder =  dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.newDocument();
+            
+            /*
+            
+            // root element
+            Element rootElement = doc.createElement("site");
+            doc.appendChild(rootElement);
+
+            //  floors element
+            Element floor = doc.createElement("floor");
+            rootElement.appendChild(floor);
+
+            // setting attribute to element
+            Attr attr = doc.createAttribute("name");
+            attr.setValue("Floor1");
+            floor.setAttributeNode(attr);
+
+            // room element
+            Element room = doc.createElement("room");
+            floor.appendChild(room);
+            
+            Attr attrRoom = doc.createAttribute("name");
+            attrRoom.setValue("Room1");
+            room.setAttributeNode(attrRoom);
+            
+            // sensor element
+            Element sensor = doc.createElement("sensor");
+            room.appendChild(sensor);
+            
+            Attr attrSensor = doc.createAttribute("name");
+            attrSensor.setValue("Sensor1");
+            sensor.setAttributeNode(attrSensor);  
+            
+            sensor.appendChild(doc.createTextNode("Nejaka blbost"));
+            */
+
+            
+            // root element
+            Element rootElement = doc.createElement("site");
+            doc.appendChild(rootElement);
+            
+        	Site site = getSite();
+        	Set<String> keysF = site.floors.keySet();
+        	
+        	for (String keyF : keysF) {        		
+        		
+                //  floors element
+                Element floor = doc.createElement("floor");
+                rootElement.appendChild(floor);      
+                
+                // setting attribute to element
+                Attr attr = doc.createAttribute("name");
+                attr.setValue(keyF);
+                floor.setAttributeNode(attr);      
+                
+		        Floor m_floor = (Floor) getThing("floors/" + keyF);
+		        Set<String> keysR = m_floor.rooms.keySet();   
+		        
+		        for (String keyR : keysR) {      
+		        	
+	                //  room element
+	                Element room = doc.createElement("room");
+	                floor.appendChild(room);      
+	                
+	                // setting attribute to element
+	                Attr attrR = doc.createAttribute("name");
+	                attrR.setValue(keyR);
+	                room.setAttributeNode(attrR);     		
+	                
+		        	Room m_room = (Room) getThing("floors/" + keyF + "/rooms/"+ keyR);
+		            Set<String> keysS = m_room.sensors.keySet();	 
+		            
+		            for (String keyS : keysS) {
+		                //  sensor element
+		                Element sensor = doc.createElement("sensor");
+		                room.appendChild(sensor);      
+		                
+		                // setting attribute to element
+		                Attr attrS = doc.createAttribute("name");
+		                attrS.setValue(keyS);
+		                sensor.setAttributeNode(attrS);     			            			            	
+		            }
+		        }        		
+        	}            
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(path));
+            transformer.transform(source, result);
+            // Output to console for testing
+          //  StreamResult consoleResult = new StreamResult(System.out);
+            //transformer.transform(source, consoleResult);
+            
+         } catch (Exception e) {
+            e.printStackTrace();
+         }       	
+    }
 }
