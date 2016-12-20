@@ -5,23 +5,26 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessage;
+import org.openhs.comm.api.Message;
 import org.openhs.comm.api.IMessageHandler;
 import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.site.data.ISiteService;
 
+import org.json.JSONObject;
+import org.json.*;
+
 public class Dataupdate implements IMessageHandler, Runnable {
 	
-	private BlockingQueue<IMessage> m_queue = null;
+	private BlockingQueue<Message> m_queue = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     private ISiteService m_siteService = null;
     private int m_log_num = 0; //TODO temporary - use slf4j instead
 	
 	public Dataupdate() {
-		m_queue = new LinkedBlockingQueue<IMessage>();
+		m_queue = new LinkedBlockingQueue<Message>();
 	}
 	
 	public void activate () {
@@ -61,7 +64,30 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	System.out.println("org.openhs.core.dataupdate: UnSet ISiteService: ");
     }
 
-    void consume(IMessage x) {
+    void consume(Message msg) {
+    	//TODO
+    	if (msg == null) {
+        	System.out.println("no msg");
+    	}
+    	else {
+    		if(m_log_num++ < 4) {
+    			System.out.println("do soming: " + msg.getTopic() + " " + msg.getData() );
+    		}
+    		if(m_log_num == 4) {
+    			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
+    		}
+    	}
+    }
+    
+    void parse(String data) {
+    	String testTemp = "{\"Type\":\"Thermometer\",\"Addr\":0,\"Comd\":\"READ\"}";
+    	String testLedR = "{\"Type\":\"LedR\",\"Addr\":0,\"Comd\":\"PULSE\"}";
+    	JSONObject jobj = new JSONObject(data);
+    	
+    	String type = jobj.getString("Type");
+    }
+
+    void consume1(Message x) {
     	//TODO
     	if (x == null) {
         	System.out.println("no msg");
@@ -132,7 +158,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
     }
     
 	@Override
-	public void handleMessage(IMessage m, ICommService cs) {
+	public void handleMessage(Message m, ICommService cs) {
 		if(m_log_num < 4) {
 			System.out.println(cs.getName() + ": " + m);
 		}

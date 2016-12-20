@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import org.openhs.comm.api.ICommService;
 import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.IMessage;
+import org.openhs.comm.api.Message;
 import org.osgi.service.component.ComponentContext;
 
 import gnu.io.CommPort;
@@ -201,7 +201,7 @@ public class RxTxService implements ICommService{
 
 
 		@Override
-		public void sendMessage(IMessage m) {
+		public void sendMessage(Message m) {
 			// TODO Auto-generated method stub
 			
 		}

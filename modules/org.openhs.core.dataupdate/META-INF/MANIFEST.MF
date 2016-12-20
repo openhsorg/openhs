@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/component.xml
 Export-Package: org.openhs.core.dataupdate
-Import-Package: org.openhs.comm.api,
+Import-Package: org.json;version="20160810.0.0",
+ org.openhs.comm.api,
  org.openhs.core.commons,
  org.openhs.core.site.data,
  org.osgi.framework;version="1.8.0"

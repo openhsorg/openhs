@@ -10,7 +10,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessage;
+import org.openhs.comm.api.Message;
 import org.openhs.comm.api.IMessageHandler;
 import org.openhs.comm.api.SensorMessage;
 
@@ -197,7 +197,7 @@ public class IqrfService implements ICommService, Runnable {
 	}
 
 	@Override
-	public void sendMessage(IMessage m) {
+	public void sendMessage(Message m) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -231,6 +231,7 @@ public class IqrfService implements ICommService, Runnable {
 	                	);
                     double val = Double.parseDouble(strVal);
                     SensorMessage m_msg = new SensorMessage("Iqrf", "Sensor" + nodeId, val, 0.0);
+                    m_msg.setTopic("Iqrf");
 					if (m_mh != null)
 						m_mh.handleMessage(m_msg, this);
     
