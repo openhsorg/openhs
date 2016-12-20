@@ -6,4 +6,6 @@
    </service>
    <reference bind="setService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetService"/>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.meteostation.Meteostation" name="Meteostation" policy="static" unbind="unsetService"/>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.data.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.cfg.OpenhsProps" name="OpenhsProps" policy="static" unbind="unsetService"/>
 </scr:component>

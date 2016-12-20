@@ -7,14 +7,9 @@
 */
 
 package org.openhs.core.site.data;
-
-import java.util.TreeMap;
-
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
-import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
-import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 
 public interface ISiteService {		
@@ -23,34 +18,34 @@ public interface ISiteService {
 	
 	void setId (String newID);
 	
-	int getNumberRooms ();
+	Site getSite ();	
 	
-	int getNumberSensors (String roomKey);
+	public Object getThing (String keyPath) throws SiteException;
 	
-	Temperature getSensorTemperature (String keyRoom, String keySensor)  throws SiteException;	
+	public Object addThing (String keyPath) throws SiteException;
 	
-	boolean setSensorTemperature (String keyRoom, String keySensor, Temperature temp) throws SiteException;		
+	public int getNumberThings (String keyPath) throws SiteException;
 	
-	Humidity getSensorHumidity (String keyRoom, String keySensor)  throws SiteException;
+	//public boolean setThingKey (String keyPathOld, String keyNew) throws SiteException;
 	
-	boolean setSensorHumidity (String keyRoom, String keySensor, Humidity hum);		
+	Temperature getSensorTemperature (String keyPath)  throws SiteException;
 	
-	boolean addRoom (String key);
+	Humidity getSensorHumidity (String keyPath)  throws SiteException;
 	
-	boolean addSensor (String keyRoom, String keySensor);
-	
-	Sensor getSensor (String keyRoom, String keySensor)  throws SiteException;
-	
-	TreeMap<String, Room> getRooms ();
-	
-	TreeMap<String, Sensor> getSensors (String keyRoom);
+	boolean setSensorTemperature (String keyPath, Temperature temp) throws SiteException;			
+		
+	boolean setSensorHumidity (String keyPath, Humidity hum);		
 	
 	boolean setSite (Site siteIn);
 	
-	boolean setRoomKey (String oldKey, String newKey);
+//	boolean setRoomKey (String oldKey, String newKey);
 	
-	boolean setSensorKey (String oldKey, String newKey);
+//	boolean setSensorKey (String oldKey, String newKey);	
 	
-	Site getSite ();
+	public void buildHouse(int rooms);
+	
+	public void LoadXML (String path);
+	
+	void SaveXML (String path);
 
 }

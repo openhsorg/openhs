@@ -1,7 +1,6 @@
 package org.openhs.core.cfg;
 
-//***  !!!
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,47 +10,51 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.openhs.core.commons.OhsConfig;
+import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Bundle;
-import java.io.File;
-import java.util.ArrayList;
+
 
 public class OpenhsProps {
 	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(OpenhsProps.class);
-	
-	private String m_openhsDir = null;
-	private String m_openhsPropsFile = null;
-	private String m_fileSep = null;
+
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
-	
-	private final String OHS_DIR = "openhs";
-	private final String OHS_PROPS = "openhs.properties";
+    private ISiteService m_siteService = null;	
+    public OhsConfig m_config = null;    
+    
+    private final String OHS_DIR = "openhs";
+    private final String OHS_PROPS = "openhs.properties";
 	private final String OHS_COMM_COMPONENT = "commComponent";
 	private final String OHS_COMM_CONFIG_FILE = "commConfigFile";
-	
-	public OpenhsBundles m_bundles = new OpenhsBundles();
-
+	private final String OHS_XML_LOAD_ENABLE = "xmlLoadEnable";
+	private final String OHS_XML_FILE_NAME = "xmlFileName";
+		
+	public OpenhsBundles m_bundles = new OpenhsBundles();	
+	public String m_openhsPropsFile;
+    public String m_openhsDir;			 //OpenHS home directory	
+    public String m_openhsDataFile = ""; //XML wile with data structure
+    public String m_openhsConfigFile = ""; //XML wile with data structure
+    
     public OpenhsProps() {
-    	String currentUsersHomeDir = System.getProperty("user.home");
-        m_fileSep = System.getProperty( "file.separator"); 
-        m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;
-        m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
     	m_properties = new Properties();
+    	m_config = new OhsConfig ();	
+    	
+    	String currentUsersHomeDir = System.getProperty("user.home");
+        String m_fileSep = System.getProperty( "file.separator");     	    	
+    	m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;
+    	m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
     }
 
     //loading props file and distribute via ConfigAdmin
     private void loadProps()
     {
-
     	InputStream input = null;
 
     	try {
@@ -63,16 +66,16 @@ public class OpenhsProps {
     		logger.info("===================== openhs properties =====================");
     		logger.info(logger.getName());
 
-            listProps(m_properties);
-    		
+            listProps(m_properties);    		
+            
     		// get the property values for communication
     		String commComponent = m_properties.getProperty(OHS_COMM_COMPONENT);
     		String commConfigFile = m_properties.getProperty(OHS_COMM_CONFIG_FILE);
     		
-    		System.out.println("\n\n------> Starting...." + commComponent);
+    		//System.out.println("\n\n------> Starting...." + commComponent);
     	
     		// load properties from comConfigFile
-    		input = new FileInputStream(m_openhsPropsFile = m_openhsDir + m_fileSep + commConfigFile);
+    		input = new FileInputStream(m_openhsDir + System.getProperty( "file.separator") + commConfigFile);
     		Properties commProperties = new Properties();
     		commProperties.load(input);
 
@@ -116,10 +119,89 @@ public class OpenhsProps {
             }
         }
     }
+    
+    /*
+     * Loads datastructure...
+     */
+    private void loadData()
+    {    	
+    	   String loadXml = m_properties.getProperty(OHS_XML_LOAD_ENABLE);
+    	   String fileName = m_properties.getProperty(OHS_XML_FILE_NAME);
+	      // String fileCfgName = m_properties.getProperty(OHS_CONFIG_FILE);
+    	   
+    	   if (loadXml.equals("yes") && !(fileName.equals(""))) {
+    		   	        
+    		   m_openhsDataFile = m_openhsDir + System.getProperty( "file.separator") + fileName;
+    		   
+    		   File xml = new File(m_openhsDataFile);
+				
+			   if (xml.exists()) {				   
+					
+					try {
+						System.out.println("\n++> LOADING XML...");	 
 
+						m_siteService.LoadXML(m_openhsDataFile);
+					}
+					catch (Exception ex) {
+				
+					}
+				} else {
+		    		
+					System.out.println("\n++> LOADING XML... but file is not here :( -> create something");	 
+					
+		    		m_siteService.buildHouse(6); //build some house....
+		        	        	
+			        try {		        	
+			        	m_siteService.SaveXML(m_openhsDataFile);
+			        }
+			        catch (Exception ex) {
+			        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
+			        }
+			        finally
+			        {
+			        	System.out.println("Site XML not found ---> Created basic config and saved: " + m_openhsDataFile); 
+			        }
+		    	}  			   
+    	   } else {
+    		   
+    		    System.out.println("\n++> File disabled -> I create some house :)");	 
+    		   
+           		m_siteService.buildHouse(6); //build some house....
+           }    
+    }
+    /*
+    public void xmlSave (String path, Object o) throws Exception {
+    	FileOutputStream fileStream = new FileOutputStream(path);
+    	BufferedOutputStream buffStream = new BufferedOutputStream(fileStream);    	
+    	
+        XMLEncoder encoder = new XMLEncoder(buffStream);
+        
+        encoder.writeObject(o);
+        
+        encoder.close();
+    }   
+    
+    public Object xmlLoad (String path) throws Exception {
+    	FileInputStream fileStream = new FileInputStream(path);
+    	BufferedInputStream buffStream = new BufferedInputStream(fileStream);    	
+    	
+    	XMLDecoder decoder = new XMLDecoder(buffStream);
+
+        Object o = decoder.readObject();
+        
+        decoder.close();
+        
+        return o;      
+    }  
+    */
+    public Properties getProperties () {
+    	return this.m_properties;
+    }
+    
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();
+		loadData();		
     }
     
     void deactivate() {
@@ -131,11 +213,19 @@ public class OpenhsProps {
 		m_ca = ca;
     }
     
-    void unsetService(Configuration ca) {
+    void unsetService(ConfigurationAdmin ca) {
         logger.info("org.openhs.core.cfg: unsetService(ConfigurationAdmin ca)");
 		if(m_ca == ca)
 			m_ca = null;
     }
+    
+    void setService(ISiteService ser) {
+        m_siteService = ser;             
+    }
 
-   
+    void unsetService(ISiteService ser) {
+        if (m_siteService == ser) {
+            ser = null;
+        }
+    }	       
 }

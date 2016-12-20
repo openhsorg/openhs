@@ -5,4 +5,5 @@
    <service>
       <provide interface="org.openhs.core.cfg.OpenhsProps"/>
    </service>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.data.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
 </scr:component>

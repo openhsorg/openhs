@@ -3,3 +3,5 @@
 
 # maven stuff
 # target/
+
+*.class
