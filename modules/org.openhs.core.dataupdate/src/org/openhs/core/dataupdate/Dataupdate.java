@@ -2,7 +2,7 @@ package org.openhs.core.dataupdate;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -15,35 +15,37 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.Message;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.SensorMessage;
+import org.json.JSONObject;
 import org.openhs.comm.api.DeviceMapping;
+import org.openhs.comm.api.ICommService;
 import org.openhs.comm.api.IDeviceMapping;
-import org.openhs.core.commons.Floor;
+import org.openhs.comm.api.IMessageHandler;
+import org.openhs.comm.api.Message;
+import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
-import org.openhs.core.commons.Room;
-import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.site.data.ISiteService;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.json.JSONObject;
-import org.json.*;
-
 public class Dataupdate implements IMessageHandler, Runnable {
 	
+	// initialize logger
+	private Logger logger = LoggerFactory.getLogger(Dataupdate.class);
+
+	private Map<String, Object> m_properties = null;
+
 	private BlockingQueue<Message> m_queue = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     private ISiteService m_siteService = null;
     private int m_log_num = 0; //TODO temporary - use slf4j instead
-    private String m_fileMapping = null;
     
     ArrayList <IDeviceMapping> m_mapping = new ArrayList <IDeviceMapping>();
 	
@@ -51,14 +53,10 @@ public class Dataupdate implements IMessageHandler, Runnable {
 		m_queue = new LinkedBlockingQueue<Message>();		   		
 	}
 	
-	public void activate () {
+	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
 		System.out.println("org.openhs.core.dataupdate: Activated...");
 		
-		String currentUsersHomeDir = System.getProperty("user.home");
-        String m_fileSep = System.getProperty( "file.separator");     	    	
-        m_fileMapping = currentUsersHomeDir + m_fileSep + "openhs" + m_fileSep + "ohs_device_mapping.xml";		
-		
-		mapping(m_fileMapping);
+		updated(properties);
 		
 		m_myThd = new Thread(this);
 		m_myThd.start();
@@ -74,6 +72,13 @@ public class Dataupdate implements IMessageHandler, Runnable {
 		}
         System.out.println("Thread successfully stopped.");		
 		System.out.println("org.openhs.core.dataupdate: De-activated...");
+	}
+	
+	public void updated(Map<String, Object> properties) {
+		m_properties = properties;
+		String mappingFileName = (String) m_properties.get("deviceMapping");
+		String openhsHome = (String) m_properties.get("openhsHome");
+		mapping(openhsHome + mappingFileName);
 	}
 	
     public void setService(ICommService cs) {

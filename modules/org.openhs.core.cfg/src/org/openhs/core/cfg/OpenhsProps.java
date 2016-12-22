@@ -1,6 +1,5 @@
 package org.openhs.core.cfg;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,13 +10,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.openhs.core.commons.OhsConfig;
-import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 public class OpenhsProps {
 	
@@ -26,21 +22,14 @@ public class OpenhsProps {
 
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
-    private ISiteService m_siteService = null;	
     public OhsConfig m_config = null;    
     
     private final String OHS_DIR = "openhs";
     private final String OHS_PROPS = "openhs.properties";
-	private final String OHS_COMM_COMPONENT = "commComponent";
-	private final String OHS_COMM_CONFIG_FILE = "commConfigFile";
-	private final String OHS_XML_LOAD_ENABLE = "xmlLoadEnable";
-	private final String OHS_XML_FILE_NAME = "xmlFileName";
-		
+
 	public OpenhsBundles m_bundles = new OpenhsBundles();	
 	public String m_openhsPropsFile;
     public String m_openhsDir;			 //OpenHS home directory	
-    public String m_openhsDataFile = ""; //XML wile with data structure
-    public String m_openhsConfigFile = ""; //XML wile with data structure
     
     public OpenhsProps() {
     	m_properties = new Properties();
@@ -48,9 +37,39 @@ public class OpenhsProps {
     	
     	String currentUsersHomeDir = System.getProperty("user.home");
         String m_fileSep = System.getProperty( "file.separator");     	    	
-    	m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR;
-    	m_openhsPropsFile = m_openhsDir + m_fileSep + OHS_PROPS;
+    	m_openhsDir = currentUsersHomeDir + m_fileSep + OHS_DIR + m_fileSep;
+    	m_openhsPropsFile = m_openhsDir + OHS_PROPS;
     }
+
+    public void loadComponentProps(String componentNameKey, String componentPropFileKey )
+    		throws IOException {
+		// get the property values for communication
+		String componentName = m_properties.getProperty(componentNameKey);
+		String componentPropFile = m_properties.getProperty(componentPropFileKey);
+    	InputStream input = null;
+		
+		// load properties from comConfigFile
+		input = new FileInputStream(m_openhsDir + componentPropFile);
+		Properties componentProperties = new Properties();
+		componentProperties.load(input);
+		
+		Configuration config = null;
+		config = m_ca.getConfiguration(componentName);
+	
+		Dictionary<String, Object> dict = config.getProperties();
+	    if (dict == null) {
+	       dict = new Hashtable<String, Object>();
+	    }
+	    
+	    // put properties to the Dictionary
+	    for (final String name: componentProperties.stringPropertyNames())
+	        dict.put(name, componentProperties.getProperty(name));		    
+	
+        dict.put("openhsHome", m_openhsDir);		    
+
+	    // update configuration with dictionary => starts commComponent via ConfigAdmin 
+	    config.update(dict);
+	}
 
     //loading props file and distribute via ConfigAdmin
     private void loadProps()
@@ -68,32 +87,13 @@ public class OpenhsProps {
 
             listProps(m_properties);    		
             
-    		// get the property values for communication
-    		String commComponent = m_properties.getProperty(OHS_COMM_COMPONENT);
-    		String commConfigFile = m_properties.getProperty(OHS_COMM_CONFIG_FILE);
-    		
-    		//System.out.println("\n\n------> Starting...." + commComponent);
-    	
-    		// load properties from comConfigFile
-    		input = new FileInputStream(m_openhsDir + System.getProperty( "file.separator") + commConfigFile);
-    		Properties commProperties = new Properties();
-    		commProperties.load(input);
+    		// configuration of siteService
+            loadComponentProps("siteComponent", "siteConfigFile");
+    		// configuration of comm
+            loadComponentProps("commComponent", "commConfigFile");
+    		// configuration of dataUpdate
+            loadComponentProps("dataUpdateComponent", "dataUpdateConfigFile");
 
-    		Configuration config = null;
-			config = m_ca.getConfiguration(commComponent);
-		
-			Dictionary<String, Object> dict = config.getProperties();
-		    if (dict == null) {
-		       dict = new Hashtable<String, Object>();
-		    }
-		    
-		    // put properties to the Dictionary
-		    for (final String name: commProperties.stringPropertyNames())
-		        dict.put(name, commProperties.getProperty(name));		    
-		
-		    // update configuration with dictionary => starts commComponent via ConfigAdmin 
-		    config.update(dict);		    		    
-		    
     	} catch (IOException ex) {
     		ex.printStackTrace();
     	} finally {
@@ -120,80 +120,6 @@ public class OpenhsProps {
         }
     }
     
-    /*
-     * Loads datastructure...
-     */
-    private void loadData()
-    {    	
-    	   String loadXml = m_properties.getProperty(OHS_XML_LOAD_ENABLE);
-    	   String fileName = m_properties.getProperty(OHS_XML_FILE_NAME);
-	      // String fileCfgName = m_properties.getProperty(OHS_CONFIG_FILE);
-    	   
-    	   if (loadXml.equals("yes") && !(fileName.equals(""))) {
-    		   	        
-    		   m_openhsDataFile = m_openhsDir + System.getProperty( "file.separator") + fileName;
-    		   
-    		   File xml = new File(m_openhsDataFile);
-				
-			   if (xml.exists()) {				   
-					
-					try {
-						System.out.println("\n++> LOADING XML...");	 
-
-						m_siteService.LoadXML(m_openhsDataFile);
-					}
-					catch (Exception ex) {
-				
-					}
-				} else {
-		    		
-					System.out.println("\n++> LOADING XML... but file is not here :( -> create something");	 
-					
-		    		m_siteService.buildHouse(6); //build some house....
-		        	        	
-			        try {		        	
-			        	m_siteService.SaveXML(m_openhsDataFile);
-			        }
-			        catch (Exception ex) {
-			        	System.out.println("Site XML not found ---> Created basic config and ERROR saving: " + ex.toString());
-			        }
-			        finally
-			        {
-			        	System.out.println("Site XML not found ---> Created basic config and saved: " + m_openhsDataFile); 
-			        }
-		    	}  			   
-    	   } else {
-    		   
-    		    System.out.println("\n++> File disabled -> I create some house :)");	 
-    		   
-           		m_siteService.buildHouse(6); //build some house....
-           }    
-    }
-    /*
-    public void xmlSave (String path, Object o) throws Exception {
-    	FileOutputStream fileStream = new FileOutputStream(path);
-    	BufferedOutputStream buffStream = new BufferedOutputStream(fileStream);    	
-    	
-        XMLEncoder encoder = new XMLEncoder(buffStream);
-        
-        encoder.writeObject(o);
-        
-        encoder.close();
-    }   
-    
-    public Object xmlLoad (String path) throws Exception {
-    	FileInputStream fileStream = new FileInputStream(path);
-    	BufferedInputStream buffStream = new BufferedInputStream(fileStream);    	
-    	
-    	XMLDecoder decoder = new XMLDecoder(buffStream);
-
-        Object o = decoder.readObject();
-        
-        decoder.close();
-        
-        return o;      
-    }  
-    */
     public Properties getProperties () {
     	return this.m_properties;
     }
@@ -201,7 +127,6 @@ public class OpenhsProps {
     void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();
-		loadData();		
     }
     
     void deactivate() {
@@ -219,13 +144,4 @@ public class OpenhsProps {
 			m_ca = null;
     }
     
-    void setService(ISiteService ser) {
-        m_siteService = ser;             
-    }
-
-    void unsetService(ISiteService ser) {
-        if (m_siteService == ser) {
-            ser = null;
-        }
-    }	       
 }

@@ -5,7 +5,9 @@ Bundle-SymbolicName: org.openhs.core.site.services
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.openhs.core.site.data,
- org.osgi.framework;version="1.8.0"
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.component;version="1.2.2",
+ org.slf4j;version="1.7.2"
 Export-Package: org.openhs.core.site.services
 Service-Component: OSGI-INF/component.xml
 Require-Bundle: org.openhs.core.commons;bundle-version="1.0.0"
