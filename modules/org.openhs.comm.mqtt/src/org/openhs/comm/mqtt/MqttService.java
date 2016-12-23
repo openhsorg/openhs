@@ -104,13 +104,11 @@ public class MqttService implements MqttCallback, ICommService {
 
 
 		SensorMessage mes = parseMsg(topic, msg);
-
-		System.out.println("COMMAND:> device: " + mes.toString());	
 */
 		String msg = new String(message.getPayload());
 		Message mes = new Message(topic, msg);
 
-		if (msg != null) {
+		if (msg != null && m_messageHandler != null) {
 			m_messageHandler.handleMessage(mes, this);
 		}
 

@@ -15,11 +15,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.json.JSONObject;
 import org.openhs.comm.api.DeviceMapping;
 import org.openhs.comm.api.ICommService;
 import org.openhs.comm.api.IDeviceMapping;
 import org.openhs.comm.api.IMessageHandler;
+import org.openhs.comm.api.IMessageParser;
 import org.openhs.comm.api.Message;
 import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
@@ -45,6 +45,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     private ISiteService m_siteService = null;
+    private IMessageParser m_parser = null;
     private int m_log_num = 0; //TODO temporary - use slf4j instead
     
     ArrayList <IDeviceMapping> m_mapping = new ArrayList <IDeviceMapping>();
@@ -100,6 +101,16 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	System.out.println("org.openhs.core.dataupdate: UnSet ISiteService: ");
     }
 
+    public void setService(IMessageParser prs) {
+    	System.out.println("org.openhs.core.dataupdate: Set IMessageParser: ");
+    	m_parser = prs;
+    }
+
+    public void unsetService(IMessageParser prs) {
+    	System.out.println("org.openhs.core.dataupdate: UnSet IMessageParser: ");
+    	m_parser = null;
+    }
+
     void consume(Message msg) {
     	//TODO
     	if (msg == null) {
@@ -112,17 +123,23 @@ public class Dataupdate implements IMessageHandler, Runnable {
     		if(m_log_num == 4) {
     			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
+
+    		Object obj = m_parser.parseMessage(msg.getData());
+        	if (obj != null) {
+            	///System.out.println("Returned class: " + obj.getClass().getName());
+    	  		if (m_siteService != null) {
+    	  			//obj.
+    	  			// Get OHS sensor mapped to the device name
+    	  			//String thingPath = getOhsDevice(smsg.getName());
+    	  		}
+
+        	}
+        	else {
+        		System.out.println("Returned class: " + "null");
+        	}
     	}
     }
     
-    void parse(String data) {
-    	String testTemp = "{\"Type\":\"Thermometer\",\"Addr\":0,\"Comd\":\"READ\"}";
-    	String testLedR = "{\"Type\":\"LedR\",\"Addr\":0,\"Comd\":\"PULSE\"}";
-    	JSONObject jobj = new JSONObject(data);
-    	
-    	String type = jobj.getString("Type");
-    }
-
     void consume1(Message x) {
     	//TODO
     	if (x == null) {
@@ -171,7 +188,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
     @Override
 	public void run() {
 	     try {
-	       while (running) { consume(m_queue.poll(5, TimeUnit.SECONDS)); }
+	       while (running) { consume(m_queue.poll(20, TimeUnit.SECONDS)); }
 	     } catch (InterruptedException e) { 
 			// TODO Auto-generated catch block
 	     	System.out.println("no message for 5 sec");
@@ -184,11 +201,11 @@ public class Dataupdate implements IMessageHandler, Runnable {
     
 	@Override
 	public void handleMessage(Message m, ICommService cs) {
-		if(m_log_num < 4) {
-			System.out.println(cs.getName() + ": " + m);
-		}
+//		if(m_log_num < 4) {
+//			System.out.println(cs.getName() + ": " + m);
+//		}
 		try {
-			m_queue.offer(m, 100, TimeUnit.MILLISECONDS);
+			m_queue.offer(m, 200, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
