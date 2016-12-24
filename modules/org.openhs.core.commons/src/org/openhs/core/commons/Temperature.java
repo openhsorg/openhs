@@ -54,7 +54,7 @@ public class Temperature extends Value
 	
 	/*
 	 * (non-Javadoc)
-	 * @see org.openhs.core.site.data.Value#get()
+	 * @see org.openhs.core.site.api.Value#get()
 	 * This is disabled to make sure user uses getCelsius or getFarenheit methods only.
 	 */
     @Override
