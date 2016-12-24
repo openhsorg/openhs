@@ -23,6 +23,7 @@ import org.openhs.comm.api.IMessageParser;
 import org.openhs.comm.api.Message;
 import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
+import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.site.api.ISensorUpdater;
 import org.openhs.core.site.api.ISiteService;
@@ -114,11 +115,12 @@ public class Dataupdate implements IMessageHandler, Runnable {
 
     void consume(Message msg) {
     	//TODO
+    	m_log_num++; 
     	if (msg == null) {
         	System.out.println("no msg");
     	}
     	else {
-    		if(m_log_num++ < 4) {
+    		if(m_log_num < 4) {
     			System.out.println("do soming: " + msg.getTopic() + " " + msg.getData() );
     		}
     		if(m_log_num == 4) {
@@ -128,61 +130,27 @@ public class Dataupdate implements IMessageHandler, Runnable {
     		ISensorUpdater su = m_parser.parseMessage(msg.getData());
         	if (su != null) {
         		su.setPath(msg.getChannel(), msg.getTopic());
-            	System.out.println("Returned class: " + su.getClass().getName() );
-            	System.out.println("patAddr: " + su.getPathAddress());
-    	  		if (m_siteService != null) {
-    	  			// Get OHS sensor mapped to the device name
-    	  			//String thingPath = getOhsDevice(smsg.getName());
-    	  			//m_siteService.
+        		if(m_log_num < 4) System.out.println("pathAddress: " + su.getPathAddress());
+
+        		if (m_siteService != null) {
+    	  			String thingPath = getOpenhsPath(su.getPathAddress());
+    	  			if(m_log_num < 4) System.out.println("thingPath: " + thingPath);
+    	  			
+                	try {
+						Object obj = m_siteService.getThing(thingPath);
+						if (obj != null) {
+							if(m_log_num < 4) System.out.println("Returned class: " + obj.getClass().getName() );
+							
+							su.update(obj);
+						}
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
     	  		}
 
         	} else
 				System.out.println("Returned class: " + "null");
-    	}
-    }
-    
-    void consume1(Message x) {
-    	//TODO
-    	if (x == null) {
-        	System.out.println("no msg");
-    	}
-    	else {
-    		SensorMessage smsg = (SensorMessage)x;
-    		if(m_log_num++ < 4) {
-    			System.out.println("do soming: " + smsg );
-    		}
-    		if(m_log_num == 4) {
-    			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
-    		}
-    		
-    		Temperature temp = new Temperature ();
-    		temp.set(smsg.getTemp());
-    		Humidity hum = new Humidity ();
-    		hum.set(smsg.getHum());
-    		
-	  		if (m_siteService != null) {
-	  			// Get OHS sensor mapped to the device name
-	  			String thingPath = getOhsDevice(smsg.getName());
-	  			
-  				try {
-  					
-		  			if (!thingPath.equals("")) {	  					  				
-		  				  						  				
-			    		if (!this.m_siteService.setSensorTemperature(thingPath, temp)) {
-				  			System.out.println("Cannot write temp :( " + smsg.getName());
-						} 	  		
-			    	
-				  		if (!this.m_siteService.setSensorHumidity(thingPath, hum)) {
-				  			System.out.println("Cannot write temp :( " + smsg.getName());
-				  		}							  		
-		  			}
-		  			else {
-			  			System.out.println("Unknown Sensor name: " + smsg.getName());
-		  			}  					  						  			
-	  			} catch (Exception ex){
-		  			
-	  			}	  			
-	  		}
     	}
     }
     
@@ -328,7 +296,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	         }     		
 	}
 	
-	private String getOhsDevice (String device_name) {
+	private String getOpenhsPath (String device_name) {
 
 		for (IDeviceMapping map : m_mapping) {
 			DeviceMapping map2 = (DeviceMapping) map;

@@ -1,8 +1,7 @@
 package org.openhs.core.site.services;
 
-import org.openhs.core.commons.SiteException;
 import org.openhs.core.site.api.ISensorUpdater;
-import org.openhs.core.site.api.ISiteService;
+import org.openhs.core.commons.Sensor;
 
 public abstract class SensorUpdaterTemperature implements ISensorUpdater {
 	
@@ -13,8 +12,8 @@ public abstract class SensorUpdaterTemperature implements ISensorUpdater {
 	}
 	
 	@Override
-	public void update(ISiteService site) throws SiteException {
-		site.getSensorTemperature(getPathAddress()).set(m_temperature);
+	public void update(Object thing) {
+		((Sensor) thing).getTemperature().set(m_temperature);
 	}
 
 }
