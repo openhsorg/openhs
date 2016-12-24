@@ -29,7 +29,7 @@ import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TextOutput;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

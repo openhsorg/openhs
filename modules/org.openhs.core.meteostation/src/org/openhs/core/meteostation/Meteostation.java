@@ -9,12 +9,13 @@
 package org.openhs.core.meteostation;
 
 import java.util.ArrayList;
-import org.openhs.core.site.data.ISiteService;
+
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.weather.OpenhsWeather;
 
 public class Meteostation {

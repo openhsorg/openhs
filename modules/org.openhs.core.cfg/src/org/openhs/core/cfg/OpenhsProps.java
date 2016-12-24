@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.openhs.core.commons.OhsConfig;
+//import org.openhs.core.commons.OhsConfig;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class OpenhsProps {
 
 	private ConfigurationAdmin m_ca = null;
 	private Properties m_properties = null;
-    public OhsConfig m_config = null;    
+    //public OhsConfig m_config = null;    
     
     private final String OHS_DIR = "openhs";
     private final String OHS_PROPS = "openhs.properties";
@@ -33,7 +33,7 @@ public class OpenhsProps {
     
     public OpenhsProps() {
     	m_properties = new Properties();
-    	m_config = new OhsConfig ();	
+    	//m_config = new OhsConfig ();	
     	
     	String currentUsersHomeDir = System.getProperty("user.home");
         String m_fileSep = System.getProperty( "file.separator");     	    	

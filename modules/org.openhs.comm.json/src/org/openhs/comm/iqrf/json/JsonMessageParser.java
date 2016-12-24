@@ -3,6 +3,7 @@ package org.openhs.comm.iqrf.json;
 import org.json.JSONObject;
 import org.openhs.comm.api.IMessageParser;
 import org.openhs.comm.api.ObjectFactory;
+import org.openhs.core.site.api.ISensorUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +12,11 @@ public class JsonMessageParser extends ObjectFactory<JSONObject> implements IMes
 	private Logger logger = LoggerFactory.getLogger(JsonMessageParser.class);
 	
 	public JsonMessageParser() {
-		registerClass("Thermometer", JsonTemperatureSensor.class);
+		registerClass("Thermometer", JsonSensorUpdaterTemperature.class);
 	}
 
 	@Override
-	public Object parseMessage(String message) {
+	public ISensorUpdater parseMessage(String message) {
 		Object obj = null;
     	JSONObject jobj = new JSONObject(message);
     	
@@ -23,7 +24,7 @@ public class JsonMessageParser extends ObjectFactory<JSONObject> implements IMes
     	if (id != null && this.hasClass(id)) {
     		obj = this.createObject(id, jobj);
     	}
-		return obj;
+		return (ISensorUpdater) obj;
 	}
 	
 	public void activate() {

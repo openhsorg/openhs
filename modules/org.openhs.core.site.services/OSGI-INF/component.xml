@@ -2,6 +2,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="require" deactivate="deactivate" immediate="true" modified="updated" name="org.openhs.core.site.services">
    <implementation class="org.openhs.core.site.services.MySiteServiceImpl"/>
    <service>
-      <provide interface="org.openhs.core.site.data.ISiteService"/>
+      <provide interface="org.openhs.core.site.api.ISiteService"/>
    </service>
 </scr:component>

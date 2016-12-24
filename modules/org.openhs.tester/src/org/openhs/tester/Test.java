@@ -1,7 +1,7 @@
 package org.openhs.tester;
 
-import org.openhs.core.site.data.ISiteService;
 import org.openhs.core.commons.TextOutput;
+import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.commons.Temperature;
 
 public class Test {

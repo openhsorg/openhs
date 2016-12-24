@@ -16,7 +16,7 @@ import java.text.*;
 
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.meteostation.Meteostation;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISiteService;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

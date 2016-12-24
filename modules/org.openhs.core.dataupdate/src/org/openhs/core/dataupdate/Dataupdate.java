@@ -24,7 +24,8 @@ import org.openhs.comm.api.Message;
 import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Temperature;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISensorUpdater;
+import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,19 +125,19 @@ public class Dataupdate implements IMessageHandler, Runnable {
     			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
 
-    		Object obj = m_parser.parseMessage(msg.getData());
-        	if (obj != null) {
-            	///System.out.println("Returned class: " + obj.getClass().getName());
+    		ISensorUpdater su = m_parser.parseMessage(msg.getData());
+        	if (su != null) {
+        		su.setPath(msg.getChannel(), msg.getTopic());
+            	System.out.println("Returned class: " + su.getClass().getName() );
+            	System.out.println("patAddr: " + su.getPathAddress());
     	  		if (m_siteService != null) {
-    	  			//obj.
     	  			// Get OHS sensor mapped to the device name
     	  			//String thingPath = getOhsDevice(smsg.getName());
+    	  			//m_siteService.
     	  		}
 
-        	}
-        	else {
-        		System.out.println("Returned class: " + "null");
-        	}
+        	} else
+				System.out.println("Returned class: " + "null");
     	}
     }
     

@@ -1,6 +1,6 @@
 package org.openhs.core.remote.access;
 
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISiteService;
 
 public class MyThread extends Thread {
 	  private volatile boolean active = true;

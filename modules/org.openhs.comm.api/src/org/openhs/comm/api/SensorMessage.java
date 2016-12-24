@@ -15,7 +15,7 @@ public class SensorMessage extends Message {
 	private double m_hum;
 
 	public SensorMessage(String device, String name, double temp, double hum) {
-		super("","");
+		super("","","");
 		m_device = device;
 		m_name = name;
 		m_temp = temp;

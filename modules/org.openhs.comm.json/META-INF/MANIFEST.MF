@@ -7,6 +7,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.json;version="20160810.0.0",
  org.openhs.comm.api,
  org.openhs.core.commons,
- org.openhs.core.commons.sensors,
+ org.openhs.core.site.api,
+ org.openhs.core.site.services,
  org.slf4j;version="1.7.2"
 Service-Component: OSGI-INF/component.xml
