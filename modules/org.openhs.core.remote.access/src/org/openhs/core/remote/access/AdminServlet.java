@@ -24,7 +24,7 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.meteostation.Meteostation;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISiteService;
 import org.osgi.framework.Bundle;
 
 import java.io.BufferedReader;

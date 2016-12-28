@@ -6,7 +6,7 @@
 * 
 */
 
-package org.openhs.core.site.data;
+package org.openhs.core.site.api;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Site;

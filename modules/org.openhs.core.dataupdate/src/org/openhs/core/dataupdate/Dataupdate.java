@@ -2,7 +2,7 @@ package org.openhs.core.dataupdate;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -15,18 +15,21 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessage;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.SensorMessage;
 import org.openhs.comm.api.DeviceMapping;
+import org.openhs.comm.api.ICommService;
 import org.openhs.comm.api.IDeviceMapping;
-import org.openhs.core.commons.Floor;
+import org.openhs.comm.api.IMessageHandler;
+import org.openhs.comm.api.IMessageParser;
+import org.openhs.comm.api.Message;
+import org.openhs.comm.api.SensorMessage;
 import org.openhs.core.commons.Humidity;
-import org.openhs.core.commons.Room;
-import org.openhs.core.commons.Site;
+import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISensorUpdater;
+import org.openhs.core.site.api.ISiteService;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -35,27 +38,28 @@ import org.w3c.dom.NodeList;
 
 public class Dataupdate implements IMessageHandler, Runnable {
 	
-	private BlockingQueue<IMessage> m_queue = null;
+	// initialize logger
+	private Logger logger = LoggerFactory.getLogger(Dataupdate.class);
+
+	private Map<String, Object> m_properties = null;
+
+	private BlockingQueue<Message> m_queue = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     private ISiteService m_siteService = null;
+    private IMessageParser m_parser = null;
     private int m_log_num = 0; //TODO temporary - use slf4j instead
-    private String m_fileMapping = null;
     
     ArrayList <IDeviceMapping> m_mapping = new ArrayList <IDeviceMapping>();
 	
 	public Dataupdate() {
-		m_queue = new LinkedBlockingQueue<IMessage>();		   		
+		m_queue = new LinkedBlockingQueue<Message>();		   		
 	}
 	
-	public void activate () {
+	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
 		System.out.println("org.openhs.core.dataupdate: Activated...");
 		
-		String currentUsersHomeDir = System.getProperty("user.home");
-        String m_fileSep = System.getProperty( "file.separator");     	    	
-        m_fileMapping = currentUsersHomeDir + m_fileSep + "openhs" + m_fileSep + "ohs_device_mapping.xml";		
-		
-		mapping(m_fileMapping);
+		updated(properties);
 		
 		m_myThd = new Thread(this);
 		m_myThd.start();
@@ -71,6 +75,13 @@ public class Dataupdate implements IMessageHandler, Runnable {
 		}
         System.out.println("Thread successfully stopped.");		
 		System.out.println("org.openhs.core.dataupdate: De-activated...");
+	}
+	
+	public void updated(Map<String, Object> properties) {
+		m_properties = properties;
+		String mappingFileName = (String) m_properties.get("deviceMapping");
+		String openhsHome = (String) m_properties.get("openhsHome");
+		mapping(openhsHome + mappingFileName);
 	}
 	
     public void setService(ICommService cs) {
@@ -92,55 +103,64 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	System.out.println("org.openhs.core.dataupdate: UnSet ISiteService: ");
     }
 
-    void consume(IMessage x) {
+    public void setService(IMessageParser prs) {
+    	System.out.println("org.openhs.core.dataupdate: Set IMessageParser: ");
+    	m_parser = prs;
+    }
+
+    public void unsetService(IMessageParser prs) {
+    	System.out.println("org.openhs.core.dataupdate: UnSet IMessageParser: ");
+    	m_parser = null;
+    }
+
+    void consume(Message msg) {
     	//TODO
-    	if (x == null) {
+    	m_log_num++; 
+    	if (msg == null) {
         	System.out.println("no msg");
     	}
     	else {
-    		SensorMessage smsg = (SensorMessage)x;
-    		if(m_log_num++ < 4) {
-    			System.out.println("do soming: " + smsg );
+    		if(m_log_num < 4) {
+    			System.out.println("do soming: " + msg.getTopic() + " " + msg.getData() );
     		}
     		if(m_log_num == 4) {
     			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
-    		
-    		Temperature temp = new Temperature ();
-    		temp.set(smsg.getTemp());
-    		Humidity hum = new Humidity ();
-    		hum.set(smsg.getHum());
-    		
-	  		if (m_siteService != null) {
-	  			// Get OHS sensor mapped to the device name
-	  			String thingPath = getOhsDevice(smsg.getName());
-	  			
-  				try {
-  					
-		  			if (!thingPath.equals("")) {	  					  				
-		  				  						  				
-			    		if (!this.m_siteService.setSensorTemperature(thingPath, temp)) {
-				  			System.out.println("Cannot write temp :( " + smsg.getName());
-						} 	  		
-			    	
-				  		if (!this.m_siteService.setSensorHumidity(thingPath, hum)) {
-				  			System.out.println("Cannot write temp :( " + smsg.getName());
-				  		}							  		
-		  			}
-		  			else {
-			  			System.out.println("Unknown Sensor name: " + smsg.getName());
-		  			}  					  						  			
-	  			} catch (Exception ex){
-		  			
-	  			}	  			
-	  		}
+
+    		//TODO select parser according channel and topic
+    		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/';
+    		ISensorUpdater su = m_parser.parseMessage(msg);
+        	if (su != null) {
+        		if(m_log_num < 4) System.out.println("pathAddress: " + su.getAddress());
+        		
+        		devicePath = devicePath + su.getAddress();
+
+        		if (m_siteService != null) {
+    	  			String thingPath = getOpenhsPath(devicePath);
+    	  			if(m_log_num < 4) System.out.println("thingPath: " + thingPath);
+    	  			
+                	try {
+						Object obj = m_siteService.getThing(thingPath);
+						if (obj != null) {
+							if(m_log_num < 4) System.out.println("Returned class: " + obj.getClass().getName() );
+							
+							su.update(obj);
+						}
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    	  		}
+
+        	} else
+				System.out.println("Returned class: " + "null");
     	}
     }
     
     @Override
 	public void run() {
 	     try {
-	       while (running) { consume(m_queue.poll(5, TimeUnit.SECONDS)); }
+	       while (running) { consume(m_queue.poll(20, TimeUnit.SECONDS)); }
 	     } catch (InterruptedException e) { 
 			// TODO Auto-generated catch block
 	     	System.out.println("no message for 5 sec");
@@ -152,12 +172,12 @@ public class Dataupdate implements IMessageHandler, Runnable {
     }
     
 	@Override
-	public void handleMessage(IMessage m, ICommService cs) {
-		if(m_log_num < 4) {
-			System.out.println(cs.getName() + ": " + m);
-		}
+	public void handleMessage(Message m, ICommService cs) {
+//		if(m_log_num < 4) {
+//			System.out.println(cs.getName() + ": " + m);
+//		}
 		try {
-			m_queue.offer(m, 100, TimeUnit.MILLISECONDS);
+			m_queue.offer(m, 200, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -279,7 +299,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	         }     		
 	}
 	
-	private String getOhsDevice (String device_name) {
+	private String getOpenhsPath (String device_name) {
 
 		for (IDeviceMapping map : m_mapping) {
 			DeviceMapping map2 = (DeviceMapping) map;

@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 
 import org.openhs.core.meteostation.Meteostation;
+import org.openhs.core.site.api.ISiteService;
 //import org.openhs.core.meteostation.ServletGauge;
 import org.openhs.core.clock.OhsClock;
-import org.openhs.core.site.data.ISiteService;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.openhs.core.commons.TextOutput;

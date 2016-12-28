@@ -5,5 +5,5 @@ Bundle-SymbolicName: org.openhs.comm.api
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.openhs.comm.api
-Import-Package: org.openhs.comm.api,
- org.openhs.core.commons
+Import-Package: org.openhs.core.commons,
+ org.openhs.core.site.api

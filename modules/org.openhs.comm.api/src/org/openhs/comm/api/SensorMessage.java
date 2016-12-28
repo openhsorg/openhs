@@ -3,7 +3,7 @@ package org.openhs.comm.api;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SensorMessage implements IMessage {
+public class SensorMessage extends Message {
 	
 	//TODO topic, message - isn't it specific just for mqtt?
 	//private String m_topic;
@@ -15,6 +15,7 @@ public class SensorMessage implements IMessage {
 	private double m_hum;
 
 	public SensorMessage(String device, String name, double temp, double hum) {
+		super("","","");
 		m_device = device;
 		m_name = name;
 		m_temp = temp;

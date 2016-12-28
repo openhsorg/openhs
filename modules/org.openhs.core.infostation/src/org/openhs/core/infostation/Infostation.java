@@ -6,7 +6,7 @@ import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.infostation.servlet.InfostationServlet;
 import org.openhs.core.meteostation.Meteostation;
-import org.openhs.core.site.data.ISiteService;
+import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.http.HttpService;
 
 

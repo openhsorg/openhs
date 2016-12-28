@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<device_map>
+<map device_path="Mqtt/Iqrf/DpaResponse/0" openhs_path="floors/Floor1/rooms/Room0/sensors/Room0_Sensor1"/>
+<map device_path="Room1_Sensor1" openhs_path="floors/Floor1/rooms/Room1/sensors/Room1_Sensor1"/>
+<map device_path="device_path3" openhs_path="ohs_path/floors/etc3"/>
+</device_map>

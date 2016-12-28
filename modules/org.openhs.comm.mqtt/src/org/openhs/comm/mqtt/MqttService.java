@@ -7,8 +7,6 @@ import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
 
 import java.util.Map;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +17,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessage;
+import org.openhs.comm.api.Message;
 import org.openhs.comm.api.IMessageHandler;
 import org.openhs.comm.api.SensorMessage;
 import org.openhs.comm.api.TopicsID;
@@ -37,8 +35,11 @@ public class MqttService implements MqttCallback, ICommService {
 	/**
 	 * Topics identificators...
 	 */
-	String myTopic = TopicsID.OPENHS.toString();
-
+	
+	//String myTopic = TopicsID.OPENHS.toString();
+	static final String MQTT_TOPIC_DPA_RESPONSE = "Iqrf/DpaResponse";
+	String myTopic = MQTT_TOPIC_DPA_RESPONSE;
+	
 	Boolean brokerConnected = false;
 
 	IMessageHandler m_messageHandler = null;
@@ -48,8 +49,8 @@ public class MqttService implements MqttCallback, ICommService {
 	static final String OPENHS_DOMAIN = "<Insert m2m.io domain here>";
 	static final String OPENHS_STUFF = "things";
 	static final String OPENHS_CLIENT = "openhs";
-	static final String OPENHS_USERNAME = "openhs";
-	static final String OPENHS_PASSWORD_MD5 = "<openhs password (MD5 sum of password)>";
+	static final String OPENHS_USERNAME = "openhs1";
+	static final String OPENHS_PASSWORD_MD5 = "ohsPswd";
 
 	// the following two flags control whether this example is a publisher, a subscriber or both
 	static final Boolean subscriber = true;
@@ -66,9 +67,9 @@ public class MqttService implements MqttCallback, ICommService {
 		System.out.println("Connection lost!");
 		// code to reconnect to the broker would go here if desired
 
-		connectBroker();
+		//connectBroker();
 
-		subscribe();
+		//subscribe();
 	}
 
 	/**
@@ -91,7 +92,8 @@ public class MqttService implements MqttCallback, ICommService {
 	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-
+//		System.out.println("-");
+/*
 		String msg = new String(message.getPayload());
 
 		System.out.println("-------------------------------------------------");
@@ -101,15 +103,12 @@ public class MqttService implements MqttCallback, ICommService {
 		//System.out.println("***");
 
 
-		SensorMessage mes = parseMsg(msg);
+		SensorMessage mes = parseMsg(topic, msg);
+*/
+		String msg = new String(message.getPayload());
+		Message mes = new Message(m_name, topic, msg);
 
-		//TODO topic?
-		//mes.topic = topic;
-		//mes.message = msg;
-
-		System.out.println("COMMAND:> device: " + mes.toString());	
-
-		if (msg != null) {
+		if (msg != null && m_messageHandler != null) {
 			m_messageHandler.handleMessage(mes, this);
 		}
 
@@ -209,7 +208,7 @@ public class MqttService implements MqttCallback, ICommService {
 	}
 
 	@Override
-	public void sendMessage(IMessage m) {
+	public void sendMessage(Message m) {
 		// TODO Auto-generated method stub
 
 	}	
@@ -256,7 +255,8 @@ public class MqttService implements MqttCallback, ICommService {
 	}		
 
 
-	public SensorMessage parseMsg(String msg) {    
+	// TODO parser will be romoved outside this class
+	public SensorMessage parseMsg(String topic, String msg) {    
 		//Example: ohs device=sensor name=Sensor1 temp1=22.10 hum=88.5
 		SensorMessage sensorMsg = null;
 
@@ -299,6 +299,8 @@ public class MqttService implements MqttCallback, ICommService {
 			}
 		}				    		    
 
+		sensorMsg.setTopic(topic);
+		sensorMsg.setData(msg);
 		return sensorMsg;
 	}
 

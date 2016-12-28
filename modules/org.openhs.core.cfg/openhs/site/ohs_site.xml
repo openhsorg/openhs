@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<site>
+<floor name="Floor1">
+<room name="Room0">
+<sensor name="Room0_Sensor1"/>
+</room>
+<room name="Room1">
+<sensor name="Room1_Sensor1"/>
+</room>
+<room name="Room2">
+<sensor name="Room2_Sensor1"/>
+</room>
+<room name="Room3">
+<sensor name="Room3_Sensor1"/>
+</room>
+<room name="Room4">
+<sensor name="Room4_Sensor1"/>
+</room>
+<room name="Room5">
+<sensor name="Room5_Sensor1"/>
+</room>
+<room name="Room6">
+<sensor name="Room6_Sensor1"/>
+</room>
+</floor>
+<floor name="Floor2">
+<room name="Room1">
+<sensor name="SensorWC"/>
+</room>
+</floor>
+</site>
