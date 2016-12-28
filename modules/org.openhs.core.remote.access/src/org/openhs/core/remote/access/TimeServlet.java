@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Room;
-import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.site.api.ISiteService;

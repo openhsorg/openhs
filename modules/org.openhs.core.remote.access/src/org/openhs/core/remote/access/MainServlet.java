@@ -20,7 +20,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Temperature;
-import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.cfg.OpenhsProps;

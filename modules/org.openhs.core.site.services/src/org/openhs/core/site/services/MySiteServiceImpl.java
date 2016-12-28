@@ -27,7 +27,6 @@ import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.HumiditySensor;
 import org.openhs.core.commons.Room;
-import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
@@ -240,9 +239,9 @@ public class MySiteServiceImpl implements ISiteService {
 		return false;
 	}	
 	
-	public Object getThing (String sitePath) throws SiteException {		
+	public Thing getThing (String sitePath) throws SiteException {		
 
-		Object obj = ss.things.get(sitePath);
+		Thing obj = ss.things.get(sitePath);
 		
 		if (obj == null) {
 			throw new SiteException("Object does not exist...");
@@ -251,7 +250,7 @@ public class MySiteServiceImpl implements ISiteService {
 		return obj;
 	}	
 	
-	public Object getThingDevice (String devicePath) throws SiteException {
+	public Thing getThingDevice (String devicePath) throws SiteException {
 				
 		String sitePath = ss.devPaths.get(devicePath);
 		

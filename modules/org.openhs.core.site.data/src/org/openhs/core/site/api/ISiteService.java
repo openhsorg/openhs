@@ -35,9 +35,9 @@ public interface ISiteService {
 	
 	public boolean addThing (String sitePath, String devicePath, Thing thing);
 	
-	public Object getThing (String sitePath) throws SiteException;
+	public Thing getThing (String sitePath) throws SiteException;
 	
-	public Object getThingDevice (String devicePath) throws SiteException;
+	public Thing getThingDevice (String devicePath) throws SiteException;
 	
 	public boolean setThingDevice (String devicePath, Thing device) throws SiteException;
 	

@@ -10,8 +10,6 @@ package org.openhs.core.commons;
 
 import java.util.TreeMap;
 
-import org.openhs.core.commons.Sensor;
-
 public class Room extends Thing {
 	
 	/*

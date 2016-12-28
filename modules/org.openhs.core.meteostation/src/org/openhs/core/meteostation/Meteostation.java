@@ -11,7 +11,7 @@ package org.openhs.core.meteostation;
 import java.util.ArrayList;
 
 import org.openhs.core.commons.TextOutput;
-import org.openhs.core.commons.Sensor;
+import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Weather;
@@ -87,23 +87,23 @@ public class Meteostation {
         list.add(false); // Movedetection outside...
     }    
 
-    public Sensor getSensorIn() throws SiteException {
+    public TemperatureSensor getSensorIn() throws SiteException {
         return getSensor(sensorInString);
     }
 
-    public Sensor getSensorOut() throws SiteException {
+    public TemperatureSensor getSensorOut() throws SiteException {
         return getSensor(sensorOutString);
     }
 
-    public Sensor getSensor(String key) throws SiteException {
-        Sensor sensor;
+    public TemperatureSensor getSensor(String key) throws SiteException {
+    	TemperatureSensor sensor;
 
         try {
          //   String delims = "[/]";
          //   String[] tokens = key.split(delims);
 
             //sensor = m_siteService.getSensor(tokens[0], tokens[1]);
-            sensor = (Sensor) m_siteService.getThing(key);
+            sensor = (TemperatureSensor) m_siteService.getThing(key);
         } catch (Exception ex) {
             throw ex;
         }
