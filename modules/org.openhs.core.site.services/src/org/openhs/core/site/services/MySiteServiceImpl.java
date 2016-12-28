@@ -9,6 +9,7 @@
 package org.openhs.core.site.services;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -21,13 +22,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Humidity;
+import org.openhs.core.commons.HumiditySensor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Sensor;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
@@ -38,6 +42,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import jdk.nashorn.internal.objects.annotations.Constructor;
 
 public class MySiteServiceImpl implements ISiteService {
 
@@ -69,16 +75,16 @@ public class MySiteServiceImpl implements ISiteService {
 	public void buildHouse(int rooms) {
 
 		try {
-			addThing("floors/Floor1");
-			addThing("floors/Floor2");
+			addThing("floors/Floor1", new Floor());
+			addThing("floors/Floor2", new Floor());
 
 			for (int i = 0; i <= rooms; i++) {
 
-				addThing("floors/Floor1/rooms/Room" + i);
-				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1");
+				addThing("floors/Floor1/rooms/Room" + i, new Room());
+				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1", new Room());
 			}
 
-			addThing("floors/Floor2/rooms/Room1/sensors/SensorWC");
+			addThing("floors/Floor2/rooms/Room1/sensors/SensorWC", "mqtt/0/path", new TemperatureSensor());
 
 		} catch (Exception ex) {
 			System.out.println("\n\n EXception***:" + ex);
@@ -96,7 +102,7 @@ public class MySiteServiceImpl implements ISiteService {
 	public void setId(String newID) {
 		ss.setId(newID);
 	}
-
+/*
 	public int getNumberThings(String keyPath) throws SiteException {
 
 		Object item = getThing(keyPath);
@@ -200,7 +206,159 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return item;
 	}
+	*/
+	public boolean addThing (String sitePath, Thing thing){
+		
+		if (ss.things.get(sitePath) == null) {
+			ss.things.put(sitePath,  thing);
 
+			return true;
+		}
+
+		return false;
+	}
+	
+	public boolean addThing (String sitePath, String devicePath, Thing thing){
+		
+		if (addThing(sitePath, thing)) {
+			ss.devPaths.put(devicePath, sitePath);
+			/*
+			if (thing instanceof Floor) {
+				ss.floorPaths.add(sitePath);
+			} else if (thing instanceof Floor) {
+				ss.roomPaths.add(sitePath);
+			}
+			*/
+			return true;
+		}
+		/*
+		if (ss.things.get(sitePath) == null) {
+			ss.things.put(sitePath,  thing);
+			ss.devPaths.put(devicePath, sitePath);
+		}
+*/
+		return false;
+	}	
+	
+	public Object getThing (String sitePath) throws SiteException {		
+
+		Object obj = ss.things.get(sitePath);
+		
+		if (obj == null) {
+			throw new SiteException("Object does not exist...");
+		}		
+
+		return obj;
+	}	
+	
+	public Object getThingDevice (String devicePath) throws SiteException {
+				
+		String sitePath = ss.devPaths.get(devicePath);
+		
+		if (sitePath == null) {
+			throw new SiteException("Device path is not mapped to site...");
+		}	
+		
+		return getThing(sitePath);
+		
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#setThingDevice(java.lang.String, org.openhs.core.commons.Thing)
+	 * string devicePath must exists, then this replaces in datastructure the object...
+	 */
+	
+	public boolean setThingDevice (String devicePath, Thing device) throws SiteException {
+		
+		String sitePath = ss.devPaths.get(devicePath);
+		
+		if (sitePath == null) {
+			throw new SiteException("[setThingDevice] Device path is not mapped to site...");
+		}	
+		
+		Object devOld = ss.things.remove(sitePath);
+		
+		if (devOld == null) {
+			throw new SiteException("[setThingDevice] Wrong object...");
+		}	
+		
+		ss.things.put(sitePath, device);
+				
+		return true;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getChildren(java.lang.String)
+	 * Returns list of sitePaths, childrens of included sitePath item.  Only first level of children.
+	 */
+	
+	public Set<String> getChildren (String sitePath) throws SiteException {
+		
+		// Divide
+		String delim = "[/]+";
+		String[] parts = sitePath.split(delim);
+
+		// Check for empty parts...
+		for (String str : parts) {
+			if (str.equals("")) {
+				System.out.println("\n\n eeeee");
+				throw new SiteException("keyPath contaims empty strings...");
+			}
+		}		
+			
+		Set<String> keySet = new HashSet <String> ();
+		
+		Set<String> keySetAll = ss.things.keySet();
+		
+		for (String item : keySetAll) {
+			
+			if (!item.equals(sitePath)) {
+				if (item.contains(sitePath)) {		
+					
+					String[] partsItem = item.split(delim);
+					for (String str : partsItem) {
+						if (str.equals("")) {
+							System.out.println("\n\n eeeee");
+							throw new SiteException("keyPath contaims empty strings...");
+						}
+					}
+					
+					if (parts.length == partsItem.length - 1) {
+						keySet.add(item);
+					}
+				}
+			}
+		}
+		
+		return keySet;
+	}
+	
+	public int getNumberThings (String sitePath) throws SiteException {
+				
+		Set<String> set = getChildren (sitePath);
+		
+		return set.size();				
+	}
+	
+	public String getDevicePath (String sitePath) {
+		
+		Set <String> devicePaths = ss.devPaths.keySet();
+		
+		for (String devicePath : devicePaths) {
+			String sitePathItem = ss.devPaths.get(devicePath);
+			
+			if (sitePathItem != null) {
+				if (sitePathItem.equals(sitePath)) {
+					return devicePath;
+				}
+			}			
+		}
+		
+		return new String(); 
+	}
+	
+/*
 	public Object addThing(String keyPath) throws SiteException {
 
 		if (keyPath.equals("")) {
@@ -237,7 +395,7 @@ public class MySiteServiceImpl implements ISiteService {
 						floors.put(str, floor);
 						item = floor;
 
-						System.out.println("\n>>>Floor created:" + str + " : " + strItem);
+						//System.out.println("\n>>>Floor created:" + str + " : " + strItem);
 					}
 				} else if (strItem.equals("rooms")) {
 					TreeMap<String, Room> rooms = (TreeMap<String, Room>) item;
@@ -295,10 +453,11 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return item;
 	}
-
+*/
+	/*
 	@Override
 	public Temperature getSensorTemperature(String keyPath) throws SiteException {
-		Sensor sensor = null;
+		TemperatureSensor sensor = null;
 		// keyPath = "rrr";
 		try {
 			Object obj = getThing(keyPath);
@@ -306,10 +465,10 @@ public class MySiteServiceImpl implements ISiteService {
 			if (obj == null)
 				throw new SiteException("Cannot get thing!");
 
-			if (!(obj instanceof Sensor)) {
+			if (!(obj instanceof TemperatureSensor)) {
 				throw new SiteException("Sensor path required!");
 			} else {
-				sensor = (Sensor) obj;
+				sensor = (TemperatureSensor) obj;
 			}
 
 		} catch (SiteException ex) {
@@ -322,7 +481,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 	@Override
 	public boolean setSensorTemperature(String keyPath, Temperature temp) throws SiteException {
-		Sensor sensor = null;
+		TemperatureSensor sensor = null;
 
 		try {
 
@@ -334,10 +493,10 @@ public class MySiteServiceImpl implements ISiteService {
 
 			}
 
-			if (!(obj instanceof Sensor)) {
+			if (!(obj instanceof TemperatureSensor)) {
 				throw new SiteException("Sensor path required!");
 			} else {
-				sensor = (Sensor) obj;
+				sensor = (TemperatureSensor) obj;
 			}
 
 		} catch (SiteException ex) {
@@ -352,7 +511,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 	@Override
 	public Humidity getSensorHumidity(String keyPath) throws SiteException {
-		Sensor sensor = null;
+		HumiditySensor sensor = null;
 
 		try {
 			Object obj = getThing(keyPath);
@@ -360,10 +519,10 @@ public class MySiteServiceImpl implements ISiteService {
 			if (obj == null)
 				throw new SiteException("Cannot get thing!");
 
-			if (!(obj instanceof Sensor)) {
+			if (!(obj instanceof HumiditySensor)) {
 				throw new SiteException("Sensor path required!");
 			} else {
-				sensor = (Sensor) obj;
+				sensor = (HumiditySensor) obj;
 			}
 		} catch (SiteException ex) {
 			throw ex;
@@ -374,7 +533,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 	@Override
 	public boolean setSensorHumidity(String keyPath, Humidity hum) {
-		Sensor sensor = null;
+		HumiditySensor sensor = null;
 
 		try {
 			Object obj = getThing(keyPath);
@@ -382,10 +541,10 @@ public class MySiteServiceImpl implements ISiteService {
 			if (obj == null)
 				throw new SiteException("Cannot get thing!");
 
-			if (!(obj instanceof Sensor)) {
+			if (!(obj instanceof HumiditySensor)) {
 				throw new SiteException("Sensor path required!");
 			} else {
-				sensor = (Sensor) obj;
+				sensor = (HumiditySensor) obj;
 			}
 		} catch (SiteException ex) {
 			return false;
@@ -395,15 +554,13 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return true;
 	}
-
+*/
 	public Site getSite() {
 		return ss;
 	}
 
-	public boolean setSite(Site siteIn) {
+	public boolean setSite(Site sitePath) {
 		// Needs to be solved...
-
-		ss = siteIn;
 
 		return true;
 	}
@@ -433,6 +590,8 @@ public class MySiteServiceImpl implements ISiteService {
 	 * 
 	 * return true; }
 	 */
+	
+	/*
 
 	public void LoadXML(String path) {
 
@@ -447,7 +606,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 			for (int i1 = 0; i1 < listFloor.getLength(); i1++) {
 				Node nFloor = listFloor.item(i1);
-				System.out.println("\n+>Current Element:" + nFloor.getNodeName());
+				//System.out.println("\n+>Current Element:" + nFloor.getNodeName());
 
 				if (nFloor.getNodeType() == Node.ELEMENT_NODE) {
 
@@ -498,95 +657,18 @@ public class MySiteServiceImpl implements ISiteService {
 				}
 			}
 
-			/*
-			 * 
-			 * // root element Element rootElement = doc.createElement("site");
-			 * doc.appendChild(rootElement);
-			 * 
-			 * Site site = m_siteService.getSite(); Set<String> keysF =
-			 * site.floors.keySet();
-			 * 
-			 * for (String keyF : keysF) {
-			 * 
-			 * // floors element Element floor = doc.createElement("floor");
-			 * rootElement.appendChild(floor);
-			 * 
-			 * // setting attribute to element Attr attr =
-			 * doc.createAttribute("name"); attr.setValue(keyF);
-			 * floor.setAttributeNode(attr);
-			 * 
-			 * Floor m_floor = (Floor) m_siteService.getThing("floors/" + keyF);
-			 * Set<String> keysR = m_floor.rooms.keySet();
-			 * 
-			 * for (String keyR : keysR) {
-			 * 
-			 * // room element Element room = doc.createElement("room");
-			 * floor.appendChild(room);
-			 * 
-			 * // setting attribute to element Attr attrR =
-			 * doc.createAttribute("name"); attrR.setValue(keyR);
-			 * room.setAttributeNode(attrR);
-			 * 
-			 * Room m_room = (Room) m_siteService.getThing("floors/" + keyF +
-			 * "/rooms/"+ keyR); Set<String> keysS = m_room.sensors.keySet();
-			 * 
-			 * for (String keyS : keysS) { // sensor element Element sensor =
-			 * doc.createElement("sensor"); room.appendChild(sensor);
-			 * 
-			 * // setting attribute to element Attr attrS =
-			 * doc.createAttribute("name"); attrS.setValue(keyS);
-			 * sensor.setAttributeNode(attrS); } } }
-			 */
-			/*
-			 * // write the content into xml file TransformerFactory
-			 * transformerFactory = TransformerFactory.newInstance();
-			 * Transformer transformer = transformerFactory.newTransformer();
-			 * DOMSource source = new DOMSource(doc); StreamResult result = new
-			 * StreamResult(new File(path)); transformer.transform(source,
-			 * result); // Output to console for testing StreamResult
-			 * consoleResult = new StreamResult(System.out);
-			 * transformer.transform(source, consoleResult);
-			 */
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+*/
+/*	
 	public void SaveXML(String path) {
 
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.newDocument();
-
-			/*
-			 * 
-			 * // root element Element rootElement = doc.createElement("site");
-			 * doc.appendChild(rootElement);
-			 * 
-			 * // floors element Element floor = doc.createElement("floor");
-			 * rootElement.appendChild(floor);
-			 * 
-			 * // setting attribute to element Attr attr =
-			 * doc.createAttribute("name"); attr.setValue("Floor1");
-			 * floor.setAttributeNode(attr);
-			 * 
-			 * // room element Element room = doc.createElement("room");
-			 * floor.appendChild(room);
-			 * 
-			 * Attr attrRoom = doc.createAttribute("name");
-			 * attrRoom.setValue("Room1"); room.setAttributeNode(attrRoom);
-			 * 
-			 * // sensor element Element sensor = doc.createElement("sensor");
-			 * room.appendChild(sensor);
-			 * 
-			 * Attr attrSensor = doc.createAttribute("name");
-			 * attrSensor.setValue("Sensor1");
-			 * sensor.setAttributeNode(attrSensor);
-			 * 
-			 * sensor.appendChild(doc.createTextNode("Nejaka blbost"));
-			 */
 
 			// root element
 			Element rootElement = doc.createElement("site");
@@ -632,6 +714,11 @@ public class MySiteServiceImpl implements ISiteService {
 						Attr attrS = doc.createAttribute("name");
 						attrS.setValue(keyS);
 						sensor.setAttributeNode(attrS);
+						
+						// setting attribute to element
+						Attr attrDp = doc.createAttribute("devicePath");
+						attrDp.setValue("test path...");
+						sensor.setAttributeNode(attrDp);						
 					}
 				}
 			}
@@ -651,7 +738,124 @@ public class MySiteServiceImpl implements ISiteService {
 			e.printStackTrace();
 		}
 	}
+	
+	*/
+	
+	
+	public void SaveXML(String path) {
 
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.newDocument();
+
+			// root element
+			Element rootElement = doc.createElement("site");
+			doc.appendChild(rootElement);
+
+			Site site = getSite();
+			Set<String> sitePaths = site.things.keySet();
+
+			for (String sitePath : sitePaths) {
+
+				Thing thing = (Thing) getThing(sitePath);
+				
+				// Element thing
+				Element element = doc.createElement("thing");
+				rootElement.appendChild(element);
+
+				// Type attribute
+				Attr type = doc.createAttribute("type");
+				type.setValue(thing.getClass().getSimpleName());
+				element.setAttributeNode(type);
+				
+				// Name attribute
+				Attr name = doc.createAttribute("name");
+				name.setValue(thing.getName());
+				element.setAttributeNode(name);		
+				
+				// SitePath attribute
+				Attr sitePathAttr = doc.createAttribute("sitePath");
+				sitePathAttr.setValue(sitePath);
+				element.setAttributeNode(sitePathAttr);	
+				
+				if (thing instanceof TemperatureSensor) {
+					// devicePath attribute
+					
+					Attr devicePathAttr = doc.createAttribute("devicePath");
+					devicePathAttr.setValue(this.getDevicePath(sitePath));
+					element.setAttributeNode(devicePathAttr);	
+				}
+			}
+
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");			
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(path));
+			transformer.transform(source, result);
+			// Output to console for testing
+			// StreamResult consoleResult = new StreamResult(System.out);
+			// transformer.transform(source, consoleResult);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+
+	public void LoadXML(String path) {
+
+		try {
+			File inputFile = new File(path);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(inputFile);
+			doc.getDocumentElement().normalize();
+
+			NodeList listSitePath = doc.getElementsByTagName("thing");
+
+			for (int i = 0; i < listSitePath.getLength(); i++) {
+				Node nodeSitePath = listSitePath.item(i);
+				//System.out.println("\n+>Current Element:" + nFloor.getNodeName());
+
+				if (nodeSitePath.getNodeType() == Node.ELEMENT_NODE) {
+
+					Element elementSitePath = (Element) nodeSitePath;
+
+					String type = elementSitePath.getAttribute("type");
+															
+					String className = "org.openhs.core.commons." + type;
+					Thing obj = (Thing) Class.forName(className).newInstance();					
+					
+					if (obj != null) {
+										
+						//System.out.println("\n+class>" + obj.getClass().getSimpleName());
+						
+						//Name attribute...
+						String name = elementSitePath.getAttribute("name");
+						obj.setName(name);
+						
+						//Name attribute...
+						String sitePath = elementSitePath.getAttribute("sitePath");
+						ss.things.put(sitePath, obj);
+						
+						if (obj instanceof TemperatureSensor) {
+							String devicePath = elementSitePath.getAttribute("devicePath");
+							ss.devPaths.put(devicePath, sitePath);
+							
+							//System.out.println("\n+classXXX>" + devicePath + " : " + sitePath);
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	
 	/*
 	 * Loads datastructure...
 	 */
@@ -669,7 +873,7 @@ public class MySiteServiceImpl implements ISiteService {
 			if (xml.exists()) {
 
 				try {
-					System.out.println("\n++> LOADING XML...");
+					//System.out.println("\n++> LOADING XML...");
 
 					LoadXML(xmlFileNamePath);
 				} catch (Exception ex) {
@@ -677,9 +881,9 @@ public class MySiteServiceImpl implements ISiteService {
 				}
 			} else {
 
-				System.out.println("\n++> LOADING XML... but file is not here :( -> create something");
+				//System.out.println("\n++> LOADING XML... but file is not here :( -> create something");
 
-				buildHouse(6); // build some house....
+				buildHouse(4); // build some house....
 
 				try {
 					SaveXML(xmlFileNamePath);
@@ -690,6 +894,14 @@ public class MySiteServiceImpl implements ISiteService {
 					System.out.println("Site XML not found ---> Created basic config and saved: " + xmlFileNamePath);
 				}
 			}
+			/*
+			if (xml.delete()) {
+				System.out.println(xml.getName() + " is deleted!");
+				
+				SaveXML(xmlFileNamePath);
+			}
+			*/
+			
 		} else {
 
 			System.out.println("\n++> File disabled -> I create some house :)");
@@ -698,27 +910,4 @@ public class MySiteServiceImpl implements ISiteService {
 		}
 	}
 
-	/*
-	 * public void xmlSave (String path, Object o) throws Exception {
-	 * FileOutputStream fileStream = new FileOutputStream(path);
-	 * BufferedOutputStream buffStream = new BufferedOutputStream(fileStream);
-	 * 
-	 * XMLEncoder encoder = new XMLEncoder(buffStream);
-	 * 
-	 * encoder.writeObject(o);
-	 * 
-	 * encoder.close(); }
-	 * 
-	 * public Object xmlLoad (String path) throws Exception { FileInputStream
-	 * fileStream = new FileInputStream(path); BufferedInputStream buffStream =
-	 * new BufferedInputStream(fileStream);
-	 * 
-	 * XMLDecoder decoder = new XMLDecoder(buffStream);
-	 * 
-	 * Object o = decoder.readObject();
-	 * 
-	 * decoder.close();
-	 * 
-	 * return o; }
-	 */
 }

@@ -66,7 +66,8 @@ public class DummyService implements ICommService, Runnable {
 		double hum2 = 80.0;
 
 		while (running) {
-			if (m_mh != null) {
+									
+			if (m_mh != null) {			
 				//msg 1
 				{
 					temp += 1.0;
@@ -77,7 +78,7 @@ public class DummyService implements ICommService, Runnable {
 						hum = 40.0;
 					m_msg1.setTemp(temp);
 					m_msg1.setHum(hum);
-					m_mh.handleMessage(m_msg1, this);
+					m_mh.handleMessage(m_msg1, this);					
 				}
 
 				//msg 2

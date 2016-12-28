@@ -12,12 +12,15 @@ import java.util.TreeMap;
 
 import org.openhs.core.commons.Sensor;
 
-public class Room{
+public class Room extends Thing {
 	
 	/*
 	 * Set of sensors in room
 	 */
+	/*
 	public TreeMap<String, Sensor> sensors = 
             new TreeMap<String, Sensor>();		
+	
+	*/	
 
 }

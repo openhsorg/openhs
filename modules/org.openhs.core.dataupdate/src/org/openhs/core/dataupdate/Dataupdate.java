@@ -126,7 +126,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
     		if(m_log_num == 4) {
     			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
-
+    		
     		//TODO select parser according channel and topic
     		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/';
     		ISensorUpdater su = m_parser.parseMessage(msg);
@@ -140,6 +140,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	  			if(m_log_num < 4) System.out.println("thingPath: " + thingPath);
     	  			
                 	try {
+                		
 						Object obj = m_siteService.getThing(thingPath);
 						if (obj != null) {
 							if(m_log_num < 4) System.out.println("Returned class: " + obj.getClass().getName() );

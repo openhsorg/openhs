@@ -36,13 +36,13 @@ public class KitchenServlet extends HttpServlet {
 	 @Override
 	    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		 	System.out.println("\n\n...GET:");
+		 	//System.out.println("\n\n...GET:");
 		 	
 		 	String value = request.getParameter("orderId");
 		 //	System.out.println("Value:=" + value);
 	        
 	    	if (value != null) {
-	    		System.out.println("Value:=" + value.toString());
+	    		//System.out.println("Value:=" + value.toString());
 	    		
 	    		if (value.toString().equals("InfoData")) {	    		
 	    			/*
@@ -139,7 +139,7 @@ public class KitchenServlet extends HttpServlet {
 	    			 */
 	    			JSONObject json = getDataToJSON_Data();
 
-	    			System.out.println("\n\nJSON:" + json.toString());
+	    			//System.out.println("\n\nJSON:" + json.toString());
 	    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -171,7 +171,7 @@ public class KitchenServlet extends HttpServlet {
 	    @Override
 	    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	        
-	    	System.out.println("\n\n...POST");
+	    	//System.out.println("\n\n...POST");
 	        
 		 	String value = request.getParameter("orderId");
 	        
@@ -298,6 +298,9 @@ public class KitchenServlet extends HttpServlet {
 			
 			try {
 				n = this.m_infostation.m_siteService.getNumberThings(floorPath + "/rooms");
+				
+				//System.out.print("\n\n--->: " + floorPath + "/rooms" + ": " + n);
+				
 			} catch (Exception ex) {	
 				//System.out.print("\nEXCPT: " + ex);
 			}

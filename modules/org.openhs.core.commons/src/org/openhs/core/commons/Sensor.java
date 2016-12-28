@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Movedetection;
-import org.openhs.core.commons.Lightsensing;
 
 public class Sensor 
 {
@@ -22,7 +21,7 @@ public class Sensor
 	
 	Movedetection 	movedetection = new Movedetection ();
 	
-	Lightsensing 	lightsensing = new Lightsensing ();
+	//Lightsensing 	lightsensing = new Lightsensing ();
 	
 	UUID uuid = UUID.randomUUID();
 	
