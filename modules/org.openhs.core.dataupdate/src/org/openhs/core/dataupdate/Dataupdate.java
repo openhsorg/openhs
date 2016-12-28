@@ -127,13 +127,16 @@ public class Dataupdate implements IMessageHandler, Runnable {
     			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
 
-    		ISensorUpdater su = m_parser.parseMessage(msg.getData());
+    		//TODO select parser according channel and topic
+    		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/';
+    		ISensorUpdater su = m_parser.parseMessage(msg);
         	if (su != null) {
-        		su.setPath(msg.getChannel(), msg.getTopic());
-        		if(m_log_num < 4) System.out.println("pathAddress: " + su.getPathAddress());
+        		if(m_log_num < 4) System.out.println("pathAddress: " + su.getAddress());
+        		
+        		devicePath = devicePath + su.getAddress();
 
         		if (m_siteService != null) {
-    	  			String thingPath = getOpenhsPath(su.getPathAddress());
+    	  			String thingPath = getOpenhsPath(devicePath);
     	  			if(m_log_num < 4) System.out.println("thingPath: " + thingPath);
     	  			
                 	try {

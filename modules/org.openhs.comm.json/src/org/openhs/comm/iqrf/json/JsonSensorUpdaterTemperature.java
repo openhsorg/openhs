@@ -4,10 +4,8 @@ import org.json.JSONObject;
 import org.openhs.core.site.services.SensorUpdaterTemperature;
 
 public class JsonSensorUpdaterTemperature extends SensorUpdaterTemperature {
+
 	private IqrfNode m_iqrfNode = null;
-	private String m_channel;
-	private String m_topic;
-	private String m_address;
 	
 	public JsonSensorUpdaterTemperature(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
@@ -22,14 +20,8 @@ public class JsonSensorUpdaterTemperature extends SensorUpdaterTemperature {
 	}
 
 	@Override
-	public String getPathAddress() {
-		return m_channel + '/' + m_topic + '/' + m_address;
+	public String getAddress() {
+		return String.valueOf(m_iqrfNode.getAddress());
 	}
 
-	@Override
-	public void setPath(String channel, String topic) {
-		m_channel = channel;
-		m_topic = topic;
-		m_address = String.valueOf(m_iqrfNode.getAddress());
-	}
 }
