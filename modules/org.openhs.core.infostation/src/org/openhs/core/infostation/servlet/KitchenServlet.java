@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -150,7 +151,51 @@ public class KitchenServlet extends HttpServlet {
 		    	        
 	    			out.flush();
 	    			out.close();	    			
-		    	}	 	    		
+	    		} else if (value.toString().equals("switch1")) {		    		
+	    			/*
+	    			 * Get data from core module.
+	    			 */
+	    			
+	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+	    			
+	    			try {
+	    				List<Boolean> list = m_infostation.getSwitchState("floors/Floor1/rooms/Room0/sensors/Kitchen_light");
+	    				
+	    				boolean state = list.get(0);
+	    				boolean stateDevice = list.get(1);
+	    				
+	    				if (stateDevice) { //device on
+	    					if (state) {
+	    						stateInt = 3; //request is on
+	    					} else {
+	    						stateInt = 4; //request is off
+	    					}
+	    				} else { //device off
+	    					if (state) { //request is on
+	    						stateInt = 2;
+	    					} else { // request is off
+	    						stateInt = 1;
+	    					}	    					
+	    				}	    					    				
+	    			} catch (Exception ex) {
+	    				
+	    			}
+	    			
+	    			JSONObject json = new JSONObject();
+	    			json.put("switchState", new Integer(stateInt));
+
+	    			//System.out.println("\n\nJSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	    			
+		    	}		 	    		
 	    	}
 	    	else {
 	    		
@@ -173,8 +218,34 @@ public class KitchenServlet extends HttpServlet {
 	        
 	    	//System.out.println("\n\n...POST");
 	        
-		 	String value = request.getParameter("orderId");
-	        
+		 	String value = request.getParameter("postId");	       
+		 	//System.out.println("POST value:=" + value);
+		 	
+		 	
+		 	if (value != null) {
+		 		
+		 		if(value.toString().equals("switchClicked")) {
+		 			
+		 			String swtch = request.getParameter("dataId");
+		 			
+		 			if (swtch != null) {
+		 				//System.out.println("Clicked switch: " + swtch.toString());
+		 				m_infostation.setSwitch("floors/Floor1/rooms/Room0/sensors/Kitchen_light");
+		 				
+		 			}
+		 			
+		 		}
+		 		
+		 		/*
+		 		JSONObject json = new JSONObject(value);
+		 		
+		 		String foo = json.get("ahoj").toString();
+		 		
+		 		System.out.println("POST value:=" + foo);
+		 		*/
+		 	}
+		 	
+		 	/*
 	    	if (value != null) {
 	    		System.out.println("Value:=" + value.toString());
 	    		
@@ -182,18 +253,19 @@ public class KitchenServlet extends HttpServlet {
 	    				    				    			
 	    		}	    		
 	    	}
-	    	
+	    	*/
 	    	
 	    	value = request.getParameter("Kitchen");
 	    	
 	    	if (value != null) {
-	    		System.out.println("Value:=" + value.toString());
+	    		//System.out.println("Value:=" + value.toString());
 	    		
 	    		if (value.toString().equals("Kitchen")) {
 	    			
 	    			  doGet(request, response);			    			
 	    		}	    		
-	    	}	    	 
+	    	}	    
+	    	
 	    }
 	    
 	    

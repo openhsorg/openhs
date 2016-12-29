@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <site>
 <thing name="no name" sitePath="floors/Floor1" type="Floor"/>
-<thing name="no name" sitePath="floors/Floor1/rooms/Room0" type="Room"/>
-<thing name="no name" sitePath="floors/Floor1/rooms/Room0/sensors/Room0_Sensor1" type="Room"/>
+<thing name="Kitchen" sitePath="floors/Floor1/rooms/Room0" type="Room"/>
+<thing name="Kitechen_Temp" sitePath="floors/Floor1/rooms/Room0/sensors/Room0_Sensor1" type="Room"/>
+<thing devicePath="unknown" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room0/sensors/Kitchen_light" type="Switch"/>
 <thing name="no name" sitePath="floors/Floor1/rooms/Room1" type="Room"/>
 <thing name="no name" sitePath="floors/Floor1/rooms/Room1/sensors/Room1_Sensor1" type="Room"/>
 <thing name="no name" sitePath="floors/Floor1/rooms/Room2" type="Room"/>

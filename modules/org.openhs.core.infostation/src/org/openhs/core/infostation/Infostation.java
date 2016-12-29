@@ -1,9 +1,12 @@
 package org.openhs.core.infostation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
+import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Switch;
 import org.openhs.core.infostation.servlet.InfostationServlet;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
@@ -78,5 +81,30 @@ public class Infostation {
           if (m_openhsProps == ser) {
               ser = null;
           }
-      }         
+      }     
+      
+      public boolean setSwitch (String sitePath) {
+    	  
+    	  try {
+    		  Switch swt = (Switch) m_siteService.getThing(sitePath);
+              return swt.setState();      		      		  
+    		  
+    	  } catch (Exception ex) {
+    		  
+    	  }    	  	      	      	  
+    	  
+    	  return false;
+      }
+      
+      public List getSwitchState (String sitePath) throws SiteException {
+
+    	  List<Boolean> list = new ArrayList<Boolean>();
+    	  
+   		  Switch swt = (Switch) m_siteService.getThing(sitePath);
+   		  
+   		  list.add(swt.getState());
+   		  list.add(swt.getDeviceState());
+   		  
+   		  return list;       
+      }      
 }

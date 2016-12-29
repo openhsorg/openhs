@@ -13,19 +13,19 @@ import java.util.Date;
 import java.util.UUID;
 import org.openhs.core.commons.TimeProfile;
 
-public class Switch {
+public class Switch extends Thing {
 	
 	UUID uuid = UUID.randomUUID();
 
 	/*
 	 * State we'd like to switch
 	 */
-	boolean newState = false;
+	boolean state = false;
 	
 	/*
-	 * State
+	 * State of device
 	 */
-	double state = 0;
+	boolean deviceState = false;
 	
 	/*
 	 * Time profiler
@@ -36,17 +36,29 @@ public class Switch {
 	 * Timestamp of last written value.
 	 */
 	Timestamp timestamp = new Timestamp(0);
-	
-	public double get()
+		
+	public void setState(boolean state)
 	{
-		return state;
-	}
-	
-	public void set(boolean state)
-	{
-		newState = state;
+		this.state = state;
 		
 		setTimestamp();
+	}
+	
+	public boolean getState()
+	{
+		return state;
+	}	
+	
+	public boolean getDeviceState()
+	{
+		return deviceState;
+	}	
+	
+	public boolean setState() {
+		if(state) state = false;
+		else state = true;
+		
+		return state;
 	}
 	
 	void setTimestamp()

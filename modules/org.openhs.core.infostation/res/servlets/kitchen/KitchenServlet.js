@@ -33,6 +33,13 @@ var KitchenInfoStation;
             } });
         return result;
     }
+    function postAjax(urlAdr, id, dataPost) {
+        var result = null;
+        $.ajax({ async: false, type: "POST", url: urlAdr, data: { postId: id, dataId: dataPost }, dataType: "json", success: function (response) {
+                result = response;
+            } });
+        return result;
+    }
     var WeatherData = (function () {
         function WeatherData() {
             this.tempIn = 0.0;
@@ -156,9 +163,16 @@ var KitchenInfoStation;
             }
             else if (appMode == Application.Floor) {
                 var room = this.floor.clickedTempMark(mousePos.x, mousePos.y);
+                var light = this.floor.clickedSwitchMark(mousePos.x, mousePos.y);
                 if (room != -1) {
                     appMode = Application.Room;
                     roomNum = room;
+                }
+                else if (light != -1) {
+                    //window.alert("switch clicked !!");
+                    postAjax('kitchen', "switchClicked", "switch1");
+                    this.getData('kitchen');
+                    this.paint();
                 }
                 else {
                     appMode = Application.None;
@@ -195,6 +209,16 @@ var KitchenInfoStation;
             //Other objects...
             this.forecastScreen.getData(url);
             this.floor.getData(url);
+        };
+        BasicScreen.prototype.postData = function (url) {
+            var data = {
+                switch1: "clicked",
+                bar: "barValue",
+                baz: "bazValue"
+            };
+            //var switch1 = "clicked";
+            var dataSend = JSON.stringify(data);
+            var send = postAjax(url, "mmm", dataSend);
         };
         /*
     //Get data from server...
@@ -626,6 +650,101 @@ var KitchenInfoStation;
         };
         return TempMark;
     }());
+    var SwitchMark = (function () {
+        function SwitchMark(ctx, x, y, width, height) {
+            this.x = 0;
+            this.y = 0;
+            this.width = 0;
+            this.height = 0;
+            this.img = null;
+            this.colorButton = "#666699";
+            this.state = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+            this.ctx = ctx;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.txt = new Text(ctx, x, y, width, height);
+            this.txt.textAlign = "left";
+            this.txt.textBaseline = "middle";
+            this.txt.fontSize = 20;
+            this.img = new Image();
+            this.img.src = "/infores/servlets/kitchen/BulbSymbol.png";
+        }
+        SwitchMark.prototype.setSize = function (x, y, width, height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.txt.x = x;
+            this.txt.y = y;
+            this.txt.width = width;
+            this.txt.height = height;
+        };
+        SwitchMark.prototype.paint = function () {
+            var text = "---";
+            // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+            //logic of switch
+            if (this.state == 0) {
+                this.colorButton = "#808080";
+                text = "---";
+            }
+            else if (this.state == 1) {
+                this.colorButton = "#3333ff";
+                text = "off";
+            }
+            else if (this.state == 2) {
+                this.colorButton = "#33cc33";
+                text = "->on";
+            }
+            else if (this.state == 3) {
+                this.colorButton = "#ffaa00";
+                text = "on";
+            }
+            else if (this.state == 4) {
+                this.colorButton = "#9999ff";
+                text = "->off";
+            }
+            else {
+                this.colorButton = "#808080";
+                text = "---";
+            }
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x + (this.width / 2), this.y, this.width / 2, 0, 2 * Math.PI, false);
+            this.ctx.fillStyle = this.colorButton;
+            this.ctx.fill();
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = '#00cc69';
+            this.ctx.stroke();
+            this.ctx.restore();
+            this.txt.x = this.x + 30;
+            this.txt.paint(text);
+            //Draw image...
+            //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
+            this.ctx.restore();
+            // }                         
+        };
+        SwitchMark.prototype.getRect = function () {
+            var rect = {
+                x: 0,
+                y: 0,
+                width: 0,
+                heigth: 0
+            };
+            rect.x = this.x;
+            rect.y = this.y;
+            rect.width = this.width;
+            rect.heigth = this.height;
+            return rect;
+        };
+        SwitchMark.prototype.isClicked = function (clx, cly) {
+            return (clx > this.x && clx < this.x + this.width && cly < this.y + this.height && cly > this.y);
+        };
+        return SwitchMark;
+    }());
     var StopWatch = (function () {
         function StopWatch(canvas) {
             this.stopwatchRect = null;
@@ -837,6 +956,7 @@ var KitchenInfoStation;
     var Floor = (function () {
         function Floor(canvas) {
             this.TempMarks = new Array();
+            this.SwitchMarks = new Array();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
             this.numRooms = 0;
@@ -850,6 +970,7 @@ var KitchenInfoStation;
             //   }          
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
+            this.SwitchMarks.push(new SwitchMark(this.ctx, 0, 0, 0, 0));
             this.txtNumRooms = new Text(this.ctx, 0, 0, 250, 100);
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
@@ -867,8 +988,11 @@ var KitchenInfoStation;
             this.TempMarks[0].setSize(250, 350, 80, 40);
             this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");
             //Inside mark
-            this.TempMarks[1].setSize(280, 200, 80, 40);
+            this.TempMarks[1].setSize(300, 200, 80, 40);
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
+            //Inner switch
+            this.SwitchMarks[0].setSize(220, 150, 80, 40);
+            this.SwitchMarks[0].paint();
             //Number rooms
             this.txtNumRooms.x = this.width - 10;
             this.txtNumRooms.y = this.height - 10;
@@ -889,11 +1013,27 @@ var KitchenInfoStation;
             }
             return cId;
         };
+        Floor.prototype.clickedSwitchMark = function (clx, cly) {
+            var cId = -1;
+            var n = -1;
+            for (var id in this.SwitchMarks) {
+                n++;
+                if (this.SwitchMarks[id].isClicked(clx, cly)) {
+                    cId = n;
+                }
+            }
+            return cId;
+        };
         Floor.prototype.getData = function (url) {
             var id = "floor1";
             var data = getAjax(url, id);
             if (data != null) {
                 this.numRooms = parseFloat(data['nRooms']);
+            }
+            var id2 = "switch1";
+            var data2 = getAjax(url, id2);
+            if (data2 != null) {
+                this.SwitchMarks[0].state = parseFloat(data2['switchState']);
             }
         };
         return Floor;

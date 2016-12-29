@@ -43,7 +43,20 @@ function getAjax(urlAdr: string, id: string) {
         }});
     
     return result;    
-    }      
+    }    
+    
+function postAjax(urlAdr: string, id: string, dataPost: string) {
+       
+    var result = null;
+            
+    $.ajax({async: false, type: "POST", url: urlAdr, data: {postId: id, dataId: dataPost}, dataType: "json", success: function(response) {
+        
+        result = response;
+                                      
+        }});
+    
+    return result;    
+    }     
         
 class WeatherData {
 
@@ -221,11 +234,23 @@ private MouseClickHandler(event) {
      } else if (appMode == Application.Floor) {     
        
         var room = this.floor.clickedTempMark(mousePos.x, mousePos.y);
+        var light = this.floor.clickedSwitchMark(mousePos.x, mousePos.y);
         
         if (room != -1) {            
             appMode = Application.Room;
             roomNum = room;            
-           } else {
+           } else if (light != -1) {
+            
+             //window.alert("switch clicked !!");
+            
+             postAjax('kitchen', "switchClicked", "switch1");
+            
+             this.getData('kitchen');
+             this.paint();  
+            
+               // this.postData('kitchen');
+            
+            } else {
             appMode = Application.None;
             }        
         
@@ -237,6 +262,7 @@ private MouseClickHandler(event) {
         
     this.paint();    
 }    
+    
 /*
 private createStaticImageCanvas() {
    let canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -246,6 +272,8 @@ private createStaticImageCanvas() {
    this.paintStaticImage();
    this.staticImageCanvas = canvas; }
     */
+    
+   
     
     private getData(url: string) {
     
@@ -265,10 +293,24 @@ private createStaticImageCanvas() {
         
         this.forecastScreen.getData(url);
         this.floor.getData(url);
-        
-    
+            
     }
     
+    private postData (url: string) {
+        
+                 var data = {
+                    switch1: "clicked",
+                    bar: "barValue",
+                    baz: "bazValue"
+                                };
+        
+        //var switch1 = "clicked";
+        
+        var dataSend : string = JSON.stringify(data);
+        
+        var send = postAjax(url, "mmm", dataSend);
+        
+        }
 
     /*
 //Get data from server...    
@@ -800,6 +842,123 @@ class TempMark {
     }
 }
     
+class SwitchMark {
+    
+    private ctx:    CanvasRenderingContext2D;       
+    public x:  number = 0;
+    public y:  number = 0;
+    public width:  number = 0;  
+    public height:  number = 0;    
+    
+    private txt:  Text;
+    
+    private img:HTMLImageElement = null;
+    private imgLoaded: boolean;// = false;       
+    
+    private colorButton: string = "#666699";
+    
+    public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+        
+    constructor (ctx: CanvasRenderingContext2D, x, y, width, height) {
+        this.ctx = ctx;        
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;              
+        
+        this.txt = new Text (ctx, x, y, width, height);
+        this.txt.textAlign = "left";
+        this.txt.textBaseline = "middle";
+        this.txt.fontSize = 20;
+        
+        this.img = new Image();                                
+        this.img.src = "/infores/servlets/kitchen/BulbSymbol.png";              
+    }      
+    
+    setSize (x: number, y: number, width: number, height: number) {
+        
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;     
+        
+        this.txt.x = x;
+        this.txt.y = y;
+        this.txt.width = width;
+        this.txt.height = height;    
+    }
+    
+    public paint () { 
+    
+        var text: string = "---";
+    
+        // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+        
+        //logic of switch
+        if (this.state == 0) {
+            this.colorButton = "#808080"; 
+            text = "---";
+        } else if (this.state == 1) {
+            this.colorButton = "#3333ff";
+            text = "off";
+        } else if (this.state == 2) {
+            this.colorButton = "#33cc33";
+            text = "->on";
+        } else if (this.state == 3) {
+            this.colorButton = "#ffaa00";
+            text = "on";
+        } else if (this.state == 4) {
+            this.colorButton = "#9999ff";
+            text = "->off";
+        } else {
+            this.colorButton = "#808080"; 
+            text = "---";
+        }
+        
+        
+       this.ctx.save();
+       this.ctx.beginPath();
+       this.ctx.arc(this.x + (this.width / 2), this.y, this.width / 2, 0, 2 * Math.PI, false);
+       this.ctx.fillStyle = this.colorButton;
+       this.ctx.fill();
+       this.ctx.lineWidth = 2;
+       this.ctx.strokeStyle = '#00cc69';
+       this.ctx.stroke();
+       this.ctx.restore();      
+                
+       this.txt.x = this.x + 30;
+       this.txt.paint(text);
+        
+        //Draw image...
+     //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
+            this.ctx.restore();        
+       // }                         
+    }     
+    
+    getRect() {
+            var rect = {
+                 x:0,
+                 y:0,
+                 width:0,
+                heigth:0
+            };  
+        
+        rect.x = this.x;
+        rect.y = this.y;
+        rect.width = this.width;
+        rect.heigth = this.height;                
+        
+        return rect;        
+    }         
+    
+    public isClicked (clx:number, cly:number) {                
+        return (clx > this.x && clx < this.x+this.width && cly < this.y+this.height && cly > this.y);        
+    }
+}    
+    
+    
 class StopWatch {
     
     private ctx:                 CanvasRenderingContext2D;
@@ -1093,6 +1252,7 @@ class Floor {
     private height:              number;
         
     private TempMarks: Array<TempMark> = new Array<TempMark>();
+    private SwitchMarks: Array<SwitchMark> = new Array<SwitchMark>();
     
     private imgFloor:HTMLImageElement = null;
     
@@ -1117,7 +1277,9 @@ class Floor {
      //   }          
         
         this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));       
+        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
+        
+        this.SwitchMarks.push(new SwitchMark (this.ctx, 0, 0, 0, 0));    
         
         this.txtNumRooms = new Text (this.ctx, 0, 0, 250, 100);
         this.txtNumRooms.textAlign = "left";
@@ -1141,8 +1303,12 @@ class Floor {
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
-        this.TempMarks[1].setSize(280, 200, 80, 40);
-        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");       
+        this.TempMarks[1].setSize(300, 200, 80, 40);
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");    
+        
+        //Inner switch
+        this.SwitchMarks[0].setSize(220, 150, 80, 40);
+        this.SwitchMarks[0].paint();          
         
          //Number rooms
         this.txtNumRooms.x = this.width - 10;
@@ -1172,6 +1338,23 @@ class Floor {
         return cId;
     }    
     
+    public clickedSwitchMark (clx:number, cly:number) {
+        
+        let cId: number = -1;
+        let n:   number = -1;
+        
+        for (let id in this.SwitchMarks) {
+             
+            n++;
+            
+            if (this.SwitchMarks[id].isClicked(clx, cly)) {
+                cId = n;
+             }
+        }        
+                
+        return cId;
+    }     
+    
     public getData(url: string) {   
      
         var id: string = "floor1";
@@ -1180,7 +1363,15 @@ class Floor {
                 
         if (data != null) {
             this.numRooms = parseFloat(data['nRooms']);
-            }                     
+            }   
+        
+        var id2: string = "switch1";        
+        var data2 = getAjax(url, id2);
+                
+        if (data2 != null) {
+            this.SwitchMarks[0].state = parseFloat(data2['switchState']);                                 
+            
+            } 
     }      
     
 }
