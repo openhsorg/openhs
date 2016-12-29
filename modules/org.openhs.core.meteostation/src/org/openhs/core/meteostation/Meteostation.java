@@ -33,7 +33,10 @@ public class Meteostation {
     /*
      * What sensors we deal with.
      */
-    public String sensorInString = "floors/Floor1/rooms/Room0/sensors/Room0_Sensor1";
+    //public String sensorInString = "floors/Floor1/rooms/Room0/sensors/Room0_Sensor1";
+    //public String sensorOutString = "floors/Floor1/rooms/Room1/sensors/Room1_Sensor1";
+    
+    public String sensorInString = "floors/Floor2/rooms/Room0/sensors/Sensor_WC";
     public String sensorOutString = "floors/Floor1/rooms/Room1/sensors/Room1_Sensor1";
 
     /*
