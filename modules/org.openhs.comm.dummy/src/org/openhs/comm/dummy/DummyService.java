@@ -23,11 +23,13 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 	private Logger logger = LoggerFactory.getLogger(DummyService.class);
 	
 	private final String m_name = "DummyService";
-	private IMessageHandler m_mh = null;
+	//private IMessageHandler m_mh = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
+    
     private ISiteService m_siteService = null;
-
+    private IMessageHandler m_messageHandler = null;
+    
     private ObjectFactory<String> m_updaterFactory;
     private ObjectFactory<String> m_thingFactory;
     
@@ -70,7 +72,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 				logger.info("    " + entry.getKey() + " = " +
 						entry.getValue() + " of type " + entry.getValue().getClass().toString());
 				if(entry.getKey().substring(0, 5).equals("Dummy")) {
-					try {
+					/*try {
 						Thing thg = createThing((String)entry.getValue());
 						logger.info("      setThingDevice: " + entry.getKey() + " " + (thg != null ? thg.getClass().getName() : "null"));
 						if (thg != null) {
@@ -78,26 +80,25 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 						}
 					} catch (SiteException e) {
 						logger.info(e.getMessage());
-					}
+					}*/
 				}
 			}
 		}
-		
 	}
 	
     public void terminate() {
         running = false;
     }
 	
-	@Override
-	public void registerMessageHandler(IMessageHandler mh) {
-		m_mh = mh;
-	}
-
-	@Override
-	public void unregisterMessageHandler(IMessageHandler mh) {
-		m_mh = null;
-	}
+//	@Override
+//	public void registerMessageHandler(IMessageHandler mh) {
+//		//m_mh = null;
+//	}
+//
+//	@Override
+//	public void unregisterMessageHandler(IMessageHandler mh) {
+//		//m_mh = null;
+//	}
 
 	@Override
 	public void sendMessage(Message m) {
@@ -111,17 +112,27 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 	}
 
     public void setService(ISiteService siteService) {
-    	logger.info( "setService(): ISiteService");
+    	logger.info( "**** setService(): ISiteService");
     	m_siteService = siteService;
     }
 
     public void unsetService(ISiteService siteService) {
-    	logger.info( "unsetService(): ISiteService");
+    	logger.info( "**** unsetService(): ISiteService");
     	if (m_siteService == siteService)
     		m_siteService = null;
     }
 
-	
+    public void setService(IMessageHandler messageHandler) {
+    	logger.info( "**** setService(): IMessageHandler");
+    	m_messageHandler = messageHandler;
+    }
+
+    public void unsetService(IMessageHandler messageHandler) {
+    	logger.info( "**** unsetService(): IMessageHandler");
+    	if (m_messageHandler == messageHandler)
+    		m_messageHandler = null;
+    }
+
 	@Override
 	public void run() {
 		double temp = 19.0;
@@ -132,7 +143,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 
 		while (running) {
 									
-			if (m_mh != null) {			
+			if (m_messageHandler != null) {			
 				//msg 0
 				{
 					temp += 1.0;
@@ -144,10 +155,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 					m_msg0.m_value = String.valueOf(temp);
 
 					Message mes = new Message(m_name, "dummy", m_msg0.toString());
-
-					if (m_mh != null) {
-						m_mh.handleMessage(mes, this);
-					}
+					m_messageHandler.handleMessage(mes, this);
 				}
 
 				//msg 1
@@ -161,10 +169,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 					m_msg1.m_value = String.valueOf(temp1);
 
 					Message mes = new Message(m_name, "dummy", m_msg1.toString());
-
-					if (m_mh != null) {
-						m_mh.handleMessage(mes, this);
-					}
+					m_messageHandler.handleMessage(mes, this);
 				}
 			
 			}
@@ -178,13 +183,13 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		}
 	}
 
-	private Thing createThing(String thingType ) {
-		Object obj = null;
-		if (m_thingFactory.hasClass(thingType)) {
-    		obj = m_thingFactory.createObject(thingType, "");
-    	}
-		return (Thing) obj;
-	}
+//	private Thing createThing(String thingType ) {
+//		Object obj = null;
+//		if (m_thingFactory.hasClass(thingType)) {
+//    		obj = m_thingFactory.createObject(thingType, "");
+//    	}
+//		return (Thing) obj;
+//	}
 
 	@Override
 	public ISensorUpdater parseMessage(Message msg) {

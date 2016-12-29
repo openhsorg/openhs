@@ -21,10 +21,7 @@ import org.openhs.comm.api.IDeviceMapping;
 import org.openhs.comm.api.IMessageHandler;
 import org.openhs.comm.api.IMessageParser;
 import org.openhs.comm.api.Message;
-import org.openhs.comm.api.SensorMessage;
-import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.SiteException;
-import org.openhs.core.commons.Temperature;
 import org.openhs.core.site.api.ISensorUpdater;
 import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
@@ -83,31 +80,33 @@ public class Dataupdate implements IMessageHandler, Runnable {
 		mapping(openhsHome + mappingFileName);
 	}
 	
-    public void setService(ICommService cs) {
-    	System.out.println("org.openhs.core.dataupdate: Set ICommService: " + cs.getName());
-    	cs.registerMessageHandler(this);
-    }
-
-    public void unsetService(ICommService cs) {
-    	System.out.println("org.openhs.core.dataupdate: UnSet ICommService: " + cs.getName());
-    	cs.unregisterMessageHandler(this);
-    }
-
     public void setService(ISiteService siteService) {
-    	System.out.println("org.openhs.core.dataupdate: Set ISiteService: ");
+    	logger.info( "**** setService(): ISiteService");
     	m_siteService = siteService;
     }
 
     public void unsetService(ISiteService siteService) {
-    	System.out.println("org.openhs.core.dataupdate: UnSet ISiteService: ");
+    	if (m_siteService == siteService)
+        	m_siteService = null;
+    	logger.info( "**** unsetService(): ISiteService");
     }
 
-    public void setService(IMessageParser prs) {
+    public void addService(ICommService cs) {
+    	logger.info( "**** addService(): ICommService:" + cs.getName());
+    	//cs.registerMessageHandler(this);
+    }
+
+    public void removeService(ICommService cs) {
+    	logger.info( "**** removeService(): ICommService:" + cs.getName());
+    	//cs.unregisterMessageHandler(this);
+    }
+
+    public void addService(IMessageParser prs) {
     	System.out.println("org.openhs.core.dataupdate: Set IMessageParser: ");
     	m_parser = prs;
     }
 
-    public void unsetService(IMessageParser prs) {
+    public void removeService(IMessageParser prs) {
     	System.out.println("org.openhs.core.dataupdate: UnSet IMessageParser: ");
     	m_parser = null;
     }
@@ -127,8 +126,11 @@ public class Dataupdate implements IMessageHandler, Runnable {
     		}
     		
     		//TODO select parser according channel and topic
-    		ISensorUpdater su = m_parser.parseMessage(msg);
-        	if (su != null) {
+    		ISensorUpdater su = null;
+    		if (m_parser != null)
+    			su = m_parser.parseMessage(msg);
+        	
+    		if (su != null) {
 
         		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/' + su.getAddress();
         		if(m_log_num < 4) logger.debug("devicePath: " + devicePath);

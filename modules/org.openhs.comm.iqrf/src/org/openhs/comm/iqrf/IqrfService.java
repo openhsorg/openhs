@@ -41,7 +41,7 @@ public class IqrfService implements ICommService, Runnable {
     
     
 	private final String m_name = "IqrfService";
-	private IMessageHandler m_mh = null;
+	private IMessageHandler m_messageHandler = null;
 	private Thread m_myThd = null;
     private volatile boolean running = true;
 
@@ -186,15 +186,26 @@ public class IqrfService implements ICommService, Runnable {
         running = false;
     }
 	
-	@Override
-	public synchronized void registerMessageHandler(IMessageHandler mh) {
-		m_mh = mh;
-	}
+//	@Override
+//	public synchronized void registerMessageHandler(IMessageHandler mh) {
+//		m_mh = mh;
+//	}
+//
+//	@Override
+//	public void unregisterMessageHandler(IMessageHandler mh) {
+//		m_mh = null;
+//	}
 
-	@Override
-	public void unregisterMessageHandler(IMessageHandler mh) {
-		m_mh = null;
-	}
+    public void setService(IMessageHandler messageHandler) {
+    	logger.info( "**** setService(): IMessageHandler");
+    	m_messageHandler = messageHandler;
+    }
+
+    public void unsetService(IMessageHandler messageHandler) {
+    	logger.info( "**** unsetService(): IMessageHandler");
+    	if (m_messageHandler == messageHandler)
+    		m_messageHandler = null;
+    }
 
 	@Override
 	public void sendMessage(Message m) {
@@ -232,8 +243,8 @@ public class IqrfService implements ICommService, Runnable {
                     double val = Double.parseDouble(strVal);
                     SensorMessage m_msg = new SensorMessage("Iqrf", "Sensor" + nodeId, val, 0.0);
                     m_msg.setTopic("Iqrf");
-					if (m_mh != null)
-						m_mh.handleMessage(m_msg, this);
+					if (m_messageHandler != null)
+						m_messageHandler.handleMessage(m_msg, this);
     
                 } else {
                     CallRequestProcessingState procState = thermo.getCallRequestProcessingStateOfLastCall();

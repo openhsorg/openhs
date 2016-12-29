@@ -1,30 +1,32 @@
 package org.openhs.comm.mqtt;
 
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
-
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.Message;
 import org.openhs.comm.api.IMessageHandler;
+import org.openhs.comm.api.Message;
 import org.openhs.comm.api.SensorMessage;
-import org.openhs.comm.api.TopicsID;
 import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MqttService implements MqttCallback, ICommService {
 
+	private Logger logger = LoggerFactory.getLogger(MqttService.class);
+	
 	Map<String, Object> m_properties = null;
 
 	final String m_name = "Mqtt";
@@ -202,22 +204,22 @@ public class MqttService implements MqttCallback, ICommService {
 
 	}
 
-	@Override
-	public void registerMessageHandler(IMessageHandler mh) {
-		m_messageHandler = mh;
-	}
+    public void setService(IMessageHandler messageHandler) {
+    	logger.info( "**** setService(): IMessageHandler");
+    	m_messageHandler = messageHandler;
+    }
+
+    public void unsetService(IMessageHandler messageHandler) {
+    	logger.info( "**** unsetService(): IMessageHandler");
+    	if (m_messageHandler == messageHandler)
+    		m_messageHandler = null;
+    }
 
 	@Override
 	public void sendMessage(Message m) {
 		// TODO Auto-generated method stub
 
 	}	
-
-	@Override
-	public void unregisterMessageHandler(IMessageHandler mh) {
-		m_messageHandler = null;
-	}
-
 
 	@Override
 	public String getName() {

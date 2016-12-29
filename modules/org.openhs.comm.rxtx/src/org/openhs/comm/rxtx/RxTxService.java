@@ -188,16 +188,16 @@ public class RxTxService implements ICommService{
 	          }
 	      }
 
-		@Override
-		public void registerMessageHandler(IMessageHandler mh) {
-			// TODO Auto-generated method stub
-		}
-
-
-		@Override
-		public void unregisterMessageHandler(IMessageHandler mh) {
-			// TODO Auto-generated method stub
-		}
+//		@Override
+//		public void registerMessageHandler(IMessageHandler mh) {
+//			// TODO Auto-generated method stub
+//		}
+//
+//
+//		@Override
+//		public void unregisterMessageHandler(IMessageHandler mh) {
+//			// TODO Auto-generated method stub
+//		}
 
 
 		@Override
