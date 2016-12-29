@@ -57,7 +57,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	}
 	
 	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
-		System.out.println("org.openhs.core.dataupdate: Activated...");
+		logger.info("**** activate()");
 		
 		updated(properties);
 		
@@ -73,8 +73,7 @@ public class Dataupdate implements IMessageHandler, Runnable {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
-        System.out.println("Thread successfully stopped.");		
-		System.out.println("org.openhs.core.dataupdate: De-activated...");
+		logger.info("**** deactivate()");
 	}
 	
 	public void updated(Map<String, Object> properties) {
@@ -117,44 +116,38 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	//TODO
     	m_log_num++; 
     	if (msg == null) {
-        	System.out.println("no msg");
+        	logger.debug(" message: null");
     	}
     	else {
     		if(m_log_num < 4) {
-    			System.out.println("do soming: " + msg.getTopic() + " " + msg.getData() );
+    			logger.debug(" message: " + msg.getTopic() + " " + msg.getData() );
     		}
     		if(m_log_num == 4) {
-    			System.out.println("logging of temp stopped after: " + m_log_num + " outputs ..." );
+    			logger.debug("logging of temp stopped after: " + m_log_num + " outputs ..." );
     		}
     		
     		//TODO select parser according channel and topic
-    		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/';
     		ISensorUpdater su = m_parser.parseMessage(msg);
         	if (su != null) {
-        		if(m_log_num < 4) System.out.println("pathAddress: " + su.getAddress());
-        		
-        		devicePath = devicePath + su.getAddress();
+
+        		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/' + su.getAddress();
+        		if(m_log_num < 4) logger.debug("devicePath: " + devicePath);
 
         		if (m_siteService != null) {
-    	  			String thingPath = getOpenhsPath(devicePath);
-    	  			if(m_log_num < 4) System.out.println("thingPath: " + thingPath);
-    	  			
                 	try {
-                		
-						Object obj = m_siteService.getThing(thingPath);
+						Object obj = m_siteService.getThingDevice(devicePath);
 						if (obj != null) {
-							if(m_log_num < 4) System.out.println("Returned class: " + obj.getClass().getName() );
+							if(m_log_num < 4) logger.debug("Returned class: " + obj.getClass().getName() );
 							
 							su.update(obj);
 						}
 					} catch (SiteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.warn("devicePath: " + devicePath + " " + e.getMessage());
 					}
     	  		}
 
         	} else
-				System.out.println("Returned class: " + "null");
+        		logger.debug("Returned class: " + "null");
     	}
     }
     

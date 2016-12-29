@@ -41,11 +41,9 @@ public class OpenhsProps {
     	m_openhsPropsFile = m_openhsDir + OHS_PROPS;
     }
 
-    public void loadComponentProps(String componentNameKey, String componentPropFileKey )
+    private void loadComponentProps(String componentName, String componentPropFile )
     		throws IOException {
 		// get the property values for communication
-		String componentName = m_properties.getProperty(componentNameKey);
-		String componentPropFile = m_properties.getProperty(componentPropFileKey);
     	InputStream input = null;
 		
 		// load properties from comConfigFile
@@ -85,15 +83,8 @@ public class OpenhsProps {
     		logger.info("===================== openhs properties =====================");
     		logger.info(logger.getName());
 
-            listProps(m_properties);    		
+            loadProps(m_properties);    		
             
-    		// configuration of siteService
-            loadComponentProps("siteComponent", "siteConfigFile");
-    		// configuration of comm
-            loadComponentProps("commComponent", "commConfigFile");
-    		// configuration of dataUpdate
-            loadComponentProps("dataUpdateComponent", "dataUpdateConfigFile");
-
     	} catch (IOException ex) {
     		ex.printStackTrace();
     	} finally {
@@ -108,7 +99,7 @@ public class OpenhsProps {
     	}
     }
     
-    private void listProps(Properties props)
+    private void loadProps(Properties props)
     {
         if(props != null && ! props.isEmpty()) {
             Iterator<Entry<Object, Object>> it = props.entrySet().iterator();
@@ -116,6 +107,12 @@ public class OpenhsProps {
                 Entry<Object, Object> entry = it.next();
                 logger.info(entry.getKey() + " = " +
                 	entry.getValue() + " of type " + entry.getValue().getClass().toString());
+                try {
+					loadComponentProps((String)entry.getKey(),(String)entry.getValue());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         }
     }
@@ -124,21 +121,21 @@ public class OpenhsProps {
     	return this.m_properties;
     }
     
-    void activate() {
+    public void activate() {
         logger.info("org.openhs.core.cfg: activate()");
 		loadProps();
     }
     
-    void deactivate() {
+    public void deactivate() {
         logger.info("org.openhs.core.cfg: deactivate()");
     }
     
-    void setService(ConfigurationAdmin ca) {
+    public void setService(ConfigurationAdmin ca) {
         logger.info("org.openhs.core.cfg: setService(ConfigurationAdmin ca)");
 		m_ca = ca;
     }
     
-    void unsetService(ConfigurationAdmin ca) {
+    public void unsetService(ConfigurationAdmin ca) {
         logger.info("org.openhs.core.cfg: unsetService(ConfigurationAdmin ca)");
 		if(m_ca == ca)
 			m_ca = null;

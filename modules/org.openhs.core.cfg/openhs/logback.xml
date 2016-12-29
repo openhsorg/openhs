@@ -360,8 +360,13 @@
             <appender-ref ref="FILE" />
     </logger>
 
+    <!-- org.openhs.core.dataupdate package --> 
+    <logger name="org.openhs.core.dataupdate.Dataupdate" level="DEBUG">
+            <appender-ref ref="FILE" />
+    </logger>
+	
     <!-- root -->
     <root level="INFO">
-        <!--  appender-ref ref="STDOUT" /-->
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

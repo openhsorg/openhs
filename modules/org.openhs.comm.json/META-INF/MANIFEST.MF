@@ -9,5 +9,6 @@ Import-Package: org.json;version="20160810.0.0",
  org.openhs.core.commons,
  org.openhs.core.site.api,
  org.openhs.core.site.services,
+ org.osgi.service.component;version="1.2.2",
  org.slf4j;version="1.7.2"
 Service-Component: OSGI-INF/component.xml

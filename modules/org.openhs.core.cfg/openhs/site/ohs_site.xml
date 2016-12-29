@@ -1,31 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <site>
-<floor name="Floor1">
-<room name="Room0">
-<sensor name="Room0_Sensor1"/>
-</room>
-<room name="Room1">
-<sensor name="Room1_Sensor1"/>
-</room>
-<room name="Room2">
-<sensor name="Room2_Sensor1"/>
-</room>
-<room name="Room3">
-<sensor name="Room3_Sensor1"/>
-</room>
-<room name="Room4">
-<sensor name="Room4_Sensor1"/>
-</room>
-<room name="Room5">
-<sensor name="Room5_Sensor1"/>
-</room>
-<room name="Room6">
-<sensor name="Room6_Sensor1"/>
-</room>
-</floor>
-<floor name="Floor2">
-<room name="Room1">
-<sensor name="SensorWC"/>
-</room>
-</floor>
+<thing name="no name" sitePath="floors/Floor1" type="Floor"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room0" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room0/sensors/Room0_Sensor1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room1/sensors/Room1_Sensor1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room2" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room2/sensors/Room2_Sensor1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room3" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room3/sensors/Room3_Sensor1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room4" type="Room"/>
+<thing name="no name" sitePath="floors/Floor1/rooms/Room4/sensors/Room4_Sensor1" type="Room"/>
+<thing name="no name" sitePath="floors/Floor2" type="Floor"/>
+<thing devicePath="DummyService/dummy/0/Thermometer" name="teplomer1" sitePath="floors/Floor2/rooms/Room0/sensors/SensorWC" type="TemperatureSensor"/>
+<thing devicePath="DummyService/dummy/1/Thermometer" name="teplomer2" sitePath="floors/Floor2/rooms/Room1/sensors/SensorWC" type="TemperatureSensor"/>
 </site>
