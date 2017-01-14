@@ -15,10 +15,11 @@ import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.api.IMeteostation;
 import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.weather.OpenhsWeather;
 
-public class Meteostation {
+public class Meteostation implements IMeteostation {
 	
 	TextOutput msg = new TextOutput ();
 

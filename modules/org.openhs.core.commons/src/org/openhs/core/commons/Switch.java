@@ -37,11 +37,11 @@ public class Switch extends Thing {
 	 */
 	Timestamp timestamp = new Timestamp(0);
 		
-	public void setState(boolean state)
+	public void setState(boolean state) throws SiteException
 	{
 		this.state = state;
-		
 		setTimestamp();
+		updateOutcoming();
 	}
 	
 	public boolean getState()
@@ -54,9 +54,15 @@ public class Switch extends Thing {
 		return deviceState;
 	}	
 	
-	public boolean setState() {
+	public void setDeviceState(boolean state)
+	{
+		deviceState = state;
+	}	
+	
+	public boolean setState() throws SiteException {
 		if(state) state = false;
 		else state = true;
+		updateOutcoming();
 		
 		return state;
 	}

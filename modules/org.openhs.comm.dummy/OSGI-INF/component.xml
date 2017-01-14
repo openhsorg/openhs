@@ -2,9 +2,9 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" modified="updated" name="org.openhs.comm.dummy">
    <implementation class="org.openhs.comm.dummy.DummyService"/>
    <service>
-      <provide interface="org.openhs.comm.api.ICommService"/>
-      <provide interface="org.openhs.comm.api.IMessageParser"/>
+      <provide interface="org.openhs.core.commons.api.ICommService"/>
+      <provide interface="org.openhs.core.commons.api.IMessageParser"/>
    </service>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.api.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
-   <reference bind="setService" cardinality="1..1" interface="org.openhs.comm.api.IMessageHandler" name="IMessageHandler" policy="static" unbind="unsetService"/>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.commons.api.IMessageHandler" name="IMessageHandler" policy="static" unbind="unsetService"/>
 </scr:component>

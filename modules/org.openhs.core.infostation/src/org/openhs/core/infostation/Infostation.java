@@ -5,39 +5,41 @@ import java.util.List;
 
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
+import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
-import org.openhs.core.infostation.servlet.InfostationServlet;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
+import org.openhs.core.commons.api.IInfostation;
+import org.openhs.core.commons.api.IMeteostation;
 import org.osgi.service.http.HttpService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class Infostation {
+public class Infostation implements IInfostation {
+
+	private Logger logger = LoggerFactory.getLogger(Infostation.class);
 			
 	TextOutput msg = new TextOutput ();
 	
-	InfostationServlet	m_servlet = null;
-	
 	public ISiteService m_siteService = null;  
-	private Meteostation m_meteo = null;	
+	private IMeteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
 	public OpenhsProps m_openhsProps = null;
         
     public void activate() {
-    	msg.println("org.openhs.core.infostation: activate"); 	  
-    	
-    	m_servlet = new InfostationServlet (this, m_httpService);
-    	       	
+		logger.info("**** activate()");
+		msg.println("org.openhs.core.infostation: activate"); 	      	       	
     }
 
     public void deactivate() {
     	msg.println("org.openhs.core.infostation: deactivate");
-    	
-    	m_servlet.unregister();
-    }	
+		logger.info("**** deactivate()");
+	}	
 
     public void setService(HttpService ser) {
+    	logger.info( "**** setService(): HttpService");
         m_httpService = ser;
     }
 
@@ -45,29 +47,28 @@ public class Infostation {
         if (m_httpService == ser) {
             m_httpService = null;
         }
+    	logger.info( "**** unsetService(): HttpService");
     }      
     
     public void setService(Meteostation ser) {
-        //  msg.println("org.openhs.core.remote.access: Set Meteostation");
-          m_meteo = ser;
+    	  logger.info("**** setService(): Meteostation");
+          m_meteo = ser;          
       }
 
       public void unsetService(Meteostation ser) {
-      	//msg.println("org.openhs.core.remote.access: UnSet Meteostation");
+    	  logger.info("**** unsetService(): Meteostation");
           if (m_meteo == ser) {
               m_meteo = null;
           }
       }	    
-      
-      public Meteostation getMeteostation() {
-    	  return m_meteo;
-      }
-      
+
       public void setService(ISiteService ser) {
+    	  logger.info("**** setService(): ISiteService");
           m_siteService = ser;
       }
 
       public void unsetService(ISiteService ser) {
+    	  logger.info("**** unsetService(): ISiteService");
           if (m_siteService == ser) {
               ser = null;
           }
@@ -85,18 +86,19 @@ public class Infostation {
       
       public boolean setSwitch (String sitePath) {
     	  
+    	  logger.debug(" setSwitch : " + sitePath);
     	  try {
     		  Switch swt = (Switch) m_siteService.getThing(sitePath);
               return swt.setState();      		      		  
     		  
     	  } catch (Exception ex) {
-    		  
+   	    	logger.warn(" Caught exception: " + ex.getMessage());
     	  }    	  	      	      	  
     	  
     	  return false;
       }
       
-      public List getSwitchState (String sitePath) throws SiteException {
+      public List<Boolean> getSwitchState (String sitePath) throws SiteException {
 
     	  List<Boolean> list = new ArrayList<Boolean>();
     	  
@@ -106,5 +108,33 @@ public class Infostation {
    		  list.add(swt.getDeviceState());
    		  
    		  return list;       
-      }      
+      }   
+      
+      public float getTempIn() {
+    	  return this.m_meteo.getTempIn();
+      }
+      
+      public float getTempOut() {
+    	  return this.m_meteo.getTempOut();
+      }
+      
+      public Weather getForecastWeather6() {    	    	    
+      	return this.m_meteo.getForecastWeather6();
+      }    
+      
+      public float getCloudsForecast() {      	
+    	  return this.m_meteo.getCloudsForecast();
+      }    
+      
+      public float getTempForecast() {
+    	  return this.m_meteo.getTempForecast();
+      }    
+      
+      public boolean isFrost() {
+    	  return this.m_meteo.isFrost();
+      }   
+      
+      public ArrayList<Weather> getForecasts() {    	    	    
+    	  return this.m_meteo.getForecasts();
+      }          
 }

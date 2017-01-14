@@ -2,8 +2,8 @@ package org.openhs.core.weather;
 
 import java.util.ArrayList;
 
-import org.openhs.comm.api.IOpenhsWeather;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.api.IOpenhsWeather;
 
 public class OpenhsWeather implements IOpenhsWeather {
 			

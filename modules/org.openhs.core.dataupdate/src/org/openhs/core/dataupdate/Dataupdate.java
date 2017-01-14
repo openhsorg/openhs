@@ -2,6 +2,7 @@ package org.openhs.core.dataupdate;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,14 +16,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.openhs.comm.api.DeviceMapping;
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IDeviceMapping;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.IMessageParser;
-import org.openhs.comm.api.Message;
+import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.SiteException;
-import org.openhs.core.site.api.ISensorUpdater;
+import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.ThingUpdater;
+import org.openhs.core.commons.api.DeviceMapping;
+import org.openhs.core.commons.api.ICommService;
+import org.openhs.core.commons.api.IDeviceMapping;
+import org.openhs.core.commons.api.IMessageHandler;
+import org.openhs.core.commons.api.IMessageParser;
+import org.openhs.core.commons.api.Message;
 import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
@@ -33,51 +36,106 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class Dataupdate implements IMessageHandler, Runnable {
+public class Dataupdate implements IMessageHandler {
 	
 	// initialize logger
 	private Logger logger = LoggerFactory.getLogger(Dataupdate.class);
 
 	private Map<String, Object> m_properties = null;
 
-	private BlockingQueue<Message> m_queue = null;
-	private Thread m_myThd = null;
-    private volatile boolean running = true;
+	private BlockingQueue<Message> m_queueIncoming = null;
+	private BlockingQueue<Message> m_queueOutcoming = null;
+
+	private Thread m_threadIncoming = null;
+    private volatile boolean m_runningIncoming = true;
+    private MessageLoopIncoming m_messageLoopIncoming = null;
+
+	private Thread m_threadOutcoming = null;
+    private volatile boolean m_runningOutcoming = true;
+    private MessageLoopOutcoming m_messageLoopOutcoming = null;
+
+    //service references
     private ISiteService m_siteService = null;
-    private IMessageParser m_parser = null;
-    private int m_log_num = 0; //TODO temporary - use slf4j instead
+    private Map<String, IMessageParser> m_parsers = null;
+    private Map<String, ICommService> m_commServices = null;
+
+    //private int m_log_num = 0; //TODO temporary - use slf4j instead
     
     ArrayList <IDeviceMapping> m_mapping = new ArrayList <IDeviceMapping>();
 	
-	public Dataupdate() {
-		m_queue = new LinkedBlockingQueue<Message>();		   		
+    private class MessageLoopIncoming implements Runnable {
+    	MessageLoopIncoming() {
+    		m_threadIncoming = new Thread(this);
+    		m_threadIncoming.start();
+    	}
+	    @Override
+    	public void run() {
+		     try {
+		       while (m_runningIncoming) { consumeIncoming(m_queueIncoming.poll(20, TimeUnit.SECONDS)); }
+		     } catch (InterruptedException e) { 
+		    	 logger.debug("MessageLoopOutcoming: No message for 20 sec");
+		     }
+    	}
+    	public void terminate() {
+    		m_runningIncoming = false;
+            try {
+            	m_threadIncoming.join();
+    		} catch (InterruptedException ex) {
+    			ex.printStackTrace();
+    		}
+        }
+    }
+    
+    private class MessageLoopOutcoming implements Runnable {
+    	MessageLoopOutcoming() {
+    		m_threadOutcoming = new Thread(this);
+    		m_threadOutcoming.start();
+    	}
+    	@Override
+    	public void run() {
+		     try {
+		       while (m_runningOutcoming) { consumeOutcoming(m_queueOutcoming.poll(20, TimeUnit.SECONDS)); }
+		     } catch (InterruptedException e) { 
+		    	 logger.debug("MessageLoopOutcoming: No message for 20 sec");
+		     }
+    	}
+    	public void terminate() {
+    		m_runningOutcoming = false;
+            try {
+            	m_threadOutcoming.join();
+    		} catch (InterruptedException ex) {
+    			ex.printStackTrace();
+    		}
+        }
+    }
+
+    public Dataupdate() {
+	    m_parsers = new HashMap<>();
+	    m_commServices = new HashMap<>();
+
+		m_queueIncoming = new LinkedBlockingQueue<Message>();		   		
+		m_queueOutcoming = new LinkedBlockingQueue<Message>();		   		
 	}
 	
 	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
 		logger.info("**** activate()");
 		
 		updated(properties);
-		
-		m_myThd = new Thread(this);
-		m_myThd.start();
+		m_messageLoopIncoming = new MessageLoopIncoming();
+		m_messageLoopOutcoming = new MessageLoopOutcoming();
 	}		
 
 	public void deactivate () {
-        this.terminate();
-        try {
-			m_myThd.join();
-		} catch (InterruptedException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
+		m_messageLoopIncoming.terminate();
+		m_messageLoopOutcoming.terminate();
 		logger.info("**** deactivate()");
 	}
 	
 	public void updated(Map<String, Object> properties) {
 		m_properties = properties;
-		String mappingFileName = (String) m_properties.get("deviceMapping");
-		String openhsHome = (String) m_properties.get("openhsHome");
-		mapping(openhsHome + mappingFileName);
+//		String mappingFileName = (String) m_properties.get("deviceMapping");
+//		String openhsHome = (String) m_properties.get("openhsHome");
+//		mapping(openhsHome + mappingFileName);
 	}
 	
     public void setService(ISiteService siteService) {
@@ -92,56 +150,56 @@ public class Dataupdate implements IMessageHandler, Runnable {
     }
 
     public void addService(ICommService cs) {
-    	logger.info( "**** addService(): ICommService:" + cs.getName());
-    	//cs.registerMessageHandler(this);
+    	logger.info( "**** addService(): ICommService: " + cs.getName());
+    	m_commServices.put(cs.getName(), cs);
     }
 
     public void removeService(ICommService cs) {
-    	logger.info( "**** removeService(): ICommService:" + cs.getName());
-    	//cs.unregisterMessageHandler(this);
+    	logger.info( "**** removeService(): ICommService: " + cs.getName());
+    	m_commServices.remove(cs.getName());
     }
 
     public void addService(IMessageParser prs) {
-    	System.out.println("org.openhs.core.dataupdate: Set IMessageParser: ");
-    	m_parser = prs;
+    	logger.info( "**** addService(): IMessageParser: " + prs.getParserName());
+    	m_parsers.put(prs.getParserName(), prs);
     }
 
     public void removeService(IMessageParser prs) {
-    	System.out.println("org.openhs.core.dataupdate: UnSet IMessageParser: ");
-    	m_parser = null;
+    	logger.info( "**** removeService(): IMessageParser: " + prs.getParserName());
+    	m_parsers.remove(prs.getParserName());
     }
 
-    void consume(Message msg) {
-    	//TODO
-    	m_log_num++; 
+    private void consumeIncoming(Message msg) {
     	if (msg == null) {
-        	logger.debug(" message: null");
+        	//logger.debug("consumeIncoming(): message: null");
     	}
     	else {
-    		if(m_log_num < 4) {
-    			logger.debug(" message: " + msg.getTopic() + " " + msg.getData() );
-    		}
-    		if(m_log_num == 4) {
-    			logger.debug("logging of temp stopped after: " + m_log_num + " outputs ..." );
-    		}
+   			logger.debug(" Received message: " + msg.toString());
     		
     		//TODO select parser according channel and topic
-    		ISensorUpdater su = null;
-    		if (m_parser != null)
-    			su = m_parser.parseMessage(msg);
+    		ThingUpdater tu = null;
+    		IMessageParser parser = m_parsers.get(msg.getTopic());
+    		if (parser != null)
+    			tu = parser.parseMessage(msg);
+    		else
+    			logger.warn("Unsupported topic: " + msg.getTopic() + " from channel: " + msg.getChannel());
         	
-    		if (su != null) {
+    		if (tu != null) {
+    			DevicePath dp = tu.getDevicePath();
+    			
+    			dp.setChannel(msg.getChannel());
+    			dp.setTopic(msg.getTopic());
 
-        		String devicePath = msg.getChannel() + '/' + msg.getTopic() + '/' + su.getAddress();
-        		if(m_log_num < 4) logger.debug("devicePath: " + devicePath);
+        		String devicePath = dp.encode(); 
+       			logger.debug("devicePath: " + devicePath);
 
         		if (m_siteService != null) {
                 	try {
-						Object obj = m_siteService.getThingDevice(devicePath);
-						if (obj != null) {
-							if(m_log_num < 4) logger.debug("Returned class: " + obj.getClass().getName() );
+						Thing th = m_siteService.getThingDevice(devicePath);
+						if (th != null) {
+							logger.debug("Returned class: " + th.getClass().getName() );
 							
-							su.update(obj);
+							tu.updateIncoming(th);
 						}
 					} catch (SiteException e) {
 						logger.warn("devicePath: " + devicePath + " " + e.getMessage());
@@ -153,33 +211,41 @@ public class Dataupdate implements IMessageHandler, Runnable {
     	}
     }
     
-    @Override
-	public void run() {
-	     try {
-	       while (running) { consume(m_queue.poll(20, TimeUnit.SECONDS)); }
-	     } catch (InterruptedException e) { 
-			// TODO Auto-generated catch block
-	     	System.out.println("no message for 5 sec");
-	     }
-    }
-		
-    public void terminate() {
-        running = false;
-    }
-    
 	@Override
-	public void handleMessage(Message m, ICommService cs) {
-//		if(m_log_num < 4) {
-//			System.out.println(cs.getName() + ": " + m);
-//		}
+	public void handleIncomingMessage(Message msg) {
 		try {
-			m_queue.offer(m, 200, TimeUnit.MILLISECONDS);
+			m_queueIncoming.offer(msg, 200, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}  
+
+    private void consumeOutcoming(Message msg) {
+    	if (msg == null) {
+        	//logger.debug("consumeOutcoming(): message: null");
+    	}
+    	else {
+        	logger.debug("consumeOutcoming(): " + msg);
+			ICommService channel = m_commServices.get(msg.getChannel());
+			if (channel != null) {
+				channel.sendMessage(msg);
+			}
+			else
+				logger.warn("Unknown channel: " + msg.getChannel() + " to send: " + msg.toString());
+    	}
+    }
 	
+	@Override
+	public void handleOutcomingMessage(Message msg) {
+    	logger.debug("handleOutcomingMessage(): " + msg);
+		try {
+			m_queueOutcoming.offer(msg, 200, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*	
 	public void mapping (String path) {
 
 		File xml = new File(path);
@@ -213,12 +279,10 @@ public class Dataupdate implements IMessageHandler, Runnable {
 	        }
     	}  	
 		
-		/*
-		for (IDeviceMapping map : m_mapping) {   
-			System.out.println("\n++>...: " + ((DeviceMapping)map).getDeviceName());
-			System.out.println("\n++>...: " + ((DeviceMapping)map).getOhsName());			
-		}
-		*/
+//		for (IDeviceMapping map : m_mapping) {   
+//			System.out.println("\n++>...: " + ((DeviceMapping)map).getDeviceName());
+//			System.out.println("\n++>...: " + ((DeviceMapping)map).getOhsName());			
+//		}
 	}
 	
 	public void saveXML(String path) {
@@ -309,4 +373,6 @@ public class Dataupdate implements IMessageHandler, Runnable {
 				
 		return "";
 	}
+	*/
+
 }

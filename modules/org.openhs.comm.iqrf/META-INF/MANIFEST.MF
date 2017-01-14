@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.openhs.comm.iqrf
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/component.xml
-Import-Package: org.openhs.comm.api,
- com.microrisc.simply,
+Import-Package: com.microrisc.simply,
  com.microrisc.simply.di_services,
  com.microrisc.simply.errors,
  com.microrisc.simply.iqrf.dpa.protocol,
@@ -22,6 +21,7 @@ Import-Package: org.openhs.comm.api,
  org.apache.commons.configuration;version="1.9.0",
  org.apache.commons.lang,
  org.apache.commons.lang.exception;version="2.6.0",
+ org.openhs.core.commons.api,
  org.osgi.framework;version="1.8.0",
  org.osgi.service.component;version="1.2.2",
  org.slf4j;version="1.7.2"

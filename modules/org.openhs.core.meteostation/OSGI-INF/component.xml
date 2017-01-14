@@ -2,8 +2,8 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="false" name="org.openhs.core.meteostation">
    <implementation class="org.openhs.core.meteostation.Meteostation"/>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.api.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
+   <reference bind="setWService" cardinality="1..1" interface="org.openhs.core.weather.OpenhsWeather" name="OpenhsWeather" policy="static" unbind="unsetWService"/>
    <service>
       <provide interface="org.openhs.core.meteostation.Meteostation"/>
    </service>
-   <reference bind="setWService" cardinality="1..1" interface="org.openhs.core.weather.OpenhsWeather" name="OpenhsWeather" policy="static" unbind="unsetWService"/>
 </scr:component>

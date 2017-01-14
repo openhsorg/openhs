@@ -3,6 +3,6 @@
    <implementation class="org.openhs.comm.rxtx.RxTxService"/>
    <property name="todoParams" type="String" value="Add some params here ;-)"/>
    <service>
-      <provide interface="org.openhs.comm.api.ICommService"/>
+      <provide interface="org.openhs.core.commons.api.ICommService"/>
    </service>
 </scr:component>

@@ -5,14 +5,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.Message;
-import org.openhs.comm.api.ObjectFactory;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.IMessageParser;
+import org.openhs.core.commons.DevicePath;
+import org.openhs.core.commons.ObjectFactory;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Thing;
-import org.openhs.core.site.api.ISensorUpdater;
+import org.openhs.core.commons.ThingUpdater;
+import org.openhs.core.commons.api.ICommService;
+import org.openhs.core.commons.api.IMessageHandler;
+import org.openhs.core.commons.api.IMessageParser;
+import org.openhs.core.commons.api.Message;
 import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
@@ -23,24 +25,24 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 	private Logger logger = LoggerFactory.getLogger(DummyService.class);
 	
 	private final String m_name = "DummyService";
-	//private IMessageHandler m_mh = null;
+	private final String m_parserName = "dummy";
+
 	private Thread m_myThd = null;
     private volatile boolean running = true;
     
     private ISiteService m_siteService = null;
     private IMessageHandler m_messageHandler = null;
     
-    private ObjectFactory<String> m_updaterFactory;
-    private ObjectFactory<String> m_thingFactory;
+    private ObjectFactory<ThingUpdater, String> m_updaterFactory;
     
-    private DummyMessage m_msg0 = new DummyMessage("0", "Thermometer", "0.0");
-    private DummyMessage m_msg1 = new DummyMessage("1", "Thermometer", "0.0");
-    
+    private DummyMessage m_thm0 = new DummyMessage("0", "Thermometer", "0.0","");
+    private DummyMessage m_thm1 = new DummyMessage("1", "Thermometer", "0.0","");
+
     public DummyService() {
-    	m_updaterFactory = new ObjectFactory<String>();
-    	m_updaterFactory.registerClass("Thermometer", DummyTemperatureSensorUpdater.class);
-    	m_thingFactory = new ObjectFactory<String>();
-    	m_thingFactory.registerClass("TemperatureSensor", DummyTemperatureSensor.class);
+    	m_updaterFactory = new ObjectFactory<ThingUpdater, String>(ThingUpdater.class);
+
+    	m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
+    	m_updaterFactory.registerClass("Switch", SwitchUpdater.class);
     }
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -72,15 +74,24 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 				logger.info("    " + entry.getKey() + " = " +
 						entry.getValue() + " of type " + entry.getValue().getClass().toString());
 				if(entry.getKey().substring(0, 5).equals("Dummy")) {
-					/*try {
-						Thing thg = createThing((String)entry.getValue());
-						logger.info("      setThingDevice: " + entry.getKey() + " " + (thg != null ? thg.getClass().getName() : "null"));
-						if (thg != null) {
-							m_siteService.setThingDevice(entry.getKey(), thg);
+					try {
+						DevicePath devPath = new DevicePath(); 
+						devPath.parse((String) entry.getKey());
+						
+						ThingUpdater tu = m_updaterFactory.createObject(devPath.getType());
+						
+						logger.info("      updater: " + entry.getKey() + " " + (tu != null ? tu.getClass().getName() : "null"));
+						if (tu != null) {
+						
+							tu.setMessageHandler(m_messageHandler);
+							tu.setDevicePath(devPath);
+							
+							Thing th = m_siteService.getThingDevice(entry.getKey());
+							th.setUpdater(tu);
 						}
 					} catch (SiteException e) {
 						logger.info(e.getMessage());
-					}*/
+					}
 				}
 			}
 		}
@@ -90,20 +101,33 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
         running = false;
     }
 	
-//	@Override
-//	public void registerMessageHandler(IMessageHandler mh) {
-//		//m_mh = null;
-//	}
-//
-//	@Override
-//	public void unregisterMessageHandler(IMessageHandler mh) {
-//		//m_mh = null;
-//	}
-
 	@Override
 	public void sendMessage(Message m) {
-		// TODO Auto-generated method stub
+		logger.debug(" Sending message: " + m.toString());
 		
+		//send back response - just workaround here to mimic switch response
+		ThingUpdater tu = parseMessage(m);
+		DevicePath dp = tu.getDevicePath();
+		
+		if (dp.getType().equals("Switch")) {
+			
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			SwitchUpdater dsu = (SwitchUpdater) tu;
+
+		    DummyMessage dmm = new DummyMessage("0", "Switch", "true", "OK");
+			
+			dmm.m_addr = dp.getAddr();
+			dmm.m_value = Boolean.toString(dsu.isState());
+
+			Message mes = new Message(m_name, "dummy", dmm.toString());
+			m_messageHandler.handleIncomingMessage(mes);
+		}
 	}
 
 	@Override
@@ -135,6 +159,12 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
 		double temp = 19.0;
 		double hum = 40.0;
 		
@@ -152,10 +182,11 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 						temp = -4.0;
 					if (hum > 50.0)
 						hum = 40.0;
-					m_msg0.m_value = String.valueOf(temp);
 
-					Message mes = new Message(m_name, "dummy", m_msg0.toString());
-					m_messageHandler.handleMessage(mes, this);
+					m_thm0.m_value = String.valueOf(temp);
+
+					Message mes = new Message(m_name, "dummy", m_thm0.toString());
+					m_messageHandler.handleIncomingMessage(mes);
 				}
 
 				//msg 1
@@ -166,10 +197,11 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 						temp1 = -15.0;
 					if (hum1 > 101.0)
 						hum1 = 80.0;
-					m_msg1.m_value = String.valueOf(temp1);
 
-					Message mes = new Message(m_name, "dummy", m_msg1.toString());
-					m_messageHandler.handleMessage(mes, this);
+					m_thm1.m_value = String.valueOf(temp1);
+
+					Message mes = new Message(m_name, "dummy", m_thm1.toString());
+					m_messageHandler.handleIncomingMessage(mes);
 				}
 			
 			}
@@ -183,24 +215,17 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		}
 	}
 
-//	private Thing createThing(String thingType ) {
-//		Object obj = null;
-//		if (m_thingFactory.hasClass(thingType)) {
-//    		obj = m_thingFactory.createObject(thingType, "");
-//    	}
-//		return (Thing) obj;
-//	}
-
 	@Override
-	public ISensorUpdater parseMessage(Message msg) {
+	public ThingUpdater parseMessage(Message msg) {
 		String[] parts = msg.getData().split(Pattern.quote("|"));
 		String id = parts[1];
 
-		Object obj = null;
-		if (id != null && m_updaterFactory.hasClass(id)) {
-    		obj = m_updaterFactory.createObject(id, msg.getData());
-    	}
-		return (ISensorUpdater) obj;
+   		return m_updaterFactory.createObject(id, msg.getData());
 	}
 
+	@Override
+	public String getParserName() {
+    	return m_parserName;
+	}
+	
 }

@@ -3,8 +3,6 @@ package org.openhs.comm.mqtt;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -15,10 +13,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.Message;
-import org.openhs.comm.api.SensorMessage;
+import org.openhs.core.commons.api.ICommService;
+import org.openhs.core.commons.api.IMessageHandler;
+import org.openhs.core.commons.api.Message;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +63,7 @@ public class MqttService implements MqttCallback, ICommService {
 	 */
 	@Override
 	public void connectionLost(Throwable t) {
-		System.out.println("Connection lost!");
+		logger.warn("Connection lost!");
 		// code to reconnect to the broker would go here if desired
 
 		//connectBroker();
@@ -84,7 +81,7 @@ public class MqttService implements MqttCallback, ICommService {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		//System.out.println("Pub complete" + new String(token.getMessage().getPayload()));
+		//logger.debug("Pub complete" + new String(token.getMessage().getPayload()));
 	}
 	/**
 	 * 
@@ -94,15 +91,15 @@ public class MqttService implements MqttCallback, ICommService {
 	 */
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-//		System.out.println("-");
+//		logger.debug("-");
 /*
 		String msg = new String(message.getPayload());
 
-		System.out.println("-------------------------------------------------");
-		System.out.println("| Topic:" + topic);
-		System.out.println("| Message: " + msg);
-		System.out.println("-------------------------------------------------");
-		//System.out.println("***");
+		logger.debug("-------------------------------------------------");
+		logger.debug("| Topic:" + topic);
+		logger.debug("| Message: " + msg);
+		logger.debug("-------------------------------------------------");
+		//logger.debug("***");
 
 
 		SensorMessage mes = parseMsg(topic, msg);
@@ -110,8 +107,10 @@ public class MqttService implements MqttCallback, ICommService {
 		String msg = new String(message.getPayload());
 		Message mes = new Message(m_name, topic, msg);
 
+		logger.debug("Received: " + m_broker_url + msg);
+
 		if (msg != null && m_messageHandler != null) {
-			m_messageHandler.handleMessage(mes, this);
+			m_messageHandler.handleIncomingMessage(mes);
 		}
 
 	}
@@ -130,7 +129,7 @@ public class MqttService implements MqttCallback, ICommService {
 
 		// Connect to Broker
 		try {
-			System.out.println("Connecting to..." + m_broker_url + " clientID: " + clientID);
+			logger.debug("Connecting to..." + m_broker_url + " clientID: " + clientID);
 
 			myClient = new MqttClient(m_broker_url, clientID, persistence);
 			myClient.setCallback(this);
@@ -142,10 +141,10 @@ public class MqttService implements MqttCallback, ICommService {
 		}
 
 		if (brokerConnected) {				
-			System.out.println("Connected to " + m_broker_url + " ... OK");
+			logger.debug("Connected to " + m_broker_url + " ... OK");
 		}
 		else {
-			System.out.println("Connected to " + m_broker_url + " ... Failed!!!");
+			logger.debug("Connected to " + m_broker_url + " ... Failed!!!");
 			return;
 		}
 
@@ -158,7 +157,7 @@ public class MqttService implements MqttCallback, ICommService {
 			// wait to ensure subscribed messages are delivered
 			if (brokerConnected) {
 				myClient.disconnect();
-				System.out.println("Disconnected " + m_broker_url );					
+				logger.debug("Disconnected " + m_broker_url );					
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -167,7 +166,9 @@ public class MqttService implements MqttCallback, ICommService {
 
 	public void subscribe () {
 
-		if (!brokerConnected) return;			
+		if (!brokerConnected) {
+	    	logger.warn( " connection broken");
+		}
 
 		// subscribe to topic if subscriber
 		try {
@@ -177,30 +178,6 @@ public class MqttService implements MqttCallback, ICommService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-	}
-
-	public void publish (String message) {
-
-		if (!brokerConnected) return;
-
-		MqttMessage msg = new MqttMessage(message.getBytes());
-		int qos = 2;
-		msg.setQos(qos);
-		msg.setRetained(false);
-
-		MqttTopic topic = myClient.getTopic(myTopic);
-
-		MqttDeliveryToken token = null;
-		try {
-			// publish message to broker
-			token = topic.publish(msg);
-			// Wait until the message has been delivered to the broker
-			token.waitForCompletion();
-			Thread.sleep(100);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
 
 	}
 
@@ -217,8 +194,27 @@ public class MqttService implements MqttCallback, ICommService {
 
 	@Override
 	public void sendMessage(Message m) {
-		// TODO Auto-generated method stub
+		if (!brokerConnected) {
+	    	logger.warn( " connection broken");
+		}
 
+		MqttMessage msg = new MqttMessage(m.getData().getBytes());
+		int qos = 2;
+		msg.setQos(qos);
+		msg.setRetained(false);
+
+		MqttTopic topic = myClient.getTopic(m.getTopic());
+
+		MqttDeliveryToken token = null;
+		try {
+			// publish message to broker
+			token = topic.publish(msg);
+			// Wait until the message has been delivered to the broker
+			token.waitForCompletion();
+			Thread.sleep(100);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}	
 
 	@Override
@@ -227,7 +223,7 @@ public class MqttService implements MqttCallback, ICommService {
 	}
 
 	public synchronized void activate(ComponentContext componentContext, Map<String, Object> properties) {
-		System.out.println("MqttService: activate");
+		logger.debug("MqttService: activate");
 
 		updated(properties);
 
@@ -252,79 +248,9 @@ public class MqttService implements MqttCallback, ICommService {
 	}
 
 	public void deactivate () {
-		System.out.println("MqttService: deactivate");
+		logger.debug("MqttService: deactivate");
 		disconnectBroker();
 	}		
-
-
-	// TODO parser will be romoved outside this class
-	public SensorMessage parseMsg(String topic, String msg) {    
-		//Example: ohs device=sensor name=Sensor1 temp1=22.10 hum=88.5
-		SensorMessage sensorMsg = null;
-
-		String pattern1;
-		String pattern2;
-		Pattern p;
-		Matcher m;						
-
-		if (msg.contains("ohs"))
-		{
-			pattern1 = "device=";
-			pattern2 = " ";
-
-			p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
-			m = p.matcher(msg);    	
-
-			String deviceName = "";
-
-			while (m.find()) {    
-
-				deviceName = m.group(1);
-			}			
-
-			System.out.println("COMMAND:> device: "+ deviceName);			
-			switch (deviceName)
-			{
-			case "sensor":				
-				String stringName = parseValue ("name", msg);
-
-				String stringTemp = parseValue ("temp", msg);
-
-				String stringHum = parseValue ("hum", msg);
-
-				System.out.println("COMMAND:> device***: " + stringName + ":" + stringTemp + ":" + stringHum);	
-
-				sensorMsg =  new SensorMessage(deviceName, stringName,
-						Double.parseDouble(stringTemp), Double.parseDouble(stringHum));
-
-				break;			
-			}
-		}				    		    
-
-		sensorMsg.setTopic(topic);
-		sensorMsg.setData(msg);
-		return sensorMsg;
-	}
-
-
-	String parseValue (String id, String text)
-	{
-		String output = "";
-
-		String pattern1 = id + "=";
-		String pattern2 = " ";
-
-		Pattern p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
-		Matcher m = p.matcher(text);    			
-
-		while (m.find()) {    
-
-			output = m.group(1);
-		}					
-
-		return output;    	
-	}
-
 
 	/**
 	 * 
@@ -348,7 +274,7 @@ public class MqttService implements MqttCallback, ICommService {
 
 			// Connect to Broker
 			try {
-				System.out.println("Connecting to..." + BROKER_URL + " clientID: " + clientID);
+				logger.debug("Connecting to..." + BROKER_URL + " clientID: " + clientID);
 
 				myClient = new MqttClient(BROKER_URL, clientID, persistence);
 				myClient.setCallback(this);
@@ -358,7 +284,7 @@ public class MqttService implements MqttCallback, ICommService {
 				System.exit(-1);
 			}
 
-			System.out.println("Connected to " + BROKER_URL);
+			logger.debug("Connected to " + BROKER_URL);
 
 			// setup topic
 			// topics on m2m.io are in the form <domain>/<stuff>/<thing>
@@ -426,23 +352,23 @@ public class MqttService implements MqttCallback, ICommService {
             MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
-            System.out.println("Connecting to broker: "+broker);
+            logger.debug("Connecting to broker: "+broker);
             sampleClient.connect(connOpts);
-            System.out.println("Connected");
-            System.out.println("Publishing message: "+ message);
+            logger.debug("Connected");
+            logger.debug("Publishing message: "+ message);
             MqttMessage msg = new MqttMessage(message.getBytes());
             msg.setQos(qos);
             sampleClient.publish(topic, msg);
-            System.out.println("Message published");
+            logger.debug("Message published");
             sampleClient.disconnect();
-            System.out.println("Disconnected");
+            logger.debug("Disconnected");
            // System.exit(0);
         } catch(MqttException me) {
-            System.out.println("reason "+me.getReasonCode());
-            System.out.println("msg "+me.getMessage());
-            System.out.println("loc "+me.getLocalizedMessage());
-            System.out.println("cause "+me.getCause());
-            System.out.println("excep "+me);
+            logger.debug("reason "+me.getReasonCode());
+            logger.debug("msg "+me.getMessage());
+            logger.debug("loc "+me.getLocalizedMessage());
+            logger.debug("cause "+me.getCause());
+            logger.debug("excep "+me);
             me.printStackTrace();
         }
 

@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.Message;
+import org.openhs.core.commons.api.ICommService;
+import org.openhs.core.commons.api.IMessageHandler;
+import org.openhs.core.commons.api.Message;
 import org.osgi.service.component.ComponentContext;
 
 import gnu.io.CommPort;

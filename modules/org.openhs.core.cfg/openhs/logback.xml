@@ -365,6 +365,21 @@
             <appender-ref ref="FILE" />
     </logger>
 	
+    <!-- org.openhs.core.dataupdate package --> 
+    <logger name="org.openhs.comm.dummy.DummyService" level="DEBUG">
+            <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- org.openhs.comm.iqrf.json package --> 
+    <logger name="org.openhs.comm.iqrf.json.SwitchUpdater" level="DEBUG">
+            <appender-ref ref="FILE" />
+    </logger>
+	
+    <!-- org.openhs.comm.mqtt package --> 
+    <logger name="org.openhs.comm.mqtt.MqttService" level="DEBUG">
+            <appender-ref ref="FILE" />
+    </logger>
+
     <!-- root -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />

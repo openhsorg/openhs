@@ -4,7 +4,7 @@ Bundle-Name: Rxtx
 Bundle-SymbolicName: org.openhs.comm.rxtx
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.openhs.comm.api,
+Import-Package: org.openhs.core.commons.api,
  org.osgi.service.component;version="1.2.2"
 Bundle-ClassPath: gnu.io.rxtx_2.1.7.4_v20071016.jar,
  .

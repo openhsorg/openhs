@@ -8,12 +8,9 @@ import java.util.Map.Entry;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-
-import org.openhs.comm.api.ICommService;
-import org.openhs.comm.api.Message;
-import org.openhs.comm.api.IMessageHandler;
-import org.openhs.comm.api.SensorMessage;
-
+import org.openhs.core.commons.api.ICommService;
+import org.openhs.core.commons.api.IMessageHandler;
+import org.openhs.core.commons.api.Message;
 import org.osgi.service.component.ComponentContext;
 
 import org.slf4j.Logger;
@@ -186,16 +183,6 @@ public class IqrfService implements ICommService, Runnable {
         running = false;
     }
 	
-//	@Override
-//	public synchronized void registerMessageHandler(IMessageHandler mh) {
-//		m_mh = mh;
-//	}
-//
-//	@Override
-//	public void unregisterMessageHandler(IMessageHandler mh) {
-//		m_mh = null;
-//	}
-
     public void setService(IMessageHandler messageHandler) {
     	logger.info( "**** setService(): IMessageHandler");
     	m_messageHandler = messageHandler;
@@ -241,10 +228,10 @@ public class IqrfService implements ICommService, Runnable {
 	                  logger.debug("Temperature on the node " + nodeId + ": " + strVal + " *C"
 	                	);
                     double val = Double.parseDouble(strVal);
-                    SensorMessage m_msg = new SensorMessage("Iqrf", "Sensor" + nodeId, val, 0.0);
+                    Message m_msg = new Message("Iqrf", "Sensor" + nodeId, Double.toString(val));
                     m_msg.setTopic("Iqrf");
 					if (m_messageHandler != null)
-						m_messageHandler.handleMessage(m_msg, this);
+						m_messageHandler.handleIncomingMessage(m_msg);
     
                 } else {
                     CallRequestProcessingState procState = thermo.getCallRequestProcessingStateOfLastCall();

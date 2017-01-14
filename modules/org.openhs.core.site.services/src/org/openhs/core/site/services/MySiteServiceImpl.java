@@ -29,6 +29,7 @@ import org.openhs.core.commons.HumiditySensor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.TextOutput;
@@ -844,6 +845,10 @@ public class MySiteServiceImpl implements ISiteService {
 							ss.devPaths.put(devicePath, sitePath);
 							
 							//System.out.println("\n+classXXX>" + devicePath + " : " + sitePath);
+						}
+						else if (obj instanceof Switch) {
+							String devicePath = elementSitePath.getAttribute("devicePath");
+							ss.devPaths.put(devicePath, sitePath);
 						}
 					}
 				}

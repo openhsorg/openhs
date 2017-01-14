@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.openhs.core.meteostation
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.openhs.core.commons,
+ org.openhs.core.commons.api,
  org.openhs.core.site.api,
  org.openhs.core.site.services,
  org.openhs.core.weather,
