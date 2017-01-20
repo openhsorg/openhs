@@ -11,12 +11,21 @@ public class TemperatureSensorUpdater extends ThingUpdater {
 	
 	public TemperatureSensorUpdater() {
 		m_iqrfNode = new IqrfNode();
-		m_temperature = -273.15;
+
+    	m_temperature = -273.15;
 	}
 
 	public TemperatureSensorUpdater(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
-		m_temperature = jobj.getDouble("Temperature");
+
+		getDevicePath().setAddr(Integer.toString(m_iqrfNode.getAddress()));
+		getDevicePath().setType(m_iqrfNode.getType());
+
+		if (m_iqrfNode.getCommand().equals("READ") && m_iqrfNode.isResult()) {
+			m_temperature = jobj.getDouble("Temperature");
+		}
+		else 
+	    	m_temperature = -273.15;
 	}
 
 	public IqrfNode getIqrfNode() {

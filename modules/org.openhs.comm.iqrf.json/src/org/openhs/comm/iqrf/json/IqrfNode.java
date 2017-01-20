@@ -8,6 +8,7 @@ public class IqrfNode {
 	private String m_command = new String();
 	private int m_timeout = -1;
 	private String m_status = new String();
+	private boolean m_result = false;
 	
 	public IqrfNode(JSONObject jobj) {
     	m_type = jobj.getString("Type");
@@ -15,6 +16,9 @@ public class IqrfNode {
     	m_command = jobj.optString("Comd");
     	m_timeout = jobj.optInt("Timeout");
     	m_status = jobj.optString("Status");
+    	if (!m_status.isEmpty()) {
+    	  m_result = m_status.equals("STATUS_NO_ERROR");	
+    	}
 	}
 
 	public String getType() {
@@ -70,5 +74,9 @@ public class IqrfNode {
     	if (!m_status.isEmpty())
     		jobj.put("Result", m_status);
     	return jobj;
+	}
+
+	public boolean isResult() {
+		return  m_result;
 	}
 }

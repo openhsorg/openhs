@@ -30,7 +30,7 @@ public class SwitchUpdater extends ThingUpdater {
     	else
 			m_state = false;
 		
-		if (m_iqrfNode.getStatus().equals("STATUS_NO_ERROR"))
+		if (m_iqrfNode.isResult())
 			m_confirmed = true;
 		
 		m_valid = true;
@@ -54,7 +54,6 @@ public class SwitchUpdater extends ThingUpdater {
     	JSONObject jobj = new JSONObject();
     	jobj = m_iqrfNode.encode(jobj);
     	
-    	logger.debug("  updateOutcoming(): " + jobj.toString());
     	//Message msg = new Message(getDevicePath().getChannel(), getDevicePath().getTopic(), dm.toString());
     	Message msg = new Message(getDevicePath().getChannel(), "Iqrf/DpaRequest", jobj.toString());
     	getMessageHandler().handleOutcomingMessage(msg);
