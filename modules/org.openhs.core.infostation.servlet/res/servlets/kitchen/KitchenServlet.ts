@@ -5,7 +5,6 @@
 
 /// <reference path="jquery.d.ts" />
 
-
 module KitchenInfoStation {
 
 //------------------------------------------------------------------------------
@@ -137,7 +136,6 @@ export class BasicScreen {
     
     private timerPaint;
     private timerData;           
-    private timerPaintStep = 3000; 
         
     private r:                   number;
     private arcCenterX:          number;
@@ -185,25 +183,24 @@ export class BasicScreen {
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
         
         this.getData('kitchen');
-        this.timerGetData();
-        this.timerEvent();
+        this.timerGetDataEvent(5000);
+        this.timerPaintEvent(5000);
         
         var self = this;
-        
-       // canvas.addEventListener('click',() => this.MouseClickHandler(event));                
-        this.canvas.addEventListener('click',function(event){self.MouseClickHandler(event);}, false);
-    
+                    
+        this.canvas.addEventListener('click',function(event){self.MouseClickHandler(event);}, false);    
     }  
     
-    private timerGetData() {
+    private timerGetDataEvent(step : number) {
        this.getData('kitchen');
-       this.timerData = window.setTimeout(() => this.timerGetData(), 5000); 
+       window.clearTimeout(this.timerData);
+       this.timerData = window.setTimeout(() => this.timerGetDataEvent(step), step); 
     }     
     
-    private timerEvent() {
-     
+    private timerPaintEvent(step : number) {     
        this.paint();  
-       this.timerPaint = window.setTimeout(() => this.timerEvent(), this.timerPaintStep); 
+       window.clearTimeout(this.timerPaint);
+       this.timerPaint = window.setTimeout(() => this.timerPaintEvent(step), step); 
     } 
         
     private MouseClickHandler(event) {
@@ -217,26 +214,22 @@ export class BasicScreen {
             if (isInside(mousePos, stopwatchRect)) {            
                 appMode = Application.Watch;          
                 this.stopWatch.start();
-                window.clearTimeout(this.timerPaint);
-                this.timerPaintStep = 40;
-                this.timerEvent();
+                this.timerPaintEvent(40);
                             
-            } else if (isInside(mousePos, this.tmpInText.getRect())) {
-                appMode = Application.Floor;                
+            } else if (isInside(mousePos, this.tmpInText.getRect())) {                                          
+                appMode = Application.Floor;                                
+                this.timerPaintEvent(10);   
+                this.timerGetDataEvent(10);                                  
             } else if (isInside(mousePos, forecastRect)) {
                 appMode = Application.WeatherForecast;    
             }                       
             
          } else if (appMode == Application.Watch) {
-                   
-                           
+                                              
             if (this.stopWatch.getStatus()) {
                 if(this.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {                                
                     this.stopWatch.stop();
-                   
-                    window.clearTimeout(this.timerPaint);
-                    this.timerPaintStep = 3000;
-                    this.timerEvent();                                
+                    this.timerPaintEvent(3000);                                
                  }
             }
             else {        
@@ -254,13 +247,15 @@ export class BasicScreen {
                } else if (light != -1) {
                 
     //             window.alert("switch clicked !!");            
-                 postAjax('kitchen', "switchClicked", "switch1");
-                            
+                 postAjax('kitchen', "switchClicked", "switch1");                            
                  this.getData('kitchen');
                  this.paint();  
                                            
-                } else {
-                appMode = Application.None;
+                } else {                
+                    appMode = Application.None;
+                
+                    this.timerPaintEvent(5000);   
+                    this.timerGetDataEvent(5000);                  
                 }        
             
          } else if (appMode == Application.Room) {     
