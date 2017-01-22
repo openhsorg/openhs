@@ -93,7 +93,6 @@ var KitchenInfoStation;
     var roomNum = 1; //number of selected room for Application.Room       
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
-            this.timerPaintStep = 3000;
             this.weather = new WeatherData(); //current weather today    
             this.forecastScreen = null; //forecast screen      
             this.stopWatch = null;
@@ -124,21 +123,22 @@ var KitchenInfoStation;
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room2.png"));
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room3.png"));
             this.getData('kitchen');
-            this.timerGetData();
-            this.timerEvent();
+            this.timerGetDataEvent(5000);
+            this.timerPaintEvent(5000);
             var self = this;
-            // canvas.addEventListener('click',() => this.MouseClickHandler(event));                
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
         }
-        BasicScreen.prototype.timerGetData = function () {
+        BasicScreen.prototype.timerGetDataEvent = function (step) {
             var _this = this;
             this.getData('kitchen');
-            this.timerData = window.setTimeout(function () { return _this.timerGetData(); }, 5000);
+            window.clearTimeout(this.timerData);
+            this.timerData = window.setTimeout(function () { return _this.timerGetDataEvent(step); }, step);
         };
-        BasicScreen.prototype.timerEvent = function () {
+        BasicScreen.prototype.timerPaintEvent = function (step) {
             var _this = this;
             this.paint();
-            this.timerPaint = window.setTimeout(function () { return _this.timerEvent(); }, this.timerPaintStep);
+            window.clearTimeout(this.timerPaint);
+            this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
         };
         BasicScreen.prototype.MouseClickHandler = function (event) {
             //window.alert("handler clicked !!" + event.clientX + " : " + event.clientY );
@@ -147,12 +147,12 @@ var KitchenInfoStation;
                 if (isInside(mousePos, stopwatchRect)) {
                     appMode = Application.Watch;
                     this.stopWatch.start();
-                    window.clearTimeout(this.timerPaint);
-                    this.timerPaintStep = 40;
-                    this.timerEvent();
+                    this.timerPaintEvent(40);
                 }
                 else if (isInside(mousePos, this.tmpInText.getRect())) {
                     appMode = Application.Floor;
+                    this.timerPaintEvent(10);
+                    this.timerGetDataEvent(10);
                 }
                 else if (isInside(mousePos, forecastRect)) {
                     appMode = Application.WeatherForecast;
@@ -162,9 +162,7 @@ var KitchenInfoStation;
                 if (this.stopWatch.getStatus()) {
                     if (this.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {
                         this.stopWatch.stop();
-                        window.clearTimeout(this.timerPaint);
-                        this.timerPaintStep = 3000;
-                        this.timerEvent();
+                        this.timerPaintEvent(3000);
                     }
                 }
                 else {
@@ -186,6 +184,8 @@ var KitchenInfoStation;
                 }
                 else {
                     appMode = Application.None;
+                    this.timerPaintEvent(5000);
+                    this.timerGetDataEvent(5000);
                 }
             }
             else if (appMode == Application.Room) {
