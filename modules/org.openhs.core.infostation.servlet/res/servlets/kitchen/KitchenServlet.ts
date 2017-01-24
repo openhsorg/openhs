@@ -4,10 +4,13 @@
 // Home page: ***
 
 /// <reference path="jquery.d.ts" />
+/// <reference path='OhsCanvasGraphics.ts'/>
 
 module KitchenInfoStation {
 
-//------------------------------------------------------------------------------
+import Rect = OhsCanvasGraphics.Rect;
+import Text = OhsCanvasGraphics.Text;
+    
     
 var forecastRect = {
     x:0,
@@ -171,8 +174,8 @@ export class BasicScreen {
         stopwatchRect.width = 60;
         stopwatchRect.heigth = 60;
             
-        this.tmpInText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
-        this.tmpOutText = new Text (this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
+        this.tmpInText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 90, 150, 100));
+        this.tmpOutText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 50, 150, 100));
      
         this.forecastScreen = new WeatherForecastScreen (canvas);
         this.floor = new Floor (canvas);
@@ -406,8 +409,8 @@ export class BasicScreen {
         
         //Outside temperature    
        this.tmpOutText.copyFrom(this.tmpInText);    
-       this.tmpOutText.x = 320;
-       this.tmpOutText.y =  50;     
+       this.tmpOutText.rect.x = 320;
+       this.tmpOutText.rect.y =  50;     
        this.tmpOutText.textAlign = "right";   
        this.tmpOutText.paint(this.weather.tempOut + " \u00B0C");    
             
@@ -573,7 +576,7 @@ imgFingerprint.onload = function(){
 }        
        
    
-    
+   /*
 class Rect {
 
     public x:  number = 0;
@@ -609,8 +612,8 @@ class Rect {
         return (clx > this.x && clx < this.x+this.w && cly < this.y+this.h && cly > this.y);        
     }    
 }
-    
-   
+  */
+   /*
 class Text {
     
     private ctx:    CanvasRenderingContext2D;   
@@ -696,7 +699,7 @@ class Text {
         }
     
 }           
-    
+    */
 class TempMark {
     
     private ctx:    CanvasRenderingContext2D;       
@@ -717,7 +720,7 @@ class TempMark {
         this.width = width;
         this.height = height;              
         
-        this.txt = new Text (ctx, x, y, width, height);
+        this.txt = new Text (ctx, new Rect (x, y, width, height));
         this.txt.textAlign = "left";
         this.txt.textBaseline = "middle";
         this.txt.fontSize = 20;
@@ -733,10 +736,10 @@ class TempMark {
         this.width = width;
         this.height = height;     
         
-        this.txt.x = x;
-        this.txt.y = y;
-        this.txt.width = width;
-        this.txt.height = height;    
+        this.txt.rect.x = x;
+        this.txt.rect.y = y;
+        this.txt.rect.w = width;
+        this.txt.rect.h = height;    
     }
     
     public paint (text: string) {      
@@ -751,7 +754,7 @@ class TempMark {
        this.ctx.stroke();
        this.ctx.restore();      
                 
-       this.txt.x = this.x + 20;
+       this.txt.rect.x = this.x + 20;
        this.txt.paint(text);
         
         //Draw image...
@@ -807,7 +810,7 @@ class SwitchMark {
         this.width = width;
         this.height = height;              
         
-        this.txt = new Text (ctx, x, y, width, height);
+        this.txt = new Text (ctx, new Rect (x, y, width, height));
         this.txt.textAlign = "left";
         this.txt.textBaseline = "middle";
         this.txt.fontSize = 20;
@@ -823,10 +826,10 @@ class SwitchMark {
         this.width = width;
         this.height = height;     
         
-        this.txt.x = x;
-        this.txt.y = y;
-        this.txt.width = width;
-        this.txt.height = height;    
+        this.txt.rect.x = x;
+        this.txt.rect.y = y;
+        this.txt.rect.w = width;
+        this.txt.rect.h = height;    
     }
     
     public paint () { 
@@ -867,7 +870,7 @@ class SwitchMark {
        this.ctx.stroke();
        this.ctx.restore();      
                 
-       this.txt.x = this.x + 30;
+       this.txt.rect.x = this.x + 30;
        this.txt.paint(text);
         
         //Draw image...
@@ -949,7 +952,7 @@ class StopWatch {
                                 
        ctx.save();
        ctx.beginPath();
-       this.roundRect(this.stopwatchRect.x,this.stopwatchRect.y,this.stopwatchRect.width(),this.stopwatchRect.height(), 40); 
+       this.roundRect(this.stopwatchRect.x,this.stopwatchRect.y,this.stopwatchRect.w,this.stopwatchRect.h, 40); 
     
        ctx.fillStyle = "white";
        ctx.fill();   
@@ -988,7 +991,7 @@ class StopWatch {
         
        if (imgFingerprintLoaded) { 
         ctx.save();
-        ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
+        ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.w - 60, this.stopwatchRect.y + 10, 50, 50);
         ctx.restore();        
        }                                
     }    
@@ -1105,8 +1108,8 @@ class WeatherForecastPanel {
     constructor (ctx: CanvasRenderingContext2D) {
          
         this.forecast = new WeatherData ();
-        this.txtWind = new Text (ctx, 0, 0, 0, 0);
-        this.txt = new Text (ctx, 0, 0, 0, 0);
+        this.txtWind = new Text (ctx, new Rect (0, 0, 0, 0));
+        this.txt = new Text (ctx, new Rect (0, 0, 0, 0));
         this.txt.textAlign = "left";
         this.txt.textBaseline = "middle";
         this.txt.fontSize = 20;
@@ -1123,10 +1126,10 @@ class WeatherForecastPanel {
         this.width = width;
         this.height = height;     
         
-        this.txt.x = x;
-        this.txt.y = y;
-        this.txt.width = width;
-        this.txt.height = height;    
+        this.txt.rect.x = x;
+        this.txt.rect.y = y;
+        this.txt.rect.w = width;
+        this.txt.rect.h = height;    
     }
     
     setForecast(fcs: WeatherData) {
@@ -1153,8 +1156,8 @@ class WeatherForecastPanel {
         ctx.restore();  
         
         //Draw temperature...
-        this.txt.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
-        this.txt.y = this.width * 1.25;
+        this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
+        this.txt.rect.y = this.width * 1.25;
         this.txt.textAlign = "center";
         this.txt.paint(this.forecast.tempOut + " \u00B0C");
                 
@@ -1164,9 +1167,9 @@ class WeatherForecastPanel {
         ctx.restore();       
         
         //wind text
-        this.txtWind.x = this.x + (this.width * 0.9);
-        this.txtWind.y = this.width * 1.6;
-        this.txtWind.width = this.width * 0.4;
+        this.txtWind.rect.x = this.x + (this.width * 0.9);
+        this.txtWind.rect.y = this.width * 1.6;
+        this.txtWind.rect.w = this.width * 0.4;
         this.txtWind.textAlign = "right";
         this.txtWind.fontSize = 15;
         this.txtWind.textBaseline = "hanging";
@@ -1222,7 +1225,7 @@ class Floor {
         
         this.SwitchMarks.push(new SwitchMark (this.ctx, 0, 0, 0, 0));    
         
-        this.txtNumRooms = new Text (this.ctx, 0, 0, 250, 100);
+        this.txtNumRooms = new Text (this.ctx, new Rect (0, 0, 250, 100));
         this.txtNumRooms.textAlign = "left";
         this.txtNumRooms.textBaseline = "middle";
         this.txtNumRooms.fontSize = 40;
@@ -1252,9 +1255,9 @@ class Floor {
         this.SwitchMarks[0].paint();          
         
          //Number rooms
-        this.txtNumRooms.x = this.width - 10;
-        this.txtNumRooms.y = this.height - 10;
-        this.txtNumRooms.width = this.width * 0.4;
+        this.txtNumRooms.rect.x = this.width - 10;
+        this.txtNumRooms.rect.y = this.height - 10;
+        this.txtNumRooms.rect.w = this.width * 0.4;
         this.txtNumRooms.textAlign = "right";
         this.txtNumRooms.fontSize = 26;
         this.txtNumRooms.textBaseline = "bottom";

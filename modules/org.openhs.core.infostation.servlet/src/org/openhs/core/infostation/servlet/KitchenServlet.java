@@ -283,6 +283,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 
+	    	out.println("<script src='infores/servlets/kitchen/OhsCanvasGraphics.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");

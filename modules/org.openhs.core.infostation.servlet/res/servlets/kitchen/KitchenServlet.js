@@ -3,9 +3,11 @@
 //
 // Home page: ***
 /// <reference path="jquery.d.ts" />
+/// <reference path='OhsCanvasGraphics.ts'/>
 var KitchenInfoStation;
 (function (KitchenInfoStation) {
-    //------------------------------------------------------------------------------
+    var Rect = OhsCanvasGraphics.Rect;
+    var Text = OhsCanvasGraphics.Text;
     var forecastRect = {
         x: 0,
         y: 0,
@@ -114,8 +116,8 @@ var KitchenInfoStation;
             stopwatchRect.y = (this.height / 2) + 20;
             stopwatchRect.width = 60;
             stopwatchRect.heigth = 60;
-            this.tmpInText = new Text(this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
-            this.tmpOutText = new Text(this.ctx, (this.width / 2), (this.height / 2) + 50, 150, 100);
+            this.tmpInText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 90, 150, 100));
+            this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 100));
             this.forecastScreen = new WeatherForecastScreen(canvas);
             this.floor = new Floor(canvas);
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
@@ -307,8 +309,8 @@ var KitchenInfoStation;
             this.tmpInText.paint(this.weather.tempIn + " \u00B0C");
             //Outside temperature    
             this.tmpOutText.copyFrom(this.tmpInText);
-            this.tmpOutText.x = 320;
-            this.tmpOutText.y = 50;
+            this.tmpOutText.rect.x = 320;
+            this.tmpOutText.rect.y = 50;
             this.tmpOutText.textAlign = "right";
             this.tmpOutText.paint(this.weather.tempOut + " \u00B0C");
             //Humidity
@@ -437,105 +439,130 @@ var KitchenInfoStation;
     imgFingerprint.onload = function () {
         imgFingerprintLoaded = true;
     };
-    var Rect = (function () {
-        function Rect(x, y, w, h) {
-            this.x = 0;
-            this.y = 0;
-            this.w = 0;
-            this.h = 0;
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
-        }
-        Rect.prototype.width = function () {
-            return this.w;
-        };
-        Rect.prototype.height = function () {
-            return this.h;
-        };
-        Rect.prototype.setWidth = function (w) {
-            this.w = w;
-        };
-        Rect.prototype.setHeight = function (h) {
-            this.h = h;
-        };
-        Rect.prototype.isClicked = function (clx, cly) {
-            return (clx > this.x && clx < this.x + this.w && cly < this.y + this.h && cly > this.y);
-        };
-        return Rect;
-    }());
-    var Text = (function () {
-        function Text(ctx, x, y, width, height) {
-            this.fontSize = 10;
-            this.fontColor = "#000000";
-            this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.textAlign = "center";
-            this.textBaseline = "middle";
-            this.x = 0;
-            this.y = 0;
-            this.width = 0;
-            this.height = 0;
-            this.ctx = ctx;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-        Text.prototype.paint = function (text) {
-            this.ctx.save();
-            this.ctx.font = this.fontSize + this.fontFamily;
-            this.ctx.textAlign = this.textAlign;
-            this.ctx.textBaseline = this.textBaseline;
-            this.ctx.fillStyle = this.fontColor;
-            this.ctx.fillText(text, this.x, this.y);
-            this.ctx.restore();
-        };
-        Text.prototype.setSize = function (x, y, width, height) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        };
-        Text.prototype.copyFrom = function (tx) {
-            this.x = tx.x;
-            this.y = tx.y;
-            this.width = tx.width;
-            this.height = tx.height;
-            this.ctx = tx.ctx;
-            this.fontSize = tx.fontSize;
-            this.fontColor = tx.fontColor;
-            this.fontFamily = tx.fontFamily;
-            this.textAlign = tx.textAlign;
-            this.textBaseline = tx.textBaseline;
-        };
-        Text.prototype.getRect = function () {
-            var rect = {
-                x: 0,
-                y: 0,
-                width: 0,
-                heigth: 0
-            };
-            rect.x = this.x;
-            rect.y = this.y;
-            rect.width = this.width;
-            rect.heigth = this.height;
-            if (this.textAlign == "center") {
-                rect.x = this.x - (this.width / 2);
-            }
-            else if (this.textAlign == "right" || this.textAlign == "end") {
-                rect.x = this.x - this.width;
-            }
-            if (this.textBaseline == "bottom") {
-                rect.y = this.y - this.height;
-            }
-            else if (this.textBaseline == "middle") {
-                rect.y = this.y - (this.height / 2);
-            }
-            return rect;
-        };
-        return Text;
-    }());
+    /*
+ class Rect {
+ 
+     public x:  number = 0;
+     public y:  number = 0;
+     private w:  number = 0;
+     private h:  number = 0;
+     
+     constructor (x: number, y: number, w: number, h: number){
+     
+         this.x = x;
+         this.y = y;
+         this.w = w;
+         this.h = h;
+     }
+     
+    public width() {
+         return this.w;
+     }
+     
+    public height() {
+         return this.h;
+     }
+     
+    public setWidth(w: number) {
+         this.w = w;
+     }
+     
+    public setHeight(h: number) {
+         this.h = h;
+     }
+     
+     public isClicked (clx:number, cly:number) {
+         return (clx > this.x && clx < this.x+this.w && cly < this.y+this.h && cly > this.y);
+     }
+ }
+   */
+    /*
+ class Text {
+     
+     private ctx:    CanvasRenderingContext2D;
+     
+     public fontSize:      number = 10;
+     public fontColor:     string = "#000000";
+     public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+     public textAlign:   string = "center";
+     public textBaseline:   string = "middle";
+     
+     public x:  number = 0;
+     public y:  number = 0;
+     public width : number = 0;
+     public height : number = 0;
+          
+     constructor (ctx: CanvasRenderingContext2D, x, y, width, height) {
+         this.ctx = ctx;
+         this.x = x;
+         this.y = y;
+         this.width = width;
+         this.height = height;
+     }
+     
+     public paint (text: string) {
+        this.ctx.save();
+        this.ctx.font = this.fontSize + this.fontFamily;
+        this.ctx.textAlign = this.textAlign;
+        this.ctx.textBaseline = this.textBaseline;
+        this.ctx.fillStyle = this.fontColor;
+        this.ctx.fillText(text, this.x, this.y);
+        this.ctx.restore();
+     }
+     
+     setSize (x: number, y: number, width: number, height: number) {
+         
+         this.x = x;
+         this.y = y;
+         this.width = width;
+         this.height = height;
+     }
+     
+     copyFrom(tx: Text) {
+         this.x = tx.x;
+         this.y = tx.y;
+         this.width = tx.width;
+         this.height = tx.height;
+         this.ctx = tx.ctx;
+         this.fontSize = tx.fontSize;
+         this.fontColor = tx.fontColor;
+         this.fontFamily = tx.fontFamily;
+         this.textAlign = tx.textAlign;
+         this.textBaseline = tx.textBaseline;
+     }
+     
+     getRect() {
+             var rect = {
+                  x:0,
+                  y:0,
+                  width:0,
+                 heigth:0
+             };
+         
+         rect.x = this.x;
+         rect.y = this.y;
+         rect.width = this.width;
+         rect.heigth = this.height;
+         
+         
+         if (this.textAlign == "center") {
+             rect.x = this.x - (this.width / 2);
+         } else if (this.textAlign == "right" || this.textAlign == "end") {
+             rect.x = this.x - this.width;
+         }
+         
+         if (this.textBaseline == "bottom") {
+             rect.y = this.y - this.height;
+         } else if (this.textBaseline == "middle") {
+             rect.y = this.y - (this.height / 2);
+         }
+         
+         return rect;
+         
+         }
+     
+ }
+     */
     var TempMark = (function () {
         function TempMark(ctx, x, y, width, height) {
             this.x = 0;
@@ -548,7 +575,7 @@ var KitchenInfoStation;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.txt = new Text(ctx, x, y, width, height);
+            this.txt = new Text(ctx, new Rect(x, y, width, height));
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
@@ -560,10 +587,10 @@ var KitchenInfoStation;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.txt.x = x;
-            this.txt.y = y;
-            this.txt.width = width;
-            this.txt.height = height;
+            this.txt.rect.x = x;
+            this.txt.rect.y = y;
+            this.txt.rect.w = width;
+            this.txt.rect.h = height;
         };
         TempMark.prototype.paint = function (text) {
             this.ctx.save();
@@ -575,7 +602,7 @@ var KitchenInfoStation;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
             this.ctx.restore();
-            this.txt.x = this.x + 20;
+            this.txt.rect.x = this.x + 20;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
@@ -616,7 +643,7 @@ var KitchenInfoStation;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.txt = new Text(ctx, x, y, width, height);
+            this.txt = new Text(ctx, new Rect(x, y, width, height));
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
@@ -628,10 +655,10 @@ var KitchenInfoStation;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.txt.x = x;
-            this.txt.y = y;
-            this.txt.width = width;
-            this.txt.height = height;
+            this.txt.rect.x = x;
+            this.txt.rect.y = y;
+            this.txt.rect.w = width;
+            this.txt.rect.h = height;
         };
         SwitchMark.prototype.paint = function () {
             var text = "---";
@@ -670,7 +697,7 @@ var KitchenInfoStation;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
             this.ctx.restore();
-            this.txt.x = this.x + 30;
+            this.txt.rect.x = this.x + 30;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
@@ -725,7 +752,7 @@ var KitchenInfoStation;
             }
             ctx.save();
             ctx.beginPath();
-            this.roundRect(this.stopwatchRect.x, this.stopwatchRect.y, this.stopwatchRect.width(), this.stopwatchRect.height(), 40);
+            this.roundRect(this.stopwatchRect.x, this.stopwatchRect.y, this.stopwatchRect.w, this.stopwatchRect.h, 40);
             ctx.fillStyle = "white";
             ctx.fill();
             ctx.lineWidth = 1;
@@ -755,7 +782,7 @@ var KitchenInfoStation;
             ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
             if (imgFingerprintLoaded) {
                 ctx.save();
-                ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.width() - 60, this.stopwatchRect.y + 10, 50, 50);
+                ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.w - 60, this.stopwatchRect.y + 10, 50, 50);
                 ctx.restore();
             }
         };
@@ -840,8 +867,8 @@ var KitchenInfoStation;
             this.forecast = null;
             this.imgWind = null;
             this.forecast = new WeatherData();
-            this.txtWind = new Text(ctx, 0, 0, 0, 0);
-            this.txt = new Text(ctx, 0, 0, 0, 0);
+            this.txtWind = new Text(ctx, new Rect(0, 0, 0, 0));
+            this.txt = new Text(ctx, new Rect(0, 0, 0, 0));
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
@@ -853,10 +880,10 @@ var KitchenInfoStation;
             this.y = y;
             this.width = width;
             this.height = height;
-            this.txt.x = x;
-            this.txt.y = y;
-            this.txt.width = width;
-            this.txt.height = height;
+            this.txt.rect.x = x;
+            this.txt.rect.y = y;
+            this.txt.rect.w = width;
+            this.txt.rect.h = height;
         };
         WeatherForecastPanel.prototype.setForecast = function (fcs) {
             this.forecast = fcs;
@@ -878,8 +905,8 @@ var KitchenInfoStation;
             ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
             ctx.restore();
             //Draw temperature...
-            this.txt.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
-            this.txt.y = this.width * 1.25;
+            this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
+            this.txt.rect.y = this.width * 1.25;
             this.txt.textAlign = "center";
             this.txt.paint(this.forecast.tempOut + " \u00B0C");
             //wind image
@@ -887,9 +914,9 @@ var KitchenInfoStation;
             ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
             ctx.restore();
             //wind text
-            this.txtWind.x = this.x + (this.width * 0.9);
-            this.txtWind.y = this.width * 1.6;
-            this.txtWind.width = this.width * 0.4;
+            this.txtWind.rect.x = this.x + (this.width * 0.9);
+            this.txtWind.rect.y = this.width * 1.6;
+            this.txtWind.rect.w = this.width * 0.4;
             this.txtWind.textAlign = "right";
             this.txtWind.fontSize = 15;
             this.txtWind.textBaseline = "hanging";
@@ -923,7 +950,7 @@ var KitchenInfoStation;
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
             this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
             this.SwitchMarks.push(new SwitchMark(this.ctx, 0, 0, 0, 0));
-            this.txtNumRooms = new Text(this.ctx, 0, 0, 250, 100);
+            this.txtNumRooms = new Text(this.ctx, new Rect(0, 0, 250, 100));
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
@@ -946,9 +973,9 @@ var KitchenInfoStation;
             this.SwitchMarks[0].setSize(220, 150, 80, 40);
             this.SwitchMarks[0].paint();
             //Number rooms
-            this.txtNumRooms.x = this.width - 10;
-            this.txtNumRooms.y = this.height - 10;
-            this.txtNumRooms.width = this.width * 0.4;
+            this.txtNumRooms.rect.x = this.width - 10;
+            this.txtNumRooms.rect.y = this.height - 10;
+            this.txtNumRooms.rect.w = this.width * 0.4;
             this.txtNumRooms.textAlign = "right";
             this.txtNumRooms.fontSize = 26;
             this.txtNumRooms.textBaseline = "bottom";
