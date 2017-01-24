@@ -10,6 +10,7 @@ module KitchenInfoStation {
 
 import Rect = OhsCanvasGraphics.Rect;
 import Text = OhsCanvasGraphics.Text;
+import TempMark = OhsCanvasGraphics.TempMark;
     
     
 var forecastRect = {
@@ -700,6 +701,7 @@ class Text {
     
 }           
     */
+    /*
 class TempMark {
     
     private ctx:    CanvasRenderingContext2D;       
@@ -785,7 +787,7 @@ class TempMark {
         return (clx > this.x && clx < this.x+this.width && cly < this.y+this.height && cly > this.y);        
     }
 }
-    
+    */
 class SwitchMark {
     
     private ctx:    CanvasRenderingContext2D;       
@@ -1220,8 +1222,8 @@ class Floor {
       //    this.imgFloorLoaded = true;
      //   }          
         
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
+        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
         
         this.SwitchMarks.push(new SwitchMark (this.ctx, 0, 0, 0, 0));    
         
@@ -1243,11 +1245,11 @@ class Floor {
      //   }      
     
         //Outside mark
-        this.TempMarks[0].setSize(250, 350, 80, 40);
+        this.TempMarks[0].setSize(new Rect (250, 350, 80, 40));
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
-        this.TempMarks[1].setSize(300, 200, 80, 40);
+        this.TempMarks[1].setSize(new Rect (300, 200, 80, 40));
         this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");    
         
         //Inner switch
@@ -1347,8 +1349,8 @@ class Room {
           this.imgRoomLoaded = true;
         }          
         
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));
-        this.TempMarks.push(new TempMark (this.ctx, 0, 0, 0, 0));               
+        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));               
     }     
     
     public paint(weatherToday : WeatherData) {
@@ -1362,11 +1364,11 @@ class Room {
      //   }      
     
         //Outside mark
-        this.TempMarks[0].setSize(250, 350, 80, 40);
+        this.TempMarks[0].setSize(new Rect (250, 350, 80, 40));
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
-        this.TempMarks[1].setSize(280, 200, 80, 40);
+        this.TempMarks[1].setSize(new Rect (280, 200, 80, 40));
         this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
     }
     

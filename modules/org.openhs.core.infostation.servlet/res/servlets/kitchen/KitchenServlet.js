@@ -8,6 +8,7 @@ var KitchenInfoStation;
 (function (KitchenInfoStation) {
     var Rect = OhsCanvasGraphics.Rect;
     var Text = OhsCanvasGraphics.Text;
+    var TempMark = OhsCanvasGraphics.TempMark;
     var forecastRect = {
         x: 0,
         y: 0,
@@ -557,71 +558,93 @@ var KitchenInfoStation;
      
  }
      */
-    class TempMark {
-        constructor(ctx, x, y, width, height) {
-            this.x = 0;
-            this.y = 0;
-            this.width = 0;
-            this.height = 0;
-            this.img = null;
-            this.ctx = ctx;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.txt = new Text(ctx, new Rect(x, y, width, height));
-            this.txt.textAlign = "left";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/tempSymbol.png";
-        }
-        setSize(x, y, width, height) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.txt.rect.x = x;
-            this.txt.rect.y = y;
-            this.txt.rect.w = width;
-            this.txt.rect.h = height;
-        }
-        paint(text) {
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.x + (this.width / 2), this.y, this.width / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = '#ccffe6';
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();
-            this.txt.rect.x = this.x + 20;
-            this.txt.paint(text);
-            //Draw image...
-            //   if (this.imgLoaded) {     
+    /*
+class TempMark {
+    
+    private ctx:    CanvasRenderingContext2D;
+    public x:  number = 0;
+    public y:  number = 0;
+    public width:  number = 0;
+    public height:  number = 0;
+    
+    private txt:  Text;
+    
+    private img:HTMLImageElement = null;
+    private imgLoaded: boolean;// = false;
+    
+    constructor (ctx: CanvasRenderingContext2D, x, y, width, height) {
+        this.ctx = ctx;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        
+        this.txt = new Text (ctx, new Rect (x, y, width, height));
+        this.txt.textAlign = "left";
+        this.txt.textBaseline = "middle";
+        this.txt.fontSize = 20;
+        
+        this.img = new Image();
+        this.img.src = "/infores/servlets/kitchen/tempSymbol.png";
+    }
+    
+    setSize (x: number, y: number, width: number, height: number) {
+        
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        
+        this.txt.rect.x = x;
+        this.txt.rect.y = y;
+        this.txt.rect.w = width;
+        this.txt.rect.h = height;
+    }
+    
+    public paint (text: string) {
+    
+       this.ctx.save();
+       this.ctx.beginPath();
+       this.ctx.arc(this.x + (this.width / 2), this.y, this.width / 2, 0, 2 * Math.PI, false);
+       this.ctx.fillStyle = '#ccffe6';
+       this.ctx.fill();
+       this.ctx.lineWidth = 2;
+       this.ctx.strokeStyle = '#00cc69';
+       this.ctx.stroke();
+       this.ctx.restore();
+                
+       this.txt.rect.x = this.x + 20;
+       this.txt.paint(text);
+        
+        //Draw image...
+     //   if (this.imgLoaded) {
             this.ctx.save();
             this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
             this.ctx.restore();
-            // }                         
-        }
-        getRect() {
-            var rect = {
-                x: 0,
-                y: 0,
-                width: 0,
-                heigth: 0
-            };
-            rect.x = this.x;
-            rect.y = this.y;
-            rect.width = this.width;
-            rect.heigth = this.height;
-            return rect;
-        }
-        isClicked(clx, cly) {
-            return (clx > this.x && clx < this.x + this.width && cly < this.y + this.height && cly > this.y);
-        }
+       // }
     }
+    
+    getRect() {
+            var rect = {
+                 x:0,
+                 y:0,
+                 width:0,
+                heigth:0
+            };
+        
+        rect.x = this.x;
+        rect.y = this.y;
+        rect.width = this.width;
+        rect.heigth = this.height;
+        
+        return rect;
+    }
+    
+    public isClicked (clx:number, cly:number) {
+        return (clx > this.x && clx < this.x+this.width && cly < this.y+this.height && cly > this.y);
+    }
+}
+    */
     class SwitchMark {
         constructor(ctx, x, y, width, height) {
             this.x = 0;
@@ -936,8 +959,8 @@ var KitchenInfoStation;
             // this.imgFloor.onload = function(){
             //    this.imgFloorLoaded = true;
             //   }          
-            this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
-            this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
+            this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+            this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
             this.SwitchMarks.push(new SwitchMark(this.ctx, 0, 0, 0, 0));
             this.txtNumRooms = new Text(this.ctx, new Rect(0, 0, 250, 100));
             this.txtNumRooms.textAlign = "left";
@@ -953,10 +976,10 @@ var KitchenInfoStation;
             ctx.restore();
             //   }      
             //Outside mark
-            this.TempMarks[0].setSize(250, 350, 80, 40);
+            this.TempMarks[0].setSize(new Rect(250, 350, 80, 40));
             this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");
             //Inside mark
-            this.TempMarks[1].setSize(300, 200, 80, 40);
+            this.TempMarks[1].setSize(new Rect(300, 200, 80, 40));
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
             //Inner switch
             this.SwitchMarks[0].setSize(220, 150, 80, 40);
@@ -1019,8 +1042,8 @@ var KitchenInfoStation;
             this.imgRoom.onload = function () {
                 this.imgRoomLoaded = true;
             };
-            this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
-            this.TempMarks.push(new TempMark(this.ctx, 0, 0, 0, 0));
+            this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+            this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
         }
         paint(weatherToday) {
             const ctx = this.ctx;
@@ -1031,10 +1054,10 @@ var KitchenInfoStation;
             ctx.restore();
             //   }      
             //Outside mark
-            this.TempMarks[0].setSize(250, 350, 80, 40);
+            this.TempMarks[0].setSize(new Rect(250, 350, 80, 40));
             this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");
             //Inside mark
-            this.TempMarks[1].setSize(280, 200, 80, 40);
+            this.TempMarks[1].setSize(new Rect(280, 200, 80, 40));
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
         }
         clickedTempMark(clx, cly) {
