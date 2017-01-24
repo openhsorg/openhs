@@ -174,7 +174,7 @@ export class BasicScreen {
         stopwatchRect.width = 60;
         stopwatchRect.heigth = 60;
             
-        this.tmpInText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 90, 150, 100));
+        this.tmpInText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 50, 150, 100));
         this.tmpOutText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 50, 150, 100));
      
         this.forecastScreen = new WeatherForecastScreen (canvas);
@@ -408,7 +408,7 @@ export class BasicScreen {
        this.tmpInText.paint(this.weather.tempIn + " \u00B0C");
         
         //Outside temperature    
-       this.tmpOutText.copyFrom(this.tmpInText);    
+       this.tmpOutText.equals(this.tmpInText);    
        this.tmpOutText.rect.x = 320;
        this.tmpOutText.rect.y =  50;     
        this.tmpOutText.textAlign = "right";   

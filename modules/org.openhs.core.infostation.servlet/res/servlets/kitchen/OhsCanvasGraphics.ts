@@ -16,32 +16,23 @@ module OhsCanvasGraphics {
             this.w = w;
             this.h = h;
         }
-        /*
-        public width() {        
-            return this.w;
-        }
-        
-        public height() {        
-            return this.h;
-        }        
-        */
-        public setWidth(w: number) {        
-            this.w = w;
-        }
-        
-        public setHeight(h: number) {        
-            this.h = h;
-        }
         
         public isClicked (clx:number, cly:number) {                
             return (clx > this.x && clx < this.x+this.w && cly < this.y+this.h && cly > this.y);        
         }    
+        
+        public equals (rectI: Rect) {
+            this.x = rectI.x;
+            this.y = rectI.y;
+            this.w = rectI.w;
+            this.h = rectI.h;                
+        }
     }    
             
     export class Text {
         
         private ctx:    CanvasRenderingContext2D;   
-        public rect:   Rect;
+        public rect:    Rect;
     
         public fontSize:      number = 10; 
         public fontColor:     string = "#000000";
@@ -50,8 +41,8 @@ module OhsCanvasGraphics {
         public textBaseline:   string = "middle";    
 
         constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
-            this.ctx = ctx;   
-            this.rect = rect;   
+            this.ctx = ctx;               
+            this.rect = new Rect (rect.x, rect.y, rect.w, rect.h);
         }          
     
         public paint (text: string) {        
@@ -63,16 +54,9 @@ module OhsCanvasGraphics {
             this.ctx.fillText(text, this.rect.x, this.rect.y);
             this.ctx.restore();                   
         }   
-    /*
-        setSize (x: number, y: number, width: number, height: number) {            
-            this.rect.x = x;
-            this.rect.y = y;
-            this.rect.setWidth(width);
-            this.rect.setHeight(height);     
-        }    
-    */
-        copyFrom(tx: Text) {        
-            //this.rect = tx.rect;
+
+        public equals(tx: Text) {        
+            this.rect.equals(tx.rect);
             this.ctx = tx.ctx;
             this.fontSize = tx.fontSize;
             this.fontColor = tx.fontColor;
@@ -112,36 +96,35 @@ module OhsCanvasGraphics {
              
     export class Mark {
         
-        private ctx:    CanvasRenderingContext2D;  
-        private rect:   Rect;
+        protected ctx:    CanvasRenderingContext2D;  
+        protected rect:   Rect;
         
         constructor (ctx: CanvasRenderingContext2D, rect: Rect){            
             this.ctx = ctx;        
-            this.rect = rect;                
+            this.rect = new Rect (rect.x, rect.y, rect.w, rect.h);             
         }
-           
+        
+        public setSize (rect:   Rect){
+            this.rect.equals(rect);
+        }
+        
+        public isClicked (clx:number, cly:number) {                
+            return (clx > this.rect.x && clx < this.rect.x + this.rect.w && cly < this.rect.y + this.rect.h && cly > this.rect.y);        
+       }        
+                   
     }
     
-    export class TempMark {
-                   
-        private ctx:    CanvasRenderingContext2D;       
-        public x:  number = 0;
-        public y:  number = 0;
-        public width:  number = 0;  
-        public height:  number = 0;    
-    
+    export class TempMark extends Mark {
+
         private txt:  Text;
     
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;       
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {
-            this.ctx = ctx;        
-            this.x = rect.x;
-            this.y = rect.y;
-            this.width = rect.w;
-            this.height = rect.h;              
             
+            super(ctx, rect);
+
             this.txt = new Text (ctx, rect);
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
@@ -151,24 +134,16 @@ module OhsCanvasGraphics {
             this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";              
         }      
         
-        setSize (x: number, y: number, width: number, height: number) {
-        
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;     
-            
-            this.txt.rect.x = x;
-            this.txt.rect.y = y;
-            this.txt.rect.setWidth(width);
-            this.txt.rect.setHeight(height);    
+        setSize (rect:  Rect) {        
+            super.setSize(rect);            
+            this.txt.rect.equals(rect);               
          }
     
         public paint (text: string) {      
     
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x + (this.width / 2), this.y, this.width / 2, 0, 2 * Math.PI, false);
+            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y, this.rect.w / 2, 0, 2 * Math.PI, false);
             this.ctx.fillStyle = '#ccffe6';
             this.ctx.fill();
             this.ctx.lineWidth = 2;
@@ -176,13 +151,13 @@ module OhsCanvasGraphics {
             this.ctx.stroke();
             this.ctx.restore();      
                     
-            this.txt.rect.x = this.x + 20;
+            this.txt.rect.x = this.rect.x + 20;
             this.txt.paint(text);
             
             //Draw image...
          //   if (this.imgLoaded) {     
             this.ctx.save();
-            this.ctx.drawImage(this.img, this.x - 8, this.y - 20, 40, 40);
+            this.ctx.drawImage(this.img, this.rect.x - 8, this.rect.y - 20, 40, 40);
             this.ctx.restore();        
            // }                         
          }     
@@ -195,16 +170,14 @@ module OhsCanvasGraphics {
                 heigth:0
              };  
         
-            rect.x = this.x;
-            rect.y = this.y;
-            rect.width = this.width;
-            rect.heigth = this.height;                
+            rect.x = this.rect.x;
+            rect.y = this.rect.y;
+            rect.width = this.rect.w;
+            rect.heigth = this.rect.h;                
         
             return rect;        
         }         
     
-        public isClicked (clx:number, cly:number) {                
-            return (clx > this.x && clx < this.x+this.width && cly < this.y+this.height && cly > this.y);        
-       }
+
     }          
 }
