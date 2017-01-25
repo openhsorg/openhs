@@ -118,8 +118,11 @@ var KitchenInfoStation;
             stopwatchRect.y = (this.height / 2) + 20;
             stopwatchRect.width = 60;
             stopwatchRect.heigth = 60;
-            this.tmpInText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 100));
-            this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 100));
+            this.tmpInText = new Text(this.ctx, new Rect((this.width / 2) - 120, (this.height / 2) - 10, 220, 60));
+            this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 60));
+            this.timeText = new Text(this.ctx, new Rect((this.width) - 150, 5, 150, 60));
+            this.dateText = new Text(this.ctx, new Rect((this.width) / 2 + 70, 80, 230, 40));
+            this.windText = new Text(this.ctx, new Rect(160, 80, 140, 40));
             this.forecastScreen = new WeatherForecastScreen(canvas);
             this.floor = new Floor(canvas);
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
@@ -153,7 +156,7 @@ var KitchenInfoStation;
                     this.stopWatch.start();
                     this.timerPaintEvent(40);
                 }
-                else if (isInside(mousePos, this.tmpInText.getRect())) {
+                else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
                     appMode = Application.Floor;
                     this.timerPaintEvent(10);
                     this.timerGetDataEvent(10);
@@ -279,42 +282,49 @@ var KitchenInfoStation;
                 ctx.restore();
             }
             //Wind outside
-            ctx.save();
-            ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = textColor;
-            ctx.fillText(this.weather.windSpeed + " m/s", 320, 100);
-            ctx.restore();
-            //Time
-            //ctx.save();
-            ctx.font = fontSizeTime + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = textColor;
-            ctx.fillText(timeString, 580, 50);
-            ctx.restore();
+            /*
+           ctx.save();
+           ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+           ctx.textAlign = "right";
+           ctx.textBaseline = "middle";
+           ctx.fillStyle = textColor;
+           ctx.fillText(this.weather.windSpeed + " m/s", 320, 100);
+           ctx.restore();
+            */
+            this.windText.fontSize = fontSizeWind;
+            this.windText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.windText.fontColor = textColor;
+            this.windText.textAlign = "right";
+            this.windText.textBaseline = "middle";
+            this.windText.paint(this.weather.windSpeed + " m/s");
+            //Time          
+            this.timeText.fontSize = fontSizeTime;
+            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.timeText.fontColor = textColor;
+            this.timeText.textAlign = "right";
+            this.timeText.textBaseline = "middle";
+            this.timeText.paint(timeString);
             //Date
-            // ctx.save();
-            ctx.font = fontSizeDate + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = textColor;
-            ctx.fillText(dateString, 580, 100);
-            ctx.restore();
+            this.dateText.fontSize = fontSizeDate;
+            this.dateText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.dateText.fontColor = textColor;
+            this.dateText.textAlign = "right";
+            this.dateText.textBaseline = "middle";
+            this.dateText.paint(dateString);
             //Inside temperature
+            this.tmpInText.rect.y = 220;
             this.tmpInText.fontSize = fontSizeTempIn;
             this.tmpInText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.tmpInText.fontColor = textColor;
-            this.tmpInText.textAlign = "center";
+            this.tmpInText.textAlign = "right";
             this.tmpInText.textBaseline = "middle";
-            this.tmpInText.paint(this.weather.tempIn + " \u00B0C");
+            this.tmpInText.paint(this.weather.tempIn.toPrecision(2) + " \u00B0C");
             //Outside temperature    
             this.tmpOutText.equals(this.tmpInText);
-            this.tmpOutText.rect.x = 320;
-            this.tmpOutText.rect.y = 50;
+            this.tmpOutText.rect.x = 80;
+            this.tmpOutText.rect.y = 5;
             this.tmpOutText.textAlign = "right";
-            this.tmpOutText.paint(this.weather.tempOut + " \u00B0C");
+            this.tmpOutText.paint(this.weather.tempOut.toPrecision(2) + " \u00B0C");
             //Humidity
             ctx.save();
             ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -681,13 +691,13 @@ var KitchenInfoStation;
             ctx.restore();
             //   }      
             //Outside mark
-            this.TempMarks[0].setSize(new Rect(250, 350, 80, 40));
+            this.TempMarks[0].setSize(new Rect(250, 320, 80, 80));
             this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");
             //Inside mark
-            this.TempMarks[1].setSize(new Rect(300, 200, 80, 40));
+            this.TempMarks[1].setSize(new Rect(300, 200, 80, 80));
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
             //Inner switch
-            this.SwitchMarks[0].setSize(new Rect(220, 150, 80, 40));
+            this.SwitchMarks[0].setSize(new Rect(220, 150, 80, 80));
             this.SwitchMarks[0].paint();
             //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;

@@ -29,24 +29,68 @@ var OhsCanvasGraphics;
         return Rect;
     }());
     OhsCanvasGraphics.Rect = Rect;
-    var Text = (function () {
+    var Mark = (function () {
+        function Mark(ctx, rect) {
+            this.ctx = ctx;
+            this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
+        }
+        Mark.prototype.equals = function (mark) {
+            this.ctx = mark.ctx;
+            this.rect.equals(mark.rect);
+        };
+        Mark.prototype.setSize = function (rect) {
+            this.rect.equals(rect);
+        };
+        Mark.prototype.isClicked = function (clx, cly) {
+            return this.rect.isClicked(clx, cly);
+        };
+        return Mark;
+    }());
+    OhsCanvasGraphics.Mark = Mark;
+    var Text = (function (_super) {
+        __extends(Text, _super);
         function Text(ctx, rect) {
+            _super.call(this, ctx, rect);
             this.fontSize = 10;
             this.fontColor = "#000000";
             this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.textAlign = "center";
             this.textBaseline = "middle";
-            this.ctx = ctx;
-            this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
+            this.border = false; //debug border
         }
         Text.prototype.paint = function (text) {
+            var x = this.rect.x;
+            var y = this.rect.y;
+            var align = this.textAlign.toString();
+            var baseline = this.textBaseline.toString();
+            if (align == "right" || align == "end") {
+                x = this.rect.x + this.rect.w;
+            }
+            else if (align == "center") {
+                x = this.rect.x + (this.rect.w / 2);
+            }
+            if (baseline == "bottom" || baseline == "alphabetic") {
+                y = this.rect.y + this.rect.h;
+            }
+            else if (baseline == "middle") {
+                y = this.rect.y + (this.rect.h / 2);
+            }
             this.ctx.save();
             this.ctx.font = this.fontSize + this.fontFamily;
             this.ctx.textAlign = this.textAlign;
             this.ctx.textBaseline = this.textBaseline;
             this.ctx.fillStyle = this.fontColor;
-            this.ctx.fillText(text, this.rect.x, this.rect.y);
+            this.ctx.fillText(text, x, y);
             this.ctx.restore();
+            if (this.border) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = "red";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
         };
         Text.prototype.equals = function (tx) {
             this.rect.equals(tx.rect);
@@ -57,95 +101,56 @@ var OhsCanvasGraphics;
             this.textAlign = tx.textAlign;
             this.textBaseline = tx.textBaseline;
         };
-        Text.prototype.getRect = function () {
-            var rect = {
-                x: 0,
-                y: 0,
-                width: 0,
-                heigth: 0
-            };
-            rect.x = this.rect.x;
-            rect.y = this.rect.y;
-            rect.width = this.rect.w;
-            rect.heigth = this.rect.h;
-            if (this.textAlign == "center") {
-                rect.x = this.rect.x - (this.rect.w / 2);
-            }
-            else if (this.textAlign == "right" || this.textAlign == "end") {
-                rect.x = this.rect.x - this.rect.h;
-            }
-            if (this.textBaseline == "bottom") {
-                rect.y = this.rect.y - this.rect.h;
-            }
-            else if (this.textBaseline == "middle") {
-                rect.y = this.rect.y - (this.rect.h / 2);
-            }
-            return rect;
+        Text.prototype.setSize = function (rect) {
+            _super.prototype.setSize.call(this, rect);
         };
         return Text;
-    }());
+    }(Mark));
     OhsCanvasGraphics.Text = Text;
-    var Mark = (function () {
-        function Mark(ctx, rect) {
-            this.ctx = ctx;
-            this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
-        }
-        Mark.prototype.setSize = function (rect) {
-            this.rect.equals(rect);
-        };
-        Mark.prototype.isClicked = function (clx, cly) {
-            return (clx > this.rect.x && clx < this.rect.x + this.rect.w && cly < this.rect.y + this.rect.h && cly > this.rect.y);
-        };
-        return Mark;
-    }());
-    OhsCanvasGraphics.Mark = Mark;
     var TempMark = (function (_super) {
         __extends(TempMark, _super);
         function TempMark(ctx, rect, src) {
             _super.call(this, ctx, rect);
             this.img = null;
+            this.border = false; //debug border
             this.txt = new Text(ctx, rect);
-            this.txt.textAlign = "left";
+            this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
+            this.txt.fontSize = 18;
             this.img = new Image();
             this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";              
         }
         TempMark.prototype.setSize = function (rect) {
             _super.prototype.setSize.call(this, rect);
-            this.txt.rect.equals(rect);
+            this.txt.setSize(rect);
         };
         TempMark.prototype.paint = function (text) {
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y, this.rect.w / 2, 0, 2 * Math.PI, false);
+            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
             this.ctx.fillStyle = '#ccffe6';
             this.ctx.fill();
             this.ctx.lineWidth = 2;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
             this.ctx.restore();
-            this.txt.rect.x = this.rect.x + 20;
+            //this.rect.x = this.rect.x + 20;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
             this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 8, this.rect.y - 20, 40, 40);
+            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
             this.ctx.restore();
-            // }                         
-        };
-        TempMark.prototype.getRect = function () {
-            var rect = {
-                x: 0,
-                y: 0,
-                width: 0,
-                heigth: 0
-            };
-            rect.x = this.rect.x;
-            rect.y = this.rect.y;
-            rect.width = this.rect.w;
-            rect.heigth = this.rect.h;
-            return rect;
+            // }            
+            if (this.border) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = "blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
         };
         return TempMark;
     }(Mark));
@@ -157,8 +162,9 @@ var OhsCanvasGraphics;
             this.img = null;
             this.colorButton = "#666699";
             this.state = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+            this.border = false; //debug border
             this.txt = new Text(ctx, rect);
-            this.txt.textAlign = "left";
+            this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
             this.img = new Image();
@@ -166,7 +172,7 @@ var OhsCanvasGraphics;
         }
         SwitchMark.prototype.setSize = function (rect) {
             _super.prototype.setSize.call(this, rect);
-            this.txt.rect.equals(rect);
+            this.txt.setSize(rect);
         };
         SwitchMark.prototype.paint = function () {
             var text = "---";
@@ -198,34 +204,30 @@ var OhsCanvasGraphics;
             }
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y, this.rect.w / 2, 0, 2 * Math.PI, false);
+            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
             this.ctx.fillStyle = this.colorButton;
             this.ctx.fill();
             this.ctx.lineWidth = 2;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
             this.ctx.restore();
-            this.txt.rect.x = this.rect.x + 30;
+            //  this.rect.x = this.rect.x + 30;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
             this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 8, this.rect.y - 20, 40, 40);
+            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
             this.ctx.restore();
-            // }                                               
-        };
-        SwitchMark.prototype.getRect = function () {
-            var rect = {
-                x: 0,
-                y: 0,
-                width: 0,
-                heigth: 0
-            };
-            rect.x = this.rect.x;
-            rect.y = this.rect.y;
-            rect.width = this.rect.w;
-            rect.heigth = this.rect.h;
-            return rect;
+            // }                        
+            if (this.border) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = "blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
         };
         return SwitchMark;
     }(Mark));
