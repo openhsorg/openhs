@@ -1051,11 +1051,11 @@ class Room {
      //   }      
     
         //Outside mark
-        this.TempMarks[0].setSize(new Rect (250, 350, 80, 40));
+        this.TempMarks[0].setSize(new Rect (250, 350, 80, 80));
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
-        this.TempMarks[1].setSize(new Rect (280, 200, 80, 40));
+        this.TempMarks[1].setSize(new Rect (280, 200, 80, 80));
         this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
     }
     

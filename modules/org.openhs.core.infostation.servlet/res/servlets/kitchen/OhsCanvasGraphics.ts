@@ -159,12 +159,13 @@ module OhsCanvasGraphics {
             this.ctx.restore();      
                     
             //this.rect.x = this.rect.x + 20;
+            this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
             
             //Draw image...
          //   if (this.imgLoaded) {     
             this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
+            this.ctx.drawImage(this.img, this.rect.x + (this.rect.w / 2) - 20, this.rect.y - 20, 40, 40);
             this.ctx.restore();        
            // }            
             
@@ -176,26 +177,8 @@ module OhsCanvasGraphics {
                 this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
                 this.ctx.stroke();
                 this.ctx.restore();
-             }              
-            
-         }     
-    /*
-         getRect() {
-             var rect = {
-                 x:0,
-                 y:0,
-                 width:0,
-                heigth:0
-             };  
-        
-            rect.x = this.rect.x;
-            rect.y = this.rect.y;
-            rect.width = this.rect.w;
-            rect.heigth = this.rect.h;                
-        
-            return rect;        
-        }     
-        */        
+             }                          
+         }            
     }          
     
     export class SwitchMark extends Mark {
@@ -263,6 +246,7 @@ module OhsCanvasGraphics {
             this.ctx.restore();      
                     
           //  this.rect.x = this.rect.x + 30;
+            this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
         
         //Draw image...

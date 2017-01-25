@@ -135,11 +135,12 @@ var OhsCanvasGraphics;
             this.ctx.stroke();
             this.ctx.restore();
             //this.rect.x = this.rect.x + 20;
+            this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
             this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
+            this.ctx.drawImage(this.img, this.rect.x + (this.rect.w / 2) - 20, this.rect.y - 20, 40, 40);
             this.ctx.restore();
             // }            
             if (this.border) {
@@ -212,6 +213,7 @@ var OhsCanvasGraphics;
             this.ctx.stroke();
             this.ctx.restore();
             //  this.rect.x = this.rect.x + 30;
+            this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
             //Draw image...
             //   if (this.imgLoaded) {     
