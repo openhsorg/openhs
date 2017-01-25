@@ -110,8 +110,7 @@ module OhsCanvasGraphics {
         
         public isClicked (clx:number, cly:number) {                
             return (clx > this.rect.x && clx < this.rect.x + this.rect.w && cly < this.rect.y + this.rect.h && cly > this.rect.y);        
-       }        
-                   
+       }                           
     }
     
     export class TempMark extends Mark {
@@ -121,8 +120,7 @@ module OhsCanvasGraphics {
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;       
     
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {
-            
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
 
             this.txt = new Text (ctx, rect);
@@ -176,8 +174,97 @@ module OhsCanvasGraphics {
             rect.heigth = this.rect.h;                
         
             return rect;        
-        }         
-    
-
+        }             
     }          
+    
+    export class SwitchMark extends Mark {
+
+        private txt:  Text;
+    
+        private img:HTMLImageElement = null;
+        private imgLoaded: boolean;// = false;    
+        private colorButton: string = "#666699";    
+        public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+
+    
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
+            super(ctx, rect);
+
+            this.txt = new Text (ctx, rect);
+            this.txt.textAlign = "left";
+            this.txt.textBaseline = "middle";
+            this.txt.fontSize = 20;
+            
+            this.img = new Image();                                
+            this.img.src = src;           
+        }      
+        
+        setSize (rect:  Rect) {        
+            super.setSize(rect);            
+            this.txt.rect.equals(rect);               
+         }
+    
+        public paint () {      
+    
+            var text: string = "---";    
+            // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+        
+            //logic of switch
+            if (this.state == 0) {
+                this.colorButton = "#808080"; 
+                text = "---";
+            } else if (this.state == 1) {
+                this.colorButton = "#3333ff";
+                text = "off";
+            } else if (this.state == 2) {
+                this.colorButton = "#33cc33";
+                text = "->on";
+            } else if (this.state == 3) {
+                this.colorButton = "#ffaa00";
+                text = "on";
+            } else if (this.state == 4) {
+                this.colorButton = "#9999ff";
+                text = "->off";
+            } else {
+                this.colorButton = "#808080"; 
+                text = "---";
+            }        
+        
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y, this.rect.w / 2, 0, 2 * Math.PI, false);
+            this.ctx.fillStyle = this.colorButton;
+            this.ctx.fill();
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = '#00cc69';
+            this.ctx.stroke();
+            this.ctx.restore();      
+                    
+            this.txt.rect.x = this.rect.x + 30;
+            this.txt.paint(text);
+        
+        //Draw image...
+     //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.rect.x - 8, this.rect.y - 20, 40, 40);
+            this.ctx.restore();        
+       // }                                               
+         }     
+    
+         getRect() {
+             var rect = {
+                 x:0,
+                 y:0,
+                 width:0,
+                heigth:0
+             };  
+        
+            rect.x = this.rect.x;
+            rect.y = this.rect.y;
+            rect.width = this.rect.w;
+            rect.heigth = this.rect.h;                
+        
+            return rect;        
+        }             
+    }           
 }
