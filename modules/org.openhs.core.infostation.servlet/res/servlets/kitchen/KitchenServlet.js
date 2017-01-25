@@ -4,12 +4,14 @@
 // Home page: ***
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsCanvasGraphics.ts'/>
+/// <reference path='OhsWeatherData.ts'/>
 var KitchenInfoStation;
 (function (KitchenInfoStation) {
     var Rect = OhsCanvasGraphics.Rect;
     var Text = OhsCanvasGraphics.Text;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
+    var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     var forecastRect = {
         x: 0,
         y: 0,
@@ -97,6 +99,7 @@ var KitchenInfoStation;
     var roomNum = 1; //number of selected room for Application.Room       
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
+            this.weatherData = new WeatherDataForecast();
             this.weather = new WeatherData(); //current weather today    
             this.forecastScreen = null; //forecast screen      
             this.stopWatch = null;
@@ -217,6 +220,15 @@ var KitchenInfoStation;
             //Other objects...
             this.forecastScreen.getData(url);
             this.floor.getData(url);
+            //Weather data....
+            data = null;
+            for (var i = 0; i <= 3; i++) {
+                var id = "Day" + i;
+                data = getAjax(url, id);
+                if (data != null) {
+                    this.weatherData.setWeatherItem(i, data);
+                }
+            }
         };
         BasicScreen.prototype.postData = function (url) {
             var data = {

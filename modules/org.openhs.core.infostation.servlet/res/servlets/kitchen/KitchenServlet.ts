@@ -5,6 +5,7 @@
 
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsCanvasGraphics.ts'/>
+/// <reference path='OhsWeatherData.ts'/>
 
 module KitchenInfoStation {
 
@@ -12,6 +13,8 @@ import Rect = OhsCanvasGraphics.Rect;
 import Text = OhsCanvasGraphics.Text;
 import TempMark = OhsCanvasGraphics.TempMark;
 import SwitchMark = OhsCanvasGraphics.SwitchMark;
+    
+import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;    
     
     
 var forecastRect = {
@@ -153,6 +156,8 @@ export class BasicScreen {
     public dateText:  Text;
     public windText:  Text;                
        
+    public weatherData: WeatherDataForecast = new WeatherDataForecast();
+    
     public weather: WeatherData = new WeatherData(); //current weather today    
     public forecastScreen: WeatherForecastScreen = null; //forecast screen      
     public stopWatch: StopWatch = null;        
@@ -297,6 +302,21 @@ export class BasicScreen {
         
         this.forecastScreen.getData(url);
         this.floor.getData(url);
+        
+        //Weather data....
+        data = null;
+        
+        for (var i = 0; i <= 3; i++) {
+            
+            var id: string = "Day" + i;
+            
+            data = getAjax(url, id);
+            if (data != null) {
+                this.weatherData.setWeatherItem(i, data);
+            }
+            
+        }
+        
             
     }
     
