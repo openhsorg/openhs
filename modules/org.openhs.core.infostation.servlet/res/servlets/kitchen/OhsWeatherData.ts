@@ -7,7 +7,7 @@ module OhsWeatherData {
         private forecasts: Array<WeatherForecast>;
         
         constructor () {            
-            this.forecasts = new Array<WeatherForecast>();                                    
+            this.forecasts = new Array<WeatherForecast>(); 
         }
         
         public setNumberForecasts (num: number) {         
@@ -20,19 +20,29 @@ module OhsWeatherData {
             }
         }
         
-        public setWeatherItem (num: number, data: string) {            
+        public setWeatherItem (num: number, data: string) {                    
             if (num + 1 > this.forecasts.length) {
                 this.setNumberForecasts (num + 1);
             }
             
             this.forecasts[num].setWeather(data);
         }
-                
+        
+        public getForecast (num: number) {        
+            if (num + 1 <= this.forecasts.length) {
+                return this.forecasts[num];
+            } else {                
+                var fcs: WeatherForecast = new WeatherForecast()
+                 fcs.valid = false;
+                                
+                return fcs;
+            }                
+        }                
     }
         
     export class WeatherForecast {
     
-        public valid: boolean = false;
+        public valid: boolean = false; //content of the forecast is valid
         
         public tempIn: number = 0.0;
         public tempOut: number = 0.0;
@@ -85,10 +95,13 @@ module OhsWeatherData {
                 return this.img;
             } 
         
-        public setWeather (data:  string) {                    
+        public setWeather (data:  string) {           
+                 
             this.tempOut = parseFloat(data['temp']);
             this.weatherSymbol = JSON.parse(data['weatherSymbol']);
-            this.windSpeed = parseFloat(data['windSpeed']);         
+            this.windSpeed = parseFloat(data['windSpeed']);
+            
+            this.valid = true;
         }        
     }        
 }

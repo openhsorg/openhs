@@ -62,6 +62,22 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
+	    		} else if (value.toString().equals("SiteData")) {	    		
+	    			/*
+	    			 * Get site data.
+	    			 */
+	    			JSONObject json = getSiteDataToJSON();
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();
+	    			
 	    		} else if (value.toString().contains("WeatherForecast_")) {	
 	    			
 	    			// Divide
@@ -77,7 +93,7 @@ public class KitchenServlet extends HttpServlet {
 	    				    				    			
 	    			int numForecast = Integer.parseInt(parts[1]);
 	    			
-	    			//System.out.println("\n\n ***Forecast: " + numForecast);
+	    		//	System.out.println("\n\n ***Forecast: " + numForecast);
 	    			
 	    			/*
 	    			 * Get data from meteo module.
@@ -246,6 +262,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 	    	
+	    	out.println("<script src='infores/servlets/kitchen/OhsSiteData.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/OhsWeatherData.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/OhsCanvasGraphics.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
@@ -282,11 +299,22 @@ public class KitchenServlet extends HttpServlet {
 			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
 			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
 			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+			json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
 			return json;
 	    }
+	    
+	    protected JSONObject getSiteDataToJSON() {
+	    	
+			JSONObject json = new JSONObject();
+			json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
+			
+			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
+			
+			return json;
+	    }	    
 	    
 	    protected JSONObject getDataToJSON_Forecast(int nFcs) {
 	    		    	

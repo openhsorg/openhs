@@ -5,6 +5,7 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsCanvasGraphics.ts'/>
 /// <reference path='OhsWeatherData.ts'/>
+/// <reference path='OhsSiteData.ts'/>
 var KitchenInfoStation;
 (function (KitchenInfoStation) {
     var Rect = OhsCanvasGraphics.Rect;
@@ -12,6 +13,7 @@ var KitchenInfoStation;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
     var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
+    var SiteData = OhsSiteData.SiteData;
     var forecastRect = {
         x: 0,
         y: 0,
@@ -100,6 +102,7 @@ var KitchenInfoStation;
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
             this.weatherData = new WeatherDataForecast(); // General weather
+            this.siteData = new SiteData(); //general Site Data
             this.weather = new WeatherData(); //current weather today    
             this.forecastScreen = null; //forecast screen      
             this.stopWatch = null;
@@ -217,9 +220,14 @@ var KitchenInfoStation;
                 this.weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
                 this.weather.windSpeed = parseFloat(data['windSpeed']);
             }
-            //Other objects...
-            this.forecastScreen.getData(url);
+            //Other objects...        
             this.floor.getData(url);
+            //Site data
+            data = null;
+            data = getAjax(url, "SiteData");
+            if (data != null) {
+                this.siteData.setSiteData(data);
+            }
             //Weather data....
             data = null;
             for (var i = 0; i < 4; i++) {
@@ -400,14 +408,6 @@ var KitchenInfoStation;
             this.forecastPanels[1].paint(ctx);
             this.forecastPanels[2].paint(ctx);
             this.forecastPanels[3].paint(ctx);
-        };
-        WeatherForecastScreen.prototype.getData = function (url) {
-            var i = 0;
-            for (var _i = 0, _a = this.forecastPanels; _i < _a.length; _i++) {
-                var panel = _a[_i];
-                panel.getData(url, "WeatherForecast_" + i);
-                i++;
-            }
         };
         return WeatherForecastScreen;
     }());
@@ -604,11 +604,13 @@ var KitchenInfoStation;
             this.width = 0.0;
             this.height = 0.0;
             this.lineWidth = 2.0;
-            this.forecast = null;
-            this.weatherData = null; //weather data source
+            this.weatherData = null; //weather data source        
             this.numForecast = 0;
             this.imgWind = null;
-            this.forecast = new WeatherData();
+            this.txtValid = new Text(ctx, new Rect(10, 10, 60, 10));
+            this.txtValid.textAlign = "left";
+            this.txtValid.textBaseline = "top";
+            this.txtValid.fontSize = 20;
             this.txtWind = new Text(ctx, new Rect(0, 0, 0, 0));
             this.txt = new Text(ctx, new Rect(0, 0, 0, 0));
             this.txt.textAlign = "left";
@@ -629,9 +631,11 @@ var KitchenInfoStation;
             this.txt.rect.w = width;
             this.txt.rect.h = height;
         };
-        WeatherForecastPanel.prototype.setForecast = function (fcs) {
+        /*
+        setForecast(fcs: WeatherData) {
             this.forecast = fcs;
-        };
+        }
+        */
         WeatherForecastPanel.prototype.paint = function (ctx) {
             //Draw rectangle...               
             ctx.save();
@@ -643,35 +647,38 @@ var KitchenInfoStation;
             ctx.strokeStyle = 'black';
             ctx.stroke();
             ctx.restore();
-            //Draw forecast image
-            var img = this.forecast.getImage();
-            ctx.save();
-            ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
-            ctx.restore();
-            //Draw temperature...
-            this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
-            this.txt.rect.y = this.width * 1.25;
-            this.txt.textAlign = "center";
-            this.txt.paint(this.forecast.tempOut + " \u00B0C");
-            //wind image
-            ctx.save();
-            ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
-            ctx.restore();
-            //wind text
-            this.txtWind.rect.x = this.x + (this.width * 0.9);
-            this.txtWind.rect.y = this.width * 1.6;
-            this.txtWind.rect.w = this.width * 0.4;
-            this.txtWind.textAlign = "right";
-            this.txtWind.fontSize = 15;
-            this.txtWind.textBaseline = "hanging";
-            this.txtWind.paint(this.forecast.windSpeed + " \u00B0C");
-        };
-        WeatherForecastPanel.prototype.getData = function (url, id) {
-            var data = getAjax(url, id);
-            if (data != null) {
-                this.forecast.tempOut = parseFloat(data['temp']);
-                this.forecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
-                this.forecast.windSpeed = parseFloat(data['windSpeed']);
+            var weatherForecast = this.weatherData.getForecast(this.numForecast);
+            if (!weatherForecast.valid) {
+                this.txtValid.setSize(new Rect(this.x + 5, this.y + 1, 20, 10));
+                this.txtValid.paint("Not valid...");
+            }
+            else {
+                //Draw forecast image
+                var img = weatherForecast.getImage();
+                ctx.save();
+                ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
+                ctx.restore();
+                //Draw temperature...
+                //this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
+                this.txt.rect.x = this.x + (this.width - 110);
+                this.txt.rect.y = this.height * 0.8;
+                this.txt.rect.w = 100;
+                this.txt.rect.h = 30;
+                this.txt.textAlign = "right";
+                this.txt.paint(weatherForecast.tempOut + " \u00B0C");
+                //wind image
+                ctx.save();
+                ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
+                ctx.restore();
+                //wind text
+                this.txtWind.rect.x = this.x + (this.width - 70);
+                this.txtWind.rect.y = this.width * 1.6 - 10;
+                this.txtWind.rect.w = 60;
+                this.txtWind.rect.h = 30;
+                this.txtWind.textAlign = "right";
+                this.txtWind.fontSize = 15;
+                this.txtWind.textBaseline = "middle";
+                this.txtWind.paint(weatherForecast.windSpeed + " \u00B0C");
             }
         };
         return WeatherForecastPanel;

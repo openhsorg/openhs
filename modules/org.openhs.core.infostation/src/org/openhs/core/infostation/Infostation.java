@@ -136,5 +136,13 @@ public class Infostation implements IInfostation {
       
       public ArrayList<Weather> getForecasts() {    	    	    
     	  return this.m_meteo.getForecasts();
-      }          
+      }  
+      
+      public int getNumberFloors() {
+    	  try {
+    		  return this.m_siteService.getNumberThings("floors");
+    	  } catch (Exception ex){    		  
+    		  return -1;
+    	  }
+      }
 }

@@ -6,6 +6,7 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsCanvasGraphics.ts'/>
 /// <reference path='OhsWeatherData.ts'/>
+/// <reference path='OhsSiteData.ts'/>
 
 module KitchenInfoStation {
 
@@ -17,6 +18,7 @@ import SwitchMark = OhsCanvasGraphics.SwitchMark;
 import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
 import WeatherForecast = OhsWeatherData.WeatherForecast;    
     
+import SiteData = OhsSiteData.SiteData;    
     
 var forecastRect = {
     x:0,
@@ -158,6 +160,7 @@ export class BasicScreen {
     public windText:  Text;                
        
     public weatherData: WeatherDataForecast = new WeatherDataForecast(); // General weather
+    public siteData:    SiteData = new SiteData(); //general Site Data
     
     public weather: WeatherData = new WeatherData(); //current weather today    
     public forecastScreen: WeatherForecastScreen = null; //forecast screen      
@@ -296,13 +299,22 @@ export class BasicScreen {
                     this.weather.tempOut = parseFloat(data['tempOut']);
                     this.weather.frostOutside = JSON.parse(data['frostOutside']);
                     this.weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
-                    this.weather.windSpeed = parseFloat(data['windSpeed']);   
+                    this.weather.windSpeed = parseFloat(data['windSpeed']);
+                    //this.numberFloors = parseInt(data['number_floors']); 
             }
         
-        //Other objects...
-        
-        this.forecastScreen.getData(url);
+        //Other objects...        
         this.floor.getData(url);
+        
+        //Site data
+        data = null;
+        
+        data = getAjax(url, "SiteData");
+        
+        if (data != null) {
+            this.siteData.setSiteData(data);
+        }           
+        
         
         //Weather data....
         data = null;
@@ -313,11 +325,8 @@ export class BasicScreen {
             data = getAjax(url, id);
             if (data != null) {
                 this.weatherData.setWeatherItem(i, data);
-            }
-            
-        }
-        
-            
+            }            
+        }                    
     }    
     
     private postData (url: string) {
@@ -534,18 +543,7 @@ class WeatherForecastScreen {
         this.forecastPanels[1].paint(ctx);
         this.forecastPanels[2].paint(ctx);
         this.forecastPanels[3].paint(ctx);        
-    }     
-    
-    public getData (url: string) {
-        
-        var i: number = 0;
-        
-        for (var panel of this.forecastPanels) {
-            panel.getData(url, "WeatherForecast_" + i);
-            
-            i++;
-        }        
-    }    
+    }        
 }
     
     
@@ -812,19 +810,20 @@ class WeatherForecastPanel {
     public width:  number = 0.0;
     public height:  number = 0.0;    
     public lineWidth: number = 2.0;
-    
-    public forecast: WeatherData = null;
-    public weatherData: WeatherDataForecast = null; //weather data source
-        
-    private numForecast:        number = 0;
-    
+    public weatherData: WeatherDataForecast = null; //weather data source        
+    private numForecast:        number = 0;    
+    public txtValid:  Text;   
     private txt:  Text;
     private txtWind:  Text;        
     imgWind:HTMLImageElement = null;
     
     constructor (ctx: CanvasRenderingContext2D, weatherData:  WeatherDataForecast, numForecast: number ) {
          
-        this.forecast = new WeatherData ();
+        this.txtValid = new Text (ctx, new Rect (10, 10, 60, 10));        
+        this.txtValid.textAlign = "left";
+        this.txtValid.textBaseline = "top";
+        this.txtValid.fontSize = 20;
+
         this.txtWind = new Text (ctx, new Rect (0, 0, 0, 0));
         this.txt = new Text (ctx, new Rect (0, 0, 0, 0));
         this.txt.textAlign = "left";
@@ -851,13 +850,13 @@ class WeatherForecastPanel {
         this.txt.rect.w = width;
         this.txt.rect.h = height;    
     }
-    
+    /*
     setForecast(fcs: WeatherData) {
         this.forecast = fcs;        
     }
-    
+    */
     public paint (ctx: CanvasRenderingContext2D) {
-        
+
         //Draw rectangle...               
         ctx.save();
         ctx.beginPath();
@@ -867,45 +866,47 @@ class WeatherForecastPanel {
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = 'black';
         ctx.stroke();         
-        ctx.restore();      
-        
-        //Draw forecast image
-        var img:HTMLImageElement = this.forecast.getImage();        
-        ctx.save();
-        ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
-        ctx.restore();  
-        
-        //Draw temperature...
-        this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
-        this.txt.rect.y = this.width * 1.25;
-        this.txt.textAlign = "center";
-        this.txt.paint(this.forecast.tempOut + " \u00B0C");
+        ctx.restore(); 
                 
-        //wind image
-        ctx.save();
-        ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
-        ctx.restore();       
+        var weatherForecast:    WeatherForecast = this.weatherData.getForecast(this.numForecast);
         
-        //wind text
-        this.txtWind.rect.x = this.x + (this.width * 0.9);
-        this.txtWind.rect.y = this.width * 1.6;
-        this.txtWind.rect.w = this.width * 0.4;
-        this.txtWind.textAlign = "right";
-        this.txtWind.fontSize = 15;
-        this.txtWind.textBaseline = "hanging";
-        this.txtWind.paint(this.forecast.windSpeed + " \u00B0C");        
+        if (!weatherForecast.valid){
+            this.txtValid.setSize(new Rect(this.x + 5, this.y + 1, 20, 10));
+            this.txtValid.paint("Not valid...");
+        } else {
+                             
+                //Draw forecast image
+                var img:HTMLImageElement = weatherForecast.getImage();        
+                ctx.save();
+                ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
+                ctx.restore();  
+                
+                //Draw temperature...
+                //this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
+                this.txt.rect.x = this.x + (this.width - 110);
+                this.txt.rect.y = this.height * 0.8;
+                this.txt.rect.w = 100;
+                this.txt.rect.h = 30;
+                this.txt.textAlign = "right";
+                this.txt.paint(weatherForecast.tempOut + " \u00B0C");
+                        
+                //wind image
+                ctx.save();
+                ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
+                ctx.restore();       
+                
+                //wind text
+                this.txtWind.rect.x = this.x + (this.width - 70);
+                this.txtWind.rect.y = this.width * 1.6 - 10;
+                this.txtWind.rect.w = 60;
+                this.txtWind.rect.h = 30;
+                this.txtWind.textAlign = "right";
+                this.txtWind.fontSize = 15;
+                this.txtWind.textBaseline = "middle";
+                this.txtWind.paint(weatherForecast.windSpeed + " \u00B0C");
+            }        
     }
-    
-    public getData(url: string, id: string) {   
      
-        var data = getAjax(url, id);
-                
-        if (data != null) {
-                    this.forecast.tempOut = parseFloat(data['temp']);
-                    this.forecast.weatherSymbol = JSON.parse(data['weatherSymbol']);
-                    this.forecast.windSpeed = parseFloat(data['windSpeed']);   
-            }                     
-    }         
 }        
     
     

@@ -24,4 +24,5 @@ public interface IInfostation {
 	public float getTempForecast();
 	public boolean isFrost();
 	public ArrayList<Weather> getForecasts();
+	public int getNumberFloors();
 }

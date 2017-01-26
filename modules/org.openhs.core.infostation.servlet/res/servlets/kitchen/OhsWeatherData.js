@@ -20,12 +20,22 @@ var OhsWeatherData;
             }
             this.forecasts[num].setWeather(data);
         };
+        WeatherDataForecast.prototype.getForecast = function (num) {
+            if (num + 1 <= this.forecasts.length) {
+                return this.forecasts[num];
+            }
+            else {
+                var fcs = new WeatherForecast();
+                fcs.valid = false;
+                return fcs;
+            }
+        };
         return WeatherDataForecast;
     }());
     OhsWeatherData.WeatherDataForecast = WeatherDataForecast;
     var WeatherForecast = (function () {
         function WeatherForecast() {
-            this.valid = false;
+            this.valid = false; //content of the forecast is valid
             this.tempIn = 0.0;
             this.tempOut = 0.0;
             this.timeString = "";
@@ -67,6 +77,7 @@ var OhsWeatherData;
             this.tempOut = parseFloat(data['temp']);
             this.weatherSymbol = JSON.parse(data['weatherSymbol']);
             this.windSpeed = parseFloat(data['windSpeed']);
+            this.valid = true;
         };
         return WeatherForecast;
     }());
