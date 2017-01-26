@@ -99,7 +99,7 @@ var KitchenInfoStation;
     var roomNum = 1; //number of selected room for Application.Room       
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
-            this.weatherData = new WeatherDataForecast();
+            this.weatherData = new WeatherDataForecast(); // General weather
             this.weather = new WeatherData(); //current weather today    
             this.forecastScreen = null; //forecast screen      
             this.stopWatch = null;
@@ -126,7 +126,7 @@ var KitchenInfoStation;
             this.timeText = new Text(this.ctx, new Rect((this.width) - 150, 5, 150, 60));
             this.dateText = new Text(this.ctx, new Rect((this.width) / 2 + 70, 80, 230, 40));
             this.windText = new Text(this.ctx, new Rect(160, 80, 140, 40));
-            this.forecastScreen = new WeatherForecastScreen(canvas);
+            this.forecastScreen = new WeatherForecastScreen(canvas, this.weatherData);
             this.floor = new Floor(canvas);
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
@@ -222,8 +222,8 @@ var KitchenInfoStation;
             this.floor.getData(url);
             //Weather data....
             data = null;
-            for (var i = 0; i <= 3; i++) {
-                var id = "Day" + i;
+            for (var i = 0; i < 4; i++) {
+                var id = "WeatherForecast_" + i;
                 data = getAjax(url, id);
                 if (data != null) {
                     this.weatherData.setWeatherItem(i, data);
@@ -375,16 +375,17 @@ var KitchenInfoStation;
     }());
     KitchenInfoStation.BasicScreen = BasicScreen; // end class Infoscreen
     var WeatherForecastScreen = (function () {
-        function WeatherForecastScreen(canvas) {
+        function WeatherForecastScreen(canvas, weatherData) {
             this.forecastPanels = new Array();
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
             this.height = canvas.height;
-            this.forecastPanels.push(new WeatherForecastPanel(this.ctx));
-            this.forecastPanels.push(new WeatherForecastPanel(this.ctx));
-            this.forecastPanels.push(new WeatherForecastPanel(this.ctx));
-            this.forecastPanels.push(new WeatherForecastPanel(this.ctx));
+            this.weatherData = weatherData;
+            this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 0));
+            this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 1));
+            this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 2));
+            this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 3));
         }
         WeatherForecastScreen.prototype.paint = function () {
             var ctx = this.ctx;
@@ -404,7 +405,7 @@ var KitchenInfoStation;
             var i = 0;
             for (var _i = 0, _a = this.forecastPanels; _i < _a.length; _i++) {
                 var panel = _a[_i];
-                panel.getData(url, "Day" + i);
+                panel.getData(url, "WeatherForecast_" + i);
                 i++;
             }
         };
@@ -597,13 +598,15 @@ var KitchenInfoStation;
         return StopWatch;
     }());
     var WeatherForecastPanel = (function () {
-        function WeatherForecastPanel(ctx) {
+        function WeatherForecastPanel(ctx, weatherData, numForecast) {
             this.x = 0.0;
             this.y = 0.0;
             this.width = 0.0;
             this.height = 0.0;
             this.lineWidth = 2.0;
             this.forecast = null;
+            this.weatherData = null; //weather data source
+            this.numForecast = 0;
             this.imgWind = null;
             this.forecast = new WeatherData();
             this.txtWind = new Text(ctx, new Rect(0, 0, 0, 0));
@@ -613,6 +616,8 @@ var KitchenInfoStation;
             this.txt.fontSize = 20;
             imgWind = new Image();
             imgWind.src = "/infores/servlets/kitchen/wind.png";
+            this.weatherData = weatherData;
+            this.numForecast = numForecast;
         }
         WeatherForecastPanel.prototype.setSize = function (x, y, width, height) {
             this.x = x;

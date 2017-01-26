@@ -62,11 +62,27 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
-	    		} else if (value.toString().equals("Day0")) {			    		
+	    		} else if (value.toString().contains("WeatherForecast_")) {	
+	    			
+	    			// Divide
+	    			String delim = "[_]+";
+	    			String[] parts = value.toString().split(delim);
+
+	    			// Check for empty parts...
+	    			for (String str : parts) {
+	    				if (str.equals("")) {
+	    					//System.out.println("\n\n eeeee");
+	    				}
+	    			}	    	
+	    				    				    			
+	    			int numForecast = Integer.parseInt(parts[1]);
+	    			
+	    			//System.out.println("\n\n ***Forecast: " + numForecast);
+	    			
 	    			/*
 	    			 * Get data from meteo module.
 	    			 */
-	    			JSONObject json = getDataToJSON_Day(0);
+	    			JSONObject json = getDataToJSON_Forecast(numForecast);
 
 	    			//System.out.println("\nJSON:" + json.toString());
 	    			
@@ -80,59 +96,6 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();		    			
 	    			
-	    		} else if (value.toString().equals("Day1")) {			    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(1);
-
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    		
-	    			
-	    		} else if (value.toString().equals("Day2")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(2);
-
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	  
-	    			
-	    		} else if (value.toString().equals("Day3")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(3);
-
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    			
 	    		} else if (value.toString().equals("floor1")) {		    		
 	    			/*
 	    			 * Get data from meteo module.
@@ -325,15 +288,15 @@ public class KitchenServlet extends HttpServlet {
 			return json;
 	    }
 	    
-	    protected JSONObject getDataToJSON_Day(int nDay) {
+	    protected JSONObject getDataToJSON_Forecast(int nFcs) {
 	    		    	
 	    	ArrayList<Weather> forecasts = m_infostation.getForecasts();
 	    	
-	    	if (nDay < 0 || nDay > 4) { 
-	    		nDay = 4;
+	    	if (nFcs < 0 || nFcs > 4) { 
+	    		nFcs = 4;
 	    	}
 	    	
-	    	int n = nDay * 8;
+	    	int n = nFcs * 8;
 	    	
 	    	if (forecasts.size() < n) {
 	    		return null;

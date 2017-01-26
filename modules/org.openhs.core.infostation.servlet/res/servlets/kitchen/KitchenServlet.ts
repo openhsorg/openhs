@@ -14,7 +14,8 @@ import Text = OhsCanvasGraphics.Text;
 import TempMark = OhsCanvasGraphics.TempMark;
 import SwitchMark = OhsCanvasGraphics.SwitchMark;
     
-import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;    
+import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
+import WeatherForecast = OhsWeatherData.WeatherForecast;    
     
     
 var forecastRect = {
@@ -156,7 +157,7 @@ export class BasicScreen {
     public dateText:  Text;
     public windText:  Text;                
        
-    public weatherData: WeatherDataForecast = new WeatherDataForecast();
+    public weatherData: WeatherDataForecast = new WeatherDataForecast(); // General weather
     
     public weather: WeatherData = new WeatherData(); //current weather today    
     public forecastScreen: WeatherForecastScreen = null; //forecast screen      
@@ -190,7 +191,7 @@ export class BasicScreen {
         this.dateText = new Text (this.ctx, new Rect ((this.width) / 2 + 70, 80, 230, 40));
         this.windText = new Text (this.ctx, new Rect (160, 80, 140, 40));
      
-        this.forecastScreen = new WeatherForecastScreen (canvas);
+        this.forecastScreen = new WeatherForecastScreen (canvas, this.weatherData);
         this.floor = new Floor (canvas);
         
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
@@ -306,9 +307,8 @@ export class BasicScreen {
         //Weather data....
         data = null;
         
-        for (var i = 0; i <= 3; i++) {
-            
-            var id: string = "Day" + i;
+        for (var i = 0; i < 4; i++) {            
+            var id: string = "WeatherForecast_" + i;
             
             data = getAjax(url, id);
             if (data != null) {
@@ -318,7 +318,7 @@ export class BasicScreen {
         }
         
             
-    }
+    }    
     
     private postData (url: string) {
         
@@ -499,19 +499,23 @@ class WeatherForecastScreen {
     private ctx:                 CanvasRenderingContext2D;    
     private width:               number;
     private height:              number;    
+    
+    public weatherData: WeatherDataForecast; //weather data source
             
     private forecastPanels: Array<WeatherForecastPanel> = new Array<WeatherForecastPanel>();        
         
-    constructor (canvas: HTMLCanvasElement) {
+    constructor (canvas: HTMLCanvasElement, weatherData: WeatherDataForecast) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.width = canvas.width;
         this.height = canvas.height;      
+        
+        this.weatherData = weatherData; 
      
-        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
-        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
-        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));
-        this.forecastPanels.push(new WeatherForecastPanel (this.ctx));        
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx, this.weatherData, 0));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx, this.weatherData, 1));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx, this.weatherData, 2));
+        this.forecastPanels.push(new WeatherForecastPanel (this.ctx, this.weatherData, 3));        
     }        
     
     public paint () {
@@ -537,7 +541,7 @@ class WeatherForecastScreen {
         var i: number = 0;
         
         for (var panel of this.forecastPanels) {
-            panel.getData(url, "Day" + i);
+            panel.getData(url, "WeatherForecast_" + i);
             
             i++;
         }        
@@ -810,11 +814,15 @@ class WeatherForecastPanel {
     public lineWidth: number = 2.0;
     
     public forecast: WeatherData = null;
+    public weatherData: WeatherDataForecast = null; //weather data source
+        
+    private numForecast:        number = 0;
+    
     private txt:  Text;
     private txtWind:  Text;        
     imgWind:HTMLImageElement = null;
     
-    constructor (ctx: CanvasRenderingContext2D) {
+    constructor (ctx: CanvasRenderingContext2D, weatherData:  WeatherDataForecast, numForecast: number ) {
          
         this.forecast = new WeatherData ();
         this.txtWind = new Text (ctx, new Rect (0, 0, 0, 0));
@@ -825,6 +833,9 @@ class WeatherForecastPanel {
         
         imgWind = new Image();
         imgWind.src="/infores/servlets/kitchen/wind.png";
+        
+        this.weatherData = weatherData;
+        this.numForecast = numForecast;
               
     }      
     

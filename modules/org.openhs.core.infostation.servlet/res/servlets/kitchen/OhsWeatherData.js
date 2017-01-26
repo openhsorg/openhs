@@ -3,12 +3,11 @@ var OhsWeatherData;
     var WeatherDataForecast = (function () {
         function WeatherDataForecast() {
             this.forecasts = new Array();
-            this.setNumberForecasts(4);
         }
         WeatherDataForecast.prototype.setNumberForecasts = function (num) {
             if (num > this.forecasts.length) {
                 for (var i = this.forecasts.length; i < num; i++) {
-                    this.forecasts.push(new Weather());
+                    this.forecasts.push(new WeatherForecast());
                 }
             }
             else if (num < this.forecasts.length) {
@@ -16,31 +15,16 @@ var OhsWeatherData;
             }
         };
         WeatherDataForecast.prototype.setWeatherItem = function (num, data) {
-            /*
-            if (num >= this.forecasts.length) {
-                this.setNumberForecasts (num);
+            if (num + 1 > this.forecasts.length) {
+                this.setNumberForecasts(num + 1);
             }
-            */
-            this.setWeather(this.forecasts[num], data);
-            //this.setWeather (new Weather(), data);
-        };
-        WeatherDataForecast.prototype.setWeather = function (weather, data) {
-            weather.tempIn = parseFloat(data['tempIn']);
-            weather.tempOut = parseFloat(data['tempOut']);
-            /*
-            weather.dateString = data['date'];
-            weather.tempIn = parseFloat(data['tempIn']);
-            weather.tempOut = parseFloat(data['tempOut']);
-            weather.frostOutside = JSON.parse(data['frostOutside']);
-            weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
-            weather.windSpeed = parseFloat(data['windSpeed']);
-            */
+            this.forecasts[num].setWeather(data);
         };
         return WeatherDataForecast;
     }());
     OhsWeatherData.WeatherDataForecast = WeatherDataForecast;
-    var Weather = (function () {
-        function Weather() {
+    var WeatherForecast = (function () {
+        function WeatherForecast() {
             this.valid = false;
             this.tempIn = 0.0;
             this.tempOut = 0.0;
@@ -72,14 +56,19 @@ var OhsWeatherData;
             this.img.src = "/infores/servlets/kitchen/cloudSnow.png";
             this.images.push(this.img);
         }
-        Weather.prototype.getImage = function () {
+        WeatherForecast.prototype.getImage = function () {
             var index = this.weatherSymbol - 1;
             if (index < 0 || index > 6)
                 index = 0;
             this.img = this.images[index];
             return this.img;
         };
-        return Weather;
+        WeatherForecast.prototype.setWeather = function (data) {
+            this.tempOut = parseFloat(data['temp']);
+            this.weatherSymbol = JSON.parse(data['weatherSymbol']);
+            this.windSpeed = parseFloat(data['windSpeed']);
+        };
+        return WeatherForecast;
     }());
-    OhsWeatherData.Weather = Weather;
+    OhsWeatherData.WeatherForecast = WeatherForecast;
 })(OhsWeatherData || (OhsWeatherData = {}));

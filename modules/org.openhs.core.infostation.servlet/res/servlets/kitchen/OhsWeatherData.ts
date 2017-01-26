@@ -4,56 +4,33 @@ module OhsWeatherData {
     
     export class WeatherDataForecast {
                        
-        private forecasts: Array<Weather>;
+        private forecasts: Array<WeatherForecast>;
         
         constructor () {            
-            this.forecasts = new Array<Weather>();
-            
-            this.setNumberForecasts (4);
-                                    
+            this.forecasts = new Array<WeatherForecast>();                                    
         }
         
-        public setNumberForecasts (num: number) {
-         
+        public setNumberForecasts (num: number) {         
             if (num > this.forecasts.length) {            
                 for (var i = this.forecasts.length; i < num; i++) {
-                    this.forecasts.push(new Weather());
+                    this.forecasts.push(new WeatherForecast());
                 }
-            } else if (num < this.forecasts.length) {
-            
+            } else if (num < this.forecasts.length) {            
                 this.forecasts.length = num;             
             }
         }
         
-        public setWeatherItem (num: number, data: string) {
-            /*
-            if (num >= this.forecasts.length) {
-                this.setNumberForecasts (num);
+        public setWeatherItem (num: number, data: string) {            
+            if (num + 1 > this.forecasts.length) {
+                this.setNumberForecasts (num + 1);
             }
-            */
-            this.setWeather (this.forecasts[num], data);
             
-            //this.setWeather (new Weather(), data);
-            
+            this.forecasts[num].setWeather(data);
         }
-        
-        
-        protected setWeather (weather: Weather, data:  string) {        
-        
-            weather.tempIn = parseFloat(data['tempIn']);
-            weather.tempOut = parseFloat(data['tempOut']);
-            /*
-            weather.dateString = data['date'];           
-            weather.tempIn = parseFloat(data['tempIn']);
-            weather.tempOut = parseFloat(data['tempOut']);
-            weather.frostOutside = JSON.parse(data['frostOutside']);
-            weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
-            weather.windSpeed = parseFloat(data['windSpeed']);     
-            */          
-        }
+                
     }
         
-    export class Weather {
+    export class WeatherForecast {
     
         public valid: boolean = false;
         
@@ -98,8 +75,7 @@ module OhsWeatherData {
                 this.images.push(this.img);                          
             }    
             
-            getImage() {
-                
+            getImage() {                
                 var index = this.weatherSymbol - 1;
                 
                 if (index <0 || index > 6) index = 0;
@@ -107,6 +83,12 @@ module OhsWeatherData {
                 this.img = this.images[index];
                 
                 return this.img;
-            }        
+            } 
+        
+        public setWeather (data:  string) {                    
+            this.tempOut = parseFloat(data['temp']);
+            this.weatherSymbol = JSON.parse(data['weatherSymbol']);
+            this.windSpeed = parseFloat(data['windSpeed']);         
+        }        
     }        
 }
