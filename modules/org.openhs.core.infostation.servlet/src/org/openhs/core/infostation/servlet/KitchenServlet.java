@@ -159,6 +159,8 @@ public class KitchenServlet extends HttpServlet {
 	    				
 	    			}
 	    			
+	    			//System.out.println("\n\n    switch  JSON:" + stateInt);
+	    			
 	    			JSONObject json = new JSONObject();
 	    			json.put("switchState", new Integer(stateInt));
 	    				    			
@@ -172,8 +174,7 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();	    			
 		    	}		 	    		
-	    	}
-	    	else {
+	    	} else {
 	    		
 	    		//System.out.println("Value:= null");	    	
 		 

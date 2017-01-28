@@ -146,7 +146,9 @@ export class BasicScreen {
     private height:              number;    
     
     private timerPaint;
-    private timerData;           
+    private timerData;
+    private timerSiteData;
+    private timerWeatherData;                   
         
     private r:                   number;
     private arcCenterX:          number;
@@ -202,7 +204,8 @@ export class BasicScreen {
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room2.png"));
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
         
-        this.getData('kitchen');
+        this.timerGetSiteDataEvent(5000);
+        this.timerGetWeatherDataEvent(5000);
         this.timerGetDataEvent(5000);
         this.timerPaintEvent(5000);
         
@@ -210,6 +213,18 @@ export class BasicScreen {
                     
         this.canvas.addEventListener('click',function(event){self.MouseClickHandler(event);}, false);    
     }  
+    
+    private timerGetSiteDataEvent(step : number) {
+       this.getSiteData('kitchen');
+       window.clearTimeout(this.timerSiteData);
+       this.timerSiteData = window.setTimeout(() => this.timerGetSiteDataEvent(step), step); 
+    } 
+    
+    private timerGetWeatherDataEvent(step : number) {
+       this.getWeatherData('kitchen');
+       window.clearTimeout(this.timerWeatherData);
+       this.timerWeatherData = window.setTimeout(() => this.timerGetWeatherDataEvent(step), step); 
+    }     
     
     private timerGetDataEvent(step : number) {
        this.getData('kitchen');
@@ -239,8 +254,8 @@ export class BasicScreen {
            // } else if (isInside(mousePos, this.tmpInText.getRect())) {                                          
               } else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
                 appMode = Application.Floor;                                
-                this.timerPaintEvent(10);   
-                this.timerGetDataEvent(10);                                  
+                this.timerPaintEvent(100);   
+                this.timerGetDataEvent(100);                                  
             } else if (isInside(mousePos, forecastRect)) {
                 appMode = Application.WeatherForecast;    
             }                       
@@ -267,7 +282,7 @@ export class BasicScreen {
                 roomNum = room;            
                } else if (light != -1) {
                 
-    //             window.alert("switch clicked !!");            
+                 //window.alert("switch clicked !!");            
                  postAjax('kitchen', "switchClicked", "switch1");                            
                  this.getData('kitchen');
                  this.paint();  
@@ -287,9 +302,30 @@ export class BasicScreen {
             
         this.paint();    
     }    
-        
-    private getData(url: string) {
     
+    private getSiteData(url: string) {    
+        var data = getAjax(url, "SiteData");
+        
+        if (data != null) {
+            this.siteData.setSiteData(data);
+        }                                               
+    }   
+    
+    private getWeatherData(url: string) {    
+        var data = null;
+        
+        for (var i = 0; i < 4; i++) {            
+            var id: string = "WeatherForecast_" + i;
+            
+            data = getAjax(url, id);
+            if (data != null) {
+                this.weatherData.setWeatherItem(i, data);
+            }            
+        }                                            
+    }     
+    
+        
+    private getData(url: string) {    
         var data = getAjax(url, 'InfoData');
                 
         if (data != null) {
@@ -305,17 +341,8 @@ export class BasicScreen {
         
         //Other objects...        
         this.floor.getData(url);
-        
-        //Site data
-        data = null;
-        
-        data = getAjax(url, "SiteData");
-        
-        if (data != null) {
-            this.siteData.setSiteData(data);
-        }           
-        
-        
+                           
+        /*
         //Weather data....
         data = null;
         
@@ -326,7 +353,8 @@ export class BasicScreen {
             if (data != null) {
                 this.weatherData.setWeatherItem(i, data);
             }            
-        }                    
+        }  
+        */                  
     }    
     
     private postData (url: string) {
