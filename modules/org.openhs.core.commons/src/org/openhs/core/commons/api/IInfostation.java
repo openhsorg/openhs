@@ -9,9 +9,11 @@ package org.openhs.core.commons.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Floor;
 
 public interface IInfostation {
 
@@ -24,5 +26,10 @@ public interface IInfostation {
 	public float getTempForecast();
 	public boolean isFrost();
 	public ArrayList<Weather> getForecasts();
-	public int getNumberFloors();
+	public int getNumberFloors();	
+	public Set<Floor> getFloors ();
+	public Set<String> getFloorsPaths () throws SiteException;
+	public Set<String> getRoomsPaths () throws SiteException;
+	public Set<String> getTempSensorsPaths () throws SiteException;
+	
 }

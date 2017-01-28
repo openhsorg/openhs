@@ -12,7 +12,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,13 +23,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Floor;
-import org.openhs.core.commons.Humidity;
-import org.openhs.core.commons.HumiditySensor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
-import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.site.api.ISiteService;
@@ -42,8 +38,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import jdk.nashorn.internal.objects.annotations.Constructor;
 
 public class MySiteServiceImpl implements ISiteService {
 
@@ -356,6 +350,24 @@ public class MySiteServiceImpl implements ISiteService {
 		}
 		
 		return new String(); 
+	}
+	
+	public Set<String> getAllThingsPath (Class<?>  t) throws SiteException {		
+		Set<String> keySet = new HashSet <String> ();
+		
+		Set<String> keySetAll = ss.things.keySet();
+		
+		for (String item : keySetAll) {
+			
+			Thing thing = (Thing) getThing(item);													
+			
+			if (t.isInstance(thing)) {
+			
+				keySet.add(item);
+			}						
+		}
+				
+		return keySet;
 	}
 	
 /*

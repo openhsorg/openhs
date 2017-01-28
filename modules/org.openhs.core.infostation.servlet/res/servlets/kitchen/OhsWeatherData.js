@@ -1,10 +1,10 @@
 var OhsWeatherData;
 (function (OhsWeatherData) {
-    class WeatherDataForecast {
-        constructor() {
+    var WeatherDataForecast = (function () {
+        function WeatherDataForecast() {
             this.forecasts = new Array();
         }
-        setNumberForecasts(num) {
+        WeatherDataForecast.prototype.setNumberForecasts = function (num) {
             if (num > this.forecasts.length) {
                 for (var i = this.forecasts.length; i < num; i++) {
                     this.forecasts.push(new WeatherForecast());
@@ -13,14 +13,14 @@ var OhsWeatherData;
             else if (num < this.forecasts.length) {
                 this.forecasts.length = num;
             }
-        }
-        setWeatherItem(num, data) {
+        };
+        WeatherDataForecast.prototype.setWeatherItem = function (num, data) {
             if (num + 1 > this.forecasts.length) {
                 this.setNumberForecasts(num + 1);
             }
             this.forecasts[num].setWeather(data);
-        }
-        getForecast(num) {
+        };
+        WeatherDataForecast.prototype.getForecast = function (num) {
             if (num + 1 <= this.forecasts.length) {
                 return this.forecasts[num];
             }
@@ -29,11 +29,12 @@ var OhsWeatherData;
                 fcs.valid = false;
                 return fcs;
             }
-        }
-    }
+        };
+        return WeatherDataForecast;
+    }());
     OhsWeatherData.WeatherDataForecast = WeatherDataForecast;
-    class WeatherForecast {
-        constructor() {
+    var WeatherForecast = (function () {
+        function WeatherForecast() {
             this.valid = false; //content of the forecast is valid
             this.tempIn = 0.0;
             this.tempOut = 0.0;
@@ -65,19 +66,20 @@ var OhsWeatherData;
             this.img.src = "/infores/servlets/kitchen/cloudSnow.png";
             this.images.push(this.img);
         }
-        getImage() {
+        WeatherForecast.prototype.getImage = function () {
             var index = this.weatherSymbol - 1;
             if (index < 0 || index > 6)
                 index = 0;
             this.img = this.images[index];
             return this.img;
-        }
-        setWeather(data) {
+        };
+        WeatherForecast.prototype.setWeather = function (data) {
             this.tempOut = parseFloat(data['temp']);
             this.weatherSymbol = JSON.parse(data['weatherSymbol']);
             this.windSpeed = parseFloat(data['windSpeed']);
             this.valid = true;
-        }
-    }
+        };
+        return WeatherForecast;
+    }());
     OhsWeatherData.WeatherForecast = WeatherForecast;
 })(OhsWeatherData || (OhsWeatherData = {}));

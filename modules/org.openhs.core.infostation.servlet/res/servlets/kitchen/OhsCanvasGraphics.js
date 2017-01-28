@@ -1,8 +1,13 @@
 /// <reference path="jquery.d.ts" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var OhsCanvasGraphics;
 (function (OhsCanvasGraphics) {
-    class Rect {
-        constructor(x, y, w, h) {
+    var Rect = (function () {
+        function Rect(x, y, w, h) {
             this.x = 0;
             this.y = 0;
             this.w = 0;
@@ -12,37 +17,40 @@ var OhsCanvasGraphics;
             this.w = w;
             this.h = h;
         }
-        isClicked(clx, cly) {
+        Rect.prototype.isClicked = function (clx, cly) {
             return (clx > this.x && clx < this.x + this.w && cly < this.y + this.h && cly > this.y);
-        }
-        equals(rectI) {
+        };
+        Rect.prototype.equals = function (rectI) {
             this.x = rectI.x;
             this.y = rectI.y;
             this.w = rectI.w;
             this.h = rectI.h;
-        }
-    }
+        };
+        return Rect;
+    }());
     OhsCanvasGraphics.Rect = Rect;
-    class Mark {
-        constructor(ctx, rect) {
+    var Mark = (function () {
+        function Mark(ctx, rect) {
             this.ctx = ctx;
             this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
         }
-        equals(mark) {
+        Mark.prototype.equals = function (mark) {
             this.ctx = mark.ctx;
             this.rect.equals(mark.rect);
-        }
-        setSize(rect) {
+        };
+        Mark.prototype.setSize = function (rect) {
             this.rect.equals(rect);
-        }
-        isClicked(clx, cly) {
+        };
+        Mark.prototype.isClicked = function (clx, cly) {
             return this.rect.isClicked(clx, cly);
-        }
-    }
+        };
+        return Mark;
+    }());
     OhsCanvasGraphics.Mark = Mark;
-    class Text extends Mark {
-        constructor(ctx, rect) {
-            super(ctx, rect);
+    var Text = (function (_super) {
+        __extends(Text, _super);
+        function Text(ctx, rect) {
+            _super.call(this, ctx, rect);
             this.fontSize = 10;
             this.fontColor = "#000000";
             this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -50,7 +58,7 @@ var OhsCanvasGraphics;
             this.textBaseline = "middle";
             this.border = false; //debug border
         }
-        paint(text) {
+        Text.prototype.paint = function (text) {
             var x = this.rect.x;
             var y = this.rect.y;
             var align = this.textAlign.toString();
@@ -83,8 +91,8 @@ var OhsCanvasGraphics;
                 this.ctx.stroke();
                 this.ctx.restore();
             }
-        }
-        equals(tx) {
+        };
+        Text.prototype.equals = function (tx) {
             this.rect.equals(tx.rect);
             this.ctx = tx.ctx;
             this.fontSize = tx.fontSize;
@@ -92,15 +100,17 @@ var OhsCanvasGraphics;
             this.fontFamily = tx.fontFamily;
             this.textAlign = tx.textAlign;
             this.textBaseline = tx.textBaseline;
-        }
-        setSize(rect) {
-            super.setSize(rect);
-        }
-    }
+        };
+        Text.prototype.setSize = function (rect) {
+            _super.prototype.setSize.call(this, rect);
+        };
+        return Text;
+    }(Mark));
     OhsCanvasGraphics.Text = Text;
-    class TempMark extends Mark {
-        constructor(ctx, rect, src) {
-            super(ctx, rect);
+    var TempMark = (function (_super) {
+        __extends(TempMark, _super);
+        function TempMark(ctx, rect, src) {
+            _super.call(this, ctx, rect);
             this.img = null;
             this.border = false; //debug border
             this.txt = new Text(ctx, rect);
@@ -110,11 +120,11 @@ var OhsCanvasGraphics;
             this.img = new Image();
             this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";              
         }
-        setSize(rect) {
-            super.setSize(rect);
+        TempMark.prototype.setSize = function (rect) {
+            _super.prototype.setSize.call(this, rect);
             this.txt.setSize(rect);
-        }
-        paint(text) {
+        };
+        TempMark.prototype.paint = function (text) {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
@@ -142,12 +152,14 @@ var OhsCanvasGraphics;
                 this.ctx.stroke();
                 this.ctx.restore();
             }
-        }
-    }
+        };
+        return TempMark;
+    }(Mark));
     OhsCanvasGraphics.TempMark = TempMark;
-    class SwitchMark extends Mark {
-        constructor(ctx, rect, src) {
-            super(ctx, rect);
+    var SwitchMark = (function (_super) {
+        __extends(SwitchMark, _super);
+        function SwitchMark(ctx, rect, src) {
+            _super.call(this, ctx, rect);
             this.img = null;
             this.colorButton = "#666699";
             this.state = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
@@ -159,11 +171,11 @@ var OhsCanvasGraphics;
             this.img = new Image();
             this.img.src = src;
         }
-        setSize(rect) {
-            super.setSize(rect);
+        SwitchMark.prototype.setSize = function (rect) {
+            _super.prototype.setSize.call(this, rect);
             this.txt.setSize(rect);
-        }
-        paint() {
+        };
+        SwitchMark.prototype.paint = function () {
             var text = "---";
             // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
             //logic of switch
@@ -218,7 +230,8 @@ var OhsCanvasGraphics;
                 this.ctx.stroke();
                 this.ctx.restore();
             }
-        }
-    }
+        };
+        return SwitchMark;
+    }(Mark));
     OhsCanvasGraphics.SwitchMark = SwitchMark;
 })(OhsCanvasGraphics || (OhsCanvasGraphics = {}));

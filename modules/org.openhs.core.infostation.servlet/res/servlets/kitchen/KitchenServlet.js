@@ -56,8 +56,8 @@ var KitchenInfoStation;
         var unixtime_ms = new Date().getTime();
         while (new Date().getTime() < unixtime_ms + ms) { }
     }
-    class WeatherData {
-        constructor() {
+    var WeatherData = (function () {
+        function WeatherData() {
             this.tempIn = 0.0;
             this.tempOut = 0.0;
             this.timeString = "";
@@ -88,18 +88,19 @@ var KitchenInfoStation;
             this.img.src = "/infores/servlets/kitchen/cloudSnow.png";
             this.images.push(this.img);
         }
-        getImage() {
+        WeatherData.prototype.getImage = function () {
             var index = this.weatherSymbol - 1;
             if (index < 0 || index > 6)
                 index = 0;
             this.img = this.images[index];
             return this.img;
-        }
-    }
+        };
+        return WeatherData;
+    }());
     var appMode = Application.None; //Mode of application
     var roomNum = 1; //number of selected room for Application.Room       
-    class BasicScreen {
-        constructor(canvas) {
+    var BasicScreen = (function () {
+        function BasicScreen(canvas) {
             this.weatherData = new WeatherDataForecast(); // General weather
             this.siteData = new SiteData(); //general Site Data
             this.weather = new WeatherData(); //current weather today    
@@ -141,27 +142,31 @@ var KitchenInfoStation;
             var self = this;
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
         }
-        timerGetSiteDataEvent(step) {
+        BasicScreen.prototype.timerGetSiteDataEvent = function (step) {
+            var _this = this;
             this.getSiteData('kitchen');
             window.clearTimeout(this.timerSiteData);
-            this.timerSiteData = window.setTimeout(() => this.timerGetSiteDataEvent(step), step);
-        }
-        timerGetWeatherDataEvent(step) {
+            this.timerSiteData = window.setTimeout(function () { return _this.timerGetSiteDataEvent(step); }, step);
+        };
+        BasicScreen.prototype.timerGetWeatherDataEvent = function (step) {
+            var _this = this;
             this.getWeatherData('kitchen');
             window.clearTimeout(this.timerWeatherData);
-            this.timerWeatherData = window.setTimeout(() => this.timerGetWeatherDataEvent(step), step);
-        }
-        timerGetDataEvent(step) {
+            this.timerWeatherData = window.setTimeout(function () { return _this.timerGetWeatherDataEvent(step); }, step);
+        };
+        BasicScreen.prototype.timerGetDataEvent = function (step) {
+            var _this = this;
             this.getData('kitchen');
             window.clearTimeout(this.timerData);
-            this.timerData = window.setTimeout(() => this.timerGetDataEvent(step), step);
-        }
-        timerPaintEvent(step) {
+            this.timerData = window.setTimeout(function () { return _this.timerGetDataEvent(step); }, step);
+        };
+        BasicScreen.prototype.timerPaintEvent = function (step) {
+            var _this = this;
             this.paint();
             window.clearTimeout(this.timerPaint);
-            this.timerPaint = window.setTimeout(() => this.timerPaintEvent(step), step);
-        }
-        MouseClickHandler(event) {
+            this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
+        };
+        BasicScreen.prototype.MouseClickHandler = function (event) {
             //window.alert("handler clicked !!" + event.clientX + " : " + event.clientY );
             var mousePos = getMousePos(this.canvas, event);
             if (appMode == Application.None) {
@@ -216,14 +221,14 @@ var KitchenInfoStation;
                 appMode = Application.None;
             }
             this.paint();
-        }
-        getSiteData(url) {
+        };
+        BasicScreen.prototype.getSiteData = function (url) {
             var data = getAjax(url, "SiteData");
             if (data != null) {
                 this.siteData.setSiteData(data);
             }
-        }
-        getWeatherData(url) {
+        };
+        BasicScreen.prototype.getWeatherData = function (url) {
             var data = null;
             for (var i = 0; i < 4; i++) {
                 var id = "WeatherForecast_" + i;
@@ -232,8 +237,8 @@ var KitchenInfoStation;
                     this.weatherData.setWeatherItem(i, data);
                 }
             }
-        }
-        getData(url) {
+        };
+        BasicScreen.prototype.getData = function (url) {
             var data = getAjax(url, 'InfoData');
             if (data != null) {
                 timeString = data['time'];
@@ -259,8 +264,8 @@ var KitchenInfoStation;
                 }
             }
             */
-        }
-        postData(url) {
+        };
+        BasicScreen.prototype.postData = function (url) {
             var data = {
                 switch1: "clicked",
                 bar: "barValue",
@@ -269,15 +274,15 @@ var KitchenInfoStation;
             //var switch1 = "clicked";
             var dataSend = JSON.stringify(data);
             var send = postAjax(url, "mmm", dataSend);
-        }
-        paintStaticImage() {
-            const ctx = this.ctx;
+        };
+        BasicScreen.prototype.paintStaticImage = function () {
+            var ctx = this.ctx;
             ctx.save();
             ctx.fillStyle = whiteColor;
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
-        }
-        paint() {
+        };
+        BasicScreen.prototype.paint = function () {
             this.paintStaticImage();
             if (appMode == Application.None || appMode == Application.Watch) {
                 this.paintBasic();
@@ -291,9 +296,9 @@ var KitchenInfoStation;
             else if (appMode == Application.WeatherForecast) {
                 this.forecastScreen.paint();
             }
-        }
-        paintBasic() {
-            const ctx = this.ctx;
+        };
+        BasicScreen.prototype.paintBasic = function () {
+            var ctx = this.ctx;
             //Draw image...
             var img = this.weather.getImage();
             ctx.save();
@@ -386,9 +391,9 @@ var KitchenInfoStation;
             if (appMode == Application.Watch) {
                 this.stopWatch.paint();
             }
-        }
-        roundRect(x, y, width, height, radius) {
-            const ctx = this.ctx;
+        };
+        BasicScreen.prototype.roundRect = function (x, y, width, height, radius) {
+            var ctx = this.ctx;
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
             ctx.lineTo(x + width - radius, y);
@@ -400,11 +405,12 @@ var KitchenInfoStation;
             ctx.lineTo(x, y + radius);
             ctx.quadraticCurveTo(x, y, x + radius, y);
             ctx.closePath();
-        }
-    }
+        };
+        return BasicScreen;
+    }());
     KitchenInfoStation.BasicScreen = BasicScreen; // end class Infoscreen
-    class WeatherForecastScreen {
-        constructor(canvas, weatherData) {
+    var WeatherForecastScreen = (function () {
+        function WeatherForecastScreen(canvas, weatherData) {
             this.forecastPanels = new Array();
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
@@ -416,10 +422,10 @@ var KitchenInfoStation;
             this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 2));
             this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 3));
         }
-        paint() {
-            const ctx = this.ctx;
-            let segment = this.width / 4;
-            let seg = segment - (2 * this.forecastPanels[1].lineWidth);
+        WeatherForecastScreen.prototype.paint = function () {
+            var ctx = this.ctx;
+            var segment = this.width / 4;
+            var seg = segment - (2 * this.forecastPanels[1].lineWidth);
             //var lineW = this.forecastPanels[1].lineWidth;
             this.forecastPanels[0].setSize(0, 0, seg, this.height);
             this.forecastPanels[1].setSize(segment, 0, seg, this.height);
@@ -429,23 +435,24 @@ var KitchenInfoStation;
             this.forecastPanels[1].paint(ctx);
             this.forecastPanels[2].paint(ctx);
             this.forecastPanels[3].paint(ctx);
-        }
-    }
+        };
+        return WeatherForecastScreen;
+    }());
     //------------------------------------------------------------------------------
-    const clockLabel = "source-code.biz";
-    const transparentColor = "rgba(0,0,0,0)";
-    const whiteColor = "#FFFFFF";
-    const blackColor = "#000000";
-    const borderColor = "#C0C0C0";
-    const secPtrColor = "#CC0000";
-    const textColor = "#000000";
-    const circleColor = "#c0c0c0";
-    let fontSizeTempIn = 54;
-    let fontSizeTempOut = 50;
-    let fontSizeWind = 24;
-    let fontSizeHum = 27;
-    let fontSizeTime = fontSizeTempOut;
-    let fontSizeDate = fontSizeWind;
+    var clockLabel = "source-code.biz";
+    var transparentColor = "rgba(0,0,0,0)";
+    var whiteColor = "#FFFFFF";
+    var blackColor = "#000000";
+    var borderColor = "#C0C0C0";
+    var secPtrColor = "#CC0000";
+    var textColor = "#000000";
+    var circleColor = "#c0c0c0";
+    var fontSizeTempIn = 54;
+    var fontSizeTempOut = 50;
+    var fontSizeWind = 24;
+    var fontSizeHum = 27;
+    var fontSizeTime = fontSizeTempOut;
+    var fontSizeDate = fontSizeWind;
     //Meteorological data    
     var timeString = "";
     var dateString = "";
@@ -484,8 +491,8 @@ var KitchenInfoStation;
     imgFingerprint.onload = function () {
         imgFingerprintLoaded = true;
     };
-    class StopWatch {
-        constructor(canvas) {
+    var StopWatch = (function () {
+        function StopWatch(canvas) {
             this.stopwatchRect = null;
             this.sec = 0;
             this.min = 0;
@@ -501,12 +508,12 @@ var KitchenInfoStation;
             this.hrs.toFixed(2);
             this.angle = 90 * (Math.PI / 180);
         }
-        zeroPad(num, places) {
+        StopWatch.prototype.zeroPad = function (num, places) {
             var zero = places - num.toString().length + 1;
             return Array(+(zero > 0 && zero)).join("0") + num;
-        }
-        paint() {
-            const ctx = this.ctx;
+        };
+        StopWatch.prototype.paint = function () {
+            var ctx = this.ctx;
             if (this.getStatus()) {
                 this.paintEffect();
             }
@@ -534,10 +541,10 @@ var KitchenInfoStation;
                 ctx.fillStyle = "grey";
                 ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);
             }
-            let dots = "...........................";
-            let str = dots.substring(0, this.dotCounter);
+            var dots = "...........................";
+            var str = dots.substring(0, this.dotCounter);
             ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
-            let text = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);
+            var text = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);
             ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
             if (imgFingerprintLoaded) {
@@ -545,9 +552,9 @@ var KitchenInfoStation;
                 ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.w - 60, this.stopwatchRect.y + 10, 50, 50);
                 ctx.restore();
             }
-        }
-        paintEffect() {
-            const ctx = this.ctx;
+        };
+        StopWatch.prototype.paintEffect = function () {
+            var ctx = this.ctx;
             var dx;
             var dy;
             var dAngle = 0.5 * (Math.PI / 180);
@@ -566,9 +573,9 @@ var KitchenInfoStation;
             ctx.lineWidth = 1;
             ctx.stroke();
             ctx.restore();
-        }
-        roundRect(x, y, width, height, radius) {
-            const ctx = this.ctx;
+        };
+        StopWatch.prototype.roundRect = function (x, y, width, height, radius) {
+            var ctx = this.ctx;
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
             ctx.lineTo(x + width - radius, y);
@@ -580,20 +587,21 @@ var KitchenInfoStation;
             ctx.lineTo(x, y + radius);
             ctx.quadraticCurveTo(x, y, x + radius, y);
             ctx.closePath();
-        }
-        stop() {
+        };
+        StopWatch.prototype.stop = function () {
             clearTimeout(this.timer);
             this.timer = 0;
             this.dotCounter = 0;
-        }
-        start() {
+        };
+        StopWatch.prototype.start = function () {
             this.sec = 0;
             this.min = 0;
             this.hrs = 0;
             this.stop();
             this.add();
-        }
-        add() {
+        };
+        StopWatch.prototype.add = function () {
+            var _this = this;
             this.sec++;
             if (this.sec >= 60) {
                 this.sec = 0;
@@ -606,17 +614,18 @@ var KitchenInfoStation;
             this.dotCounter++;
             if (this.dotCounter > 17)
                 this.dotCounter = 1;
-            this.timer = setTimeout(() => this.add(), 1000);
-        }
-        getStatus() {
+            this.timer = setTimeout(function () { return _this.add(); }, 1000);
+        };
+        StopWatch.prototype.getStatus = function () {
             if (this.timer != 0)
                 return true;
             else
                 return false;
-        }
-    }
-    class WeatherForecastPanel {
-        constructor(ctx, weatherData, numForecast) {
+        };
+        return StopWatch;
+    }());
+    var WeatherForecastPanel = (function () {
+        function WeatherForecastPanel(ctx, weatherData, numForecast) {
             this.x = 0.0;
             this.y = 0.0;
             this.width = 0.0;
@@ -639,7 +648,7 @@ var KitchenInfoStation;
             this.weatherData = weatherData;
             this.numForecast = numForecast;
         }
-        setSize(x, y, width, height) {
+        WeatherForecastPanel.prototype.setSize = function (x, y, width, height) {
             this.x = x;
             this.y = y;
             this.width = width;
@@ -648,13 +657,13 @@ var KitchenInfoStation;
             this.txt.rect.y = y;
             this.txt.rect.w = width;
             this.txt.rect.h = height;
-        }
+        };
         /*
         setForecast(fcs: WeatherData) {
             this.forecast = fcs;
         }
         */
-        paint(ctx) {
+        WeatherForecastPanel.prototype.paint = function (ctx) {
             //Draw rectangle...               
             ctx.save();
             ctx.beginPath();
@@ -698,10 +707,11 @@ var KitchenInfoStation;
                 this.txtWind.textBaseline = "middle";
                 this.txtWind.paint(weatherForecast.windSpeed + " \u00B0C");
             }
-        }
-    }
-    class Floor {
-        constructor(canvas) {
+        };
+        return WeatherForecastPanel;
+    }());
+    var Floor = (function () {
+        function Floor(canvas) {
             this.TempMarks = new Array();
             this.SwitchMarks = new Array();
             this.imgFloor = null;
@@ -723,8 +733,8 @@ var KitchenInfoStation;
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
         }
-        paint(weatherToday) {
-            const ctx = this.ctx;
+        Floor.prototype.paint = function (weatherToday) {
+            var ctx = this.ctx;
             //Draw image...
             //   if (this.imgFloorLoaded) {     
             ctx.save();
@@ -748,30 +758,30 @@ var KitchenInfoStation;
             this.txtNumRooms.fontSize = 26;
             this.txtNumRooms.textBaseline = "bottom";
             this.txtNumRooms.paint("Number Rooms:" + this.numRooms);
-        }
-        clickedTempMark(clx, cly) {
-            let cId = -1;
-            let n = -1;
-            for (let id in this.TempMarks) {
+        };
+        Floor.prototype.clickedTempMark = function (clx, cly) {
+            var cId = -1;
+            var n = -1;
+            for (var id in this.TempMarks) {
                 n++;
                 if (this.TempMarks[id].isClicked(clx, cly)) {
                     cId = n;
                 }
             }
             return cId;
-        }
-        clickedSwitchMark(clx, cly) {
-            let cId = -1;
-            let n = -1;
-            for (let id in this.SwitchMarks) {
+        };
+        Floor.prototype.clickedSwitchMark = function (clx, cly) {
+            var cId = -1;
+            var n = -1;
+            for (var id in this.SwitchMarks) {
                 n++;
                 if (this.SwitchMarks[id].isClicked(clx, cly)) {
                     cId = n;
                 }
             }
             return cId;
-        }
-        getData(url) {
+        };
+        Floor.prototype.getData = function (url) {
             var id = "floor1";
             //window.alert("floor clicked !!");
             var data = getAjax(url, id);
@@ -783,10 +793,11 @@ var KitchenInfoStation;
             if (data2 != null) {
                 this.SwitchMarks[0].state = parseFloat(data2['switchState']);
             }
-        }
-    }
-    class Room {
-        constructor(canvas, imgSrc) {
+        };
+        return Floor;
+    }());
+    var Room = (function () {
+        function Room(canvas, imgSrc) {
             this.TempMarks = new Array();
             this.imgRoom = null;
             this.imgRoomLoaded = false;
@@ -801,8 +812,8 @@ var KitchenInfoStation;
             this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
             this.TempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
         }
-        paint(weatherToday) {
-            const ctx = this.ctx;
+        Room.prototype.paint = function (weatherToday) {
+            var ctx = this.ctx;
             //Draw image...
             //  if (this.imgRoomLoaded) {     
             ctx.save();
@@ -815,19 +826,20 @@ var KitchenInfoStation;
             //Inside mark
             this.TempMarks[1].setSize(new Rect(280, 200, 80, 80));
             this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
-        }
-        clickedTempMark(clx, cly) {
-            let cId = -1;
-            let n = 0;
-            for (let id in this.TempMarks) {
+        };
+        Room.prototype.clickedTempMark = function (clx, cly) {
+            var cId = -1;
+            var n = 0;
+            for (var id in this.TempMarks) {
                 n++;
                 if (this.TempMarks[id].isClicked(clx, cly)) {
                     cId = n;
                 }
             }
             return cId;
-        }
-    }
+        };
+        return Room;
+    }());
     //Function to get the mouse position
     function getMousePos(canvas, event) {
         var rect = canvas.getBoundingClientRect();

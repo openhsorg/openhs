@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.api.IInfostation;
-import org.openhs.core.infostation.Infostation;
 
 public class KitchenServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	IInfostation	m_infostation = null;
 	
@@ -37,9 +42,6 @@ public class KitchenServlet extends HttpServlet {
 		 	//System.out.println("\n\n...GET:");
 		 	
 		 	String value = request.getParameter("orderId");
-		 	//System.out.println("\n\n**GET Value:=" + value);
-		 	
-		 	//response.addHeader("Cache-Control","no-cache,no-store");
 	        
 	    	if (value != null) {
 	    		//System.out.println("Value:=" + value.toString());
@@ -87,13 +89,12 @@ public class KitchenServlet extends HttpServlet {
 	    			// Check for empty parts...
 	    			for (String str : parts) {
 	    				if (str.equals("")) {
-	    					//System.out.println("\n\n eeeee");
 	    				}
 	    			}	    	
 	    				    				    			
 	    			int numForecast = Integer.parseInt(parts[1]);
 	    			
-	    		//	System.out.println("\n\n ***Forecast: " + numForecast);
+	    		    //System.out.println("\n\n ***Forecast: " + numForecast);
 	    			
 	    			/*
 	    			 * Get data from meteo module.
@@ -300,7 +301,7 @@ public class KitchenServlet extends HttpServlet {
 			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
 			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
 			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
-			json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
+		//	json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
@@ -308,9 +309,61 @@ public class KitchenServlet extends HttpServlet {
 	    }
 	    
 	    protected JSONObject getSiteDataToJSON() {
-	    	
-			JSONObject json = new JSONObject();
-			json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
+	    	  		    		    	
+			JSONObject json = new JSONObject();			
+			
+			// Floors
+			try {
+				Set<String> floorPaths = this.m_infostation.getFloorsPaths ();						
+				json.put("number_floors", String.format("%d", floorPaths.size()));
+				
+				int i = 0;
+				for (String item: floorPaths) {
+					i ++;
+					String id = "floorPath_" + i;					
+					json.put(id, item);
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_floors", String.format("0"));								
+				//e.printStackTrace();
+			}	
+			
+			// Rooms
+			
+			try {
+				Set<String> roomsPaths = this.m_infostation.getRoomsPaths ();						
+				json.put("number_rooms", String.format("%d", roomsPaths.size()));
+				
+				int i = 0;
+				for (String item: roomsPaths) {
+					i ++;
+					String id = "roomPath_" + i;					
+					json.put(id, item);
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_rooms", String.format("0"));								
+				//e.printStackTrace();
+			}		
+			
+			// temperatureSensors
+			
+			try {
+				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
+				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
+				
+				int i = 0;
+				for (String item: tempSensorsPaths) {
+					i ++;
+					String id = "tempSensorPath_" + i;					
+					json.put(id, item);
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_tempsensors", String.format("0"));								
+				//e.printStackTrace();
+			}		
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			

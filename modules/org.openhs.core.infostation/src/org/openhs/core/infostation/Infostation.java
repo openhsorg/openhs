@@ -1,13 +1,18 @@
 package org.openhs.core.infostation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Floor;
+import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.commons.api.IInfostation;
@@ -137,12 +142,44 @@ public class Infostation implements IInfostation {
       public ArrayList<Weather> getForecasts() {    	    	    
     	  return this.m_meteo.getForecasts();
       }  
-      
+
       public int getNumberFloors() {
     	  try {
-    		  return this.m_siteService.getNumberThings("floors");
+    		  Set<String> floorPaths = this.getFloorsPaths();
+    		  
+    		  return floorPaths.size();    		  
     	  } catch (Exception ex){    		  
-    		  return -1;
+    		  return 0;
+    	  }
+      }            
+      
+      public Set<Floor> getFloors () {
+    	  Set<Floor> floors = new HashSet <Floor> ();
+    	  
+    	  try {
+    		  Set<String> floorPaths = this.m_siteService.getChildren("floors");    		      		  
+    		  
+    		  for (String path: floorPaths) {
+    			  floors.add((Floor)this.m_siteService.getThing(path));
+    		  }
+    		  
+    		  return floors;
+    		      		  
+    	  } catch (Exception ex) {
+    		  return floors;
     	  }
       }
+      
+      public Set<String> getFloorsPaths () throws SiteException {
+    	  return this.m_siteService.getChildren("floors");    		      		      		    	  
+      }     
+      
+      public Set<String> getRoomsPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(Room.class);   		      		    	  
+      }     
+      
+      public Set<String> getTempSensorsPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(TemperatureSensor.class);   		      		    	  
+      }        
+      
 }

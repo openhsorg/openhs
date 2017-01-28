@@ -14,8 +14,8 @@
 var StationClock;
 (function (StationClock) {
     //------------------------------------------------------------------------------
-    class Temperature {
-        constructor(clockCanvas) {
+    var Temperature = (function () {
+        function Temperature(clockCanvas) {
             this.clockCanvas = clockCanvas;
             this.timerEvent();
             /*
@@ -25,37 +25,39 @@ var StationClock;
            this.timerEvent();
             */
         }
-        timerEvent() {
+        Temperature.prototype.timerEvent = function () {
+            var _this = this;
             this.paintTemp();
-            let t = 1000 - Date.now() % 1000;
-            window.setTimeout(() => this.timerEvent(), t);
-        }
-        paintTemp() {
+            var t = 1000 - Date.now() % 1000;
+            window.setTimeout(function () { return _this.timerEvent(); }, t);
+        };
+        Temperature.prototype.paintTemp = function () {
             if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
                 this.createStaticImageCanvas();
             }
             this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
             new ClockImagePainter(this.clockCanvas).paintDynamicImage();
-        }
-        createStaticImageCanvas() {
-            let canvas = document.createElement("canvas");
+        };
+        Temperature.prototype.createStaticImageCanvas = function () {
+            var canvas = document.createElement("canvas");
             canvas.width = this.clockCanvas.width;
             canvas.height = this.clockCanvas.height;
             new ClockImagePainter(canvas).paintStaticImage();
             this.staticImageCanvas = canvas;
-        }
-    }
+        };
+        return Temperature;
+    }());
     StationClock.Temperature = Temperature; // end class Temperature
     //------------------------------------------------------------------------------
-    const clockLabel = "source-code.biz";
-    const transparentColor = "rgba(0,0,0,0)";
-    const whiteColor = "#FFFFFF";
-    const blackColor = "#000000";
-    const borderColor = "#C0C0C0";
-    const secPtrColor = "#CC0000";
+    var clockLabel = "source-code.biz";
+    var transparentColor = "rgba(0,0,0,0)";
+    var whiteColor = "#FFFFFF";
+    var blackColor = "#000000";
+    var borderColor = "#C0C0C0";
+    var secPtrColor = "#CC0000";
     var ni = 0;
-    class ClockImagePainter {
-        constructor(canvas) {
+    var ClockImagePainter = (function () {
+        function ClockImagePainter(canvas) {
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
             this.height = canvas.height;
@@ -64,7 +66,7 @@ var StationClock;
             this.centerY = this.height / 2;
             // ni = 0; 
         }
-        getData() {
+        ClockImagePainter.prototype.getData = function () {
             $(document).ready(function () {
                 /*
                 $.get("clock", { orderId : "John"},
@@ -93,16 +95,16 @@ var StationClock;
                                     */
                 });
             });
-        }
-        paintStaticImage() {
+        };
+        ClockImagePainter.prototype.paintStaticImage = function () {
             // Paint outer background.
-            const ctx = this.ctx;
+            var ctx = this.ctx;
             ctx.save();
             ctx.fillStyle = transparentColor;
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
             // Paint inner background and border.
-            const borderWidth = this.r / 54;
+            var borderWidth = this.r / 54;
             ctx.save();
             ctx.beginPath();
             ctx.arc(this.centerX, this.centerY, this.r + borderWidth / 2, 0, 2 * Math.PI);
@@ -113,18 +115,18 @@ var StationClock;
             ctx.stroke();
             ctx.restore();
             // Draw 60 clock marks.
-            for (let i = 0; i < 60; i++) {
-                let big = i % 5 == 0;
-                let rLength = big ? this.r * 10 / 44 : this.r * 3 / 44;
-                let rWidth = big ? this.r * 3 / 44 : this.r / 44;
-                let r2 = this.r * 42 / 44;
-                let angle = 2 * Math.PI / 60 * i;
+            for (var i = 0; i < 60; i++) {
+                var big = i % 5 == 0;
+                var rLength = big ? this.r * 10 / 44 : this.r * 3 / 44;
+                var rWidth = big ? this.r * 3 / 44 : this.r / 44;
+                var r2 = this.r * 42 / 44;
+                var angle = 2 * Math.PI / 60 * i;
                 this.drawRadial(angle, r2 - rLength, r2, rWidth, rWidth, blackColor);
             }
             // Draw text.
             this.drawClockLabel();
-        }
-        paintDynamicImage() {
+        };
+        ClockImagePainter.prototype.paintDynamicImage = function () {
             /*
            let date: Date = new Date();
            let hour: number = date.getHours();
@@ -135,7 +137,7 @@ var StationClock;
            this.drawRadial(2 * Math.PI * sec / 60, -this.r * 14 / 44, this.r * 27 / 44, this.r / 44, this.r / 44, secPtrColor);
            this.drawRadialFilledCircle(2 * Math.PI / 60 * sec, this.r * 27 / 44, this.r * 9 / 88, secPtrColor);
             */
-            const ctx = this.ctx;
+            var ctx = this.ctx;
             this.getData();
             //alert(this.ni);
             ctx.save();
@@ -146,7 +148,7 @@ var StationClock;
             ctx.stroke();
             ctx.restore();
             ctx.save();
-            let fontSize = 62;
+            var fontSize = 62;
             ctx.font = fontSize + "px Helvetica, sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -155,16 +157,16 @@ var StationClock;
             var txt = "N:" + ni;
             ctx.fillText(txt, 400, 150);
             ctx.restore();
-        }
-        drawRadial(alpha, r1, r2, width1, width2, color) {
-            let sin = Math.sin(alpha);
-            let cos = Math.cos(alpha);
-            let pm1X = this.centerX + sin * r1;
-            let pm1Y = this.centerY - cos * r1;
-            let pm2X = this.centerX + sin * r2;
-            let pm2Y = this.centerY - cos * r2;
-            let px = [];
-            let py = [];
+        };
+        ClockImagePainter.prototype.drawRadial = function (alpha, r1, r2, width1, width2, color) {
+            var sin = Math.sin(alpha);
+            var cos = Math.cos(alpha);
+            var pm1X = this.centerX + sin * r1;
+            var pm1Y = this.centerY - cos * r1;
+            var pm2X = this.centerX + sin * r2;
+            var pm2Y = this.centerY - cos * r2;
+            var px = [];
+            var py = [];
             px[0] = pm1X - cos * width1 / 2;
             py[0] = pm1Y - sin * width1 / 2;
             px[3] = pm1X + cos * width1 / 2;
@@ -174,41 +176,41 @@ var StationClock;
             px[2] = pm2X + cos * width2 / 2;
             py[2] = pm2Y + sin * width2 / 2;
             this.drawFilledPolygon(px, py, color);
-        }
-        drawFilledPolygon(px, py, color) {
-            const ctx = this.ctx;
+        };
+        ClockImagePainter.prototype.drawFilledPolygon = function (px, py, color) {
+            var ctx = this.ctx;
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(px[0], py[0]);
-            for (let i = 1; i < px.length; i++) {
+            for (var i = 1; i < px.length; i++) {
                 ctx.lineTo(px[i], py[i]);
             }
             ctx.fillStyle = color;
             ctx.fill();
             ctx.restore();
-        }
-        drawRadialFilledCircle(alpha, r1, circR, color) {
-            const ctx = this.ctx;
-            let p0X = this.centerX + Math.sin(alpha) * r1;
-            let p0Y = this.centerY - Math.cos(alpha) * r1;
+        };
+        ClockImagePainter.prototype.drawRadialFilledCircle = function (alpha, r1, circR, color) {
+            var ctx = this.ctx;
+            var p0X = this.centerX + Math.sin(alpha) * r1;
+            var p0Y = this.centerY - Math.cos(alpha) * r1;
             ctx.save();
             ctx.beginPath();
             ctx.arc(p0X, p0Y, circR, 0, 2 * Math.PI);
             ctx.fillStyle = color;
             ctx.fill();
             ctx.restore();
-        }
-        drawClockLabel() {
-            const ctx = this.ctx;
+        };
+        ClockImagePainter.prototype.drawClockLabel = function () {
+            var ctx = this.ctx;
             ctx.save();
-            let fontSize = Math.round(this.r * 20 / 200);
+            var fontSize = Math.round(this.r * 20 / 200);
             ctx.font = fontSize + "px Helvetica, sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = borderColor;
             ctx.fillText(clockLabel, this.centerX, this.centerY + this.r / 2);
             ctx.restore();
-        }
-    }
-     // end class ClockImagePainter
+        };
+        return ClockImagePainter;
+    }()); // end class ClockImagePainter
 })(StationClock || (StationClock = {})); // end module StationClock
