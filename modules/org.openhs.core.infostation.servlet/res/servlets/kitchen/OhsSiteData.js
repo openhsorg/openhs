@@ -6,6 +6,7 @@ var OhsSiteData;
             this.rooms = new Array();
             this.tempSensors = new Array();
             this.switches = new Array();
+            this.doors = new Array();
         }
         SiteData.prototype.setNumberFloors = function (num) {
             if (num > this.floors.length) {
@@ -35,6 +36,16 @@ var OhsSiteData;
             }
             else if (num < this.tempSensors.length) {
                 this.tempSensors.length = num;
+            }
+        };
+        SiteData.prototype.setNumberDoors = function (num) {
+            if (num > this.doors.length) {
+                for (var i = this.doors.length; i < num; i++) {
+                    this.doors.push(new Door());
+                }
+            }
+            else if (num < this.doors.length) {
+                this.doors.length = num;
             }
         };
         /*
@@ -78,6 +89,18 @@ var OhsSiteData;
             for (var i = 1; i <= numberTempSensors; i++) {
                 var tempSensorPath = data['tempSensorPath_' + i];
                 this.tempSensors[i - 1].setPath(tempSensorPath);
+                this.tempSensors[i - 1].x = parseInt(data['x_coordinate']);
+                this.tempSensors[i - 1].y = parseInt(data['y_coordinate']);
+            }
+            // Door                     
+            var numberDoors = parseInt(data['number_doors']);
+            //window.alert("Number temp sensors:" + numberDoors);
+            this.setNumberDoors(numberDoors);
+            for (var i = 1; i <= numberDoors; i++) {
+                var doorPath = data['doorPath_' + i];
+                this.doors[i - 1].setPath(doorPath);
+                this.doors[i - 1].x = parseInt(data['x_coordinate']);
+                this.doors[i - 1].y = parseInt(data['y_coordinate']);
             }
         };
         return SiteData;
@@ -106,6 +129,8 @@ var OhsSiteData;
     var TemperatureSensor = (function () {
         function TemperatureSensor() {
             this.valid = false; //content of the forecast is valid      
+            this.x = 0;
+            this.y = 0;
         }
         TemperatureSensor.prototype.setPath = function (path) {
             this.path = path;
@@ -123,4 +148,28 @@ var OhsSiteData;
         return Switch;
     }());
     OhsSiteData.Switch = Switch;
+    var Door = (function () {
+        function Door() {
+            this.valid = false; //content is valid       
+            this.open = false;
+            this.locked = false;
+            this.x = 0;
+            this.y = 0;
+        }
+        Door.prototype.setPath = function (path) {
+            this.path = path;
+        };
+        return Door;
+    }());
+    OhsSiteData.Door = Door;
+    var Window = (function () {
+        function Window() {
+            this.valid = false; //content is valid       
+        }
+        Window.prototype.setPath = function (path) {
+            this.path = path;
+        };
+        return Window;
+    }());
+    OhsSiteData.Window = Window;
 })(OhsSiteData || (OhsSiteData = {}));

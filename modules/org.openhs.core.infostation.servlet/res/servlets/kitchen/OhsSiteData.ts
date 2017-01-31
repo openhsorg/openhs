@@ -8,12 +8,14 @@ module OhsSiteData {
         private rooms: Array <Room>;
         private tempSensors: Array <TemperatureSensor>;
         private switches: Array <Switch>;
+        private doors: Array <Door>;
         
         constructor () {            
             this.floors = new Array<Floor>();
             this.rooms = new Array<Room>(); 
             this.tempSensors = new Array<TemperatureSensor>(); 
-            this.switches = new Array<Switch>();  
+            this.switches = new Array<Switch>();
+            this.doors = new Array<Door>();    
         }
         
         public setNumberFloors (num: number) {         
@@ -43,6 +45,16 @@ module OhsSiteData {
                 }
             } else if (num < this.tempSensors.length) {            
                 this.tempSensors.length = num;             
+            }
+        }    
+        
+        public setNumberDoors(num: number) {         
+            if (num > this.doors.length) {            
+                for (var i = this.doors.length; i < num; i++) {
+                    this.doors.push(new Door());
+                }
+            } else if (num < this.doors.length) {            
+                this.doors.length = num;             
             }
         }         
         
@@ -98,7 +110,21 @@ module OhsSiteData {
             for (var i = 1; i <= numberTempSensors; i++) {
                 var tempSensorPath: string = data['tempSensorPath_' + i];                
                 this.tempSensors[i - 1].setPath(tempSensorPath);
-            }                                    
+                this.tempSensors[i - 1].x = parseInt(data['x_coordinate']);
+                this.tempSensors[i - 1].y = parseInt(data['y_coordinate']);                
+            }     
+            
+            // Door                     
+            var numberDoors = parseInt(data['number_doors']);
+            //window.alert("Number temp sensors:" + numberDoors);
+            this.setNumberDoors (numberDoors);
+                        
+            for (var i = 1; i <= numberDoors; i++) {
+                var doorPath: string = data['doorPath_' + i];                
+                this.doors[i - 1].setPath(doorPath);
+                this.doors[i - 1].x = parseInt(data['x_coordinate']);
+                this.doors[i - 1].y = parseInt(data['y_coordinate']);
+            }                         
         }
     }
         
@@ -110,9 +136,7 @@ module OhsSiteData {
         
         public setPath (path: string) {
             this.path = path;
-        }
-        
-        
+        }                
     }
     
     export class Room {
@@ -123,8 +147,7 @@ module OhsSiteData {
         
         public setPath (path: string) {
             this.path = path;
-        }        
-        
+        }                
     }    
     
     export class TemperatureSensor {
@@ -133,10 +156,17 @@ module OhsSiteData {
         
         public path:  string; //OpenHS path
         
-        public setPath (path: string) {
-            this.path = path;
+        public x:   number;
+        public y:   number;      
+        
+        constructor () {            
+            this.x = 0;
+            this.y = 0;
         }        
         
+        public setPath (path: string) {
+            this.path = path;
+        }                
     } 
     
     export class Switch {
@@ -147,7 +177,44 @@ module OhsSiteData {
         
         public setPath (path: string) {
             this.path = path;
-        }        
+        }                
+    }   
+    
+    export class Door {
+    
+        public valid: boolean = false; //content is valid       
         
-    }     
+        public path:  string; //OpenHS path
+        
+        public open:       boolean; //Open
+        public locked:     boolean; //Door lock
+        
+        public x:   number;
+        public y:   number;
+        
+        constructor () {
+            this.open = false;
+            this.locked = false;
+            
+            this.x = 0;
+            this.y = 0;
+        }
+        
+        public setPath (path: string) {
+            this.path = path;
+        }                
+    }    
+    
+    export class Window {
+    
+        public valid: boolean = false; //content is valid       
+        
+        public path:        string; //OpenHS path        
+        public open:        boolean; //Open
+        
+        public setPath (path: string) {
+            this.path = path;
+        }                
+    }    
+    
 }

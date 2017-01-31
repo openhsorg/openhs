@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -329,8 +330,7 @@ public class KitchenServlet extends HttpServlet {
 				//e.printStackTrace();
 			}	
 			
-			// Rooms
-			
+			// Rooms			
 			try {
 				Set<String> roomsPaths = this.m_infostation.getRoomsPaths ();						
 				json.put("number_rooms", String.format("%d", roomsPaths.size()));
@@ -347,8 +347,7 @@ public class KitchenServlet extends HttpServlet {
 				//e.printStackTrace();
 			}		
 			
-			// temperatureSensors
-			
+			// temperatureSensors			
 			try {
 				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
 				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
@@ -358,12 +357,29 @@ public class KitchenServlet extends HttpServlet {
 					i ++;
 					String id = "tempSensorPath_" + i;					
 					json.put(id, item);
+					json.put("x_coordinate", String.format("%d", 300 + (50 * i)));
+					json.put("y_coordinate", String.format("%d", 200));										
 				}
 				
 			} catch (SiteException e) {
 				json.put("number_tempsensors", String.format("0"));								
 				//e.printStackTrace();
 			}		
+			
+			// door		
+			Set<String> doorsPaths = new HashSet <String> (); 
+			doorsPaths.add("test/doors"); //this.m_infostation.getTempSensorsPaths();
+			
+			json.put("number_doors", String.format("%d", doorsPaths.size()));
+			
+			int i = 0;
+			for (String item: doorsPaths) {
+				i ++;
+				String id = "doorPath_" + i;					
+				json.put(id, item);
+				json.put("x_coordinate", String.format("%d", 100));
+				json.put("y_coordinate", String.format("%d", 50));
+			}			
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
