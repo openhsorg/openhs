@@ -18,7 +18,9 @@ import SwitchMark = OhsCanvasGraphics.SwitchMark;
 import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
 import WeatherForecast = OhsWeatherData.WeatherForecast;    
     
-import SiteData = OhsSiteData.SiteData;    
+import SiteData = OhsSiteData.SiteData;
+import Floor = OhsSiteData.Floor;
+import TemperatureSensor = OhsSiteData.TemperatureSensor;            
     
 var forecastRect = {
     x:0,
@@ -167,9 +169,9 @@ export class BasicScreen {
     public weather: WeatherData = new WeatherData(); //current weather today    
     public forecastScreen: WeatherForecastScreen = null; //forecast screen      
     public stopWatch: StopWatch = null;        
-    public floor: Floor = null;    
-    private room: Array<Room> = new Array<Room>();
-    private floors: Array<Floor> = new Array<Floor>();
+   // public floor: Floor = null;    
+    private room: Array<RoomScreen> = new Array<RoomScreen>();
+    private floors: Array<FloorScreen> = new Array<FloorScreen>();
 
     constructor (canvas: HTMLCanvasElement) {        
         this.canvas = canvas;
@@ -198,12 +200,12 @@ export class BasicScreen {
         this.windText = new Text (this.ctx, new Rect (160, 80, 140, 40));
      
         this.forecastScreen = new WeatherForecastScreen (canvas, this.weatherData);
-        this.floor = new Floor (canvas, this.siteData);
+     //   this.floor = new Floor (canvas, this.siteData);
         
-        this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
-        this.room.push(new Room (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
-        this.room.push(new Room (canvas, "/infores/servlets/kitchen/room2.png"));
-        this.room.push(new Room (canvas, "/infores/servlets/kitchen/room3.png"));
+        this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
+        this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
+        this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room2.png"));
+        this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room3.png"));
         
         this.timerGetSiteDataEvent(5000);
         this.timerGetWeatherDataEvent(5000);
@@ -272,10 +274,10 @@ export class BasicScreen {
                 appMode = Application.None;
             }        
             
-         } else if (appMode == Application.Floor) {     
+         } else if (appMode == Application.Floor && this.floors.length > 0) {     
            
-            var room = this.floor.clickedTempMark(mousePos.x, mousePos.y);
-            var light = this.floor.clickedSwitchMark(mousePos.x, mousePos.y);
+            var room = this.floors[0].clickedTempMark(mousePos.x, mousePos.y);
+            var light = this.floors[0].clickedSwitchMark(mousePos.x, mousePos.y);
             
             if (room != -1) {            
                 appMode = Application.Room;
@@ -341,8 +343,8 @@ export class BasicScreen {
                     //this.numberFloors = parseInt(data['number_floors']); 
             }
         
-        //Other objects...        
-        this.floor.getData(url);                 
+        //Other objects...  
+        if (this.floors.length > 0)   this.floors[0].getData(url);                 
     }    
     
     private postData (url: string) {
@@ -363,9 +365,22 @@ export class BasicScreen {
 
     public loadGraphics () {
     
-        this.floor.loadGraphics();
-        
+        this.setNumberFloors (this.siteData.getNumberFloors());
+                
+        for (let id in this.floors) {
+            this.floors[id].loadGraphics();            
+        }                
     }
+    
+    public setNumberFloors (num: number) {         
+        if (num > this.floors.length) {            
+            for (var i = this.floors.length; i < num; i++) {
+                this.floors.push(new FloorScreen(this.canvas, this.siteData));
+            }
+        } else if (num < this.floors.length) {            
+            this.floors.length = num;             
+        }
+    }    
      
     public paintStaticImage() {
        const ctx = this.ctx;
@@ -382,8 +397,10 @@ export class BasicScreen {
         
         if (appMode == Application.None || appMode == Application.Watch) {       
             this.paintBasic();        
-        } else if (appMode == Application.Floor) {        
-              this.floor.paint(this.weather);       
+        } else if (appMode == Application.Floor) {   
+            if (this.floors.length > 0) {
+                this.floors[0].paint(this.weather);
+            }       
         } else if (appMode == Application.Room) {        
               this.room[roomNum].paint(this.weather);              
         } else if (appMode == Application.WeatherForecast) {
@@ -931,7 +948,7 @@ class WeatherForecastPanel {
 }        
     
     
-class Floor {
+class FloorScreen {
     
     private ctx:                 CanvasRenderingContext2D;
     private width:               number;
@@ -939,7 +956,7 @@ class Floor {
     
     public siteData:    SiteData = null;
         
-    private TempMarks: Array<TempMark> = new Array<TempMark>();
+    private tempMarks: Array<TempMark> = new Array<TempMark>();
     private SwitchMarks: Array<SwitchMark> = new Array<SwitchMark>();
     
     private imgFloor:HTMLImageElement = null;
@@ -959,15 +976,10 @@ class Floor {
         this.height = canvas.height;
         
         this.imgFloor = new Image();
-        this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";      
-
-                
-       // this.imgFloor.onload = function(){
-      //    this.imgFloorLoaded = true;
-     //   }          
+        this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";            
         
-        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
-        this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+   //     this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+   //     this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
         
         this.SwitchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/BulbSymbol.png"));    
         
@@ -988,14 +1000,19 @@ class Floor {
             ctx.restore();        
      //   }      
     
+        for (let id in this.tempMarks) {
+            this.tempMarks[id].paint();            
+        }
+        
         //Outside mark
+        /*
         this.TempMarks[0].setSize(new Rect (250, 320, 80, 80));
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
         this.TempMarks[1].setSize(new Rect (300, 200, 80, 80));
         this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");    
-        
+        */
         //Inner switch
         this.SwitchMarks[0].setSize(new Rect (220, 150, 80, 80));
         this.SwitchMarks[0].paint();          
@@ -1016,11 +1033,11 @@ class Floor {
         let cId: number = -1;
         let n:   number = -1;
         
-        for (let id in this.TempMarks) {
+        for (let id in this.tempMarks) {
              
             n++;
             
-            if (this.TempMarks[id].isClicked(clx, cly)) {
+            if (this.tempMarks[id].isClicked(clx, cly)) {
                 cId = n;
              }
         }        
@@ -1069,6 +1086,22 @@ class Floor {
     
     public loadGraphics () {
         
+        if (this.tempMarks.length > this.siteData.tempSensors.length) {
+            this.tempMarks.length = this.siteData.tempSensors.length;
+            
+        } else if (this.tempMarks.length < this.siteData.tempSensors.length) {
+            for (var i = this.tempMarks.length; i < this.siteData.tempSensors.length; i++) {
+                this.tempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+            }
+        }            
+        
+        
+        
+        // Update data
+        for (let id in this.siteData.tempSensors) {
+            this.tempMarks[id].setSize(new Rect (this.siteData.tempSensors[id].x, this.siteData.tempSensors[id].y, 80, 80));
+            this.tempMarks[id].setTemp(this.siteData.tempSensors[id].temp);                        
+        }
         
     
     
@@ -1076,7 +1109,7 @@ class Floor {
     
 }
     
-class Room {
+class RoomScreen {
     
     private ctx:                 CanvasRenderingContext2D;
     private width:               number;
@@ -1114,14 +1147,15 @@ class Room {
         ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
         ctx.restore();        
      //   }      
-    
+    /*
         //Outside mark
         this.TempMarks[0].setSize(new Rect (250, 350, 80, 80));
         this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");    
             
         //Inside mark
         this.TempMarks[1].setSize(new Rect (280, 200, 80, 80));
-        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");            
+        this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");  
+        */          
     }
     
     public clickedTempMark (clx:number, cly:number) {

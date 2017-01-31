@@ -116,6 +116,7 @@ var OhsCanvasGraphics;
             _super.call(this, ctx, rect);
             this.img = null;
             this.border = false; //debug border
+            this.temp = -100.0;
             this.txt = new Text(ctx, rect);
             this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
@@ -127,7 +128,10 @@ var OhsCanvasGraphics;
             _super.prototype.setSize.call(this, rect);
             this.txt.setSize(rect);
         };
-        TempMark.prototype.paint = function (text) {
+        TempMark.prototype.setTemp = function (temp) {
+            this.temp = temp;
+        };
+        TempMark.prototype.paint = function () {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
@@ -139,7 +143,7 @@ var OhsCanvasGraphics;
             this.ctx.restore();
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
+            this.txt.paint(this.temp + " \u00B0C");
             //Draw image...
             //   if (this.imgLoaded) {     
             this.ctx.save();

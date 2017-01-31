@@ -11,6 +11,12 @@ var OhsSiteData;
         SiteData.prototype.getNumberFloors = function () {
             return this.floors.length;
         };
+        SiteData.prototype.getFloor = function (num) {
+            if (num > this.floors.length || num < 1) {
+                return null;
+            }
+            return this.floors[num - 1];
+        };
         SiteData.prototype.setNumberFloors = function (num) {
             if (num > this.floors.length) {
                 for (var i = this.floors.length; i < num; i++) {
@@ -89,11 +95,12 @@ var OhsSiteData;
             var numberTempSensors = parseInt(data['number_tempsensors']);
             this.setNumberTempSensors(numberTempSensors);
             //window.alert("Number temp sensors:" + numberTempSensors);
-            for (var i = 1; i <= numberTempSensors; i++) {
-                var tempSensorPath = data['tempSensorPath_' + i];
-                this.tempSensors[i - 1].setPath(tempSensorPath);
-                this.tempSensors[i - 1].x = parseInt(data['x_coordinate']);
-                this.tempSensors[i - 1].y = parseInt(data['y_coordinate']);
+            for (var id in this.tempSensors) {
+                var tempSensorPath = data['tempSensorPath_' + id];
+                this.tempSensors[id].setPath(tempSensorPath);
+                this.tempSensors[id].x = parseInt(data['x_coordinate_ts' + id]);
+                this.tempSensors[id].y = parseInt(data['y_coordinate_ts' + id]);
+                this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);
             }
             // Door                     
             var numberDoors = parseInt(data['number_doors']);
@@ -134,6 +141,7 @@ var OhsSiteData;
             this.valid = false; //content of the forecast is valid      
             this.x = 0;
             this.y = 0;
+            this.temp = 0.0;
         }
         TemperatureSensor.prototype.setPath = function (path) {
             this.path = path;

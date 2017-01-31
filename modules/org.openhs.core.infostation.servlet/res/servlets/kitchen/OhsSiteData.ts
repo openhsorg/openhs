@@ -6,7 +6,7 @@ module OhsSiteData {
                        
         private floors: Array <Floor>;
         private rooms: Array <Room>;
-        private tempSensors: Array <TemperatureSensor>;
+        public tempSensors: Array <TemperatureSensor>;
         private switches: Array <Switch>;
         private doors: Array <Door>;
         
@@ -20,6 +20,13 @@ module OhsSiteData {
         
         public getNumberFloors () {
             return this.floors.length;
+        }
+        
+        public getFloor (num:  number){
+            if (num > this.floors.length || num < 1) {
+                return null;
+            }
+            return this.floors[num - 1];
         }
         
         public setNumberFloors (num: number) {         
@@ -111,11 +118,14 @@ module OhsSiteData {
             this.setNumberTempSensors (numberTempSensors);
             //window.alert("Number temp sensors:" + numberTempSensors);
             
-            for (var i = 1; i <= numberTempSensors; i++) {
-                var tempSensorPath: string = data['tempSensorPath_' + i];                
-                this.tempSensors[i - 1].setPath(tempSensorPath);
-                this.tempSensors[i - 1].x = parseInt(data['x_coordinate']);
-                this.tempSensors[i - 1].y = parseInt(data['y_coordinate']);                
+            for (let id in this.tempSensors) {
+                var tempSensorPath: string = data['tempSensorPath_' + id];                
+                this.tempSensors[id].setPath(tempSensorPath);
+                this.tempSensors[id].x = parseInt(data['x_coordinate_ts' + id]);
+                this.tempSensors[id].y = parseInt(data['y_coordinate_ts' + id]);
+                this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);      
+                
+               // window.alert("\n--->ID:" + id + " Path: " + tempSensorPath + " X: " + parseInt(data['x_coordinate']) + "Y: " + this.tempSensors[id].y);
             }     
             
             // Door                     
@@ -160,12 +170,15 @@ module OhsSiteData {
         
         public path:  string; //OpenHS path
         
+        public temp:  number;
+        
         public x:   number;
         public y:   number;      
         
         constructor () {            
             this.x = 0;
             this.y = 0;
+            this.temp = 0.0;
         }        
         
         public setPath (path: string) {

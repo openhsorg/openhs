@@ -327,7 +327,7 @@ public class KitchenServlet extends HttpServlet {
 				
 			} catch (SiteException e) {
 				json.put("number_floors", String.format("0"));								
-				//e.printStackTrace();
+				e.printStackTrace();
 			}	
 			
 			// Rooms			
@@ -344,7 +344,7 @@ public class KitchenServlet extends HttpServlet {
 				
 			} catch (SiteException e) {
 				json.put("number_rooms", String.format("0"));								
-				//e.printStackTrace();
+				e.printStackTrace();
 			}		
 			
 			// temperatureSensors			
@@ -352,18 +352,38 @@ public class KitchenServlet extends HttpServlet {
 				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
 				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
 				
+				
+				
 				int i = 0;
 				for (String item: tempSensorsPaths) {
+													
+					json.put("tempSensorPath_" + i, item);
+					//json.put("x_coordinate_ts", String.format("500"));
+				//	json.put("y_coordinate_ts", String.format("200"));		
+					
+					if (i == 0) {
+						json.put("temp_ts" + i, String.format("%.2f", m_infostation.getTempOut()));
+						json.put("x_coordinate_ts" + i, String.format("300"));
+						json.put("y_coordinate_ts" + i, String.format("300"));	
+					} else if (i == 1) {
+						json.put("temp_ts" + i, String.format("%.2f", m_infostation.getTempIn()));
+						json.put("x_coordinate_ts" + i, String.format("300"));
+						json.put("y_coordinate_ts" + i, String.format("150"));							
+						//json.put("x_coordinate", String.format("%d", 300 + 160));
+					} else {
+						json.put("temp_ts" + i, "NaN");	
+						json.put("x_coordinate_ts" + i, String.format("100"));
+						json.put("y_coordinate_ts" + i, String.format("150"));	
+					}
+					
 					i ++;
-					String id = "tempSensorPath_" + i;					
-					json.put(id, item);
-					json.put("x_coordinate", String.format("%d", 300 + (50 * i)));
-					json.put("y_coordinate", String.format("%d", 200));										
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
+					
 				}
 				
 			} catch (SiteException e) {
 				json.put("number_tempsensors", String.format("0"));								
-				//e.printStackTrace();
+				e.printStackTrace();
 			}		
 			
 			// door		

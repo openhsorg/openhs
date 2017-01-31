@@ -131,6 +131,8 @@ module OhsCanvasGraphics {
         private imgLoaded: boolean;// = false;     
         
         protected border:    boolean = false; //debug border
+        
+        private temp:   number = -100.0;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
@@ -148,8 +150,12 @@ module OhsCanvasGraphics {
             super.setSize(rect);     
             this.txt.setSize(rect);                    
          }
+        
+        setTemp (temp: number) {
+            this.temp = temp;    
+        }
     
-        public paint (text: string) {      
+        public paint () {      
     
             this.ctx.save();
             this.ctx.beginPath();
@@ -163,7 +169,7 @@ module OhsCanvasGraphics {
                     
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
+            this.txt.paint(this.temp + " \u00B0C");
             
             //Draw image...
          //   if (this.imgLoaded) {     
