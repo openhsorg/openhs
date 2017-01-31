@@ -8,6 +8,9 @@ var OhsSiteData;
             this.switches = new Array();
             this.doors = new Array();
         }
+        SiteData.prototype.getNumberFloors = function () {
+            return this.floors.length;
+        };
         SiteData.prototype.setNumberFloors = function (num) {
             if (num > this.floors.length) {
                 for (var i = this.floors.length; i < num; i++) {
@@ -158,6 +161,15 @@ var OhsSiteData;
         }
         Door.prototype.setPath = function (path) {
             this.path = path;
+        };
+        Door.prototype.getState = function () {
+            if (!this.valid)
+                return 0;
+            if (this.open)
+                return 1;
+            if (this.locked)
+                return 3;
+            return 2;
         };
         return Door;
     }());

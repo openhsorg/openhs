@@ -18,6 +18,10 @@ module OhsSiteData {
             this.doors = new Array<Door>();    
         }
         
+        public getNumberFloors () {
+            return this.floors.length;
+        }
+        
         public setNumberFloors (num: number) {         
             if (num > this.floors.length) {            
                 for (var i = this.floors.length; i < num; i++) {
@@ -202,7 +206,15 @@ module OhsSiteData {
         
         public setPath (path: string) {
             this.path = path;
-        }                
+        }    
+        
+        public getState () {                                   
+            if (!this.valid) return 0;
+            if (this.open) return 1;                        
+            if (this.locked) return 3;
+            
+            return 2;                                    
+        }
     }    
     
     export class Window {

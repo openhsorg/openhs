@@ -108,6 +108,7 @@ var KitchenInfoStation;
             this.stopWatch = null;
             this.floor = null;
             this.room = new Array();
+            this.floors = new Array();
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
@@ -130,7 +131,7 @@ var KitchenInfoStation;
             this.dateText = new Text(this.ctx, new Rect((this.width) / 2 + 70, 80, 230, 40));
             this.windText = new Text(this.ctx, new Rect(160, 80, 140, 40));
             this.forecastScreen = new WeatherForecastScreen(canvas, this.weatherData);
-            this.floor = new Floor(canvas);
+            this.floor = new Floor(canvas, this.siteData);
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
             this.room.push(new Room(canvas, "/infores/servlets/kitchen/room2.png"));
@@ -227,6 +228,8 @@ var KitchenInfoStation;
             if (data != null) {
                 this.siteData.setSiteData(data);
             }
+            //Load site data...
+            this.loadGraphics();
         };
         BasicScreen.prototype.getWeatherData = function (url) {
             var data = null;
@@ -251,19 +254,6 @@ var KitchenInfoStation;
             }
             //Other objects...        
             this.floor.getData(url);
-            /*
-            //Weather data....
-            data = null;
-            
-            for (var i = 0; i < 4; i++) {
-                var id: string = "WeatherForecast_" + i;
-                
-                data = getAjax(url, id);
-                if (data != null) {
-                    this.weatherData.setWeatherItem(i, data);
-                }
-            }
-            */
         };
         BasicScreen.prototype.postData = function (url) {
             var data = {
@@ -274,6 +264,9 @@ var KitchenInfoStation;
             //var switch1 = "clicked";
             var dataSend = JSON.stringify(data);
             var send = postAjax(url, "mmm", dataSend);
+        };
+        BasicScreen.prototype.loadGraphics = function () {
+            this.floor.loadGraphics();
         };
         BasicScreen.prototype.paintStaticImage = function () {
             var ctx = this.ctx;
@@ -711,13 +704,15 @@ var KitchenInfoStation;
         return WeatherForecastPanel;
     }());
     var Floor = (function () {
-        function Floor(canvas) {
+        function Floor(canvas, siteData) {
+            this.siteData = null;
             this.TempMarks = new Array();
             this.SwitchMarks = new Array();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
             this.numRooms = 0;
             this.ctx = canvas.getContext("2d");
+            this.siteData = siteData;
             this.width = canvas.width;
             this.height = canvas.height;
             this.imgFloor = new Image();
@@ -793,6 +788,8 @@ var KitchenInfoStation;
             if (data2 != null) {
                 this.SwitchMarks[0].state = parseFloat(data2['switchState']);
             }
+        };
+        Floor.prototype.loadGraphics = function () {
         };
         return Floor;
     }());

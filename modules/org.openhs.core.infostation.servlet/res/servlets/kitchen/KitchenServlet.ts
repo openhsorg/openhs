@@ -169,6 +169,7 @@ export class BasicScreen {
     public stopWatch: StopWatch = null;        
     public floor: Floor = null;    
     private room: Array<Room> = new Array<Room>();
+    private floors: Array<Floor> = new Array<Floor>();
 
     constructor (canvas: HTMLCanvasElement) {        
         this.canvas = canvas;
@@ -197,7 +198,7 @@ export class BasicScreen {
         this.windText = new Text (this.ctx, new Rect (160, 80, 140, 40));
      
         this.forecastScreen = new WeatherForecastScreen (canvas, this.weatherData);
-        this.floor = new Floor (canvas);
+        this.floor = new Floor (canvas, this.siteData);
         
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
         this.room.push(new Room (canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
@@ -250,8 +251,7 @@ export class BasicScreen {
                 appMode = Application.Watch;          
                 this.stopWatch.start();
                 this.timerPaintEvent(40);
-                            
-           // } else if (isInside(mousePos, this.tmpInText.getRect())) {                                          
+                                                                
               } else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
                 appMode = Application.Floor;                                
                 this.timerPaintEvent(100);   
@@ -308,7 +308,10 @@ export class BasicScreen {
         
         if (data != null) {
             this.siteData.setSiteData(data);
-        }                                               
+        }   
+        
+        //Load site data...
+        this.loadGraphics ();
     }   
     
     private getWeatherData(url: string) {    
@@ -323,8 +326,7 @@ export class BasicScreen {
             }            
         }                                            
     }     
-    
-        
+            
     private getData(url: string) {    
         var data = getAjax(url, 'InfoData');
                 
@@ -340,21 +342,7 @@ export class BasicScreen {
             }
         
         //Other objects...        
-        this.floor.getData(url);
-                           
-        /*
-        //Weather data....
-        data = null;
-        
-        for (var i = 0; i < 4; i++) {            
-            var id: string = "WeatherForecast_" + i;
-            
-            data = getAjax(url, id);
-            if (data != null) {
-                this.weatherData.setWeatherItem(i, data);
-            }            
-        }  
-        */                  
+        this.floor.getData(url);                 
     }    
     
     private postData (url: string) {
@@ -373,6 +361,11 @@ export class BasicScreen {
         
      }
 
+    public loadGraphics () {
+    
+        this.floor.loadGraphics();
+        
+    }
      
     public paintStaticImage() {
        const ctx = this.ctx;
@@ -943,6 +936,8 @@ class Floor {
     private ctx:                 CanvasRenderingContext2D;
     private width:               number;
     private height:              number;
+    
+    public siteData:    SiteData = null;
         
     private TempMarks: Array<TempMark> = new Array<TempMark>();
     private SwitchMarks: Array<SwitchMark> = new Array<SwitchMark>();
@@ -955,9 +950,11 @@ class Floor {
     
     private txtNumRooms:  Text;
     
-    constructor (canvas: HTMLCanvasElement) {
+    constructor (canvas: HTMLCanvasElement, siteData:  SiteData) {
         
         this.ctx = canvas.getContext("2d");
+        this.siteData = siteData;
+        
         this.width = canvas.width;
         this.height = canvas.height;
         
@@ -1068,6 +1065,14 @@ class Floor {
             
             } 
     }      
+    
+    
+    public loadGraphics () {
+        
+        
+    
+    
+    }    
     
 }
     

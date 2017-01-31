@@ -28,11 +28,14 @@ module OhsCanvasGraphics {
             this.h = rectI.h;                
         }
     }                
-             
+         
+    /**
+     * Graphical symbol...
+     */
     export class Mark {
         
-        protected ctx:    CanvasRenderingContext2D;  
-        public rect:   Rect;        
+        protected   ctx:    CanvasRenderingContext2D;  
+        public      rect:   Rect;        
         
         constructor (ctx: CanvasRenderingContext2D, rect: Rect){                    
             this.ctx = ctx;        
@@ -270,58 +273,45 @@ module OhsCanvasGraphics {
     
     export class DoorsMark extends Mark {
 
-        private txt:  Text;
+       // private txt:  Text;
     
-        private img:HTMLImageElement = null;
+        private imgOpen:HTMLImageElement = null;
+        private imgClose:HTMLImageElement = null;
+        private imgLock:HTMLImageElement = null;
+        
         private imgLoaded: boolean;// = false;    
         private colorButton: string = "#666699";    
-        public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+        public state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
 
         protected border:    boolean = false; //debug border
     
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
             super(ctx, rect);
-
+/*
             this.txt = new Text (ctx, rect);
             this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
+            */
             
-            this.img = new Image();                                
-            this.img.src = src;           
+            this.imgOpen = new Image();                                
+            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";     
+            
+            this.imgClose = new Image();                                
+            this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 
+            
+            this.imgLock = new Image();                                
+            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";               
+            
         }      
         
         setSize (rect:  Rect) {        
             super.setSize(rect);    
-            this.txt.setSize(rect);                 
+            //this.txt.setSize(rect);                 
          }
     
-        public paint () {      
-    
-            var text: string = "---";    
-            // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-        
-            //logic of switch
-            if (this.state == 0) {
-                this.colorButton = "#808080"; 
-                text = "---";
-            } else if (this.state == 1) {
-                this.colorButton = "#3333ff";
-                text = "off";
-            } else if (this.state == 2) {
-                this.colorButton = "#33cc33";
-                text = "->on";
-            } else if (this.state == 3) {
-                this.colorButton = "#ffaa00";
-                text = "on";
-            } else if (this.state == 4) {
-                this.colorButton = "#9999ff";
-                text = "->off";
-            } else {
-                this.colorButton = "#808080"; 
-                text = "---";
-            }        
-        
+        public paint (state: number) {      
+            
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
@@ -330,19 +320,46 @@ module OhsCanvasGraphics {
             this.ctx.lineWidth = 2;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
-            this.ctx.restore();      
-                    
-          //  this.rect.x = this.rect.x + 30;
-            this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
-        
-        //Draw image...
-     //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
-            this.ctx.restore();        
-       // }                        
+            this.ctx.restore();              
             
+            //logic of switch
+            if (this.state == 0) {
+                this.colorButton = "#808080";  
+                
+                this.ctx.save();
+                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.restore();                   
+                
+            } else if (this.state == 1) {
+                this.colorButton = "green";
+                
+                this.ctx.save();
+                this.ctx.drawImage(this.imgOpen, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.restore();                   
+                
+            } else if (this.state == 2) {
+                this.colorButton = "green";
+                
+                this.ctx.save();
+                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.restore();                   
+                
+            } else if (this.state == 3) {
+                this.colorButton = "green";
+                
+                this.ctx.save();
+                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.restore();                  
+                
+                this.ctx.save();
+                this.ctx.drawImage(this.imgLock, this.rect.x - 5, this.rect.y + 30, 40, 40);
+                this.ctx.restore();                  
+                
+            } else {
+                this.colorButton = "#808080"; 
+                
+            }        
+                                         
             if (this.border){
                 this.ctx.save();
                 this.ctx.beginPath();
