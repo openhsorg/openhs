@@ -14,13 +14,15 @@ import Rect = OhsCanvasGraphics.Rect;
 import Text = OhsCanvasGraphics.Text;
 import TempMark = OhsCanvasGraphics.TempMark;
 import SwitchMark = OhsCanvasGraphics.SwitchMark;
+import DoorMark = OhsCanvasGraphics.DoorMark;
     
 import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
 import WeatherForecast = OhsWeatherData.WeatherForecast;    
     
 import SiteData = OhsSiteData.SiteData;
 import Floor = OhsSiteData.Floor;
-import TemperatureSensor = OhsSiteData.TemperatureSensor;            
+import TemperatureSensor = OhsSiteData.TemperatureSensor;    
+import Door = OhsSiteData.Door;               
     
 var forecastRect = {
     x:0,
@@ -957,6 +959,9 @@ class FloorScreen {
     public siteData:    SiteData = null;
         
     private tempMarks: Array<TempMark> = new Array<TempMark>();
+    private switchMarks: Array<SwitchMark> = new Array<SwitchMark>();
+    private doorMarks: Array<DoorMark> = new Array<DoorMark>();
+    
     private SwitchMarks: Array<SwitchMark> = new Array<SwitchMark>();
     
     private imgFloor:HTMLImageElement = null;
@@ -994,15 +999,21 @@ class FloorScreen {
         const ctx = this.ctx;
         
         //Draw image...
-     //   if (this.imgFloorLoaded) {     
-            ctx.save();
-            ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
-            ctx.restore();        
+ //   if (this.imgFloorLoaded) {     
+        ctx.save();
+        ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
+        ctx.restore();        
      //   }      
     
+        // Temperature sensors...
         for (let id in this.tempMarks) {
             this.tempMarks[id].paint();            
         }
+        
+        // Doors
+        for (let id in this.doorMarks) {
+            this.doorMarks[id].paint();            
+        }        
         
         //Outside mark
         /*
@@ -1086,6 +1097,7 @@ class FloorScreen {
     
     public loadGraphics () {
         
+        // Temperature
         if (this.tempMarks.length > this.siteData.tempSensors.length) {
             this.tempMarks.length = this.siteData.tempSensors.length;
             
@@ -1094,16 +1106,26 @@ class FloorScreen {
                 this.tempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
             }
         }            
-        
-        
-        
-        // Update data
+
         for (let id in this.siteData.tempSensors) {
             this.tempMarks[id].setSize(new Rect (this.siteData.tempSensors[id].x, this.siteData.tempSensors[id].y, 80, 80));
             this.tempMarks[id].setTemp(this.siteData.tempSensors[id].temp);                        
         }
         
-    
+        // Doors
+        if (this.doorMarks.length > this.siteData.doors.length) {
+            this.doorMarks.length = this.siteData.doors.length;
+            
+        } else if (this.doorMarks.length < this.siteData.doors.length) {
+            for (var i = this.doorMarks.length; i < this.siteData.doors.length; i++) {
+                this.doorMarks.push(new DoorMark (this.ctx, new Rect (0, 0, 0, 0)));
+            }
+        }            
+
+        for (let id in this.siteData.doors) {
+            this.doorMarks[id].setSize(new Rect (this.siteData.doors[id].x, this.siteData.doors[id].y, 80, 80));
+            this.doorMarks[id].setState(this.siteData.doors[id].open, this.siteData.doors[id].locked);                        
+        }                
     
     }    
     

@@ -12,6 +12,7 @@ var KitchenInfoStation;
     var Text = OhsCanvasGraphics.Text;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
+    var DoorMark = OhsCanvasGraphics.DoorMark;
     var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     var SiteData = OhsSiteData.SiteData;
     var forecastRect = {
@@ -723,6 +724,8 @@ var KitchenInfoStation;
         function FloorScreen(canvas, siteData) {
             this.siteData = null;
             this.tempMarks = new Array();
+            this.switchMarks = new Array();
+            this.doorMarks = new Array();
             this.SwitchMarks = new Array();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
@@ -749,8 +752,13 @@ var KitchenInfoStation;
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();
             //   }      
+            // Temperature sensors...
             for (var id in this.tempMarks) {
                 this.tempMarks[id].paint();
+            }
+            // Doors
+            for (var id in this.doorMarks) {
+                this.doorMarks[id].paint();
             }
             //Outside mark
             /*
@@ -809,6 +817,7 @@ var KitchenInfoStation;
             }
         };
         FloorScreen.prototype.loadGraphics = function () {
+            // Temperature
             if (this.tempMarks.length > this.siteData.tempSensors.length) {
                 this.tempMarks.length = this.siteData.tempSensors.length;
             }
@@ -817,10 +826,22 @@ var KitchenInfoStation;
                     this.tempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
                 }
             }
-            // Update data
             for (var id in this.siteData.tempSensors) {
                 this.tempMarks[id].setSize(new Rect(this.siteData.tempSensors[id].x, this.siteData.tempSensors[id].y, 80, 80));
                 this.tempMarks[id].setTemp(this.siteData.tempSensors[id].temp);
+            }
+            // Doors
+            if (this.doorMarks.length > this.siteData.doors.length) {
+                this.doorMarks.length = this.siteData.doors.length;
+            }
+            else if (this.doorMarks.length < this.siteData.doors.length) {
+                for (var i = this.doorMarks.length; i < this.siteData.doors.length; i++) {
+                    this.doorMarks.push(new DoorMark(this.ctx, new Rect(0, 0, 0, 0)));
+                }
+            }
+            for (var id in this.siteData.doors) {
+                this.doorMarks[id].setSize(new Rect(this.siteData.doors[id].x, this.siteData.doors[id].y, 80, 80));
+                this.doorMarks[id].setState(this.siteData.doors[id].open, this.siteData.doors[id].locked);
             }
         };
         return FloorScreen;

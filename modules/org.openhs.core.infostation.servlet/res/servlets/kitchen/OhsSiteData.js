@@ -37,6 +37,15 @@ var OhsSiteData;
                 this.rooms.length = num;
             }
         };
+        SiteData.prototype.getNumberDoors = function () {
+            return this.doors.length;
+        };
+        SiteData.prototype.getDoor = function (num) {
+            if (num > this.doors.length || num < 1) {
+                return null;
+            }
+            return this.doors[num - 1];
+        };
         SiteData.prototype.setNumberTempSensors = function (num) {
             if (num > this.tempSensors.length) {
                 for (var i = this.tempSensors.length; i < num; i++) {
@@ -104,13 +113,15 @@ var OhsSiteData;
             }
             // Door                     
             var numberDoors = parseInt(data['number_doors']);
-            //window.alert("Number temp sensors:" + numberDoors);
             this.setNumberDoors(numberDoors);
-            for (var i = 1; i <= numberDoors; i++) {
-                var doorPath = data['doorPath_' + i];
-                this.doors[i - 1].setPath(doorPath);
-                this.doors[i - 1].x = parseInt(data['x_coordinate']);
-                this.doors[i - 1].y = parseInt(data['y_coordinate']);
+            //  window.alert("Number doors:" + this.getNumberDoors());            
+            for (var id in this.doors) {
+                var doorPath = data['doorPath_' + id];
+                this.doors[id].setPath(doorPath);
+                this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
+                this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
+                this.doors[id].open = JSON.parse(data['open_door_' + id]);
+                this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
             }
         };
         return SiteData;

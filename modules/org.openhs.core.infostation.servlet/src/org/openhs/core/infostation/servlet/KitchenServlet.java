@@ -388,18 +388,40 @@ public class KitchenServlet extends HttpServlet {
 			
 			// door		
 			Set<String> doorsPaths = new HashSet <String> (); 
-			doorsPaths.add("test/doors"); //this.m_infostation.getTempSensorsPaths();
+			/*
+			 * TEMPORARY code
+			 */
+			doorsPaths.add("test/doorsA"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("test/doorsB"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("test/doorsC"); //this.m_infostation.getTempSensorsPaths();
+			/*
+			 * TEMPORARY code end...
+			 */
 			
 			json.put("number_doors", String.format("%d", doorsPaths.size()));
 			
 			int i = 0;
-			for (String item: doorsPaths) {
-				i ++;
-				String id = "doorPath_" + i;					
-				json.put(id, item);
-				json.put("x_coordinate", String.format("%d", 100));
-				json.put("y_coordinate", String.format("%d", 50));
+			for (String item: doorsPaths) {			
+				json.put("doorPath_" + i, item);
+				json.put("x_coordinate_door_" + i, String.format("%d", 100 + (i * 80)));
+				json.put("y_coordinate_door_" + i, String.format("%d", 50));
+				
+				i++;
 			}			
+			
+			/*
+			 * TEMPORARY code
+			 */			
+			json.put("open_door_0", new Boolean(true));
+			json.put("open_door_1", new Boolean(false));
+			json.put("open_door_2", new Boolean(false));
+			
+			json.put("lock_door_0", new Boolean(false));
+			json.put("lock_door_1", new Boolean(false));
+			json.put("lock_door_2", new Boolean(true));	
+			/*
+			 * TEMPORARY code end...
+			 */			
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			

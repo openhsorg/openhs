@@ -217,7 +217,7 @@ module OhsCanvasGraphics {
             super.setSize(rect);    
             this.txt.setSize(rect);                 
          }
-    
+                    
         public paint () {      
     
             var text: string = "---";    
@@ -277,7 +277,7 @@ module OhsCanvasGraphics {
          }          
     }    
     
-    export class DoorsMark extends Mark {
+    export class DoorMark extends Mark {
 
        // private txt:  Text;
     
@@ -286,8 +286,10 @@ module OhsCanvasGraphics {
         private imgLock:HTMLImageElement = null;
         
         private imgLoaded: boolean;// = false;    
-        private colorButton: string = "#666699";    
-        public state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
+        private colorButton: string = "black";
+        private colorBorder: string = "black";     
+        
+        protected state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
 
         protected border:    boolean = false; //debug border
     
@@ -311,54 +313,67 @@ module OhsCanvasGraphics {
             
         }      
         
-        setSize (rect:  Rect) {        
-            super.setSize(rect);    
-            //this.txt.setSize(rect);                 
+        public setSize (rect:  Rect) {        
+            super.setSize(rect);                
          }
+        
+        public setState (open: boolean, lock: boolean) {
+            if (open) this.state = 1;
+            else {
+                if (!lock) this.state = 2;
+                else {
+                    this.state = 3;
+                }    
+            }                                              
+        }
     
-        public paint (state: number) {      
+        public paint () {      
             
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
+            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 3, 0, 2 * Math.PI, false);
             this.ctx.fillStyle = this.colorButton;
             this.ctx.fill();
             this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
+            this.ctx.strokeStyle = this.colorBorder;
             this.ctx.stroke();
             this.ctx.restore();              
             
             //logic of switch
             if (this.state == 0) {
                 this.colorButton = "#808080";  
+                this.colorBorder = "#00cc69";
                 
                 this.ctx.save();
                 this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
                 this.ctx.restore();                   
                 
             } else if (this.state == 1) {
-                this.colorButton = "green";
+                this.colorButton = "#ccffe6";
+                this.colorBorder = "#00cc69";
                 
                 this.ctx.save();
-                this.ctx.drawImage(this.imgOpen, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.drawImage(this.imgOpen, this.rect.x + 20, this.rect.y + 20, 40, 40);
                 this.ctx.restore();                   
                 
             } else if (this.state == 2) {
-                this.colorButton = "green";
+                this.colorButton = "#ccffe6";
+                this.colorBorder = "#00cc69";
                 
                 this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
                 this.ctx.restore();                   
                 
             } else if (this.state == 3) {
-                this.colorButton = "green";
+                this.colorButton = "#ff8080";
+                this.colorBorder = "red";
                 
                 this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
+                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
                 this.ctx.restore();                  
                 
                 this.ctx.save();
-                this.ctx.drawImage(this.imgLock, this.rect.x - 5, this.rect.y + 30, 40, 40);
+                this.ctx.drawImage(this.imgLock, this.rect.x + 20 + 10, this.rect.y + 30, 20, 20);
                 this.ctx.restore();                  
                 
             } else {
