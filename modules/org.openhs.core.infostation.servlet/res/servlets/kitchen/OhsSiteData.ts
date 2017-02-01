@@ -28,6 +28,7 @@ module OhsSiteData {
             }
             return this.floors[num - 1];
         }
+       
         
         public setNumberFloors (num: number) {         
             if (num > this.floors.length) {            
@@ -80,24 +81,26 @@ module OhsSiteData {
             }
         }         
         
-        
-        /*
-        public setFloorItem (num: number, data: string) {                    
-            if (num + 1 > this.floors.length) {
-                this.setNumberFloors (num + 1);
+        public setNumberSwitches (num: number) {         
+            if (num > this.switches.length) {            
+                for (var i = this.switches.length; i < num; i++) {
+                    this.switches.push(new Switch());
+                }
+            } else if (num < this.switches.length) {            
+                this.switches.length = num;             
             }
-            
-            //this.floors[num].setWeather(data);
+        }          
+
+        public getNumberSwitches () {
+            return this.switches.length;
         }
         
-        public getFloor (num: number) {        
-            if (num + 1 <= this.floors.length) {
-                return this.floors[num];
-            } else {                                                
-                return new Floor();
-            }                
-        } 
-        */  
+        public getSwitch (num:  number){
+            if (num > this.switches.length || num < 1) {
+                return null;
+            }
+            return this.switches[num - 1];
+        }         
         
         public setSiteData (data: string){
             
@@ -138,6 +141,20 @@ module OhsSiteData {
                 
                // window.alert("\n--->ID:" + id + " Path: " + tempSensorPath + " X: " + parseInt(data['x_coordinate']) + "Y: " + this.tempSensors[id].y);
             }     
+            
+            // Switches                     
+            var numberSwitches = parseInt(data['number_switches']);
+            this.setNumberSwitches (numberSwitches);
+            //window.alert("Number switches:" + numberSwitches);
+            
+            for (let id in this.switches) {         
+                this.switches[id].setPath(data['switchPath_' + id]);
+                this.switches[id].x = parseInt(data['x_coordinate_sw' + id]);
+                this.switches[id].y = parseInt(data['y_coordinate_sw' + id]);
+               // this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);      
+                
+               // window.alert("\n--->ID:" + id + " Path: " + tempSensorPath + " X: " + parseInt(data['x_coordinate']) + "Y: " + this.tempSensors[id].y);
+            }              
             
             // Door                     
             var numberDoors = parseInt(data['number_doors']);
@@ -205,6 +222,14 @@ module OhsSiteData {
         public valid: boolean = false; //content of the forecast is valid       
         
         public path:  string; //OpenHS path
+        
+        public x:   number;
+        public y:   number;        
+        
+        constructor () {            
+            this.x = 0;
+            this.y = 0;
+        }        
         
         public setPath (path: string) {
             this.path = path;

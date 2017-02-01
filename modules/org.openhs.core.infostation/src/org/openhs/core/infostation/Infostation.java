@@ -180,6 +180,10 @@ public class Infostation implements IInfostation {
       
       public Set<String> getTempSensorsPaths () throws SiteException {    	      	  
     	  return this.m_siteService.getAllThingsPath(TemperatureSensor.class);   		      		    	  
-      }        
+      }  
+      
+      public Set<String> getSwitchPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(Switch.class);   		      		    	  
+      }            
       
 }

@@ -386,6 +386,52 @@ public class KitchenServlet extends HttpServlet {
 				e.printStackTrace();
 			}		
 			
+			
+			// Switch			
+			try {
+				Set<String> switchPaths = this.m_infostation.getSwitchPaths();						
+				json.put("number_switches", String.format("%d", switchPaths.size()));				
+								
+				int i = 0;
+				for (String item: switchPaths) {
+													
+					json.put("switchPath_" + i, item);
+					json.put("x_coordinate_sw" + i, String.format("250" + (i * 50)));
+					json.put("y_coordinate_sw" + i, String.format("200"));		
+
+    				List<Boolean> list = m_infostation.getSwitchState(item);
+    				
+    				int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off
+    				boolean state = list.get(0);
+    				boolean stateDevice = list.get(1);
+    				
+    				if (stateDevice) { //device on
+    					if (state) {
+    						stateInt = 3; //request is on
+    					} else {
+    						stateInt = 4; //request is off
+    					}
+    				} else { //device off
+    					if (state) { //request is on
+    						stateInt = 2;
+    					} else { // request is off
+    						stateInt = 1;
+    					}	    					
+    				}						
+					
+    				json.put("state_sw" + i, new Integer(stateInt));		
+    				
+					i ++;
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
+					
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_switches", String.format("0"));								
+				e.printStackTrace();
+			}			
+			
+			
 			// door		
 			Set<String> doorsPaths = new HashSet <String> (); 
 			/*
@@ -424,6 +470,9 @@ public class KitchenServlet extends HttpServlet {
 			 */			
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
+			
+			
+			
 			
 			return json;
 	    }	    

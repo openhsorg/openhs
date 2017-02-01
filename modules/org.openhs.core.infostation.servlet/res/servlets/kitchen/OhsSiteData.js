@@ -66,23 +66,25 @@ var OhsSiteData;
                 this.doors.length = num;
             }
         };
-        /*
-        public setFloorItem (num: number, data: string) {
-            if (num + 1 > this.floors.length) {
-                this.setNumberFloors (num + 1);
+        SiteData.prototype.setNumberSwitches = function (num) {
+            if (num > this.switches.length) {
+                for (var i = this.switches.length; i < num; i++) {
+                    this.switches.push(new Switch());
+                }
             }
-            
-            //this.floors[num].setWeather(data);
-        }
-        
-        public getFloor (num: number) {
-            if (num + 1 <= this.floors.length) {
-                return this.floors[num];
-            } else {
-                return new Floor();
+            else if (num < this.switches.length) {
+                this.switches.length = num;
             }
-        }
-        */
+        };
+        SiteData.prototype.getNumberSwitches = function () {
+            return this.switches.length;
+        };
+        SiteData.prototype.getSwitch = function (num) {
+            if (num > this.switches.length || num < 1) {
+                return null;
+            }
+            return this.switches[num - 1];
+        };
         SiteData.prototype.setSiteData = function (data) {
             // Floors
             var numberFloors = parseInt(data['number_floors']);
@@ -110,6 +112,15 @@ var OhsSiteData;
                 this.tempSensors[id].x = parseInt(data['x_coordinate_ts' + id]);
                 this.tempSensors[id].y = parseInt(data['y_coordinate_ts' + id]);
                 this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);
+            }
+            // Switches                     
+            var numberSwitches = parseInt(data['number_switches']);
+            this.setNumberSwitches(numberSwitches);
+            //window.alert("Number switches:" + numberSwitches);
+            for (var id in this.switches) {
+                this.switches[id].setPath(data['switchPath_' + id]);
+                this.switches[id].x = parseInt(data['x_coordinate_sw' + id]);
+                this.switches[id].y = parseInt(data['y_coordinate_sw' + id]);
             }
             // Door                     
             var numberDoors = parseInt(data['number_doors']);
@@ -163,6 +174,8 @@ var OhsSiteData;
     var Switch = (function () {
         function Switch() {
             this.valid = false; //content of the forecast is valid       
+            this.x = 0;
+            this.y = 0;
         }
         Switch.prototype.setPath = function (path) {
             this.path = path;
