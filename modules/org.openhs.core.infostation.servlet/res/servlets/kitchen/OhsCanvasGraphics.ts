@@ -1,7 +1,14 @@
 
 /// <reference path="jquery.d.ts" />
+/// <reference path='OhsSiteData.ts'/>
 
 module OhsCanvasGraphics {
+    
+import SiteData = OhsSiteData.SiteData;
+import Floor = OhsSiteData.Floor;
+import TemperatureSensor = OhsSiteData.TemperatureSensor;    
+import Door = OhsSiteData.Door;
+import Switch = OhsSiteData.Switch;         
                 
     export class Rect {
                                        
@@ -155,8 +162,7 @@ module OhsCanvasGraphics {
             this.temp = temp;    
         }
     
-        public paint () {      
-    
+        public paint () {          
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
@@ -192,15 +198,17 @@ module OhsCanvasGraphics {
     
     export class SwitchMark extends Mark {
 
+        public switch: Switch = null;
+        
         private txt:  Text;
     
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;    
         private colorButton: string = "#666699";    
-        public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+       // public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
 
-        protected border:    boolean = false; //debug border
-    
+        protected border:    boolean = false; //debug border        
+            
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
 
@@ -211,7 +219,7 @@ module OhsCanvasGraphics {
             
             this.img = new Image();                                
             this.img.src = src;           
-        }      
+        }                              
         
         setSize (rect:  Rect) {        
             super.setSize(rect);    
@@ -219,24 +227,33 @@ module OhsCanvasGraphics {
          }
                     
         public paint () {      
+        
+            // Update this
+            this.rect.x = this.switch.x;
+            this.rect.y = this.switch.y;
+            this.rect.w = 80;
+            this.rect.h = 80;
+            
+            this.txt.setSize(this.rect);
+            
     
             var text: string = "---";    
             // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
         
             //logic of switch
-            if (this.state == 0) {
+            if (this.switch.getState() == 0) {
                 this.colorButton = "#808080"; 
                 text = "---";
-            } else if (this.state == 1) {
+            } else if (this.switch.getState() == 1) {
                 this.colorButton = "#3333ff";
                 text = "off";
-            } else if (this.state == 2) {
+            } else if (this.switch.getState() == 2) {
                 this.colorButton = "#33cc33";
                 text = "->on";
-            } else if (this.state == 3) {
+            } else if (this.switch.getState() == 3) {
                 this.colorButton = "#ffaa00";
                 text = "on";
-            } else if (this.state == 4) {
+            } else if (this.switch.getState() == 4) {
                 this.colorButton = "#9999ff";
                 text = "->off";
             } else {

@@ -115,6 +115,32 @@ public class Infostation implements IInfostation {
    		  return list;       
       }   
       
+      public int getSwitchIntState (String sitePath) throws SiteException {
+
+    	  	int stateInt = 0;
+    	  
+			List<Boolean> list = getSwitchState(sitePath);
+			
+			boolean state = list.get(0);
+			boolean stateDevice = list.get(1);
+			
+			if (stateDevice) { //device on
+				if (state) {
+					stateInt = 3; //request is on
+				} else {
+					stateInt = 4; //request is off
+				}
+			} else { //device off
+				if (state) { //request is on
+					stateInt = 2;
+				} else { // request is off
+					stateInt = 1;
+				}	    					
+			}	
+			
+   		  return stateInt;       
+      }       
+      
       public float getTempIn() {
     	  return this.m_meteo.getTempIn();
       }

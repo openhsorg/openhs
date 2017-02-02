@@ -22,7 +22,8 @@ import WeatherForecast = OhsWeatherData.WeatherForecast;
 import SiteData = OhsSiteData.SiteData;
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
-import Door = OhsSiteData.Door;               
+import Door = OhsSiteData.Door;
+import Switch = OhsSiteData.Switch;                   
     
 var forecastRect = {
     x:0,
@@ -98,8 +99,7 @@ private img:HTMLImageElement = null;
 
 private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();    
     
-    constructor() {
-                
+    constructor() {                
         this.img = new Image();
         this.img.src="/infores/servlets/kitchen/sunny.png";        
         this.images.push(this.img);
@@ -151,7 +151,7 @@ export class BasicScreen {
     
     private timerPaint;
     private timerData;
-    private timerSiteData;
+    private timerLoadGraphics;
     private timerWeatherData;                   
         
     private r:                   number;
@@ -166,7 +166,7 @@ export class BasicScreen {
     public windText:  Text;                
        
     public weatherData: WeatherDataForecast = new WeatherDataForecast(); // General weather
-    public siteData:    SiteData = new SiteData(); //general Site Data
+    public siteData:    SiteData = null; //general Site Data
     
     public weather: WeatherData = new WeatherData(); //current weather today    
     public forecastScreen: WeatherForecastScreen = null; //forecast screen      
@@ -175,7 +175,10 @@ export class BasicScreen {
     private room: Array<RoomScreen> = new Array<RoomScreen>();
     private floors: Array<FloorScreen> = new Array<FloorScreen>();
 
-    constructor (canvas: HTMLCanvasElement) {        
+    constructor (canvas: HTMLCanvasElement) {      
+    
+        this.siteData = new SiteData ();
+        
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.width = canvas.width;
@@ -209,7 +212,7 @@ export class BasicScreen {
         this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room2.png"));
         this.room.push(new RoomScreen (canvas, "/infores/servlets/kitchen/room3.png"));
         
-        this.timerGetSiteDataEvent(5000);
+        this.timerLoadGraphicsEvent(2000);
         this.timerGetWeatherDataEvent(5000);
         this.timerGetDataEvent(5000);
         this.timerPaintEvent(5000);
@@ -219,10 +222,10 @@ export class BasicScreen {
         this.canvas.addEventListener('click',function(event){self.MouseClickHandler(event);}, false);    
     }  
     
-    private timerGetSiteDataEvent(step : number) {
-       this.getSiteData('kitchen');
-       window.clearTimeout(this.timerSiteData);
-       this.timerSiteData = window.setTimeout(() => this.timerGetSiteDataEvent(step), step); 
+    private timerLoadGraphicsEvent(step : number) {
+       this.loadGraphics();
+       window.clearTimeout(this.timerLoadGraphics);
+       this.timerLoadGraphics = window.setTimeout(() => this.timerLoadGraphicsEvent(step), step); 
     } 
     
     private timerGetWeatherDataEvent(step : number) {
@@ -258,8 +261,9 @@ export class BasicScreen {
                                                                 
               } else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
                 appMode = Application.Floor;                                
-                this.timerPaintEvent(100);   
-                this.timerGetDataEvent(100);                                  
+                this.timerPaintEvent(50);   
+               // this.timerGetDataEvent(50);   
+                                               
             } else if (isInside(mousePos, forecastRect)) {
                 appMode = Application.WeatherForecast;    
             }                       
@@ -277,7 +281,9 @@ export class BasicScreen {
             }        
             
          } else if (appMode == Application.Floor && this.floors.length > 0) {     
-           
+        
+            this.floors[0].MouseClickHandler(mousePos.x, mousePos.y);
+           /*
             var room = this.floors[0].clickedTempMark(mousePos.x, mousePos.y);
             var light = this.floors[0].clickedSwitchMark(mousePos.x, mousePos.y);
             
@@ -297,7 +303,7 @@ export class BasicScreen {
                     this.timerPaintEvent(5000);   
                     this.timerGetDataEvent(5000);                  
                 }        
-            
+            */
          } else if (appMode == Application.Room) {     
             appMode = Application.Floor;        
          } else if (appMode == Application.WeatherForecast) {     
@@ -308,12 +314,9 @@ export class BasicScreen {
     }    
     
     private getSiteData(url: string) {    
-        var data = getAjax(url, "SiteData");
-        
-        if (data != null) {
-            this.siteData.setSiteData(data);
-        }   
-        
+
+      //  this.siteData.setSiteData();
+         
         //Load site data...
         this.loadGraphics ();
     }   
@@ -343,10 +346,7 @@ export class BasicScreen {
                     this.weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
                     this.weather.windSpeed = parseFloat(data['windSpeed']);
                     //this.numberFloors = parseInt(data['number_floors']); 
-            }
-        
-        //Other objects...  
-        if (this.floors.length > 0)   this.floors[0].getData(url);                 
+            }          
     }    
     
     private postData (url: string) {
@@ -401,7 +401,7 @@ export class BasicScreen {
             this.paintBasic();        
         } else if (appMode == Application.Floor) {   
             if (this.floors.length > 0) {
-                this.floors[0].paint(this.weather);
+                this.floors[0].paint();
             }       
         } else if (appMode == Application.Room) {        
               this.room[roomNum].paint(this.weather);              
@@ -962,8 +962,6 @@ class FloorScreen {
     private switchMarks: Array<SwitchMark> = new Array<SwitchMark>();
     private doorMarks: Array<DoorMark> = new Array<DoorMark>();
     
-    private SwitchMarks: Array<SwitchMark> = new Array<SwitchMark>();
-    
     private imgFloor:HTMLImageElement = null;
     
     private imgFloorLoaded: boolean = false;
@@ -972,8 +970,7 @@ class FloorScreen {
     
     private txtNumRooms:  Text;
     
-    constructor (canvas: HTMLCanvasElement, siteData:  SiteData) {
-        
+    constructor (canvas: HTMLCanvasElement, siteData:  SiteData) {        
         this.ctx = canvas.getContext("2d");
         this.siteData = siteData;
         
@@ -982,20 +979,28 @@ class FloorScreen {
         
         this.imgFloor = new Image();
         this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";            
-        
-   //     this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
-   //     this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
-        
-        this.SwitchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/BulbSymbol.png"));    
-        
+     
         this.txtNumRooms = new Text (this.ctx, new Rect (0, 0, 250, 100));
         this.txtNumRooms.textAlign = "left";
         this.txtNumRooms.textBaseline = "middle";
-        this.txtNumRooms.fontSize = 40;
+        this.txtNumRooms.fontSize = 40;                
+    }  
+
+    MouseClickHandler(x: number, y: number) {
                 
-    }     
+        //let room: number = this.clickedTempMark(x, y);
+        var switchData: Switch = this.clickedSwitchMark(x, y);
+        
+        if (switchData != null) {
+            switchData.postServerClick();
+            switchData.getServerData();
+            this.paint();
+        } else {
+            appMode = Application.None;
+        }       
+    }    
     
-    public paint(weatherToday : WeatherData) {
+    public paint() {
         const ctx = this.ctx;
         
         //Draw image...
@@ -1009,6 +1014,11 @@ class FloorScreen {
         for (let id in this.tempMarks) {
             this.tempMarks[id].paint();            
         }
+        
+        // Switches...
+        for (let id in this.switchMarks) {
+            this.switchMarks[id].paint();            
+        }        
         
         // Doors
         for (let id in this.doorMarks) {
@@ -1025,8 +1035,10 @@ class FloorScreen {
         this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");    
         */
         //Inner switch
+        /*
         this.SwitchMarks[0].setSize(new Rect (220, 150, 80, 80));
-        this.SwitchMarks[0].paint();          
+        this.SwitchMarks[0].paint();  
+        */        
         
          //Number rooms
         this.txtNumRooms.rect.x = this.width - 10;
@@ -1055,45 +1067,19 @@ class FloorScreen {
                 
         return cId;
     }    
-    
-    public clickedSwitchMark (clx:number, cly:number) {
+
+    public clickedSwitchMark (clx:number, cly:number) {        
         
-        let cId: number = -1;
-        let n:   number = -1;
-        
-        for (let id in this.SwitchMarks) {
-             
-            n++;
-            
-            if (this.SwitchMarks[id].isClicked(clx, cly)) {
-                cId = n;
+        for (let id in this.switchMarks) {
+
+            if (this.switchMarks[id].isClicked(clx, cly)) {
+                return this.switchMarks[id].switch;
              }
         }        
                 
-        return cId;
-    }     
-    
-    public getData(url: string) {   
-     
-        var id: string = "floor1";
-        
-        //window.alert("floor clicked !!");
-        
-        var data = getAjax(url, id);
-                
-        if (data != null) {
-            this.numRooms = parseFloat(data['nRooms']);
-            }   
-        
-        var id2: string = "switch1";        
-        var data2 = getAjax(url, id2);
-                
-        if (data2 != null) {
-            this.SwitchMarks[0].state = parseFloat(data2['switchState']);                                 
-            
-            } 
-    }      
-    
+        return null;
+    }    
+           
     
     public loadGraphics () {
         
@@ -1111,6 +1097,21 @@ class FloorScreen {
             this.tempMarks[id].setSize(new Rect (this.siteData.tempSensors[id].x, this.siteData.tempSensors[id].y, 80, 80));
             this.tempMarks[id].setTemp(this.siteData.tempSensors[id].temp);                        
         }
+        
+        // Switches
+        if (this.switchMarks.length > this.siteData.switches.length) {
+            this.switchMarks.length = this.siteData.switches.length;
+            
+        } else if (this.switchMarks.length < this.siteData.switches.length) {
+            for (var i = this.switchMarks.length; i < this.siteData.switches.length; i++) {
+                this.switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/BulbSymbol.png"));                
+            }
+        }            
+
+        for (let id in this.siteData.switches) {
+            this.switchMarks[id].switch = this.siteData.switches[id];
+        }          
+        
         
         // Doors
         if (this.doorMarks.length > this.siteData.doors.length) {

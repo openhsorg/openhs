@@ -1,5 +1,23 @@
 var OhsSiteData;
 (function (OhsSiteData) {
+    function getAjax(urlAdr, dataIn) {
+        var result = null;
+        $.ajaxSetup({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+        $.ajax({ async: false, url: urlAdr, data: dataIn, dataType: "json", success: function (data) {
+                result = data;
+            } });
+        return result;
+    }
+    function postAjax(urlAdr, json) {
+        var result = null;
+        $.ajax({ async: false, type: "POST", url: urlAdr, data: json, dataType: "json", success: function (response) {
+                result = response;
+            } });
+        return result;
+    }
     var SiteData = (function () {
         function SiteData() {
             this.floors = new Array();
@@ -7,7 +25,26 @@ var OhsSiteData;
             this.tempSensors = new Array();
             this.switches = new Array();
             this.doors = new Array();
+            this.slowTimerGetDataEvent(5000);
+            this.fastTimerGetDataEvent(100);
         }
+        SiteData.prototype.fastTimerGetDataEvent = function (step) {
+            var _this = this;
+            for (var id in this.switches) {
+                this.switches[id].getServerData();
+            }
+            for (var id in this.tempSensors) {
+                this.tempSensors[id].getServerData();
+            }
+            window.clearTimeout(this.fastTimerGetData);
+            this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
+        };
+        SiteData.prototype.slowTimerGetDataEvent = function (step) {
+            var _this = this;
+            this.getServerData();
+            window.clearTimeout(this.slowTimerGetData);
+            this.slowTimerGetData = window.setTimeout(function () { return _this.slowTimerGetDataEvent(step); }, step);
+        };
         SiteData.prototype.getNumberFloors = function () {
             return this.floors.length;
         };
@@ -85,54 +122,54 @@ var OhsSiteData;
             }
             return this.switches[num - 1];
         };
-        SiteData.prototype.setSiteData = function (data) {
-            // Floors
-            var numberFloors = parseInt(data['number_floors']);
-            //window.alert("Number floors:" + numberFloors );                        
-            this.setNumberFloors(numberFloors);
-            for (var i = 1; i <= numberFloors; i++) {
-                var floorPath = data['floorPath_' + i];
-                this.floors[i - 1].setPath(floorPath);
-            }
-            // Rooms            
-            var numberRooms = parseInt(data['number_rooms']);
-            this.setNumberRooms(numberRooms);
-            //window.alert("Number rooms:" + numberRooms);
-            for (var i = 1; i <= numberRooms; i++) {
-                var roomPath = data['roomPath_' + i];
-                this.rooms[i - 1].setPath(roomPath);
-            }
-            // TempSensors                     
-            var numberTempSensors = parseInt(data['number_tempsensors']);
-            this.setNumberTempSensors(numberTempSensors);
-            //window.alert("Number temp sensors:" + numberTempSensors);
-            for (var id in this.tempSensors) {
-                var tempSensorPath = data['tempSensorPath_' + id];
-                this.tempSensors[id].setPath(tempSensorPath);
-                this.tempSensors[id].x = parseInt(data['x_coordinate_ts' + id]);
-                this.tempSensors[id].y = parseInt(data['y_coordinate_ts' + id]);
-                this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);
-            }
-            // Switches                     
-            var numberSwitches = parseInt(data['number_switches']);
-            this.setNumberSwitches(numberSwitches);
-            //window.alert("Number switches:" + numberSwitches);
-            for (var id in this.switches) {
-                this.switches[id].setPath(data['switchPath_' + id]);
-                this.switches[id].x = parseInt(data['x_coordinate_sw' + id]);
-                this.switches[id].y = parseInt(data['y_coordinate_sw' + id]);
-            }
-            // Door                     
-            var numberDoors = parseInt(data['number_doors']);
-            this.setNumberDoors(numberDoors);
-            //  window.alert("Number doors:" + this.getNumberDoors());            
-            for (var id in this.doors) {
-                var doorPath = data['doorPath_' + id];
-                this.doors[id].setPath(doorPath);
-                this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
-                this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
-                this.doors[id].open = JSON.parse(data['open_door_' + id]);
-                this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
+        SiteData.prototype.getServerData = function () {
+            var req = {
+                orderId: "SiteData"
+            };
+            var data = getAjax("kitchen", req);
+            this.setSiteData2(data);
+        };
+        SiteData.prototype.setSiteData2 = function (data) {
+            // var data: string = this.getData("kitchen", "SiteData"); 
+            if (data != null) {
+                // Floors
+                var numberFloors = parseInt(data['number_floors']);
+                //window.alert("Number floors:" + numberFloors );                        
+                this.setNumberFloors(numberFloors);
+                for (var i = 1; i <= numberFloors; i++) {
+                    var floorPath = data['floorPath_' + i];
+                    this.floors[i - 1].setPath(floorPath);
+                }
+                // Rooms            
+                var numberRooms = parseInt(data['number_rooms']);
+                this.setNumberRooms(numberRooms);
+                //window.alert("Number rooms:" + numberRooms);
+                for (var i = 1; i <= numberRooms; i++) {
+                    var roomPath = data['roomPath_' + i];
+                    this.rooms[i - 1].setPath(roomPath);
+                }
+                // TempSensors                              
+                this.setNumberTempSensors(parseInt(data['number_tempsensors']));
+                for (var id in this.tempSensors) {
+                    this.tempSensors[id].setPath(data['tempSensorPath_' + id]);
+                }
+                // Switches                     
+                this.setNumberSwitches(parseInt(data['number_switches']));
+                for (var id in this.switches) {
+                    this.switches[id].setPath(data['switchPath_' + id]);
+                }
+                // Door                     
+                var numberDoors = parseInt(data['number_doors']);
+                this.setNumberDoors(numberDoors);
+                //  window.alert("Number doors:" + this.getNumberDoors());            
+                for (var id in this.doors) {
+                    var doorPath = data['doorPath_' + id];
+                    this.doors[id].setPath(doorPath);
+                    this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
+                    this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
+                    this.doors[id].open = JSON.parse(data['open_door_' + id]);
+                    this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
+                }
             }
         };
         return SiteData;
@@ -160,13 +197,29 @@ var OhsSiteData;
     OhsSiteData.Room = Room;
     var TemperatureSensor = (function () {
         function TemperatureSensor() {
-            this.valid = false; //content of the forecast is valid      
+            this.valid = false; //content of the forecast is valid              
             this.x = 0;
             this.y = 0;
             this.temp = 0.0;
         }
+        TemperatureSensor.prototype.getPath = function () {
+            return this.path;
+        };
         TemperatureSensor.prototype.setPath = function (path) {
             this.path = path;
+        };
+        TemperatureSensor.prototype.getServerData = function () {
+            var req = {
+                orderId: "TempSensor",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.x = parseInt(data['x_coordinate']);
+                this.y = parseInt(data['y_coordinate']);
+                this.temp = parseFloat(data['temp']);
+                this.valid = true;
+            }
         };
         return TemperatureSensor;
     }());
@@ -176,9 +229,39 @@ var OhsSiteData;
             this.valid = false; //content of the forecast is valid       
             this.x = 0;
             this.y = 0;
+            this.stateInt = 0;
         }
+        Switch.prototype.isValid = function () {
+            return this.valid;
+        };
         Switch.prototype.setPath = function (path) {
             this.path = path;
+        };
+        Switch.prototype.getPath = function () {
+            return this.path;
+        };
+        Switch.prototype.getState = function () {
+            return this.stateInt;
+        };
+        Switch.prototype.postServerClick = function () {
+            var req = {
+                postId: "SwitchS",
+                path: this.path
+            };
+            postAjax("kitchen", req);
+        };
+        Switch.prototype.getServerData = function () {
+            var req = {
+                orderId: "SwitchS",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.stateInt = parseInt(data['state_sw']);
+                this.x = parseInt(data['x_coordinate']);
+                this.y = parseInt(data['y_coordinate']);
+                this.valid = true;
+            }
         };
         return Switch;
     }());

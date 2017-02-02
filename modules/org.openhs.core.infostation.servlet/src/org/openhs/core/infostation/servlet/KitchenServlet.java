@@ -45,7 +45,7 @@ public class KitchenServlet extends HttpServlet {
 		 	String value = request.getParameter("orderId");
 	        
 	    	if (value != null) {
-	    		//System.out.println("Value:=" + value.toString());
+	    	//	System.out.println("Value:=" + value.toString());
 	    		
 	    		if (value.toString().equals("InfoData")) {	    		
 	    			/*
@@ -69,6 +69,9 @@ public class KitchenServlet extends HttpServlet {
 	    			/*
 	    			 * Get site data.
 	    			 */
+	    			
+	    			//System.out.println("\n\n\n\n ------> SiteData  <-----------------: ");
+	    			
 	    			JSONObject json = getSiteDataToJSON();
 	    			
 	    			response.setContentType("application/json");
@@ -130,7 +133,8 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
-	    			out.close();	    			
+	    			out.close();	  
+	    			
 	    		} else if (value.toString().equals("switch1")) {		    		
 	    			/*
 	    			 * Get data from core module.
@@ -139,24 +143,7 @@ public class KitchenServlet extends HttpServlet {
 	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
 	    			
 	    			try {
-	    				List<Boolean> list = m_infostation.getSwitchState("floors/Floor1/rooms/Room0/sensors/Kitchen_light");
-	    				
-	    				boolean state = list.get(0);
-	    				boolean stateDevice = list.get(1);
-	    				
-	    				if (stateDevice) { //device on
-	    					if (state) {
-	    						stateInt = 3; //request is on
-	    					} else {
-	    						stateInt = 4; //request is off
-	    					}
-	    				} else { //device off
-	    					if (state) { //request is on
-	    						stateInt = 2;
-	    					} else { // request is off
-	    						stateInt = 1;
-	    					}	    					
-	    				}	    					    				
+	    				stateInt = m_infostation.getSwitchIntState("floors/Floor1/rooms/Room0/sensors/Kitchen_light");	    					    					    				
 	    			} catch (Exception ex) {
 	    				
 	    			}
@@ -174,22 +161,118 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
-	    			out.close();	    			
-		    	}		 	    		
-	    	} else {
-	    		
-	    		//System.out.println("Value:= null");	    	
-		 
-	    		response.setContentType("text/html");
-		    	response.setCharacterEncoding("UTF-8");
-		    	response.setHeader("cache-control", "no-cache");		    	
+	    			out.close();	
+	    			
+		    	} else if (value.toString().contains("DataSwitch_")) {
+		    		
+		    		String path = value.toString();		   
+		    		String del = "DataSwitch_";
+		    		
+		    		String path2 = path.replace(del, "");
+		    		
+		    			
+	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+	    			
+	    			try {
+	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
+	    			} catch (Exception ex) {
+	    				
+	    			}
+	    			
+	    			System.out.println("\n\n\n\n    switch  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			JSONObject json = new JSONObject();
+	    			json.put("state_sw", new Integer(stateInt));
+	    				    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
 
-	    		PrintWriter out = response.getWriter();
-	        
-	    		print_html (out);
-	    	        
-	    		out.close();	         
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();			    				    		
+		    		
+		    	} else if (value.toString().equals("SwitchS")) {
+		    		
+//		    		System.out.println("\n\n\n\n    SwitchS  ");
+	    			
+		    		String path2 = request.getParameter("path").toString();
+		    			
+	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+	    			
+	    			try {
+	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
+	    			} catch (Exception ex) {
+	    				
+	    			}
+	    			
+	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			JSONObject json = new JSONObject();
+	    			json.put("state_sw", new Integer(stateInt));
+					json.put("x_coordinate", String.format("%d", 200));
+					json.put("y_coordinate", String.format("%d", 200));		    			
+	    				    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	
+	    			
+		    	} else if (value.toString().equals("TempSensor")) {
+		    			    			
+		    		String path = request.getParameter("path").toString();
+	    			
+	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			JSONObject json = new JSONObject();
+					
+					
+					if (path.contains("WC")) {
+						
+						json.put("temp", String.format("%.2f", m_infostation.getTempIn()));
+						json.put("x_coordinate", String.format("300"));
+						json.put("y_coordinate", String.format("150"));								
+						
+					} else {
+					
+						json.put("temp", String.format("%.2f", m_infostation.getTempOut()));
+						json.put("x_coordinate", String.format("300"));
+						json.put("y_coordinate", String.format("300"));		
+					}
+	    				    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();			    				    		
+		    	}
+	    		
+	    	} else {
+    		
+    		//System.out.println("Value:= null");	    	
+	 
+    		response.setContentType("text/html");
+	    	response.setCharacterEncoding("UTF-8");
+	    	response.setHeader("cache-control", "no-cache");		    	
+
+    		PrintWriter out = response.getWriter();
+        
+    		print_html (out);
+    	        
+    		out.close();	         
 	    	}
+	    	
 	    }
 
 	    @Override
@@ -213,6 +296,9 @@ public class KitchenServlet extends HttpServlet {
 		 				
 		 			}
 		 			
+		 		} else if (value.toString().equals("SwitchS")) {		 			
+		 			String path = request.getParameter("path").toString();				 			
+		 			m_infostation.setSwitch(path);		 			
 		 		}
 		 		
 		 		/*
@@ -311,6 +397,7 @@ public class KitchenServlet extends HttpServlet {
 	    
 	    protected JSONObject getSiteDataToJSON() {
 	    	  		    		    	
+	    	
 			JSONObject json = new JSONObject();			
 			
 			// Floors
@@ -351,42 +438,19 @@ public class KitchenServlet extends HttpServlet {
 			try {
 				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
 				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
-				
-				
-				
+
 				int i = 0;
-				for (String item: tempSensorsPaths) {
-													
+				for (String item: tempSensorsPaths) {													
 					json.put("tempSensorPath_" + i, item);
-					//json.put("x_coordinate_ts", String.format("500"));
-				//	json.put("y_coordinate_ts", String.format("200"));		
-					
-					if (i == 0) {
-						json.put("temp_ts" + i, String.format("%.2f", m_infostation.getTempOut()));
-						json.put("x_coordinate_ts" + i, String.format("300"));
-						json.put("y_coordinate_ts" + i, String.format("300"));	
-					} else if (i == 1) {
-						json.put("temp_ts" + i, String.format("%.2f", m_infostation.getTempIn()));
-						json.put("x_coordinate_ts" + i, String.format("300"));
-						json.put("y_coordinate_ts" + i, String.format("150"));							
-						//json.put("x_coordinate", String.format("%d", 300 + 160));
-					} else {
-						json.put("temp_ts" + i, "NaN");	
-						json.put("x_coordinate_ts" + i, String.format("100"));
-						json.put("y_coordinate_ts" + i, String.format("150"));	
-					}
-					
+
 					i ++;
-					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
-					
-				}
-				
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);					
+				}				
 			} catch (SiteException e) {
 				json.put("number_tempsensors", String.format("0"));								
 				e.printStackTrace();
 			}		
-			
-			
+						
 			// Switch			
 			try {
 				Set<String> switchPaths = this.m_infostation.getSwitchPaths();						
@@ -396,31 +460,7 @@ public class KitchenServlet extends HttpServlet {
 				for (String item: switchPaths) {
 													
 					json.put("switchPath_" + i, item);
-					json.put("x_coordinate_sw" + i, String.format("250" + (i * 50)));
-					json.put("y_coordinate_sw" + i, String.format("200"));		
 
-    				List<Boolean> list = m_infostation.getSwitchState(item);
-    				
-    				int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off
-    				boolean state = list.get(0);
-    				boolean stateDevice = list.get(1);
-    				
-    				if (stateDevice) { //device on
-    					if (state) {
-    						stateInt = 3; //request is on
-    					} else {
-    						stateInt = 4; //request is off
-    					}
-    				} else { //device off
-    					if (state) { //request is on
-    						stateInt = 2;
-    					} else { // request is off
-    						stateInt = 1;
-    					}	    					
-    				}						
-					
-    				json.put("state_sw" + i, new Integer(stateInt));		
-    				
 					i ++;
 					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
 					

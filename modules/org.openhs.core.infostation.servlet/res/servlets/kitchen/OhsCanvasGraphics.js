@@ -1,4 +1,5 @@
 /// <reference path="jquery.d.ts" />
+/// <reference path='OhsSiteData.ts'/>
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -167,10 +168,11 @@ var OhsCanvasGraphics;
         __extends(SwitchMark, _super);
         function SwitchMark(ctx, rect, src) {
             _super.call(this, ctx, rect);
+            this.switch = null;
             this.img = null;
             this.colorButton = "#666699";
-            this.state = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-            this.border = false; //debug border
+            // public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
+            this.border = false; //debug border        
             this.txt = new Text(ctx, rect);
             this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
@@ -183,26 +185,32 @@ var OhsCanvasGraphics;
             this.txt.setSize(rect);
         };
         SwitchMark.prototype.paint = function () {
+            // Update this
+            this.rect.x = this.switch.x;
+            this.rect.y = this.switch.y;
+            this.rect.w = 80;
+            this.rect.h = 80;
+            this.txt.setSize(this.rect);
             var text = "---";
             // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
             //logic of switch
-            if (this.state == 0) {
+            if (this.switch.getState() == 0) {
                 this.colorButton = "#808080";
                 text = "---";
             }
-            else if (this.state == 1) {
+            else if (this.switch.getState() == 1) {
                 this.colorButton = "#3333ff";
                 text = "off";
             }
-            else if (this.state == 2) {
+            else if (this.switch.getState() == 2) {
                 this.colorButton = "#33cc33";
                 text = "->on";
             }
-            else if (this.state == 3) {
+            else if (this.switch.getState() == 3) {
                 this.colorButton = "#ffaa00";
                 text = "on";
             }
-            else if (this.state == 4) {
+            else if (this.switch.getState() == 4) {
                 this.colorButton = "#9999ff";
                 text = "->off";
             }

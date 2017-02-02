@@ -1,13 +1,49 @@
 
 
 module OhsSiteData {
+ 
+    function getAjax(urlAdr: string, dataIn: string) {
+       
+        var result = null;
+    
+        $.ajaxSetup ({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+            
+        $.ajax({async: false, url: urlAdr, data: dataIn, dataType: "json", success: function(data) {
+        
+            result = data;
+                                      
+        }});
+    
+        return result;    
+    }     
+    
+    
+    function postAjax(urlAdr: string, json: string) {
+       
+        var result = null;
+            
+        $.ajax({async: false, type: "POST", url: urlAdr, data: json, dataType: "json", success: function(response) {
+        
+            result = response;
+                                      
+        }});
+    
+        return result;    
+    }      
+    
     
     export class SiteData {
                        
+        private fastTimerGetData;
+        private slowTimerGetData;
+        
         private floors: Array <Floor>;
         private rooms: Array <Room>;
         public tempSensors: Array <TemperatureSensor>;
-        private switches: Array <Switch>;
+        public switches: Array <Switch>;
         public doors: Array <Door>;
         
         constructor () {            
@@ -16,7 +52,32 @@ module OhsSiteData {
             this.tempSensors = new Array<TemperatureSensor>(); 
             this.switches = new Array<Switch>();
             this.doors = new Array<Door>();    
+                        
+            this.slowTimerGetDataEvent(5000);            
+            this.fastTimerGetDataEvent(100);
         }
+        
+        private fastTimerGetDataEvent(step : number) {
+            
+            for (let id in this.switches) {
+                this.switches[id].getServerData();
+            }
+            
+            for (let id in this.tempSensors) {
+                this.tempSensors[id].getServerData();
+            }            
+                      
+           window.clearTimeout(this.fastTimerGetData);
+           this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
+        }           
+        
+        private slowTimerGetDataEvent(step : number) {
+                                  
+           this.getServerData();
+             
+           window.clearTimeout(this.slowTimerGetData);
+           this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
+        }         
         
         public getNumberFloors () {
             return this.floors.length;
@@ -100,77 +161,111 @@ module OhsSiteData {
                 return null;
             }
             return this.switches[num - 1];
-        }         
+        }   
         
-        public setSiteData (data: string){
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "SiteData"
+//                path:   this.path                
+            } 
             
-            // Floors
-            var numberFloors = parseInt(data['number_floors']);
+            var data: string = getAjax("kitchen", req); 
             
-            //window.alert("Number floors:" + numberFloors );                        
-            this.setNumberFloors (numberFloors);
-                                    
-            for (var i = 1; i <= numberFloors; i++) {
-                var floorPath: string = data['floorPath_' + i];
+            this.setSiteData2(data);           
+        }        
+        
+        public setSiteData2 (data:  string){
+            
+           // var data: string = this.getData("kitchen", "SiteData"); 
+            
+            if (data != null) {
+            
+                // Floors
+                var numberFloors = parseInt(data['number_floors']);
                 
-                this.floors[i - 1].setPath(floorPath);
-            }           
-            
-            // Rooms            
-            var numberRooms = parseInt(data['number_rooms']);
-            this.setNumberRooms (numberRooms);
-            //window.alert("Number rooms:" + numberRooms);
-            
-            for (var i = 1; i <= numberRooms; i++) {
-                var roomPath: string = data['roomPath_' + i];
+                //window.alert("Number floors:" + numberFloors );                        
+                this.setNumberFloors (numberFloors);
+                                        
+                for (var i = 1; i <= numberFloors; i++) {
+                    var floorPath: string = data['floorPath_' + i];
+                    
+                    this.floors[i - 1].setPath(floorPath);
+                }           
                 
-                this.rooms[i - 1].setPath(roomPath);
-            }             
-            
-            // TempSensors                     
-            var numberTempSensors = parseInt(data['number_tempsensors']);
-            this.setNumberTempSensors (numberTempSensors);
-            //window.alert("Number temp sensors:" + numberTempSensors);
-            
-            for (let id in this.tempSensors) {
-                var tempSensorPath: string = data['tempSensorPath_' + id];                
-                this.tempSensors[id].setPath(tempSensorPath);
-                this.tempSensors[id].x = parseInt(data['x_coordinate_ts' + id]);
-                this.tempSensors[id].y = parseInt(data['y_coordinate_ts' + id]);
-                this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);      
+                // Rooms            
+                var numberRooms = parseInt(data['number_rooms']);
+                this.setNumberRooms (numberRooms);
+                //window.alert("Number rooms:" + numberRooms);
                 
-               // window.alert("\n--->ID:" + id + " Path: " + tempSensorPath + " X: " + parseInt(data['x_coordinate']) + "Y: " + this.tempSensors[id].y);
-            }     
-            
-            // Switches                     
-            var numberSwitches = parseInt(data['number_switches']);
-            this.setNumberSwitches (numberSwitches);
-            //window.alert("Number switches:" + numberSwitches);
-            
-            for (let id in this.switches) {         
-                this.switches[id].setPath(data['switchPath_' + id]);
-                this.switches[id].x = parseInt(data['x_coordinate_sw' + id]);
-                this.switches[id].y = parseInt(data['y_coordinate_sw' + id]);
-               // this.tempSensors[id].temp = parseFloat(data['temp_ts' + id]);      
+                for (var i = 1; i <= numberRooms; i++) {
+                    var roomPath: string = data['roomPath_' + i];
+                    
+                    this.rooms[i - 1].setPath(roomPath);
+                }             
                 
-               // window.alert("\n--->ID:" + id + " Path: " + tempSensorPath + " X: " + parseInt(data['x_coordinate']) + "Y: " + this.tempSensors[id].y);
-            }              
-            
-            // Door                     
-            var numberDoors = parseInt(data['number_doors']);
-            this.setNumberDoors (numberDoors);
-            
-          //  window.alert("Number doors:" + this.getNumberDoors());            
-                        
-            for (let id in this.doors) {
-                var doorPath: string = data['doorPath_' + id];                
-                this.doors[id].setPath(doorPath);
-                this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
-                this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
-                this.doors[id].open = JSON.parse(data['open_door_' + id]);
-                this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
-            }                         
+                // TempSensors                              
+                this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+                
+                for (let id in this.tempSensors) {                                
+                    this.tempSensors[id].setPath(data['tempSensorPath_' + id]);                   
+                }     
+                
+                // Switches                     
+                this.setNumberSwitches (parseInt(data['number_switches']));
+                
+                for (let id in this.switches) {                      
+                    this.switches[id].setPath(data['switchPath_' + id]);
+                }              
+                
+                // Door                     
+                var numberDoors = parseInt(data['number_doors']);
+                this.setNumberDoors (numberDoors);
+                
+              //  window.alert("Number doors:" + this.getNumberDoors());            
+                            
+                for (let id in this.doors) {
+                    var doorPath: string = data['doorPath_' + id];                
+                    this.doors[id].setPath(doorPath);
+                    this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
+                    this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
+                    this.doors[id].open = JSON.parse(data['open_door_' + id]);
+                    this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
+                }   
+                
+            }
         }
+        /*
+        public setSwitch (path: string){            
+            for (let id in this.switches) {                
+                if (this.switches[id].path.toString() == path) {
+                    
+                    this.switches[id].getServerData();
+                      
+                }                   
+            }    
+        }
+        */
+        /*
+        public postSwitch (path: string){            
+            for (let id in this.switches) {                
+                if (this.switches[id].path.toString() == path) {
+    
+                    //postAjax('kitchen', "switchClicked", "switch1");
+                    this.switches[id].userClick();                     
+                }                   
+            }    
+        }        
+        
+        private getData(url: string, id: string) {    
+            var data = getAjax(url, id);
+            
+            if (data != null) {
+                return data;
+            }
+            return null;   
+        }   
+        */      
     }
         
     export class Floor {
@@ -197,12 +292,10 @@ module OhsSiteData {
     
     export class TemperatureSensor {
     
-        public valid: boolean = false; //content of the forecast is valid      
+        protected valid: boolean = false; //content of the forecast is valid              
+        protected path:  string; //OpenHS path
         
-        public path:  string; //OpenHS path
-        
-        public temp:  number;
-        
+        public temp:  number;        
         public x:   number;
         public y:   number;      
         
@@ -212,16 +305,37 @@ module OhsSiteData {
             this.temp = 0.0;
         }        
         
+        public getPath () {
+            return this.path;
+        }   
+        
         public setPath (path: string) {
             this.path = path;
-        }                
+        }          
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "TempSensor",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.x = parseInt(data['x_coordinate']);
+                this.y = parseInt(data['y_coordinate']);
+                this.temp = parseFloat(data['temp']);  
+                this.valid = true;
+            }                            
+        }        
     } 
     
     export class Switch {
     
-        public valid: boolean = false; //content of the forecast is valid       
-        
-        public path:  string; //OpenHS path
+        protected      valid:  boolean = false; //content of the forecast is valid       
+        protected   stateInt:  number; //        
+        protected path:  string; //OpenHS path
         
         public x:   number;
         public y:   number;        
@@ -229,11 +343,52 @@ module OhsSiteData {
         constructor () {            
             this.x = 0;
             this.y = 0;
+            
+            this.stateInt = 0;
         }        
+        
+        public isValid() {
+            return this.valid;
+        }
         
         public setPath (path: string) {
             this.path = path;
+        }  
+        
+        public getPath () {
+            return this.path;
+        }         
+ 
+        public getState () {
+            return this.stateInt;
+        }
+        
+        public postServerClick () {            
+            var req: any = {
+                postId : "SwitchS",
+                path:   this.path                
+            }
+            
+            postAjax("kitchen", req);
         }                
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "SwitchS",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.stateInt = parseInt(data['state_sw']);
+                this.x = parseInt(data['x_coordinate']);
+                this.y = parseInt(data['y_coordinate']);
+                
+                this.valid = true;
+            }                            
+        }
     }   
     
     export class Door {
