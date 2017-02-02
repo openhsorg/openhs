@@ -1,3 +1,6 @@
+/**
+ * Module with data structure...
+ */
 var OhsSiteData;
 (function (OhsSiteData) {
     var SiteData = (function () {
@@ -112,10 +115,6 @@ var OhsSiteData;
                 orderId: "SiteData"
             };
             var data = getAjax("kitchen", req);
-            this.setSiteData2(data);
-        };
-        SiteData.prototype.setSiteData2 = function (data) {
-            // var data: string = this.getData("kitchen", "SiteData"); 
             if (data != null) {
                 // Floors                  
                 this.setNumberFloors(parseInt(data['number_floors']));

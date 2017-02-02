@@ -1,4 +1,6 @@
-
+/**
+ * Module with data structure...
+ */
 
 module OhsSiteData {
      
@@ -143,13 +145,6 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            this.setSiteData2(data);           
-        }        
-        
-        public setSiteData2 (data:  string){
-            
-           // var data: string = this.getData("kitchen", "SiteData"); 
-            
             if (data != null) {
             
                 // Floors                  
@@ -186,8 +181,8 @@ module OhsSiteData {
                 for (let id in this.doors) {           
                     this.doors[id].setPath(data['doorPath_' + id]);
                 }                   
-            }
-        }   
+            }      
+        }                        
     }
         
     export class Floor {
