@@ -198,15 +198,11 @@ import Switch = OhsSiteData.Switch;
     
     export class SwitchMark extends Mark {
 
-        public switch: Switch = null;
-        
-        private txt:  Text;
-    
+        public switch: Switch = null;        
+        private txt:  Text;   
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;    
         private colorButton: string = "#666699";    
-       // public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-
         protected border:    boolean = false; //debug border        
             
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
@@ -218,7 +214,7 @@ import Switch = OhsSiteData.Switch;
             this.txt.fontSize = 20;
             
             this.img = new Image();                                
-            this.img.src = src;           
+            this.img.src = src;                    
         }                              
         
         setSize (rect:  Rect) {        
@@ -230,16 +226,12 @@ import Switch = OhsSiteData.Switch;
         
             // Update this
             this.rect.x = this.switch.x;
-            this.rect.y = this.switch.y;
-            this.rect.w = 80;
-            this.rect.h = 80;
+            this.rect.y = this.switch.y;        
             
             this.txt.setSize(this.rect);
-            
-    
+                
             var text: string = "---";    
-            // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-        
+
             //logic of switch
             if (this.switch.getState() == 0) {
                 this.colorButton = "#808080"; 
@@ -271,7 +263,6 @@ import Switch = OhsSiteData.Switch;
             this.ctx.stroke();
             this.ctx.restore();      
                     
-          //  this.rect.x = this.rect.x + 30;
             this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
         

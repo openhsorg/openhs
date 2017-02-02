@@ -232,8 +232,7 @@ public class KitchenServlet extends HttpServlet {
 	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
 	    			
 	    			JSONObject json = new JSONObject();
-					
-					
+										
 					if (path.contains("WC")) {
 						
 						json.put("temp", String.format("%.2f", m_infostation.getTempIn()));
@@ -255,8 +254,43 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
-	    			out.close();			    				    		
-		    	}
+	    			out.close();		
+	    			
+		    	} else if (value.toString().equals("DoorD")) {
+		    		
+	    			String path = request.getParameter("path").toString();
+					
+					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+					
+					JSONObject json = new JSONObject();
+										
+					if (path.contains("doorsA")) {						
+						json.put("x_coordinate", String.format("%d", 100));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(true));
+						json.put("lock", new Boolean(false));												
+					} else if (path.contains("doorsB")) {
+						json.put("x_coordinate", String.format("%d", 200));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(false));
+						json.put("lock", new Boolean(false));	
+					} else {
+						json.put("x_coordinate", String.format("%d", 300));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(false));
+						json.put("lock", new Boolean(true));	
+					}
+						    			
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = response.getWriter();	    			
+					
+					out.println(json.toString());
+					    
+					out.flush();
+					out.close();			    				    		
+				}
 	    		
 	    	} else {
     		
@@ -489,8 +523,6 @@ public class KitchenServlet extends HttpServlet {
 			int i = 0;
 			for (String item: doorsPaths) {			
 				json.put("doorPath_" + i, item);
-				json.put("x_coordinate_door_" + i, String.format("%d", 100 + (i * 80)));
-				json.put("y_coordinate_door_" + i, String.format("%d", 50));
 				
 				i++;
 			}			

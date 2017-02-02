@@ -171,7 +171,6 @@ var OhsCanvasGraphics;
             this.switch = null;
             this.img = null;
             this.colorButton = "#666699";
-            // public state: number = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
             this.border = false; //debug border        
             this.txt = new Text(ctx, rect);
             this.txt.textAlign = "right";
@@ -188,11 +187,8 @@ var OhsCanvasGraphics;
             // Update this
             this.rect.x = this.switch.x;
             this.rect.y = this.switch.y;
-            this.rect.w = 80;
-            this.rect.h = 80;
             this.txt.setSize(this.rect);
             var text = "---";
-            // state=   0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
             //logic of switch
             if (this.switch.getState() == 0) {
                 this.colorButton = "#808080";
@@ -227,7 +223,6 @@ var OhsCanvasGraphics;
             this.ctx.strokeStyle = '#00cc69';
             this.ctx.stroke();
             this.ctx.restore();
-            //  this.rect.x = this.rect.x + 30;
             this.txt.rect.x = this.rect.x - 10;
             this.txt.paint(text);
             //Draw image...

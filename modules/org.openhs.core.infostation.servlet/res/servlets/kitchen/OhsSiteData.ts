@@ -1,40 +1,7 @@
 
 
 module OhsSiteData {
- 
-    function getAjax(urlAdr: string, dataIn: string) {
-       
-        var result = null;
-    
-        $.ajaxSetup ({
-            // Disable caching of AJAX responses
-            cache: false
-        });
-            
-        $.ajax({async: false, url: urlAdr, data: dataIn, dataType: "json", success: function(data) {
-        
-            result = data;
-                                      
-        }});
-    
-        return result;    
-    }     
-    
-    
-    function postAjax(urlAdr: string, json: string) {
-       
-        var result = null;
-            
-        $.ajax({async: false, type: "POST", url: urlAdr, data: json, dataType: "json", success: function(response) {
-        
-            result = response;
-                                      
-        }});
-    
-        return result;    
-    }      
-    
-    
+     
     export class SiteData {
                        
         private fastTimerGetData;
@@ -65,7 +32,11 @@ module OhsSiteData {
             
             for (let id in this.tempSensors) {
                 this.tempSensors[id].getServerData();
-            }            
+            }      
+            
+            for (let id in this.doors) {
+                this.doors[id].getServerData();
+            }             
                       
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
@@ -181,27 +152,18 @@ module OhsSiteData {
             
             if (data != null) {
             
-                // Floors
-                var numberFloors = parseInt(data['number_floors']);
-                
-                //window.alert("Number floors:" + numberFloors );                        
-                this.setNumberFloors (numberFloors);
+                // Floors                  
+                this.setNumberFloors (parseInt(data['number_floors']));
                                         
-                for (var i = 1; i <= numberFloors; i++) {
-                    var floorPath: string = data['floorPath_' + i];
-                    
-                    this.floors[i - 1].setPath(floorPath);
+                for (let id in this.floors) {                    
+                    this.floors[id].setPath(data['floorPath_' + id]);
                 }           
                 
                 // Rooms            
-                var numberRooms = parseInt(data['number_rooms']);
-                this.setNumberRooms (numberRooms);
-                //window.alert("Number rooms:" + numberRooms);
+                this.setNumberRooms (parseInt(data['number_rooms']));
                 
-                for (var i = 1; i <= numberRooms; i++) {
-                    var roomPath: string = data['roomPath_' + i];
-                    
-                    this.rooms[i - 1].setPath(roomPath);
+                for (let id in this.rooms) {                    
+                    this.rooms[id].setPath(data['roomPath_' + id]);
                 }             
                 
                 // TempSensors                              
@@ -219,53 +181,13 @@ module OhsSiteData {
                 }              
                 
                 // Door                     
-                var numberDoors = parseInt(data['number_doors']);
-                this.setNumberDoors (numberDoors);
-                
-              //  window.alert("Number doors:" + this.getNumberDoors());            
+                this.setNumberDoors (parseInt(data['number_doors']));
                             
-                for (let id in this.doors) {
-                    var doorPath: string = data['doorPath_' + id];                
-                    this.doors[id].setPath(doorPath);
-                    this.doors[id].x = parseInt(data['x_coordinate_door_' + id]);
-                    this.doors[id].y = parseInt(data['y_coordinate_door_' + id]);
-                    this.doors[id].open = JSON.parse(data['open_door_' + id]);
-                    this.doors[id].locked = JSON.parse(data['lock_door_' + id]);
-                }   
-                
-            }
-        }
-        /*
-        public setSwitch (path: string){            
-            for (let id in this.switches) {                
-                if (this.switches[id].path.toString() == path) {
-                    
-                    this.switches[id].getServerData();
-                      
+                for (let id in this.doors) {           
+                    this.doors[id].setPath(data['doorPath_' + id]);
                 }                   
-            }    
-        }
-        */
-        /*
-        public postSwitch (path: string){            
-            for (let id in this.switches) {                
-                if (this.switches[id].path.toString() == path) {
-    
-                    //postAjax('kitchen', "switchClicked", "switch1");
-                    this.switches[id].userClick();                     
-                }                   
-            }    
-        }        
-        
-        private getData(url: string, id: string) {    
-            var data = getAjax(url, id);
-            
-            if (data != null) {
-                return data;
             }
-            return null;   
         }   
-        */      
     }
         
     export class Floor {
@@ -422,6 +344,34 @@ module OhsSiteData {
             
             return 2;                                    
         }
+        
+        public postServerClick () {            
+            var req: any = {
+                postId : "DoorD",
+                path:   this.path                
+            }
+            
+            postAjax("kitchen", req);
+        }                
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "DoorD",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.x = parseInt(data['x_coordinate']);
+                this.y = parseInt(data['y_coordinate']);
+                this.open = JSON.parse(data['open']);
+                this.locked = JSON.parse(data['lock']);
+                
+                this.valid = true;
+            }                            
+        }        
     }    
     
     export class Window {
@@ -435,5 +385,39 @@ module OhsSiteData {
             this.path = path;
         }                
     }    
+    
+    
+    function getAjax(urlAdr: string, dataIn: string) {
+       
+        var result = null;
+    
+        $.ajaxSetup ({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+            
+        $.ajax({async: false, url: urlAdr, data: dataIn, dataType: "json", success: function(data) {
+        
+            result = data;
+                                      
+        }});
+    
+        return result;    
+    }     
+    
+    
+    function postAjax(urlAdr: string, json: string) {
+       
+        var result = null;
+            
+        $.ajax({async: false, type: "POST", url: urlAdr, data: json, dataType: "json", success: function(response) {
+        
+            result = response;
+                                      
+        }});
+    
+        return result;    
+    }      
+        
     
 }

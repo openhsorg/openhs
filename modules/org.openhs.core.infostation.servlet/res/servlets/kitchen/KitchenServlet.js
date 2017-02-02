@@ -750,20 +750,6 @@ var KitchenInfoStation;
             for (var id in this.doorMarks) {
                 this.doorMarks[id].paint();
             }
-            //Outside mark
-            /*
-            this.TempMarks[0].setSize(new Rect (250, 320, 80, 80));
-            this.TempMarks[0].paint(weatherToday.tempOut + " \u00B0C");
-                
-            //Inside mark
-            this.TempMarks[1].setSize(new Rect (300, 200, 80, 80));
-            this.TempMarks[1].paint(weatherToday.tempIn + " \u00B0C");
-            */
-            //Inner switch
-            /*
-            this.SwitchMarks[0].setSize(new Rect (220, 150, 80, 80));
-            this.SwitchMarks[0].paint();
-            */
             //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;
             this.txtNumRooms.rect.y = this.height - 10;
@@ -812,7 +798,7 @@ var KitchenInfoStation;
             }
             else if (this.switchMarks.length < this.siteData.switches.length) {
                 for (var i = this.switchMarks.length; i < this.siteData.switches.length; i++) {
-                    this.switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/BulbSymbol.png"));
+                    this.switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
                 }
             }
             for (var id in this.siteData.switches) {
