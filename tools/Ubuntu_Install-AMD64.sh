@@ -61,6 +61,10 @@ apt-get -f -y install vlc
 # unrar
 apt-get -f -y install unrar-free
 
+# rar
+sudo apt-get update
+sudo apt-get -f -y install rar unrar
+
 #Gthumb
 apt-get -f -y install gthumb
 copy_shortcut "gthumb.desktop"
@@ -93,10 +97,6 @@ add-apt-repository -y ppa:webupd8team/tor-browser
 apt-get -y update
 apt-get -y install tor-browser
 
-#Kate editor
-apt-get -y update
-apt-get -y install kate
-
 #Chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
@@ -127,9 +127,6 @@ apt-get -f -y install gparted
 add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 apt-get -y update
 apt-get -y install skype
-
-apt-get -y update
-apt-get install -y unrar
 
 #JDownloader
 wget http://installer.jdownloader.org/JD2SilentSetup_x64.sh
