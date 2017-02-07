@@ -371,15 +371,16 @@ import Switch = OhsSiteData.Switch;
     }    
     
     export class DoorMark extends Mark {
-
-       // private txt:  Text;
     
-        private imgOpen:HTMLImageElement = null;
+        private imgOpen:HTMLImageElement = new Image() ;
         private imgClose:HTMLImageElement = null;
         private imgLock:HTMLImageElement = null;
         
+                                            
+            //this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";            
+        
         private imgLoaded: boolean;// = false;    
-        private colorButton: string = "black";
+        private colorButton: string = "white";
         private colorBorder: string = "black";     
         
         protected state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
@@ -388,15 +389,9 @@ import Switch = OhsSiteData.Switch;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
             super(ctx, rect);
-/*
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            */
-            
-            this.imgOpen = new Image();                                
-            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";     
+
+          //  this.imgOpen = new Image();                                
+            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";               
             
             this.imgClose = new Image();                                
             this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 

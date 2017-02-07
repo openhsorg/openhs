@@ -36,6 +36,9 @@ var OhsSiteData;
         SiteData.prototype.getNumberFloors = function () {
             return this.floors.length;
         };
+        SiteData.prototype.getNumberRooms = function () {
+            return this.rooms.length;
+        };
         SiteData.prototype.getFloor = function (num) {
             if (num > this.floors.length || num < 1) {
                 return null;

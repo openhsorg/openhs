@@ -312,21 +312,14 @@ var OhsCanvasGraphics;
         __extends(DoorMark, _super);
         function DoorMark(ctx, rect) {
             _super.call(this, ctx, rect);
-            // private txt:  Text;
-            this.imgOpen = null;
+            this.imgOpen = new Image();
             this.imgClose = null;
             this.imgLock = null;
-            this.colorButton = "black";
+            this.colorButton = "white";
             this.colorBorder = "black";
             this.state = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
             this.border = false; //debug border
-            /*
-                        this.txt = new Text (ctx, rect);
-                        this.txt.textAlign = "right";
-                        this.txt.textBaseline = "middle";
-                        this.txt.fontSize = 20;
-                        */
-            this.imgOpen = new Image();
+            //  this.imgOpen = new Image();                                
             this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";
             this.imgClose = new Image();
             this.imgClose.src = "/infores/servlets/kitchen/door_close.png";

@@ -56,6 +56,10 @@ module OhsSiteData {
             return this.floors.length;
         }
         
+        public getNumberRooms () {
+            return this.rooms.length;
+        }        
+        
         public getFloor (num:  number){
             if (num > this.floors.length || num < 1) {
                 return null;
