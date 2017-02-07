@@ -50,20 +50,6 @@ var KitchenInfoStation;
     //Meteorological data    
     var timeString = "";
     var dateString = "";
-    //Wind image    
-    var imgWind = new Image();
-    imgWind.src = '/infores/servlets/kitchen/wind.png';
-    var imgWindLoaded = false;
-    imgWind.onload = function () {
-        imgWindLoaded = true;
-    };
-    //Hum image    
-    var imgHum = new Image();
-    imgHum.src = '/infores/servlets/kitchen/drop.png';
-    var imgHumLoaded = false;
-    imgHum.onload = function () {
-        imgHumLoaded = true;
-    };
     //Fingerprint image    
     var imgFingerprint = new Image();
     imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png';
@@ -71,6 +57,12 @@ var KitchenInfoStation;
     imgFingerprint.onload = function () {
         imgFingerprintLoaded = true;
     };
+    var ApplicationKitchen = (function () {
+        function ApplicationKitchen(canvas) {
+        }
+        return ApplicationKitchen;
+    }());
+    KitchenInfoStation.ApplicationKitchen = ApplicationKitchen;
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
             // Data
@@ -86,17 +78,15 @@ var KitchenInfoStation;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
             this.height = canvas.height;
-            this.r = Math.min(this.width, this.height) * 7 / 16;
-            this.arcCenterX = this.width / 2;
-            this.arcCenterY = this.height / 2 + 50;
-            this.arcRadius = 120;
             this.iconStopWatch = new Icon(this.ctx, new Rect((this.width / 2) + 180, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/stopwatch.png');
             this.iconVoiceMessage = new Icon(this.ctx, new Rect((this.width / 2) - 220, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/voicemessage.png');
             this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 150, 150), imagePaths);
+            this.iconWind = new Icon(this.ctx, new Rect(140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
+            this.iconHum = new Icon(this.ctx, new Rect((this.width / 2) + 10, (this.height / 2) + 70, 60, 60), '/infores/servlets/kitchen/drop.png');
             this.stopWatch = new StopWatch(canvas);
-            this.stopWatch.arcCenterX = this.arcCenterX;
-            this.stopWatch.arcCenterY = this.arcCenterY;
-            this.stopWatch.arcRadius = this.arcRadius;
+            this.stopWatch.arcCenterX = this.width / 2;
+            this.stopWatch.arcCenterY = this.height / 2 + 50;
+            this.stopWatch.arcRadius = 120;
             this.tmpInText = new Text(this.ctx, new Rect((this.width / 2) - 120, (this.height / 2) - 10, 220, 60));
             this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 60));
             this.timeText = new Text(this.ctx, new Rect((this.width) - 150, 5, 150, 60));
@@ -233,17 +223,9 @@ var KitchenInfoStation;
             //Weather outside...
             this.iconWeather.paint(this.weatherData.getCurrent().weatherSymbol);
             //Wind
-            if (imgWindLoaded) {
-                ctx.save();
-                ctx.drawImage(imgWind, 140, 70, 50, 50);
-                ctx.restore();
-            }
+            this.iconWind.paint();
             //Hum
-            if (imgHumLoaded) {
-                ctx.save();
-                ctx.drawImage(imgHum, (this.width / 2) + 10, (this.height / 2) + 70, 60, 60);
-                ctx.restore();
-            }
+            this.iconHum.paint();
             //Voice message
             this.iconVoiceMessage.paint();
             //Stopwatch
@@ -292,9 +274,13 @@ var KitchenInfoStation;
             ctx.fillText("44", (this.width / 2), (this.height / 2) + 105);
             ctx.restore();
             //Draw arc...
+            var r = Math.min(this.width, this.height) * 7 / 16;
+            var arcCenterX = this.width / 2;
+            var arcCenterY = this.height / 2 + 50;
+            var arcRadius = 120;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(this.arcCenterX, this.arcCenterY, this.arcRadius, 0, 2 * Math.PI, false);
+            ctx.arc(arcCenterX, arcCenterY, arcRadius, 0, 2 * Math.PI, false);
             ctx.lineWidth = 1;
             ctx.strokeStyle = circleColor;
             ctx.stroke();
@@ -503,8 +489,7 @@ var KitchenInfoStation;
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
-            imgWind = new Image();
-            imgWind.src = "/infores/servlets/kitchen/wind.png";
+            this.iconWind = new Icon(this.ctx, new Rect(140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
             this.weatherData = weatherData;
             this.numForecast = numForecast;
             this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 10, 10), imagePaths);
@@ -519,11 +504,6 @@ var KitchenInfoStation;
             this.txt.rect.w = width;
             this.txt.rect.h = height;
         };
-        /*
-        setForecast(fcs: WeatherData) {
-            this.forecast = fcs;
-        }
-        */
         WeatherForecastPanel.prototype.paint = function (ctx) {
             //Draw rectangle...               
             ctx.save();
@@ -546,14 +526,7 @@ var KitchenInfoStation;
                     this.iconWeather.setSize(new Rect(this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth)));
                     this.iconWeather.paint(weatherForecast.weatherSymbol - 1);
                 }
-                /*
-                    var img:HTMLImageElement = weatherForecast.getImage();
-                    ctx.save();
-                    ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
-                    ctx.restore();
-                */
                 //Draw temperature...
-                //this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
                 this.txt.rect.x = this.x + (this.width - 110);
                 this.txt.rect.y = this.height * 0.8;
                 this.txt.rect.w = 100;
@@ -561,9 +534,8 @@ var KitchenInfoStation;
                 this.txt.textAlign = "right";
                 this.txt.paint(weatherForecast.tempOut + " \u00B0C");
                 //wind image
-                ctx.save();
-                ctx.drawImage(imgWind, this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
-                ctx.restore();
+                this.iconWind.setSize(new Rect(this.x + (this.width * 0.1), this.width * 1.5, 40, 40));
+                this.iconWind.paint();
                 //wind text
                 this.txtWind.rect.x = this.x + (this.width - 70);
                 this.txtWind.rect.y = this.width * 1.6 - 10;
