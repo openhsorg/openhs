@@ -3,12 +3,26 @@
 module OhsWeatherData {
     
     export class WeatherDataForecast {
-                       
+                               
         private forecasts: Array<WeatherForecast>;
+        private currentForecast: WeatherForecast;
+        
+        private timerGetData;
         
         constructor () {            
             this.forecasts = new Array<WeatherForecast>(); 
+            this.currentForecast = new WeatherForecast();
+            
+            this.timerGetServerDataEvent(10000);
         }
+        
+        private timerGetServerDataEvent(step : number) {
+                                  
+           this.getServerData();
+             
+           window.clearTimeout(this.timerGetData);
+           this.timerGetData = window.setTimeout(() => this.timerGetServerDataEvent(step), step); 
+        }         
         
         public setNumberForecasts (num: number) {         
             if (num > this.forecasts.length) {            
@@ -37,7 +51,37 @@ module OhsWeatherData {
                                 
                 return fcs;
             }                
-        }                
+        }
+        
+        public getCurrent () {
+            return this.currentForecast;
+        }            
+        
+        public getServerData () {                        
+            for (var i = 0; i < 4; i++) {                            
+                var req: any = {                
+                    orderId : "WeatherForecast_" + i
+    //                path:   this.path                
+                }                 
+                
+                var data: string = getAjax("kitchen", req);
+                if (data != null) {
+                    this.setWeatherItem(i, data);
+                }            
+            }      
+            
+            // Get current forecast
+                var req: any = {                
+                    orderId : "WeatherCurrent"
+    //                path:   this.path                
+                }  
+            
+                var data: string = getAjax("kitchen", req);
+                if (data != null) {
+                    this.currentForecast.setWeather2(data);
+                }             
+            
+        }
     }
         
     export class WeatherForecast {
@@ -54,47 +98,13 @@ module OhsWeatherData {
         public weatherSymbol: number = 0; 
         public windSpeed: number = 0;      
             
-        private img:HTMLImageElement = null;
-        
+        private img:HTMLImageElement = null;        
         private images: Array<HTMLImageElement> = new Array<HTMLImageElement>();    
             
-            constructor() {
-                        
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/sunny.png";        
-                this.images.push(this.img);
-                
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/partcloudy.png";        
-                this.images.push(this.img);
-                
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/cloudy.png";        
-                this.images.push(this.img);
-                
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/cloudRain.png";        
-                this.images.push(this.img);
-                
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/cloudStorm.png";        
-                this.images.push(this.img);
-                
-                this.img = new Image();
-                this.img.src="/infores/servlets/kitchen/cloudSnow.png";        
-                this.images.push(this.img);                          
-            }    
-            
-            getImage() {                
-                var index = this.weatherSymbol - 1;
-                
-                if (index <0 || index > 6) index = 0;
-            
-                this.img = this.images[index];
-                
-                return this.img;
-            } 
-        
+        constructor() {
+                 
+        }    
+
         public setWeather (data:  string) {           
                  
             this.tempOut = parseFloat(data['temp']);
@@ -102,6 +112,49 @@ module OhsWeatherData {
             this.windSpeed = parseFloat(data['windSpeed']);
             
             this.valid = true;
-        }        
-    }        
+        }   
+        
+        public setWeather2 (data:  string) {           
+                                                                  
+            this.tempIn = parseFloat(data['tempIn']);
+            this.tempOut = parseFloat(data['tempOut']);
+            this.frostOutside = JSON.parse(data['frostOutside']);
+            this.weatherSymbol = JSON.parse(data['weatherSymbol']);
+            this.windSpeed = parseFloat(data['windSpeed']);            
+            
+            this.valid = true;
+        }          
+    }      
+    
+    function getAjax(urlAdr: string, dataIn: string) {
+       
+        var result = null;
+    
+        $.ajaxSetup ({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+            
+        $.ajax({async: false, url: urlAdr, data: dataIn, dataType: "json", success: function(data) {
+        
+            result = data;
+                                      
+        }});
+    
+        return result;    
+    }     
+    
+    
+    function postAjax(urlAdr: string, json: string) {
+       
+        var result = null;
+            
+        $.ajax({async: false, type: "POST", url: urlAdr, data: json, dataType: "json", success: function(response) {
+        
+            result = response;
+                                      
+        }});
+    
+        return result;    
+    }      
 }

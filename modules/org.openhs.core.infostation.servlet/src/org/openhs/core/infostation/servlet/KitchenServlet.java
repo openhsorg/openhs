@@ -84,6 +84,24 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
+	    		} else if (value.toString().contains("WeatherCurrent")) {	
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getCurWeatherToJSON();
+
+	    			//System.out.println("\nWeatherCurrent JSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	    			
+	    			
 	    		} else if (value.toString().contains("WeatherForecast_")) {	
 	    			
 	    			// Divide
@@ -427,7 +445,7 @@ public class KitchenServlet extends HttpServlet {
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
 			return json;
-	    }
+	    }	    	    
 	    
 	    protected JSONObject getSiteDataToJSON() {
 	    	  		    		    	
@@ -580,6 +598,22 @@ public class KitchenServlet extends HttpServlet {
 						
 			return json;
 	    }
+	    
+	    protected JSONObject getCurWeatherToJSON() {
+	    	
+	    	Weather wth = m_infostation.getForecastWeather6();		    
+		    		    
+			JSONObject json = new JSONObject();
+			json.put("tempIn", String.format("%.2f", m_infostation.getTempIn()));
+			json.put("tempOut", String.format("%.2f", m_infostation.getTempOut()));			
+			json.put("cloudPerc", m_infostation.getCloudsForecast());
+			json.put("tempForecast", m_infostation.getTempForecast());
+			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
+			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
+			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+			
+			return json;
+	    }	    
 	    
 	    protected JSONObject getDataToJSON_Data() {
 	    	

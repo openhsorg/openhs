@@ -13,20 +13,10 @@ var KitchenInfoStation;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
     var DoorMark = OhsCanvasGraphics.DoorMark;
+    var Icon = OhsCanvasGraphics.Icon;
+    var Iconset = OhsCanvasGraphics.Iconset;
     var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     var SiteData = OhsSiteData.SiteData;
-    var forecastRect = {
-        x: 0,
-        y: 0,
-        width: 150,
-        heigth: 150
-    };
-    var stopwatchRect = {
-        x: 0,
-        y: 0,
-        width: 0,
-        heigth: 0
-    };
     var Application;
     (function (Application) {
         Application[Application["None"] = 0] = "None";
@@ -35,79 +25,60 @@ var KitchenInfoStation;
         Application[Application["WeatherForecast"] = 3] = "WeatherForecast";
         Application[Application["Room"] = 4] = "Room";
     })(Application || (Application = {}));
-    function getAjax(urlAdr, id) {
-        var result = null;
-        $.ajaxSetup({
-            // Disable caching of AJAX responses
-            cache: false
-        });
-        $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
-                result = data;
-            } });
-        return result;
-    }
-    function postAjax(urlAdr, id, dataPost) {
-        var result = null;
-        $.ajax({ async: false, type: "POST", url: urlAdr, data: { postId: id, dataId: dataPost }, dataType: "json", success: function (response) {
-                result = response;
-            } });
-        return result;
-    }
-    function sleep(ms) {
-        var unixtime_ms = new Date().getTime();
-        while (new Date().getTime() < unixtime_ms + ms) { }
-    }
-    var WeatherData = (function () {
-        function WeatherData() {
-            this.tempIn = 0.0;
-            this.tempOut = 0.0;
-            this.timeString = "";
-            this.dateString = "";
-            this.frostOutside = false;
-            this.frostOutsideString = "false";
-            this.cloudPerc = 0.0;
-            this.weatherSymbol = 0;
-            this.windSpeed = 0;
-            this.img = null;
-            this.images = new Array();
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/sunny.png";
-            this.images.push(this.img);
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/partcloudy.png";
-            this.images.push(this.img);
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/cloudy.png";
-            this.images.push(this.img);
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/cloudRain.png";
-            this.images.push(this.img);
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/cloudStorm.png";
-            this.images.push(this.img);
-            this.img = new Image();
-            this.img.src = "/infores/servlets/kitchen/cloudSnow.png";
-            this.images.push(this.img);
-        }
-        WeatherData.prototype.getImage = function () {
-            var index = this.weatherSymbol - 1;
-            if (index < 0 || index > 6)
-                index = 0;
-            this.img = this.images[index];
-            return this.img;
-        };
-        return WeatherData;
-    }());
+    var imagePaths = [
+        "/infores/servlets/kitchen/sunny.png",
+        "/infores/servlets/kitchen/partcloudy.png",
+        "/infores/servlets/kitchen/cloudy.png",
+        "/infores/servlets/kitchen/cloudRain.png",
+        "/infores/servlets/kitchen/cloudStorm.png",
+        "/infores/servlets/kitchen/cloudSnow.png"
+    ];
     var appMode = Application.None; //Mode of application
     var roomNum = 1; //number of selected room for Application.Room       
+    var whiteColor = "#FFFFFF";
+    var blackColor = "#000000";
+    var borderColor = "#C0C0C0";
+    var secPtrColor = "#CC0000";
+    var textColor = "#000000";
+    var circleColor = "#c0c0c0";
+    var fontSizeTempIn = 54;
+    var fontSizeTempOut = 50;
+    var fontSizeWind = 24;
+    var fontSizeHum = 27;
+    var fontSizeTime = fontSizeTempOut;
+    var fontSizeDate = fontSizeWind;
+    //Meteorological data    
+    var timeString = "";
+    var dateString = "";
+    //Wind image    
+    var imgWind = new Image();
+    imgWind.src = '/infores/servlets/kitchen/wind.png';
+    var imgWindLoaded = false;
+    imgWind.onload = function () {
+        imgWindLoaded = true;
+    };
+    //Hum image    
+    var imgHum = new Image();
+    imgHum.src = '/infores/servlets/kitchen/drop.png';
+    var imgHumLoaded = false;
+    imgHum.onload = function () {
+        imgHumLoaded = true;
+    };
+    //Fingerprint image    
+    var imgFingerprint = new Image();
+    imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png';
+    var imgFingerprintLoaded = false;
+    imgFingerprint.onload = function () {
+        imgFingerprintLoaded = true;
+    };
     var BasicScreen = (function () {
         function BasicScreen(canvas) {
+            // Data
             this.weatherData = new WeatherDataForecast(); // General weather
-            this.siteData = null; //general Site Data
-            this.weather = new WeatherData(); //current weather today    
+            this.siteData = null; //general Site Data    
+            // Screens
             this.forecastScreen = null; //forecast screen      
             this.stopWatch = null;
-            // public floor: Floor = null;    
             this.room = new Array();
             this.floors = new Array();
             this.siteData = new SiteData();
@@ -119,27 +90,24 @@ var KitchenInfoStation;
             this.arcCenterX = this.width / 2;
             this.arcCenterY = this.height / 2 + 50;
             this.arcRadius = 120;
+            this.iconStopWatch = new Icon(this.ctx, new Rect((this.width / 2) + 180, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/stopwatch.png');
+            this.iconVoiceMessage = new Icon(this.ctx, new Rect((this.width / 2) - 220, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/voicemessage.png');
+            this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 150, 150), imagePaths);
             this.stopWatch = new StopWatch(canvas);
             this.stopWatch.arcCenterX = this.arcCenterX;
             this.stopWatch.arcCenterY = this.arcCenterY;
             this.stopWatch.arcRadius = this.arcRadius;
-            stopwatchRect.x = (this.width / 2) + 180;
-            stopwatchRect.y = (this.height / 2) + 20;
-            stopwatchRect.width = 60;
-            stopwatchRect.heigth = 60;
             this.tmpInText = new Text(this.ctx, new Rect((this.width / 2) - 120, (this.height / 2) - 10, 220, 60));
             this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 60));
             this.timeText = new Text(this.ctx, new Rect((this.width) - 150, 5, 150, 60));
             this.dateText = new Text(this.ctx, new Rect((this.width) / 2 + 70, 80, 230, 40));
             this.windText = new Text(this.ctx, new Rect(160, 80, 140, 40));
             this.forecastScreen = new WeatherForecastScreen(canvas, this.weatherData);
-            //   this.floor = new Floor (canvas, this.siteData);
             this.room.push(new RoomScreen(canvas, "/infores/servlets/kitchen/room0.png")); //0: Outside
             this.room.push(new RoomScreen(canvas, "/infores/servlets/kitchen/room1.png")); //1: Room1...
             this.room.push(new RoomScreen(canvas, "/infores/servlets/kitchen/room2.png"));
             this.room.push(new RoomScreen(canvas, "/infores/servlets/kitchen/room3.png"));
             this.timerLoadGraphicsEvent(2000);
-            this.timerGetWeatherDataEvent(5000);
             this.timerGetDataEvent(5000);
             this.timerPaintEvent(5000);
             var self = this;
@@ -150,12 +118,6 @@ var KitchenInfoStation;
             this.loadGraphics();
             window.clearTimeout(this.timerLoadGraphics);
             this.timerLoadGraphics = window.setTimeout(function () { return _this.timerLoadGraphicsEvent(step); }, step);
-        };
-        BasicScreen.prototype.timerGetWeatherDataEvent = function (step) {
-            var _this = this;
-            this.getWeatherData('kitchen');
-            window.clearTimeout(this.timerWeatherData);
-            this.timerWeatherData = window.setTimeout(function () { return _this.timerGetWeatherDataEvent(step); }, step);
         };
         BasicScreen.prototype.timerGetDataEvent = function (step) {
             var _this = this;
@@ -173,7 +135,8 @@ var KitchenInfoStation;
             //window.alert("handler clicked !!" + event.clientX + " : " + event.clientY );
             var mousePos = getMousePos(this.canvas, event);
             if (appMode == Application.None) {
-                if (isInside(mousePos, stopwatchRect)) {
+                // if (isInside(mousePos, stopwatchRect)) {            
+                if (this.iconStopWatch.isClicked(mousePos.x, mousePos.y)) {
                     appMode = Application.Watch;
                     this.stopWatch.start();
                     this.timerPaintEvent(40);
@@ -182,7 +145,7 @@ var KitchenInfoStation;
                     appMode = Application.Floor;
                     this.timerPaintEvent(50);
                 }
-                else if (isInside(mousePos, forecastRect)) {
+                else if (this.iconWeather.isClicked(mousePos.x, mousePos.y)) {
                     appMode = Application.WeatherForecast;
                 }
             }
@@ -208,31 +171,11 @@ var KitchenInfoStation;
             }
             this.paint();
         };
-        BasicScreen.prototype.getSiteData = function (url) {
-            //  this.siteData.setSiteData();
-            //Load site data...
-            this.loadGraphics();
-        };
-        BasicScreen.prototype.getWeatherData = function (url) {
-            var data = null;
-            for (var i = 0; i < 4; i++) {
-                var id = "WeatherForecast_" + i;
-                data = getAjax(url, id);
-                if (data != null) {
-                    this.weatherData.setWeatherItem(i, data);
-                }
-            }
-        };
         BasicScreen.prototype.getData = function (url) {
             var data = getAjax(url, 'InfoData');
             if (data != null) {
                 timeString = data['time'];
                 dateString = data['date'];
-                this.weather.tempIn = parseFloat(data['tempIn']);
-                this.weather.tempOut = parseFloat(data['tempOut']);
-                this.weather.frostOutside = JSON.parse(data['frostOutside']);
-                this.weather.weatherSymbol = JSON.parse(data['weatherSymbol']);
-                this.weather.windSpeed = parseFloat(data['windSpeed']);
             }
         };
         BasicScreen.prototype.postData = function (url) {
@@ -279,7 +222,7 @@ var KitchenInfoStation;
                 }
             }
             else if (appMode == Application.Room) {
-                this.room[roomNum].paint(this.weather);
+                this.room[roomNum].paint(this.weatherData.getCurrent());
             }
             else if (appMode == Application.WeatherForecast) {
                 this.forecastScreen.paint();
@@ -287,11 +230,8 @@ var KitchenInfoStation;
         };
         BasicScreen.prototype.paintBasic = function () {
             var ctx = this.ctx;
-            //Draw image...
-            var img = this.weather.getImage();
-            ctx.save();
-            ctx.drawImage(img, forecastRect.x, forecastRect.y, forecastRect.width, forecastRect.heigth);
-            ctx.restore();
+            //Weather outside...
+            this.iconWeather.paint(this.weatherData.getCurrent().weatherSymbol);
             //Wind
             if (imgWindLoaded) {
                 ctx.save();
@@ -305,33 +245,16 @@ var KitchenInfoStation;
                 ctx.restore();
             }
             //Voice message
-            if (imgVoiceMessageLoaded) {
-                ctx.save();
-                ctx.drawImage(imgVoiceMessage, (this.width / 2) - 220, (this.height / 2) + 20, 60, 60);
-                ctx.restore();
-            }
+            this.iconVoiceMessage.paint();
             //Stopwatch
-            if (imgStopwatchLoaded) {
-                ctx.save();
-                ctx.drawImage(imgStopwatch, (this.width / 2) + 180, (this.height / 2) + 20, 60, 60);
-                ctx.restore();
-            }
+            this.iconStopWatch.paint();
             //Wind outside
-            /*
-           ctx.save();
-           ctx.font = fontSizeWind + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-           ctx.textAlign = "right";
-           ctx.textBaseline = "middle";
-           ctx.fillStyle = textColor;
-           ctx.fillText(this.weather.windSpeed + " m/s", 320, 100);
-           ctx.restore();
-            */
             this.windText.fontSize = fontSizeWind;
             this.windText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.windText.fontColor = textColor;
             this.windText.textAlign = "right";
             this.windText.textBaseline = "middle";
-            this.windText.paint(this.weather.windSpeed + " m/s");
+            this.windText.paint(this.weatherData.getCurrent().windSpeed + " m/s");
             //Time          
             this.timeText.fontSize = fontSizeTime;
             this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -353,13 +276,13 @@ var KitchenInfoStation;
             this.tmpInText.fontColor = textColor;
             this.tmpInText.textAlign = "right";
             this.tmpInText.textBaseline = "middle";
-            this.tmpInText.paint(this.weather.tempIn.toPrecision(2) + " \u00B0C");
+            this.tmpInText.paint(this.weatherData.getCurrent().tempIn.toPrecision(2) + " \u00B0C");
             //Outside temperature    
             this.tmpOutText.equals(this.tmpInText);
             this.tmpOutText.rect.x = 80;
             this.tmpOutText.rect.y = 5;
             this.tmpOutText.textAlign = "right";
-            this.tmpOutText.paint(this.weather.tempOut.toPrecision(2) + " \u00B0C");
+            this.tmpOutText.paint(this.weatherData.getCurrent().tempOut.toPrecision(2) + " \u00B0C");
             //Humidity
             ctx.save();
             ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -399,7 +322,7 @@ var KitchenInfoStation;
     KitchenInfoStation.BasicScreen = BasicScreen; // end class Infoscreen
     var WeatherForecastScreen = (function () {
         function WeatherForecastScreen(canvas, weatherData) {
-            this.forecastPanels = new Array();
+            this.forecastPanels = new Array(); // Panels      
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
@@ -426,59 +349,6 @@ var KitchenInfoStation;
         };
         return WeatherForecastScreen;
     }());
-    //------------------------------------------------------------------------------
-    var clockLabel = "source-code.biz";
-    var transparentColor = "rgba(0,0,0,0)";
-    var whiteColor = "#FFFFFF";
-    var blackColor = "#000000";
-    var borderColor = "#C0C0C0";
-    var secPtrColor = "#CC0000";
-    var textColor = "#000000";
-    var circleColor = "#c0c0c0";
-    var fontSizeTempIn = 54;
-    var fontSizeTempOut = 50;
-    var fontSizeWind = 24;
-    var fontSizeHum = 27;
-    var fontSizeTime = fontSizeTempOut;
-    var fontSizeDate = fontSizeWind;
-    //Meteorological data    
-    var timeString = "";
-    var dateString = "";
-    //Wind image    
-    var imgWind = new Image();
-    imgWind.src = '/infores/servlets/kitchen/wind.png';
-    var imgWindLoaded = false;
-    imgWind.onload = function () {
-        imgWindLoaded = true;
-    };
-    //Hum image    
-    var imgHum = new Image();
-    imgHum.src = '/infores/servlets/kitchen/drop.png';
-    var imgHumLoaded = false;
-    imgHum.onload = function () {
-        imgHumLoaded = true;
-    };
-    //Voice message Image    
-    var imgVoiceMessage = new Image();
-    imgVoiceMessage.src = '/infores/servlets/kitchen/voicemessage.png';
-    var imgVoiceMessageLoaded = false;
-    imgVoiceMessage.onload = function () {
-        imgVoiceMessageLoaded = true;
-    };
-    //Stop watch image    
-    var imgStopwatch = new Image();
-    imgStopwatch.src = '/infores/servlets/kitchen/stopwatch.png';
-    var imgStopwatchLoaded = false;
-    imgStopwatch.onload = function () {
-        imgStopwatchLoaded = true;
-    };
-    //Fingerprint image    
-    var imgFingerprint = new Image();
-    imgFingerprint.src = '/infores/servlets/kitchen/fingerprint.png';
-    var imgFingerprintLoaded = false;
-    imgFingerprint.onload = function () {
-        imgFingerprintLoaded = true;
-    };
     var StopWatch = (function () {
         function StopWatch(canvas) {
             this.stopwatchRect = null;
@@ -622,6 +492,8 @@ var KitchenInfoStation;
             this.weatherData = null; //weather data source        
             this.numForecast = 0;
             this.imgWind = null;
+            this.iconWeather = null;
+            this.ctx = ctx;
             this.txtValid = new Text(ctx, new Rect(10, 10, 60, 10));
             this.txtValid.textAlign = "left";
             this.txtValid.textBaseline = "top";
@@ -635,6 +507,7 @@ var KitchenInfoStation;
             imgWind.src = "/infores/servlets/kitchen/wind.png";
             this.weatherData = weatherData;
             this.numForecast = numForecast;
+            this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 10, 10), imagePaths);
         }
         WeatherForecastPanel.prototype.setSize = function (x, y, width, height) {
             this.x = x;
@@ -669,10 +542,16 @@ var KitchenInfoStation;
             }
             else {
                 //Draw forecast image
-                var img = weatherForecast.getImage();
-                ctx.save();
-                ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
-                ctx.restore();
+                if (this.iconWeather != null) {
+                    this.iconWeather.setSize(new Rect(this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth)));
+                    this.iconWeather.paint(weatherForecast.weatherSymbol - 1);
+                }
+                /*
+                    var img:HTMLImageElement = weatherForecast.getImage();
+                    ctx.save();
+                    ctx.drawImage(img, this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
+                    ctx.restore();
+                */
                 //Draw temperature...
                 //this.txt.rect.x = this.x + ((this.width - (2 * this.lineWidth)) / 2);
                 this.txt.rect.x = this.x + (this.width - 110);
@@ -875,8 +754,26 @@ var KitchenInfoStation;
             y: event.clientY - rect.top
         };
     }
-    //Function to check whether a point is inside a rectangle
-    function isInside(pos, rect) {
-        return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.heigth && pos.y > rect.y;
+    function getAjax(urlAdr, id) {
+        var result = null;
+        $.ajaxSetup({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+        $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
+                result = data;
+            } });
+        return result;
+    }
+    function postAjax(urlAdr, id, dataPost) {
+        var result = null;
+        $.ajax({ async: false, type: "POST", url: urlAdr, data: { postId: id, dataId: dataPost }, dataType: "json", success: function (response) {
+                result = response;
+            } });
+        return result;
+    }
+    function sleep(ms) {
+        var unixtime_ms = new Date().getTime();
+        while (new Date().getTime() < unixtime_ms + ms) { }
     }
 })(KitchenInfoStation || (KitchenInfoStation = {})); // end module KitchenInfoStation

@@ -51,6 +51,70 @@ var OhsCanvasGraphics;
         return Mark;
     }());
     OhsCanvasGraphics.Mark = Mark;
+    var Icon = (function (_super) {
+        __extends(Icon, _super);
+        function Icon(ctx, rect, src) {
+            _super.call(this, ctx, rect);
+            this.img = null;
+            this.border = false; //debug border
+            this.img = new Image();
+            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
+        }
+        Icon.prototype.paint = function () {
+            //Draw image...
+            //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            this.ctx.restore();
+            // }            
+            if (this.border) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = "blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
+        };
+        return Icon;
+    }(Mark));
+    OhsCanvasGraphics.Icon = Icon;
+    var Iconset = (function (_super) {
+        __extends(Iconset, _super);
+        //  public numImagePaint = 0;
+        function Iconset(ctx, rect, imgPaths) {
+            _super.call(this, ctx, rect);
+            this.border = false; //debug border
+            this.images = new Array();
+            for (var i in imgPaths) {
+                var img = new Image();
+                img.src = imgPaths[i].toString();
+                this.images.push(img);
+            }
+            //this.numImagePaint = 0;
+        }
+        Iconset.prototype.paint = function (nImage) {
+            //Draw image...            
+            var image = this.images[nImage];
+            if (image != null) {
+                this.ctx.save();
+                this.ctx.drawImage(image, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.restore();
+            }
+            if (this.border) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeStyle = "blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+            }
+        };
+        return Iconset;
+    }(Mark));
+    OhsCanvasGraphics.Iconset = Iconset;
     var Text = (function (_super) {
         __extends(Text, _super);
         function Text(ctx, rect) {

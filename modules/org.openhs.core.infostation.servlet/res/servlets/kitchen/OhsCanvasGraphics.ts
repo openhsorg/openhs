@@ -63,6 +63,91 @@ import Switch = OhsSiteData.Switch;
         }        
     }
     
+    export class Icon extends Mark {
+        
+        private img:HTMLImageElement = null;
+        protected border:    boolean = false; //debug border
+        
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src: string) {
+            super(ctx, rect);
+            
+            this.img = new Image();                                
+            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
+
+        }    
+        
+        public paint () {   
+            
+            //Draw image...
+         //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            this.ctx.restore();        
+           // }            
+            
+            if (this.border){
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth=2;
+                this.ctx.strokeStyle="blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+             }                          
+         }                 
+    }
+    
+    export class Iconset extends Mark {
+        
+        protected border:    boolean = false; //debug border
+        
+        public imagePaths: Array <String>;
+        public images: Array <HTMLImageElement>;
+        
+      //  public numImagePaint = 0;
+        
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect, imgPaths: Array<String>) {
+            super(ctx, rect);
+            
+            this.images = new Array <HTMLImageElement>();
+            
+            for (let i in imgPaths) {
+                
+                var img: HTMLImageElement = new Image();
+                img.src = imgPaths[i].toString();
+                
+                this.images.push(img);    
+                
+          //      this.border = true;
+                
+              //  window.alert(imgPaths[i].toString());
+            }
+            
+            //this.numImagePaint = 0;
+        }    
+        
+        public paint (nImage: number) {               
+            //Draw image...            
+            var image: HTMLImageElement = this.images[nImage];
+            
+            if (image != null) {            
+                this.ctx.save();
+                this.ctx.drawImage(image, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.restore();                                                                        
+             }
+            
+                if (this.border){
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.lineWidth=2;
+                    this.ctx.strokeStyle="blue";
+                    this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                    this.ctx.stroke();
+                    this.ctx.restore();
+                 }              
+         }                 
+    }    
+    
     export class Text extends Mark {
     
         public fontSize:      number = 10; 
