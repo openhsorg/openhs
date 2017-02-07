@@ -81,19 +81,27 @@ var KitchenInfoStation;
             // Screens
             this.m_screenMain = null;
             this.m_forecastScreen = null; //forecast screen            
-            this.m_rooms = new Array();
-            this.m_floors = new Array();
+            this.m_room = null;
+            this.m_floor = null;
+            //Graphics
+            this.m_tempMarks = new Array();
+            this.m_switchMarks = new Array();
+            this.m_doorMarks = new Array();
             // Handlers
             // private screen: Screen;
             this.currPage = null;
             this.refreshRateMain = 5000;
             this.canvas = canvas;
+            this.ctx = canvas.getContext("2d");
             //---Data---
             this.m_siteData = new SiteData();
             this.m_weatherData = new WeatherDataForecast();
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
+            this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_tempMarks, this.m_switchMarks, this.m_doorMarks);
+            this.m_room = new ScreenRoom(this.canvas, this.m_siteData);
             this.m_forecastScreen = new ScreenWeatherForecast(this.canvas, this.m_weatherData);
+            //---Graphics---
             //---Mouse Handler---
             var self = this;
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
@@ -112,7 +120,7 @@ var KitchenInfoStation;
             var screen = null;
             if (ret == SwitchScreen.Floor) {
                 refresh = 50;
-                screen = this.m_floors[0];
+                screen = this.m_floor;
             }
             else if (ret == SwitchScreen.Main) {
                 screen = this.m_screenMain;
@@ -135,10 +143,51 @@ var KitchenInfoStation;
             }
         };
         ApplicationKitchen.prototype.LoadGraphics = function () {
-            //Application data
-            this.setNumberFloors(this.m_siteData.getNumberFloors());
-            for (var id in this.m_floors) {
+            /*
+            this.setNumberFloors (this.m_siteData.getNumberFloors());
+            
+            
+            for (let id in this.m_floors) {
                 this.m_floors[id].LoadGraphics();
+            }
+            */
+            // Temperature
+            if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
+                this.m_tempMarks.length = this.m_siteData.tempSensors.length;
+            }
+            else if (this.m_tempMarks.length < this.m_siteData.tempSensors.length) {
+                for (var i = this.m_tempMarks.length; i < this.m_siteData.tempSensors.length; i++) {
+                    this.m_tempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+                }
+            }
+            for (var id in this.m_siteData.tempSensors) {
+                this.m_tempMarks[id].setSize(new Rect(this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
+                this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);
+            }
+            // Switches
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
+            }
+            else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+                    this.m_switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
+                }
+            }
+            for (var id in this.m_siteData.switches) {
+                this.m_switchMarks[id].switch = this.m_siteData.switches[id];
+            }
+            // Doors
+            if (this.m_doorMarks.length > this.m_siteData.doors.length) {
+                this.m_doorMarks.length = this.m_siteData.doors.length;
+            }
+            else if (this.m_doorMarks.length < this.m_siteData.doors.length) {
+                for (var i = this.m_doorMarks.length; i < this.m_siteData.doors.length; i++) {
+                    this.m_doorMarks.push(new DoorMark(this.ctx, new Rect(0, 0, 0, 0)));
+                }
+            }
+            for (var id in this.m_siteData.doors) {
+                this.m_doorMarks[id].setSize(new Rect(this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
+                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);
             }
         };
         ApplicationKitchen.prototype.timerGetServerDataEvent = function (step) {
@@ -152,26 +201,6 @@ var KitchenInfoStation;
             this.LoadGraphics();
             window.clearTimeout(this.timerLoadGraphics);
             this.timerLoadGraphics = window.setTimeout(function () { return _this.timerLoadGraphicsEvent(step); }, step);
-        };
-        ApplicationKitchen.prototype.setNumberFloors = function (num) {
-            if (num > this.m_floors.length) {
-                for (var i = this.m_floors.length; i < num; i++) {
-                    this.m_floors.push(new ScreenFloor(this.canvas, this.m_siteData));
-                }
-            }
-            else if (num < this.m_floors.length) {
-                this.m_floors.length = num;
-            }
-        };
-        ApplicationKitchen.prototype.setNumberRooms = function (num) {
-            if (num > this.m_rooms.length) {
-                for (var i = this.m_rooms.length; i < num; i++) {
-                    this.m_rooms.push(new ScreenRoom(this.canvas, this.m_siteData));
-                }
-            }
-            else if (num < this.m_rooms.length) {
-                this.m_rooms.length = num;
-            }
         };
         return ApplicationKitchen;
     }());
@@ -613,16 +642,21 @@ var KitchenInfoStation;
     }());
     var ScreenFloor = (function (_super) {
         __extends(ScreenFloor, _super);
-        function ScreenFloor(canvas, siteData) {
+        function ScreenFloor(canvas, siteData, tempMarks, switchMarks, doorMarks) {
             _super.call(this, canvas);
             this.siteData = null;
-            this.tempMarks = new Array();
-            this.switchMarks = new Array();
-            this.doorMarks = new Array();
+            this.thingPath = "";
+            //Graphics
+            this.m_tempMarks = null;
+            this.m_switchMarks = null;
+            this.m_doorMarks = null;
             this.imgFloor = null;
             this.imgFloorLoaded = false;
             this.numRooms = 0;
             this.siteData = siteData;
+            this.m_tempMarks = tempMarks;
+            this.m_switchMarks = switchMarks;
+            this.m_doorMarks = doorMarks;
             this.imgFloor = new Image();
             this.imgFloor.src = "/infores/servlets/kitchen/floor1.jpg";
             this.txtNumRooms = new Text(this.ctx, new Rect(0, 0, 250, 100));
@@ -654,16 +688,16 @@ var KitchenInfoStation;
             ctx.restore();
             //   }      
             // Temperature sensors...
-            for (var id in this.tempMarks) {
-                this.tempMarks[id].paint();
+            for (var id in this.m_tempMarks) {
+                this.m_tempMarks[id].paint();
             }
             // Switches...
-            for (var id in this.switchMarks) {
-                this.switchMarks[id].paint();
+            for (var id in this.m_switchMarks) {
+                this.m_switchMarks[id].paint();
             }
             // Doors
-            for (var id in this.doorMarks) {
-                this.doorMarks[id].paint();
+            for (var id in this.m_doorMarks) {
+                this.m_doorMarks[id].paint();
             }
             //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;
@@ -677,61 +711,21 @@ var KitchenInfoStation;
         ScreenFloor.prototype.clickedTempMark = function (clx, cly) {
             var cId = -1;
             var n = -1;
-            for (var id in this.tempMarks) {
+            for (var id in this.m_tempMarks) {
                 n++;
-                if (this.tempMarks[id].isClicked(clx, cly)) {
+                if (this.m_tempMarks[id].isClicked(clx, cly)) {
                     cId = n;
                 }
             }
             return cId;
         };
         ScreenFloor.prototype.clickedSwitchMark = function (clx, cly) {
-            for (var id in this.switchMarks) {
-                if (this.switchMarks[id].isClicked(clx, cly)) {
-                    return this.switchMarks[id].switch;
+            for (var id in this.m_switchMarks) {
+                if (this.m_switchMarks[id].isClicked(clx, cly)) {
+                    return this.m_switchMarks[id].switch;
                 }
             }
             return null;
-        };
-        ScreenFloor.prototype.LoadGraphics = function () {
-            // Temperature
-            if (this.tempMarks.length > this.siteData.tempSensors.length) {
-                this.tempMarks.length = this.siteData.tempSensors.length;
-            }
-            else if (this.tempMarks.length < this.siteData.tempSensors.length) {
-                for (var i = this.tempMarks.length; i < this.siteData.tempSensors.length; i++) {
-                    this.tempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
-                }
-            }
-            for (var id in this.siteData.tempSensors) {
-                this.tempMarks[id].setSize(new Rect(this.siteData.tempSensors[id].x, this.siteData.tempSensors[id].y, 80, 80));
-                this.tempMarks[id].setTemp(this.siteData.tempSensors[id].temp);
-            }
-            // Switches
-            if (this.switchMarks.length > this.siteData.switches.length) {
-                this.switchMarks.length = this.siteData.switches.length;
-            }
-            else if (this.switchMarks.length < this.siteData.switches.length) {
-                for (var i = this.switchMarks.length; i < this.siteData.switches.length; i++) {
-                    this.switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
-                }
-            }
-            for (var id in this.siteData.switches) {
-                this.switchMarks[id].switch = this.siteData.switches[id];
-            }
-            // Doors
-            if (this.doorMarks.length > this.siteData.doors.length) {
-                this.doorMarks.length = this.siteData.doors.length;
-            }
-            else if (this.doorMarks.length < this.siteData.doors.length) {
-                for (var i = this.doorMarks.length; i < this.siteData.doors.length; i++) {
-                    this.doorMarks.push(new DoorMark(this.ctx, new Rect(0, 0, 0, 0)));
-                }
-            }
-            for (var id in this.siteData.doors) {
-                this.doorMarks[id].setSize(new Rect(this.siteData.doors[id].x, this.siteData.doors[id].y, 80, 80));
-                this.doorMarks[id].setState(this.siteData.doors[id].open, this.siteData.doors[id].locked);
-            }
         };
         return ScreenFloor;
     }(Screen));

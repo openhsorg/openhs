@@ -372,7 +372,7 @@ import Switch = OhsSiteData.Switch;
     
     export class DoorMark extends Mark {
     
-        private imgOpen:HTMLImageElement = new Image() ;
+        private imgOpen:HTMLImageElement = null;
         private imgClose:HTMLImageElement = null;
         private imgLock:HTMLImageElement = null;
         
@@ -390,7 +390,7 @@ import Switch = OhsSiteData.Switch;
         constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
             super(ctx, rect);
 
-          //  this.imgOpen = new Image();                                
+            this.imgOpen = new Image();                                
             this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";               
             
             this.imgClose = new Image();                                
