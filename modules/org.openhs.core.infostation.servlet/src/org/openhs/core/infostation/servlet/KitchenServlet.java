@@ -46,11 +46,9 @@ public class KitchenServlet extends HttpServlet {
 	        
 	    	if (value != null) {
 	    	//	System.out.println("Value:=" + value.toString());
-	    		
+	    		/*
 	    		if (value.toString().equals("InfoData")) {	    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
+	    	
 	    			JSONObject json = getDataToJSON();
 
 	    			//System.out.println("\nJSON:" + json.toString());
@@ -65,7 +63,9 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
-	    		} else if (value.toString().equals("SiteData")) {	    		
+	    		} else
+	    			*/
+	    	    if (value.toString().equals("SiteData")) {	    		
 	    			/*
 	    			 * Get site data.
 	    			 */
@@ -135,84 +135,7 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();		    			
 	    			
-	    		} else if (value.toString().equals("floor1")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Data();
-
-	    			//System.out.println("\n\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	  
-	    			
-	    		} else if (value.toString().equals("switch1")) {		    		
-	    			/*
-	    			 * Get data from core module.
-	    			 */
-	    				    				    			
-	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-	    			
-	    			try {
-	    				stateInt = m_infostation.getSwitchIntState("floors/Floor1/rooms/Room0/sensors/Kitchen_light");	    					    					    				
-	    			} catch (Exception ex) {
-	    				
-	    			}
-	    			
-	    			//System.out.println("\n\n    switch  JSON:" + stateInt);
-	    			
-	    			JSONObject json = new JSONObject();
-	    			json.put("switchState", new Integer(stateInt));
-	    				    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	
-	    			
-		    	} else if (value.toString().contains("DataSwitch_")) {
-		    		
-		    		String path = value.toString();		   
-		    		String del = "DataSwitch_";
-		    		
-		    		String path2 = path.replace(del, "");
-		    		
-		    			
-	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-	    			
-	    			try {
-	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
-	    			} catch (Exception ex) {
-	    				
-	    			}
-	    			
-	    			System.out.println("\n\n\n\n    switch  JSON: " + path2 + " State: " + stateInt);
-	    			
-	    			JSONObject json = new JSONObject();
-	    			json.put("state_sw", new Integer(stateInt));
-	    				    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();			    				    		
-		    		
-		    	} else if (value.toString().equals("SwitchS")) {
+	    		} else if (value.toString().equals("SwitchS")) {
 		    		
 //		    		System.out.println("\n\n\n\n    SwitchS  ");
 	    			
@@ -415,7 +338,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	   
+	   /*
 	    protected JSONObject getDataToJSON() {
 	    	
 	    	Weather wth = m_infostation.getForecastWeather6();
@@ -446,11 +369,19 @@ public class KitchenServlet extends HttpServlet {
 			
 			return json;
 	    }	    	    
-	    
+	    */
 	    protected JSONObject getSiteDataToJSON() {
-	    	  		    		    	
+		    Date curDate = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		    String time = format.format(curDate); 	 		  
+		    
+		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
+		    String date = format2.format(curDate); 	  	    	  		    		    	
 	    	
-			JSONObject json = new JSONObject();			
+			JSONObject json = new JSONObject();	
+			
+			json.put("time", time);
+			json.put("date", date);			
 			
 			// Floors
 			try {
@@ -614,14 +545,14 @@ public class KitchenServlet extends HttpServlet {
 			
 			return json;
 	    }	    
-	    
+	    /*
 	    protected JSONObject getDataToJSON_Data() {
 	    	
 			JSONObject json = new JSONObject();
 														
 			int n = -1;
 			
-			/*
+			
 			
 			try {
 				n = this.m_infostation.m_siteService.getNumberThings("floors/Floor1/rooms");
@@ -631,9 +562,10 @@ public class KitchenServlet extends HttpServlet {
 			} catch (Exception ex) {	
 				//System.out.print("\nEXCPT: " + ex);
 			}
-	            			*/			
+	            						
 		    json.put("nRooms", String.format("%d",n));
 						
 			return json;
-	    }	    
+	    }	
+	    */
 }

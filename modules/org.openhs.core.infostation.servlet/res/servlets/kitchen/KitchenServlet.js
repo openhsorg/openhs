@@ -22,15 +22,6 @@ var KitchenInfoStation;
     var Iconset = OhsCanvasGraphics.Iconset;
     var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     var SiteData = OhsSiteData.SiteData;
-    /*
-  enum Application {
-      None,
-      Watch,
-      Floor,
-      WeatherForecast,
-      Room
-  }
-  */
     var SwitchScreen;
     (function (SwitchScreen) {
         SwitchScreen[SwitchScreen["Main"] = 0] = "Main";
@@ -47,9 +38,6 @@ var KitchenInfoStation;
         "/infores/servlets/kitchen/cloudStorm.png",
         "/infores/servlets/kitchen/cloudSnow.png"
     ];
-    //    var screen = SwitchScreen.Main;
-    //   var appMode = Application.None;  //Mode of application
-    //   var roomNum = 1; //number of selected room for Application.Room       
     var whiteColor = "#FFFFFF";
     var blackColor = "#000000";
     var borderColor = "#C0C0C0";
@@ -84,9 +72,9 @@ var KitchenInfoStation;
             this.m_room = null;
             this.m_floor = null;
             //Graphics
-            this.m_tempMarks = new Array();
-            this.m_switchMarks = new Array();
-            this.m_doorMarks = new Array();
+            this.m_tempMarks = null;
+            this.m_switchMarks = null;
+            this.m_doorMarks = null;
             // Handlers
             // private screen: Screen;
             this.currPage = null;
@@ -96,12 +84,15 @@ var KitchenInfoStation;
             //---Data---
             this.m_siteData = new SiteData();
             this.m_weatherData = new WeatherDataForecast();
+            //---Graphics---
+            this.m_tempMarks = new Array();
+            this.m_switchMarks = new Array();
+            this.m_doorMarks = new Array();
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
             this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_tempMarks, this.m_switchMarks, this.m_doorMarks);
             this.m_room = new ScreenRoom(this.canvas, this.m_siteData);
             this.m_forecastScreen = new ScreenWeatherForecast(this.canvas, this.m_weatherData);
-            //---Graphics---
             //---Mouse Handler---
             var self = this;
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
@@ -128,6 +119,9 @@ var KitchenInfoStation;
             else if (ret == SwitchScreen.WeatherForecast) {
                 screen = this.m_forecastScreen;
             }
+            else if (ret == SwitchScreen.Room) {
+                screen = this.m_room;
+            }
             // Switch screen
             this.switchPage(screen, refresh);
         };
@@ -143,14 +137,6 @@ var KitchenInfoStation;
             }
         };
         ApplicationKitchen.prototype.LoadGraphics = function () {
-            /*
-            this.setNumberFloors (this.m_siteData.getNumberFloors());
-            
-            
-            for (let id in this.m_floors) {
-                this.m_floors[id].LoadGraphics();
-            }
-            */
             // Temperature
             if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
                 this.m_tempMarks.length = this.m_siteData.tempSensors.length;
@@ -245,8 +231,6 @@ var KitchenInfoStation;
             this.m_weatherData = null;
             //Graphics
             this.stopWatch = null;
-            this.timeString = "---";
-            this.dateString = "---";
             this.appWatch = false;
             //---Data---
             this.m_siteData = m_siteData;
@@ -324,14 +308,14 @@ var KitchenInfoStation;
             this.timeText.fontColor = textColor;
             this.timeText.textAlign = "right";
             this.timeText.textBaseline = "middle";
-            this.timeText.paint(this.timeString);
+            this.timeText.paint(this.m_siteData.timeString);
             //Date
             this.dateText.fontSize = fontSizeDate;
             this.dateText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.dateText.fontColor = textColor;
             this.dateText.textAlign = "right";
             this.dateText.textBaseline = "middle";
-            this.dateText.paint(this.dateString);
+            this.dateText.paint(this.m_siteData.dateString);
             //Inside temperature
             this.tmpInText.rect.y = 220;
             this.tmpInText.fontSize = fontSizeTempIn;
@@ -376,13 +360,6 @@ var KitchenInfoStation;
             ctx.fillStyle = whiteColor;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
-        };
-        ScreenMain.prototype.getServerData = function (url) {
-            var data = getAjax(url, 'InfoData');
-            if (data != null) {
-                this.timeString = data['time'];
-                this.dateString = data['date'];
-            }
         };
         return ScreenMain;
     }(Screen));

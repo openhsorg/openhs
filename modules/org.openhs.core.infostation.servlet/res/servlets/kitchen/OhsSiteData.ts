@@ -9,11 +9,14 @@ module OhsSiteData {
         private fastTimerGetData;
         private slowTimerGetData;
         
-        private floors: Array <Floor>;
-        private rooms: Array <Room>;
-        public tempSensors: Array <TemperatureSensor>;
-        public switches: Array <Switch>;
-        public doors: Array <Door>;
+        private floors: Array <Floor> = null;
+        private rooms: Array <Room> = null;
+        public tempSensors: Array <TemperatureSensor> = null;
+        public switches: Array <Switch> = null;
+        public doors: Array <Door> = null;
+        
+        public timeString: string = "---";
+        public dateString: string = "---";
         
         constructor () {            
             this.floors = new Array<Floor>();
@@ -150,6 +153,9 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
+                
+                this.dateString = data['date'];
+                this.timeString = data['time'];
             
                 // Floors                  
                 this.setNumberFloors (parseInt(data['number_floors']));

@@ -5,6 +5,13 @@ var OhsSiteData;
 (function (OhsSiteData) {
     var SiteData = (function () {
         function SiteData() {
+            this.floors = null;
+            this.rooms = null;
+            this.tempSensors = null;
+            this.switches = null;
+            this.doors = null;
+            this.timeString = "---";
+            this.dateString = "---";
             this.floors = new Array();
             this.rooms = new Array();
             this.tempSensors = new Array();
@@ -119,6 +126,8 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
+                this.dateString = data['date'];
+                this.timeString = data['time'];
                 // Floors                  
                 this.setNumberFloors(parseInt(data['number_floors']));
                 for (var id in this.floors) {

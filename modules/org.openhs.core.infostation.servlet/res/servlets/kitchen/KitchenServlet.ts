@@ -26,15 +26,7 @@ module KitchenInfoStation {
     import TemperatureSensor = OhsSiteData.TemperatureSensor;    
     import Door = OhsSiteData.Door;
     import Switch = OhsSiteData.Switch;                   
-      /*     
-    enum Application {
-        None,
-        Watch,    
-        Floor,
-        WeatherForecast,
-        Room
-    }   
-    */
+
     enum SwitchScreen {
         Main,
         Watch,    
@@ -50,12 +42,7 @@ module KitchenInfoStation {
             "/infores/servlets/kitchen/cloudRain.png",        
             "/infores/servlets/kitchen/cloudStorm.png",        
            "/infores/servlets/kitchen/cloudSnow.png"       
-    ];
-    
- 
-//    var screen = SwitchScreen.Main;
- //   var appMode = Application.None;  //Mode of application
- //   var roomNum = 1; //number of selected room for Application.Room       
+    ];     
         
     const whiteColor       = "#FFFFFF";
     const blackColor       = "#000000";
@@ -105,9 +92,9 @@ module KitchenInfoStation {
         private m_floor: ScreenFloor =  null;        
         
         //Graphics
-        private m_tempMarks: Array<TempMark> = new Array<TempMark>();
-        private m_switchMarks: Array<SwitchMark> = new Array<SwitchMark>();
-        private m_doorMarks: Array<DoorMark> = new Array<DoorMark>();        
+        private m_tempMarks: Array<TempMark> = null;
+        private m_switchMarks: Array<SwitchMark> = null;
+        private m_doorMarks: Array<DoorMark> = null;        
         
         // Handlers
        // private screen: Screen;
@@ -123,14 +110,16 @@ module KitchenInfoStation {
             this.m_siteData = new SiteData ();
             this.m_weatherData = new WeatherDataForecast ();
             
+            //---Graphics---
+            this.m_tempMarks = new Array<TempMark>();
+            this.m_switchMarks = new Array<SwitchMark>();
+            this.m_doorMarks = new Array<DoorMark>();              
+            
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
             this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_tempMarks, this.m_switchMarks, this.m_doorMarks);
             this.m_room = new ScreenRoom(this.canvas, this.m_siteData);      
-            this.m_forecastScreen = new ScreenWeatherForecast (this.canvas, this.m_weatherData);   
-            
-            //---Graphics---
-            
+            this.m_forecastScreen = new ScreenWeatherForecast (this.canvas, this.m_weatherData);                               
             
             //---Mouse Handler---
             var self = this;                    
@@ -165,39 +154,32 @@ module KitchenInfoStation {
                 screen = this.m_screenMain;
                                 
             } else if (ret == SwitchScreen.WeatherForecast) {
-                screen = this.m_forecastScreen;            
+                screen = this.m_forecastScreen;     
+                       
+            } else if (ret == SwitchScreen.Room) {
+                screen = this.m_room;
+                            
             }
             
             // Switch screen
             this.switchPage(screen, refresh);
         }
         
-        private switchPage(next: Screen, refreshRate: number) {
-            
+        private switchPage(next: Screen, refreshRate: number) {            
             if (this.currPage != null && next != null) {                                
                 this.currPage.close();
                 this.currPage = next.open(refreshRate);                                 
             }
         }
 
-        private getServerData () {
-            
+        private getServerData () {            
             if (this.currPage != null) {
                 this.currPage.getServerData(this.url);                
             }
         }
         
-        private LoadGraphics () {
-            /*            
-            this.setNumberFloors (this.m_siteData.getNumberFloors());    
-            
-            
-            for (let id in this.m_floors) {
-                this.m_floors[id].LoadGraphics();
-            }
-            */
-            
-  // Temperature
+        private LoadGraphics () {            
+            // Temperature
             if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
                 this.m_tempMarks.length = this.m_siteData.tempSensors.length;
                 
@@ -321,9 +303,6 @@ module KitchenInfoStation {
         public timeText:  Text;
         public dateText:  Text;
         public windText:  Text;     
-        
-        private timeString: string = "---";
-        private dateString: string = "---";
 
         private appWatch: boolean = false;
       //  public timerPaint;
@@ -425,7 +404,7 @@ module KitchenInfoStation {
             this.timeText.fontColor = textColor;
             this.timeText.textAlign = "right";
             this.timeText.textBaseline = "middle";           
-            this.timeText.paint(this.timeString);        
+            this.timeText.paint(this.m_siteData.timeString);        
                     
             //Date
             this.dateText.fontSize = fontSizeDate;
@@ -433,7 +412,7 @@ module KitchenInfoStation {
             this.dateText.fontColor = textColor;
             this.dateText.textAlign = "right";
             this.dateText.textBaseline = "middle";           
-            this.dateText.paint(this.dateString);                
+            this.dateText.paint(this.m_siteData.dateString);                
             
             //Inside temperature
             this.tmpInText.rect.y =  220;
@@ -476,9 +455,7 @@ module KitchenInfoStation {
             
             if (this.appWatch) {        
                      this.stopWatch.paint();    
-            }              
-            
-            
+            }                                      
         }
     
         private paintStaticImage() {
@@ -488,19 +465,7 @@ module KitchenInfoStation {
            ctx.fillStyle = whiteColor;
            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
            ctx.restore();   
-        }    
-        
-        public getServerData (url: string) {
-            
-            var data = getAjax(url, 'InfoData');
-                    
-            if (data != null) {
-                
-                this.timeString = data['time'];
-                this.dateString = data['date'];           
-                             
-            }          
-        }            
+        }          
     }
        
     class ScreenWeatherForecast extends Screen {
