@@ -194,51 +194,46 @@ module OhsSiteData {
             }      
         }                        
     }
-        
-    export class Floor {
     
-        public valid: boolean = false; //content of the forecast is valid
+    export class Thing {
         
-        public path:  string; //OpenHS path
+        public valid: boolean = false; //content of the forecast is valid        
+        protected path:  string; //OpenHS path     
+        
+        constructor () {
+            this.path = '';
+        }
         
         public setPath (path: string) {
             this.path = path;
-        }                
+        }   
+        
+        public getPath() {
+            return this.path;
+        }
+        
+    }
+        
+    export class Floor extends Thing {
+                   
     }
     
-    export class Room {
-    
-        public valid: boolean = false; //content of the forecast is valid     
-        
-        public path:  string; //OpenHS path
-        
-        public setPath (path: string) {
-            this.path = path;
-        }                
+    export class Room extends Thing{
+              
     }    
     
-    export class TemperatureSensor {
-    
-        protected valid: boolean = false; //content of the forecast is valid              
-        protected path:  string; //OpenHS path
+    export class TemperatureSensor extends Thing{
         
         public temp:  number;        
         public x:   number;
         public y:   number;      
         
-        constructor () {            
+        constructor () { 
+            super();           
             this.x = 0;
             this.y = 0;
             this.temp = 0.0;
-        }        
-        
-        public getPath () {
-            return this.path;
-        }   
-        
-        public setPath (path: string) {
-            this.path = path;
-        }          
+        }             
         
         public getServerData () {       
              
@@ -258,16 +253,16 @@ module OhsSiteData {
         }        
     } 
     
-    export class Switch {
+    export class Switch extends Thing{
     
-        protected      valid:  boolean = false; //content of the forecast is valid       
+ 
         protected   stateInt:  number; //        
-        protected path:  string; //OpenHS path
         
         public x:   number;
         public y:   number;        
         
-        constructor () {            
+        constructor () {     
+            super ();       
             this.x = 0;
             this.y = 0;
             
@@ -276,15 +271,7 @@ module OhsSiteData {
         
         public isValid() {
             return this.valid;
-        }
-        
-        public setPath (path: string) {
-            this.path = path;
-        }  
-        
-        public getPath () {
-            return this.path;
-        }         
+        }       
  
         public getState () {
             return this.stateInt;
@@ -318,11 +305,7 @@ module OhsSiteData {
         }
     }   
     
-    export class Door {
-    
-        public valid: boolean = false; //content is valid       
-        
-        public path:  string; //OpenHS path
+    export class Door extends Thing {
         
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
@@ -331,16 +314,13 @@ module OhsSiteData {
         public y:   number;
         
         constructor () {
+            super();
             this.open = false;
             this.locked = false;
             
             this.x = 0;
             this.y = 0;
-        }
-        
-        public setPath (path: string) {
-            this.path = path;
-        }    
+        } 
         
         public getState () {                                   
             if (!this.valid) return 0;

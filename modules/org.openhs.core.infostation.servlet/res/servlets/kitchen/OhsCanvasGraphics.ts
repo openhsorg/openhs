@@ -8,7 +8,114 @@ import SiteData = OhsSiteData.SiteData;
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
-import Switch = OhsSiteData.Switch;         
+import Switch = OhsSiteData.Switch;
+import Thing = OhsSiteData.Thing;     
+    
+    export class Graphics {
+        
+        private canvas:              HTMLCanvasElement;
+        public ctx:                  CanvasRenderingContext2D;          
+        
+        private m_siteData: SiteData = null;
+        
+        private m_tempMarks: Array<TempMark> = null;
+        public m_switchMarks: Array<SwitchMark> = null;
+        public m_doorMarks: Array<DoorMark> = null;  
+        
+        private timerUpdateGraphics;
+        
+        constructor (canvas: HTMLCanvasElement, m_siteData: SiteData) {    
+            this.canvas = canvas; 
+            this.ctx = canvas.getContext("2d");    
+            
+            //---Data---
+            this.m_siteData = m_siteData;
+            
+            //---Graphics---            
+            this.m_tempMarks = new Array<TempMark>();
+            this.m_switchMarks = new Array<SwitchMark>();
+            this.m_doorMarks = new Array<DoorMark>();     
+            
+            //---Timer---
+            this.timerUpdateGraphicsEvent(10000);
+            
+        }
+        
+        private updateGraphics () {
+            // Temperature
+            if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
+                this.m_tempMarks.length = this.m_siteData.tempSensors.length;
+                
+            } else if (this.m_tempMarks.length < this.m_siteData.tempSensors.length) {
+                for (var i = this.m_tempMarks.length; i < this.m_siteData.tempSensors.length; i++) {
+                    this.m_tempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+                }
+            }            
+    
+            for (let id in this.m_siteData.tempSensors) {
+                this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
+                this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
+                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
+            }
+            
+            // Switches
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
+                
+            } else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+                    this.m_switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));                
+                }
+            }            
+    
+            for (let id in this.m_siteData.switches) {
+                this.m_switchMarks[id].switch = this.m_siteData.switches[id];
+            }          
+                    
+            // Doors
+            if (this.m_doorMarks.length > this.m_siteData.doors.length) {
+                this.m_doorMarks.length = this.m_siteData.doors.length;
+                
+            } else if (this.m_doorMarks.length < this.m_siteData.doors.length) {
+                for (var i = this.m_doorMarks.length; i < this.m_siteData.doors.length; i++) {
+                    this.m_doorMarks.push(new DoorMark (this.ctx, new Rect (0, 0, 0, 0)));
+                }
+            }            
+    
+            for (let id in this.m_siteData.doors) {
+                this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
+                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);                        
+            }                       
+        }        
+        
+        private timerUpdateGraphicsEvent(step : number) {     
+           this.updateGraphics();  
+           window.clearTimeout(this.timerUpdateGraphics);
+           this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
+        }   
+        
+        public getTempMarks() {
+            return this.m_tempMarks;
+        }
+        
+        public getTempMarkInside(path: string) {            
+            
+            var tempMarksNew: Array<TempMark> = new Array<TempMark>();
+            
+            for (let i in this.m_tempMarks) {
+                
+                var sensor: TemperatureSensor = this.m_tempMarks[i].getData();
+                
+                var pathSensor: string = sensor.getPath();
+                
+                if (pathSensor.search(path) != -1) {
+                    tempMarksNew.push(this.m_tempMarks[i]);
+                }                               
+            }
+            
+            return tempMarksNew;            
+        }               
+    }
                 
     export class Rect {
                                        
@@ -42,7 +149,9 @@ import Switch = OhsSiteData.Switch;
     export class Mark {
         
         protected   ctx:    CanvasRenderingContext2D;  
-        public      rect:   Rect;        
+        public      rect:   Rect;
+        
+        public thing: Thing = null;
         
         constructor (ctx: CanvasRenderingContext2D, rect: Rect){                    
             this.ctx = ctx;        
@@ -73,7 +182,6 @@ import Switch = OhsSiteData.Switch;
             
             this.img = new Image();                                
             this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
-
         }    
         
         public paint () {   
@@ -225,6 +333,7 @@ import Switch = OhsSiteData.Switch;
         protected border:    boolean = false; //debug border
         
         private temp:   number = -100.0;
+        private tempSensor: TemperatureSensor = null;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
@@ -246,7 +355,15 @@ import Switch = OhsSiteData.Switch;
         setTemp (temp: number) {
             this.temp = temp;    
         }
-    
+        
+        public setData (temp: TemperatureSensor){
+            this.tempSensor = temp;
+        }
+        
+        public getData () {
+            return this.tempSensor;
+        }
+            
         public paint () {          
             this.ctx.save();
             this.ctx.beginPath();
@@ -260,7 +377,10 @@ import Switch = OhsSiteData.Switch;
                     
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(this.temp + " \u00B0C");
+            
+            if (this.tempSensor != null) {
+                this.txt.paint(this.tempSensor.temp + " \u00B0C");
+            }
             
             //Draw image...
          //   if (this.imgLoaded) {     

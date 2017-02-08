@@ -7,6 +7,87 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var OhsCanvasGraphics;
 (function (OhsCanvasGraphics) {
+    var Graphics = (function () {
+        function Graphics(canvas, m_siteData) {
+            this.m_siteData = null;
+            this.m_tempMarks = null;
+            this.m_switchMarks = null;
+            this.m_doorMarks = null;
+            this.canvas = canvas;
+            this.ctx = canvas.getContext("2d");
+            //---Data---
+            this.m_siteData = m_siteData;
+            //---Graphics---            
+            this.m_tempMarks = new Array();
+            this.m_switchMarks = new Array();
+            this.m_doorMarks = new Array();
+            //---Timer---
+            this.timerUpdateGraphicsEvent(10000);
+        }
+        Graphics.prototype.updateGraphics = function () {
+            // Temperature
+            if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
+                this.m_tempMarks.length = this.m_siteData.tempSensors.length;
+            }
+            else if (this.m_tempMarks.length < this.m_siteData.tempSensors.length) {
+                for (var i = this.m_tempMarks.length; i < this.m_siteData.tempSensors.length; i++) {
+                    this.m_tempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+                }
+            }
+            for (var id in this.m_siteData.tempSensors) {
+                this.m_tempMarks[id].setSize(new Rect(this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
+                this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);
+                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);
+            }
+            // Switches
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
+            }
+            else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+                    this.m_switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
+                }
+            }
+            for (var id in this.m_siteData.switches) {
+                this.m_switchMarks[id].switch = this.m_siteData.switches[id];
+            }
+            // Doors
+            if (this.m_doorMarks.length > this.m_siteData.doors.length) {
+                this.m_doorMarks.length = this.m_siteData.doors.length;
+            }
+            else if (this.m_doorMarks.length < this.m_siteData.doors.length) {
+                for (var i = this.m_doorMarks.length; i < this.m_siteData.doors.length; i++) {
+                    this.m_doorMarks.push(new DoorMark(this.ctx, new Rect(0, 0, 0, 0)));
+                }
+            }
+            for (var id in this.m_siteData.doors) {
+                this.m_doorMarks[id].setSize(new Rect(this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
+                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);
+            }
+        };
+        Graphics.prototype.timerUpdateGraphicsEvent = function (step) {
+            var _this = this;
+            this.updateGraphics();
+            window.clearTimeout(this.timerUpdateGraphics);
+            this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
+        };
+        Graphics.prototype.getTempMarks = function () {
+            return this.m_tempMarks;
+        };
+        Graphics.prototype.getTempMarkInside = function (path) {
+            var tempMarksNew = new Array();
+            for (var i in this.m_tempMarks) {
+                var sensor = this.m_tempMarks[i].getData();
+                var pathSensor = sensor.getPath();
+                if (pathSensor.search(path) != -1) {
+                    tempMarksNew.push(this.m_tempMarks[i]);
+                }
+            }
+            return tempMarksNew;
+        };
+        return Graphics;
+    }());
+    OhsCanvasGraphics.Graphics = Graphics;
     var Rect = (function () {
         function Rect(x, y, w, h) {
             this.x = 0;
@@ -35,6 +116,7 @@ var OhsCanvasGraphics;
      */
     var Mark = (function () {
         function Mark(ctx, rect) {
+            this.thing = null;
             this.ctx = ctx;
             this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
         }
@@ -182,6 +264,7 @@ var OhsCanvasGraphics;
             this.img = null;
             this.border = false; //debug border
             this.temp = -100.0;
+            this.tempSensor = null;
             this.txt = new Text(ctx, rect);
             this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
@@ -196,6 +279,12 @@ var OhsCanvasGraphics;
         TempMark.prototype.setTemp = function (temp) {
             this.temp = temp;
         };
+        TempMark.prototype.setData = function (temp) {
+            this.tempSensor = temp;
+        };
+        TempMark.prototype.getData = function () {
+            return this.tempSensor;
+        };
         TempMark.prototype.paint = function () {
             this.ctx.save();
             this.ctx.beginPath();
@@ -208,7 +297,9 @@ var OhsCanvasGraphics;
             this.ctx.restore();
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(this.temp + " \u00B0C");
+            if (this.tempSensor != null) {
+                this.txt.paint(this.tempSensor.temp + " \u00B0C");
+            }
             //Draw image...
             //   if (this.imgLoaded) {     
             this.ctx.save();

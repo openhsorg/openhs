@@ -17,6 +17,7 @@ module KitchenInfoStation {
     import DoorMark = OhsCanvasGraphics.DoorMark;
     import Icon = OhsCanvasGraphics.Icon;
     import Iconset = OhsCanvasGraphics.Iconset;
+    import Graphics = OhsCanvasGraphics.Graphics;
         
     import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     import WeatherForecast = OhsWeatherData.WeatherForecast;    
@@ -89,12 +90,14 @@ module KitchenInfoStation {
         private m_screenMain: ScreenMain = null;
         public m_forecastScreen: ScreenWeatherForecast = null; //forecast screen            
         private m_room: ScreenRoom = null;
-        private m_floor: ScreenFloor =  null;        
+        private m_floor: ScreenFloor =  null;
+       
         
         //Graphics
-        private m_tempMarks: Array<TempMark> = null;
-        private m_switchMarks: Array<SwitchMark> = null;
-        private m_doorMarks: Array<DoorMark> = null;        
+        private m_graphics: Graphics = null;   
+     //   private m_tempMarks: Array<TempMark> = null;
+    //    private m_switchMarks: Array<SwitchMark> = null;
+    //    private m_doorMarks: Array<DoorMark> = null;        
         
         // Handlers
        // private screen: Screen;
@@ -111,14 +114,17 @@ module KitchenInfoStation {
             this.m_weatherData = new WeatherDataForecast ();
             
             //---Graphics---
+            /*
             this.m_tempMarks = new Array<TempMark>();
             this.m_switchMarks = new Array<SwitchMark>();
-            this.m_doorMarks = new Array<DoorMark>();              
+            this.m_doorMarks = new Array<DoorMark>();
+            */
+            this.m_graphics = new Graphics(this.canvas, this.m_siteData);                  
             
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
-            this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_tempMarks, this.m_switchMarks, this.m_doorMarks);
-            this.m_room = new ScreenRoom(this.canvas, this.m_siteData);      
+            this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_graphics);
+            this.m_room = new ScreenRoom(this.canvas, this.m_siteData, this.m_graphics);      
             this.m_forecastScreen = new ScreenWeatherForecast (this.canvas, this.m_weatherData);                               
             
             //---Mouse Handler---
@@ -129,7 +135,7 @@ module KitchenInfoStation {
            // this.screen = Screen.Main;
             
             //---Timer Setup---
-            this.timerLoadGraphicsEvent(this.refreshRateMain);
+         //   this.timerLoadGraphicsEvent(this.refreshRateMain);
             //this.timerPaintEvent(5000);
             this.timerGetServerDataEvent(this.refreshRateMain);  
               
@@ -157,7 +163,7 @@ module KitchenInfoStation {
                 screen = this.m_forecastScreen;     
                        
             } else if (ret == SwitchScreen.Room) {
-                screen = this.m_room;
+             //   screen = this.m_room;
                             
             }
             
@@ -177,7 +183,7 @@ module KitchenInfoStation {
                 this.currPage.getServerData(this.url);                
             }
         }
-        
+        /*
         private LoadGraphics () {            
             // Temperature
             if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
@@ -224,18 +230,19 @@ module KitchenInfoStation {
             }               
             
         }
-        
+        */
         private timerGetServerDataEvent(step : number) {
            this.getServerData();
            window.clearTimeout(this.timerData);
            this.timerData = window.setTimeout(() => this.timerGetServerDataEvent(step), step); 
         }         
-  
+  /*
         private timerLoadGraphicsEvent(step : number) {     
            this.LoadGraphics();  
            window.clearTimeout(this.timerLoadGraphics);
            this.timerLoadGraphics = window.setTimeout(() => this.timerLoadGraphicsEvent(step), step); 
-        }                  
+        }   
+        */               
     }
     
     export class Screen {
@@ -815,10 +822,12 @@ module KitchenInfoStation {
         protected thingPath: string = "";
         
         //Graphics
+        private m_graphics: Graphics = null;
+        /*
         private m_tempMarks: Array<TempMark> = null;
         private m_switchMarks: Array<SwitchMark> = null;
         private m_doorMarks: Array<DoorMark> = null;          
-
+*/
         private imgFloor:HTMLImageElement = null;        
         private imgFloorLoaded: boolean = false;
         
@@ -827,14 +836,16 @@ module KitchenInfoStation {
         private txtNumRooms:  Text;
         private timerData;
         
-        constructor (canvas: HTMLCanvasElement, siteData:  SiteData, tempMarks: Array<TempMark>, switchMarks: Array<SwitchMark>, doorMarks: Array<DoorMark>) {                
+        constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {                
             super (canvas);
             
+            this.m_graphics = m_graphics;
+            /*
             this.siteData = siteData;
             this.m_tempMarks = tempMarks;
             this.m_switchMarks = switchMarks;
             this.m_doorMarks = doorMarks;
-            
+            */
             this.imgFloor = new Image();
             this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";            
          
@@ -876,18 +887,20 @@ module KitchenInfoStation {
          //   }      
         
             // Temperature sensors...
-            for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paint();            
+            var tempMarks = this.m_graphics.getTempMarks();
+            
+            for (let id in tempMarks) {
+                tempMarks[id].paint();            
             }
             
             // Switches...
-            for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paint();            
+            for (let id in this.m_graphics.m_switchMarks) {
+                this.m_graphics.m_switchMarks[id].paint();            
             }        
             
             // Doors
-            for (let id in this.m_doorMarks) {
-                this.m_doorMarks[id].paint();            
+            for (let id in this.m_graphics.m_doorMarks) {
+                this.m_graphics.m_doorMarks[id].paint();            
             }                  
             
              //Number rooms
@@ -906,11 +919,13 @@ module KitchenInfoStation {
             let cId: number = -1;
             let n:   number = -1;
             
-            for (let id in this.m_tempMarks) {
+             var tempMarks = this.m_graphics.getTempMarks();
+            
+            for (let id in tempMarks) {
                  
                 n++;
                 
-                if (this.m_tempMarks[id].isClicked(clx, cly)) {
+                if (tempMarks[id].isClicked(clx, cly)) {
                     cId = n;
                  }
             }        
@@ -920,9 +935,9 @@ module KitchenInfoStation {
     
         public clickedSwitchMark (clx:number, cly:number) {        
             
-            for (let id in this.m_switchMarks) {
-                if (this.m_switchMarks[id].isClicked(clx, cly)) {
-                    return this.m_switchMarks[id].switch;
+            for (let id in this.m_graphics.m_switchMarks) {
+                if (this.m_graphics.m_switchMarks[id].isClicked(clx, cly)) {
+                    return this.m_graphics.m_switchMarks[id].switch;
                  }
             }                        
             return null;
@@ -930,15 +945,17 @@ module KitchenInfoStation {
     }
         
     class ScreenRoom extends Screen {
-            
-        private TempMarks: Array<TempMark> = new Array<TempMark>();
+                    
+        //Graphics
+        private m_graphics: Graphics = null;    
         
-        private imgRoom:HTMLImageElement = null;
-        
+        private imgRoom:HTMLImageElement = null;        
         private imgRoomLoaded: boolean = false;
         
-        constructor (canvas: HTMLCanvasElement, siteData:  SiteData) {            
+        constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
+            
+            this.m_graphics = m_graphics;         
             
             this.imgRoom = new Image();
             this.imgRoom.src="/infores/servlets/kitchen/room1.png";  
@@ -947,18 +964,26 @@ module KitchenInfoStation {
               this.imgRoomLoaded = true;
             }          
             
-            this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
-            this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));               
+           // this..TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+            //this.TempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));               
         }     
         
         public paint() {
             const ctx = this.ctx;
             
-            //Draw image...
-          //  if (this.imgRoomLoaded) {     
+            //Draw image... 
             ctx.save();           
             ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
-            ctx.restore();        
+            ctx.restore();
+            
+            // Temperature sensors...
+            var tempMarks = this.m_graphics.getTempMarks();
+            
+            for (let id in tempMarks) {
+                tempMarks[id].paint();            
+            }            
+            
+            
          //   }      
         /*
             //Outside mark
@@ -975,7 +1000,7 @@ module KitchenInfoStation {
             
             let cId: number = -1;
             let n:   number = 0;
-            
+            /*
             for (let id in this.TempMarks) {
                  
                 n++;
@@ -984,7 +1009,7 @@ module KitchenInfoStation {
                     cId = n;
                  }
             }        
-                    
+                    */
             return cId;
         }                 
     }    

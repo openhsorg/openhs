@@ -1,6 +1,11 @@
 /**
  * Module with data structure...
  */
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var OhsSiteData;
 (function (OhsSiteData) {
     var SiteData = (function () {
@@ -158,39 +163,44 @@ var OhsSiteData;
         return SiteData;
     }());
     OhsSiteData.SiteData = SiteData;
-    var Floor = (function () {
+    var Thing = (function () {
+        function Thing() {
+            this.valid = false; //content of the forecast is valid        
+            this.path = '';
+        }
+        Thing.prototype.setPath = function (path) {
+            this.path = path;
+        };
+        Thing.prototype.getPath = function () {
+            return this.path;
+        };
+        return Thing;
+    }());
+    OhsSiteData.Thing = Thing;
+    var Floor = (function (_super) {
+        __extends(Floor, _super);
         function Floor() {
-            this.valid = false; //content of the forecast is valid
+            _super.apply(this, arguments);
         }
-        Floor.prototype.setPath = function (path) {
-            this.path = path;
-        };
         return Floor;
-    }());
+    }(Thing));
     OhsSiteData.Floor = Floor;
-    var Room = (function () {
+    var Room = (function (_super) {
+        __extends(Room, _super);
         function Room() {
-            this.valid = false; //content of the forecast is valid     
+            _super.apply(this, arguments);
         }
-        Room.prototype.setPath = function (path) {
-            this.path = path;
-        };
         return Room;
-    }());
+    }(Thing));
     OhsSiteData.Room = Room;
-    var TemperatureSensor = (function () {
+    var TemperatureSensor = (function (_super) {
+        __extends(TemperatureSensor, _super);
         function TemperatureSensor() {
-            this.valid = false; //content of the forecast is valid              
+            _super.call(this);
             this.x = 0;
             this.y = 0;
             this.temp = 0.0;
         }
-        TemperatureSensor.prototype.getPath = function () {
-            return this.path;
-        };
-        TemperatureSensor.prototype.setPath = function (path) {
-            this.path = path;
-        };
         TemperatureSensor.prototype.getServerData = function () {
             var req = {
                 orderId: "TempSensor",
@@ -205,23 +215,18 @@ var OhsSiteData;
             }
         };
         return TemperatureSensor;
-    }());
+    }(Thing));
     OhsSiteData.TemperatureSensor = TemperatureSensor;
-    var Switch = (function () {
+    var Switch = (function (_super) {
+        __extends(Switch, _super);
         function Switch() {
-            this.valid = false; //content of the forecast is valid       
+            _super.call(this);
             this.x = 0;
             this.y = 0;
             this.stateInt = 0;
         }
         Switch.prototype.isValid = function () {
             return this.valid;
-        };
-        Switch.prototype.setPath = function (path) {
-            this.path = path;
-        };
-        Switch.prototype.getPath = function () {
-            return this.path;
         };
         Switch.prototype.getState = function () {
             return this.stateInt;
@@ -247,19 +252,17 @@ var OhsSiteData;
             }
         };
         return Switch;
-    }());
+    }(Thing));
     OhsSiteData.Switch = Switch;
-    var Door = (function () {
+    var Door = (function (_super) {
+        __extends(Door, _super);
         function Door() {
-            this.valid = false; //content is valid       
+            _super.call(this);
             this.open = false;
             this.locked = false;
             this.x = 0;
             this.y = 0;
         }
-        Door.prototype.setPath = function (path) {
-            this.path = path;
-        };
         Door.prototype.getState = function () {
             if (!this.valid)
                 return 0;
@@ -291,7 +294,7 @@ var OhsSiteData;
             }
         };
         return Door;
-    }());
+    }(Thing));
     OhsSiteData.Door = Door;
     var Window = (function () {
         function Window() {
