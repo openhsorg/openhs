@@ -135,6 +135,7 @@ var OhsSiteData;
                 this.timeString = data['time'];
                 // Floors                  
                 this.setNumberFloors(parseInt(data['number_floors']));
+                //  window.alert("floors:   " + this.getNumberFloors());
                 for (var id in this.floors) {
                     this.floors[id].setPath(data['floorPath_' + id]);
                 }

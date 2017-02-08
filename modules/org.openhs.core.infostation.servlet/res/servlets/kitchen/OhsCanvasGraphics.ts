@@ -20,7 +20,7 @@ import Thing = OhsSiteData.Thing;
         
         private m_tempMarks: Array<TempMark> = null;
         public m_switchMarks: Array<SwitchMark> = null;
-        public m_doorMarks: Array<DoorMark> = null;  
+        protected m_doorMarks: Array<DoorMark> = null;  
         
         private timerUpdateGraphics;
         
@@ -95,48 +95,98 @@ import Thing = OhsSiteData.Thing;
            this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
         }   
         
-        public isClicked(x: number, y: number) {
+        public isClicked(x: number, y: number, path: string) {
             
-            for (let id in this.m_switchMarks) {                
-                if(this.m_switchMarks[id].isClicked(x, y)) {
-                    return <Thing> this.m_switchMarks[id].getData();
+            var switches = this.getSwitchMarks(path);
+            
+            for (let id in switches) {                
+                if(switches[id].isClicked(x, y)) {
+                    return <Thing> switches[id].getData();
                 }
             }  
             
-            for (let id in this.m_tempMarks) {                
-                if(this.m_tempMarks[id].isClicked(x, y)) {
-                    return <Thing> this.m_tempMarks[id].getData();
+            var temps = this.getTempMarks(path);
+            
+            for (let id in temps) {                
+                if(temps[id].isClicked(x, y)) {
+                    return <Thing> temps[id].getData();
                 }
-            }  
-            
-            for (let id in this.m_doorMarks) {                
-                if(this.m_doorMarks[id].isClicked(x, y)) {
-                    return <Thing> this.m_doorMarks[id].getData();
-                }
-            }              
-        }
-        
-        public getTempMarks() {
-            return this.m_tempMarks;
-        }
-        
-        public getTempMarkInside(path: string) {            
-            
-            var tempMarksNew: Array<TempMark> = new Array<TempMark>();
-            
-            for (let i in this.m_tempMarks) {
-                
-                var sensor: TemperatureSensor = this.m_tempMarks[i].getData();
-                
-                var pathSensor: string = sensor.getPath();
-                
-                if (pathSensor.search(path) != -1) {
-                    tempMarksNew.push(this.m_tempMarks[i]);
-                }                               
             }
             
-            return tempMarksNew;            
-        }               
+            var doors = this.getDoorMarks(path);
+            
+            for (let id in doors) {                
+                if(doors[id].isClicked(x, y)) {
+                    return <Thing> doors[id].getData();
+                }
+            }              
+        }        
+        
+        public getTempMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_tempMarks;
+                
+            } else {
+            
+                 return this.m_tempMarks.filter(function(element){
+                      
+                    if (element instanceof TempMark) {
+                     
+                        var mark: TempMark = <TempMark> element;
+                        
+                        var thing: TemperatureSensor = mark.getData();
+                        
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false; 
+                 });                
+             }
+        } 
+        
+        public getSwitchMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_switchMarks;
+                
+            } else {
+            
+                 return this.m_switchMarks.filter(function(element){
+                      
+                    if (element instanceof SwitchMark) {
+                     
+                        var mark: SwitchMark = <SwitchMark> element;
+                        
+                        var thing: Switch = mark.getData();
+                        
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false; 
+                 });                
+             }
+        } 
+        
+        public getDoorMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_doorMarks;
+                
+            } else {
+            
+                 return this.m_doorMarks.filter(function(element){
+                      
+                    if (element instanceof DoorMark) {
+                     
+                        var mark: DoorMark = <DoorMark> element;
+                        
+                        var thing: Door = mark.getData();
+                        
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false; 
+                 });                
+             }
+        }         
     }
                 
     export class Rect {

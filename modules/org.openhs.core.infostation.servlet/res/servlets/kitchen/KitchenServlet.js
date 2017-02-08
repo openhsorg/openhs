@@ -74,11 +74,7 @@ var KitchenInfoStation;
             this.m_floor = null;
             //Graphics
             this.m_graphics = null;
-            //   private m_tempMarks: Array<TempMark> = null;
-            //    private m_switchMarks: Array<SwitchMark> = null;
-            //    private m_doorMarks: Array<DoorMark> = null;        
             // Handlers
-            // private screen: Screen;
             this.currPage = null;
             this.refreshRateMain = 5000;
             this.canvas = canvas;
@@ -87,11 +83,6 @@ var KitchenInfoStation;
             this.m_siteData = new SiteData();
             this.m_weatherData = new WeatherDataForecast();
             //---Graphics---
-            /*
-            this.m_tempMarks = new Array<TempMark>();
-            this.m_switchMarks = new Array<SwitchMark>();
-            this.m_doorMarks = new Array<DoorMark>();
-            */
             this.m_graphics = new Graphics(this.canvas, this.m_siteData);
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
@@ -101,38 +92,41 @@ var KitchenInfoStation;
             //---Mouse Handler---
             var self = this;
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
-            //---Handlers---
-            // this.screen = Screen.Main;
             //---Timer Setup---
-            //   this.timerLoadGraphicsEvent(this.refreshRateMain);
-            //this.timerPaintEvent(5000);
             this.timerGetServerDataEvent(this.refreshRateMain);
-            this.currPage = this.m_screenMain.open(this.refreshRateMain);
+            //---Set current displayed page---
+            this.openPage(this.m_screenMain, this.refreshRateMain);
         }
         ApplicationKitchen.prototype.MouseClickHandler = function (event) {
             var mousePos = getMousePos(this.canvas, event);
-            var ret = this.currPage.MouseClickHandler(event);
+            /*
+            * handling in current page...
+            */
+            var retVal = this.currPage.MouseClickHandler(event);
             var refresh = this.refreshRateMain;
             var screen = null;
-            if (ret == SwitchScreen.Floor) {
+            if (retVal.nextScreen == SwitchScreen.Floor) {
                 refresh = 50;
                 screen = this.m_floor;
+                this.m_floor.setThing(this.m_siteData.floors[1]);
             }
-            else if (ret == SwitchScreen.Main) {
+            else if (retVal.nextScreen == SwitchScreen.Main) {
                 screen = this.m_screenMain;
             }
-            else if (ret == SwitchScreen.WeatherForecast) {
+            else if (retVal.nextScreen == SwitchScreen.WeatherForecast) {
                 screen = this.m_forecastScreen;
             }
-            else if (ret == SwitchScreen.Room) {
+            else if (retVal.nextScreen == SwitchScreen.Room) {
                 screen = this.m_room;
             }
             // Switch screen
-            this.switchPage(screen, refresh);
+            this.openPage(screen, refresh);
         };
-        ApplicationKitchen.prototype.switchPage = function (next, refreshRate) {
-            if (this.currPage != null && next != null) {
-                this.currPage.close();
+        ApplicationKitchen.prototype.openPage = function (next, refreshRate) {
+            if (next != null) {
+                if (this.currPage != null) {
+                    this.currPage.close();
+                }
                 this.currPage = next.open(refreshRate);
             }
         };
@@ -152,6 +146,11 @@ var KitchenInfoStation;
     KitchenInfoStation.ApplicationKitchen = ApplicationKitchen;
     var Screen = (function () {
         function Screen(canvas) {
+            this.thing = null;
+            this.returnVal = {
+                nextScreen: null,
+                nextThingPath: null
+            };
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
@@ -177,12 +176,20 @@ var KitchenInfoStation;
         };
         Screen.prototype.getServerData = function (url) {
         };
+        Screen.prototype.setThing = function (thing) {
+            this.thing = thing;
+        };
+        Screen.prototype.getThing = function () {
+            return this.thing;
+        };
+        Screen.prototype.getThingPath = function () {
+            return this.thing.getPath();
+        };
         return Screen;
     }());
     KitchenInfoStation.Screen = Screen;
     var ScreenMain = (function (_super) {
         __extends(ScreenMain, _super);
-        //  public timerPaint;
         function ScreenMain(canvas, m_siteData, m_weatherData) {
             _super.call(this, canvas);
             //Data
@@ -211,6 +218,10 @@ var KitchenInfoStation;
             this.stopWatch.arcRadius = 120;
         }
         ScreenMain.prototype.MouseClickHandler = function (event) {
+            var returnVal = {
+                nextScreen: SwitchScreen.Main,
+                nextThingPath: null
+            };
             var mousePos = getMousePos(this.canvas, event);
             if (this.appWatch) {
                 if (this.stopWatch.getStatus()) {
@@ -232,10 +243,15 @@ var KitchenInfoStation;
                     this.open(30);
                 }
                 else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
-                    return SwitchScreen.Floor;
+                    // return SwitchScreen.Floor;  
+                    //window.clearTimeout(this.timerPaint);
+                    returnVal.nextScreen = SwitchScreen.Floor;
+                    return returnVal;
                 }
                 else if (this.iconWeather.isClicked(mousePos.x, mousePos.y)) {
-                    return SwitchScreen.WeatherForecast;
+                    // return SwitchScreen.WeatherForecast;  
+                    returnVal.nextScreen = SwitchScreen.WeatherForecast;
+                    return returnVal;
                 }
             }
             return null;
@@ -336,7 +352,8 @@ var KitchenInfoStation;
             this.forecastPanels.push(new WeatherForecastPanel(this.ctx, this.weatherData, 3));
         }
         ScreenWeatherForecast.prototype.MouseClickHandler = function (event) {
-            return SwitchScreen.Main;
+            this.returnVal.nextScreen = SwitchScreen.Main;
+            return this.returnVal;
         };
         ScreenWeatherForecast.prototype.paint = function () {
             var ctx = this.ctx;
@@ -597,24 +614,31 @@ var KitchenInfoStation;
             this.txtNumRooms.fontSize = 40;
         }
         ScreenFloor.prototype.MouseClickHandler = function (event) {
+            var returnVal = {
+                nextScreen: SwitchScreen.Main,
+                nextThingPath: null
+            };
+            returnVal.nextScreen = SwitchScreen.Main;
             var mousePos = getMousePos(this.canvas, event);
-            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y);
+            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y, this.getThingPath());
             if (thing instanceof Switch) {
                 var switchSensor = thing;
                 switchSensor.postServerClick();
                 switchSensor.getServerData();
                 this.paint();
+                this.returnVal.nextScreen = null;
             }
             else if (thing instanceof TemperatureSensor) {
                 var tempSensor = thing;
-                return SwitchScreen.Room;
+                //return SwitchScreen.Room;
+                this.returnVal.nextScreen = SwitchScreen.Room;
             }
             else if (thing instanceof Door) {
             }
             else {
-                return SwitchScreen.Main;
+                this.returnVal.nextScreen = SwitchScreen.Main;
             }
-            return null;
+            return this.returnVal;
         };
         ScreenFloor.prototype.paint = function () {
             var ctx = this.ctx;
@@ -624,18 +648,21 @@ var KitchenInfoStation;
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();
             //   }      
+            //            var pth: string = this.getThingPath();
             // Temperature sensors...
-            var tempMarks = this.m_graphics.getTempMarks();
+            var tempMarks = this.m_graphics.getTempMarks(this.getThingPath());
             for (var id in tempMarks) {
                 tempMarks[id].paint();
             }
             // Switches...
-            for (var id in this.m_graphics.m_switchMarks) {
-                this.m_graphics.m_switchMarks[id].paint();
+            var switchMarks = this.m_graphics.getSwitchMarks(this.getThingPath());
+            for (var id in switchMarks) {
+                switchMarks[id].paint();
             }
             // Doors
-            for (var id in this.m_graphics.m_doorMarks) {
-                this.m_graphics.m_doorMarks[id].paint();
+            var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            for (var id in doorMarks) {
+                doorMarks[id].paint();
             }
             //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;
@@ -667,24 +694,28 @@ var KitchenInfoStation;
         }
         ScreenRoom.prototype.MouseClickHandler = function (event) {
             var mousePos = getMousePos(this.canvas, event);
-            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y);
+            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y, null);
             if (thing instanceof Switch) {
                 var switchSensor = thing;
                 switchSensor.postServerClick();
                 switchSensor.getServerData();
                 this.paint();
+                this.returnVal.nextScreen = null;
             }
             else if (thing instanceof TemperatureSensor) {
                 var tempSensor = thing;
                 window.alert("Temp sensor clicked...!: " + tempSensor.getPath());
+                //return SwitchScreen.Room;
+                this.returnVal.nextScreen = null;
             }
             else if (thing instanceof Door) {
                 window.alert("Door clicked...!");
+                this.returnVal.nextScreen = null;
             }
             else {
-                return SwitchScreen.Main;
+                this.returnVal.nextScreen = SwitchScreen.Main;
             }
-            return null;
+            return this.returnVal;
         };
         ScreenRoom.prototype.paint = function () {
             var ctx = this.ctx;
@@ -693,7 +724,7 @@ var KitchenInfoStation;
             ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);
             ctx.restore();
             // Temperature sensors...
-            var tempMarks = this.m_graphics.getTempMarks();
+            var tempMarks = this.m_graphics.getTempMarks(null);
             for (var id in tempMarks) {
                 tempMarks[id].paint();
             }

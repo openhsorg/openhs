@@ -205,12 +205,12 @@ public class KitchenServlet extends HttpServlet {
 					
 					JSONObject json = new JSONObject();
 										
-					if (path.contains("doorsA")) {						
+					if (path.contains("Door1")) {						
 						json.put("x_coordinate", String.format("%d", 100));
 						json.put("y_coordinate", String.format("%d", 50));						
 						json.put("open", new Boolean(true));
 						json.put("lock", new Boolean(false));												
-					} else if (path.contains("doorsB")) {
+					} else if (path.contains("Door2")) {
 						json.put("x_coordinate", String.format("%d", 200));
 						json.put("y_coordinate", String.format("%d", 50));						
 						json.put("open", new Boolean(false));
@@ -390,9 +390,11 @@ public class KitchenServlet extends HttpServlet {
 				
 				int i = 0;
 				for (String item: floorPaths) {
-					i ++;
+
 					String id = "floorPath_" + i;					
 					json.put(id, item);
+					
+					i ++;
 				}
 				
 			} catch (SiteException e) {
@@ -406,10 +408,11 @@ public class KitchenServlet extends HttpServlet {
 				json.put("number_rooms", String.format("%d", roomsPaths.size()));
 				
 				int i = 0;
-				for (String item: roomsPaths) {
-					i ++;
+				for (String item: roomsPaths) {	
 					String id = "roomPath_" + i;					
 					json.put(id, item);
+					
+					i++;
 				}
 				
 			} catch (SiteException e) {
@@ -460,9 +463,9 @@ public class KitchenServlet extends HttpServlet {
 			/*
 			 * TEMPORARY code
 			 */
-			doorsPaths.add("test/doorsA"); //this.m_infostation.getTempSensorsPaths();
-			doorsPaths.add("test/doorsB"); //this.m_infostation.getTempSensorsPaths();
-			doorsPaths.add("test/doorsC"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door1"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door2"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door3"); //this.m_infostation.getTempSensorsPaths();
 			/*
 			 * TEMPORARY code end...
 			 */

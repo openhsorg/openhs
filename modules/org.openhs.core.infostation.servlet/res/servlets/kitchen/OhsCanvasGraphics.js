@@ -72,36 +72,70 @@ var OhsCanvasGraphics;
             window.clearTimeout(this.timerUpdateGraphics);
             this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
         };
-        Graphics.prototype.isClicked = function (x, y) {
-            for (var id in this.m_switchMarks) {
-                if (this.m_switchMarks[id].isClicked(x, y)) {
-                    return this.m_switchMarks[id].getData();
+        Graphics.prototype.isClicked = function (x, y, path) {
+            var switches = this.getSwitchMarks(path);
+            for (var id in switches) {
+                if (switches[id].isClicked(x, y)) {
+                    return switches[id].getData();
                 }
             }
-            for (var id in this.m_tempMarks) {
-                if (this.m_tempMarks[id].isClicked(x, y)) {
-                    return this.m_tempMarks[id].getData();
+            var temps = this.getTempMarks(path);
+            for (var id in temps) {
+                if (temps[id].isClicked(x, y)) {
+                    return temps[id].getData();
                 }
             }
-            for (var id in this.m_doorMarks) {
-                if (this.m_doorMarks[id].isClicked(x, y)) {
-                    return this.m_doorMarks[id].getData();
+            var doors = this.getDoorMarks(path);
+            for (var id in doors) {
+                if (doors[id].isClicked(x, y)) {
+                    return doors[id].getData();
                 }
             }
         };
-        Graphics.prototype.getTempMarks = function () {
-            return this.m_tempMarks;
-        };
-        Graphics.prototype.getTempMarkInside = function (path) {
-            var tempMarksNew = new Array();
-            for (var i in this.m_tempMarks) {
-                var sensor = this.m_tempMarks[i].getData();
-                var pathSensor = sensor.getPath();
-                if (pathSensor.search(path) != -1) {
-                    tempMarksNew.push(this.m_tempMarks[i]);
-                }
+        Graphics.prototype.getTempMarks = function (path) {
+            if (path == null) {
+                return this.m_tempMarks;
             }
-            return tempMarksNew;
+            else {
+                return this.m_tempMarks.filter(function (element) {
+                    if (element instanceof TempMark) {
+                        var mark = element;
+                        var thing = mark.getData();
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false;
+                });
+            }
+        };
+        Graphics.prototype.getSwitchMarks = function (path) {
+            if (path == null) {
+                return this.m_switchMarks;
+            }
+            else {
+                return this.m_switchMarks.filter(function (element) {
+                    if (element instanceof SwitchMark) {
+                        var mark = element;
+                        var thing = mark.getData();
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false;
+                });
+            }
+        };
+        Graphics.prototype.getDoorMarks = function (path) {
+            if (path == null) {
+                return this.m_doorMarks;
+            }
+            else {
+                return this.m_doorMarks.filter(function (element) {
+                    if (element instanceof DoorMark) {
+                        var mark = element;
+                        var thing = mark.getData();
+                        return thing.getPath().indexOf(path) === 0;
+                    }
+                    return false;
+                });
+            }
         };
         return Graphics;
     }());

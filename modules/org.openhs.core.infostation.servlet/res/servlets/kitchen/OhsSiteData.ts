@@ -9,8 +9,8 @@ module OhsSiteData {
         private fastTimerGetData;
         private slowTimerGetData;
         
-        private floors: Array <Floor> = null;
-        private rooms: Array <Room> = null;
+        public floors: Array <Floor> = null;
+        public rooms: Array <Room> = null;
         public tempSensors: Array <TemperatureSensor> = null;
         public switches: Array <Switch> = null;
         public doors: Array <Door> = null;
@@ -159,9 +159,13 @@ module OhsSiteData {
             
                 // Floors                  
                 this.setNumberFloors (parseInt(data['number_floors']));
+                
+              //  window.alert("floors:   " + this.getNumberFloors());
                                         
                 for (let id in this.floors) {                    
                     this.floors[id].setPath(data['floorPath_' + id]);
+                    
+                //     window.alert("path:   " + this.floors[id].getPath() + "  id:" + id);
                 }           
                 
                 // Rooms            
