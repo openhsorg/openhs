@@ -36,7 +36,7 @@ var OhsCanvasGraphics;
             }
             for (var id in this.m_siteData.tempSensors) {
                 this.m_tempMarks[id].setSize(new Rect(this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
-                this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);
+                // this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
                 this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);
             }
             // Switches
@@ -49,7 +49,7 @@ var OhsCanvasGraphics;
                 }
             }
             for (var id in this.m_siteData.switches) {
-                this.m_switchMarks[id].switch = this.m_siteData.switches[id];
+                this.m_switchMarks[id].thing = this.m_siteData.switches[id];
             }
             // Doors
             if (this.m_doorMarks.length > this.m_siteData.doors.length) {
@@ -63,6 +63,7 @@ var OhsCanvasGraphics;
             for (var id in this.m_siteData.doors) {
                 this.m_doorMarks[id].setSize(new Rect(this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
                 this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);
+                this.m_doorMarks[id].thing = this.m_siteData.doors[id];
             }
         };
         Graphics.prototype.timerUpdateGraphicsEvent = function (step) {
@@ -70,6 +71,23 @@ var OhsCanvasGraphics;
             this.updateGraphics();
             window.clearTimeout(this.timerUpdateGraphics);
             this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
+        };
+        Graphics.prototype.isClicked = function (x, y) {
+            for (var id in this.m_switchMarks) {
+                if (this.m_switchMarks[id].isClicked(x, y)) {
+                    return this.m_switchMarks[id].getData();
+                }
+            }
+            for (var id in this.m_tempMarks) {
+                if (this.m_tempMarks[id].isClicked(x, y)) {
+                    return this.m_tempMarks[id].getData();
+                }
+            }
+            for (var id in this.m_doorMarks) {
+                if (this.m_doorMarks[id].isClicked(x, y)) {
+                    return this.m_doorMarks[id].getData();
+                }
+            }
         };
         Graphics.prototype.getTempMarks = function () {
             return this.m_tempMarks;
@@ -259,12 +277,12 @@ var OhsCanvasGraphics;
     OhsCanvasGraphics.Text = Text;
     var TempMark = (function (_super) {
         __extends(TempMark, _super);
+        //  private temp:   number = -100.0;
+        //  private tempSensor: TemperatureSensor = null;
         function TempMark(ctx, rect, src) {
             _super.call(this, ctx, rect);
             this.img = null;
             this.border = false; //debug border
-            this.temp = -100.0;
-            this.tempSensor = null;
             this.txt = new Text(ctx, rect);
             this.txt.textAlign = "right";
             this.txt.textBaseline = "middle";
@@ -276,14 +294,16 @@ var OhsCanvasGraphics;
             _super.prototype.setSize.call(this, rect);
             this.txt.setSize(rect);
         };
-        TempMark.prototype.setTemp = function (temp) {
+        /*
+        setTemp (temp: number) {
             this.temp = temp;
-        };
+        }
+        */
         TempMark.prototype.setData = function (temp) {
-            this.tempSensor = temp;
+            this.thing = temp;
         };
         TempMark.prototype.getData = function () {
-            return this.tempSensor;
+            return this.thing;
         };
         TempMark.prototype.paint = function () {
             this.ctx.save();
@@ -297,8 +317,9 @@ var OhsCanvasGraphics;
             this.ctx.restore();
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            if (this.tempSensor != null) {
-                this.txt.paint(this.tempSensor.temp + " \u00B0C");
+            if (this.thing != null) {
+                var thingSensor = this.thing;
+                this.txt.paint(thingSensor.temp + " \u00B0C");
             }
             //Draw image...
             //   if (this.imgLoaded) {     
@@ -323,7 +344,6 @@ var OhsCanvasGraphics;
         __extends(SwitchMark, _super);
         function SwitchMark(ctx, rect, src) {
             _super.call(this, ctx, rect);
-            this.switch = null;
             this.img = null;
             this.colorButton = "#666699";
             this.border = false; //debug border        
@@ -338,30 +358,37 @@ var OhsCanvasGraphics;
             _super.prototype.setSize.call(this, rect);
             this.txt.setSize(rect);
         };
+        SwitchMark.prototype.setData = function (switchIn) {
+            this.thing = switchIn;
+        };
+        SwitchMark.prototype.getData = function () {
+            return this.thing;
+        };
         SwitchMark.prototype.paint = function () {
+            var switchVar = this.thing;
             // Update this
-            this.rect.x = this.switch.x;
-            this.rect.y = this.switch.y;
+            this.rect.x = switchVar.x;
+            this.rect.y = switchVar.y;
             this.txt.setSize(this.rect);
             var text = "---";
             //logic of switch
-            if (this.switch.getState() == 0) {
+            if (switchVar.getState() == 0) {
                 this.colorButton = "#808080";
                 text = "---";
             }
-            else if (this.switch.getState() == 1) {
+            else if (switchVar.getState() == 1) {
                 this.colorButton = "#3333ff";
                 text = "off";
             }
-            else if (this.switch.getState() == 2) {
+            else if (switchVar.getState() == 2) {
                 this.colorButton = "#33cc33";
                 text = "->on";
             }
-            else if (this.switch.getState() == 3) {
+            else if (switchVar.getState() == 3) {
                 this.colorButton = "#ffaa00";
                 text = "on";
             }
-            else if (this.switch.getState() == 4) {
+            else if (switchVar.getState() == 4) {
                 this.colorButton = "#9999ff";
                 text = "->off";
             }
@@ -419,6 +446,12 @@ var OhsCanvasGraphics;
         }
         DoorMark.prototype.setSize = function (rect) {
             _super.prototype.setSize.call(this, rect);
+        };
+        DoorMark.prototype.setData = function (door) {
+            this.thing = door;
+        };
+        DoorMark.prototype.getData = function () {
+            return this.thing;
         };
         DoorMark.prototype.setState = function (open, lock) {
             if (open)

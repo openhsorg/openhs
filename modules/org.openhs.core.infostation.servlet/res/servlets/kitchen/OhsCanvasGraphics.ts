@@ -54,7 +54,7 @@ import Thing = OhsSiteData.Thing;
     
             for (let id in this.m_siteData.tempSensors) {
                 this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
-                this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
+               // this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
                 this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
             }
             
@@ -69,7 +69,7 @@ import Thing = OhsSiteData.Thing;
             }            
     
             for (let id in this.m_siteData.switches) {
-                this.m_switchMarks[id].switch = this.m_siteData.switches[id];
+                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
             }          
                     
             // Doors
@@ -84,7 +84,8 @@ import Thing = OhsSiteData.Thing;
     
             for (let id in this.m_siteData.doors) {
                 this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
-                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);                        
+                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);    
+                this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];                    
             }                       
         }        
         
@@ -93,6 +94,27 @@ import Thing = OhsSiteData.Thing;
            window.clearTimeout(this.timerUpdateGraphics);
            this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
         }   
+        
+        public isClicked(x: number, y: number) {
+            
+            for (let id in this.m_switchMarks) {                
+                if(this.m_switchMarks[id].isClicked(x, y)) {
+                    return <Thing> this.m_switchMarks[id].getData();
+                }
+            }  
+            
+            for (let id in this.m_tempMarks) {                
+                if(this.m_tempMarks[id].isClicked(x, y)) {
+                    return <Thing> this.m_tempMarks[id].getData();
+                }
+            }  
+            
+            for (let id in this.m_doorMarks) {                
+                if(this.m_doorMarks[id].isClicked(x, y)) {
+                    return <Thing> this.m_doorMarks[id].getData();
+                }
+            }              
+        }
         
         public getTempMarks() {
             return this.m_tempMarks;
@@ -332,8 +354,8 @@ import Thing = OhsSiteData.Thing;
         
         protected border:    boolean = false; //debug border
         
-        private temp:   number = -100.0;
-        private tempSensor: TemperatureSensor = null;
+      //  private temp:   number = -100.0;
+      //  private tempSensor: TemperatureSensor = null;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
@@ -351,17 +373,17 @@ import Thing = OhsSiteData.Thing;
             super.setSize(rect);     
             this.txt.setSize(rect);                    
          }
-        
+        /*
         setTemp (temp: number) {
             this.temp = temp;    
         }
-        
+        */
         public setData (temp: TemperatureSensor){
-            this.tempSensor = temp;
+            this.thing = <Thing> temp;
         }
         
         public getData () {
-            return this.tempSensor;
+            return <TemperatureSensor> this.thing;
         }
             
         public paint () {          
@@ -378,8 +400,11 @@ import Thing = OhsSiteData.Thing;
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
             
-            if (this.tempSensor != null) {
-                this.txt.paint(this.tempSensor.temp + " \u00B0C");
+            if (this.thing != null) {
+                
+                var thingSensor: TemperatureSensor = <TemperatureSensor> this.thing;
+                
+                this.txt.paint(thingSensor.temp + " \u00B0C");
             }
             
             //Draw image...
@@ -403,7 +428,7 @@ import Thing = OhsSiteData.Thing;
     
     export class SwitchMark extends Mark {
 
-        public switch: Switch = null;        
+     //   public switch: Switch = null;        
         private txt:  Text;   
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;    
@@ -426,31 +451,40 @@ import Thing = OhsSiteData.Thing;
             super.setSize(rect);    
             this.txt.setSize(rect);                 
          }
+        
+        public setData (switchIn: Switch){
+            this.thing = <Switch> switchIn;
+        }
+        
+        public getData () {
+            return <Switch> this.thing;
+        }        
                     
         public paint () {      
         
+            var switchVar: Switch = <Switch> this.thing;
             // Update this
-            this.rect.x = this.switch.x;
-            this.rect.y = this.switch.y;        
+            this.rect.x = switchVar.x;
+            this.rect.y = switchVar.y;        
             
             this.txt.setSize(this.rect);
                 
             var text: string = "---";    
 
             //logic of switch
-            if (this.switch.getState() == 0) {
+            if (switchVar.getState() == 0) {
                 this.colorButton = "#808080"; 
                 text = "---";
-            } else if (this.switch.getState() == 1) {
+            } else if (switchVar.getState() == 1) {
                 this.colorButton = "#3333ff";
                 text = "off";
-            } else if (this.switch.getState() == 2) {
+            } else if (switchVar.getState() == 2) {
                 this.colorButton = "#33cc33";
                 text = "->on";
-            } else if (this.switch.getState() == 3) {
+            } else if (switchVar.getState() == 3) {
                 this.colorButton = "#ffaa00";
                 text = "on";
-            } else if (this.switch.getState() == 4) {
+            } else if (switchVar.getState() == 4) {
                 this.colorButton = "#9999ff";
                 text = "->off";
             } else {
@@ -524,6 +558,14 @@ import Thing = OhsSiteData.Thing;
         public setSize (rect:  Rect) {        
             super.setSize(rect);                
          }
+        
+        public setData (door: Door){
+            this.thing = <Door> door;
+        }
+        
+        public getData () {
+            return <Door> this.thing;
+        }          
         
         public setState (open: boolean, lock: boolean) {
             if (open) this.state = 1;
