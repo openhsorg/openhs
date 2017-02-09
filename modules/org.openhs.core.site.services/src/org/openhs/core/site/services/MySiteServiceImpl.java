@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.DigitalInput;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
@@ -852,6 +853,7 @@ public class MySiteServiceImpl implements ISiteService {
 						String sitePath = elementSitePath.getAttribute("sitePath");
 						ss.things.put(sitePath, obj);
 						
+						//TODO use factory pattern
 						if (obj instanceof TemperatureSensor) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
@@ -859,6 +861,10 @@ public class MySiteServiceImpl implements ISiteService {
 							//System.out.println("\n+classXXX>" + devicePath + " : " + sitePath);
 						}
 						else if (obj instanceof Switch) {
+							String devicePath = elementSitePath.getAttribute("devicePath");
+							ss.devPaths.put(devicePath, sitePath);
+						}
+						else if (obj instanceof DigitalInput) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 						}
