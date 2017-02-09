@@ -27,6 +27,9 @@ var OhsSiteData;
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
             var _this = this;
+            for (var id in this.rooms) {
+                this.rooms[id].getServerData();
+            }
             for (var id in this.switches) {
                 this.switches[id].getServerData();
             }
@@ -116,14 +119,57 @@ var OhsSiteData;
                 this.switches.length = num;
             }
         };
-        SiteData.prototype.getNumberSwitches = function () {
-            return this.switches.length;
+        SiteData.prototype.getSwitches = function () {
+            return this.switches;
         };
-        SiteData.prototype.getSwitch = function (num) {
-            if (num > this.switches.length || num < 1) {
+        SiteData.prototype.getParentPath = function (thing) {
+            if (thing == null) {
                 return null;
             }
-            return this.switches[num - 1];
+            else {
+                var path = thing.getPath();
+                if (path == null) {
+                    return null;
+                }
+                var path2 = path
+                    .replace(/(^\s+|\s+$)/g, '') //remove leading and trailing whitespaces
+                    .replace(/(^\/+|\/+$)/g, ''); //remove leading and trailing slashes
+                // window.alert("*** getParent ***, Path: " + path + "  \n\nPath2:" + path2 +"|");
+                var parts = path2.split('/'); //split string
+                parts.pop();
+                parts.pop();
+                var newPath = parts.join('/');
+                //  window.alert("*** getParent ***, newPath: " + newPath);
+                return newPath;
+            }
+        };
+        SiteData.prototype.getThing = function (path) {
+            for (var id in this.floors) {
+                if (this.floors[id].getPath() == path) {
+                    return this.floors[id];
+                }
+            }
+            for (var id in this.rooms) {
+                if (this.rooms[id].getPath() == path) {
+                    return this.rooms[id];
+                }
+            }
+            for (var id in this.tempSensors) {
+                if (this.tempSensors[id].getPath() == path) {
+                    return this.tempSensors[id];
+                }
+            }
+            for (var id in this.switches) {
+                if (this.switches[id].getPath() == path) {
+                    return this.switches[id];
+                }
+            }
+            for (var id in this.doors) {
+                if (this.doors[id].getPath() == path) {
+                    return this.doors[id];
+                }
+            }
+            return null;
         };
         SiteData.prototype.getServerData = function () {
             var req = {
@@ -136,28 +182,36 @@ var OhsSiteData;
                 // Floors                  
                 this.setNumberFloors(parseInt(data['number_floors']));
                 //  window.alert("floors:   " + this.getNumberFloors());
-                for (var id in this.floors) {
-                    this.floors[id].setPath(data['floorPath_' + id]);
+                for (var id_1 in this.floors) {
+                    this.floors[id_1].setPath(data['floorPath_' + id_1]);
                 }
                 // Rooms            
                 this.setNumberRooms(parseInt(data['number_rooms']));
-                for (var id in this.rooms) {
+                for (var id = 0; id < this.rooms.length; id++) {
                     this.rooms[id].setPath(data['roomPath_' + id]);
+                    if (id == 0)
+                        this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room0.png";
+                    if (id == 1)
+                        this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room1.png";
+                    if (id == 2)
+                        this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room2.png";
+                    if (id == 3)
+                        this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
                 }
                 // TempSensors                              
                 this.setNumberTempSensors(parseInt(data['number_tempsensors']));
-                for (var id in this.tempSensors) {
-                    this.tempSensors[id].setPath(data['tempSensorPath_' + id]);
+                for (var id_2 in this.tempSensors) {
+                    this.tempSensors[id_2].setPath(data['tempSensorPath_' + id_2]);
                 }
                 // Switches                     
                 this.setNumberSwitches(parseInt(data['number_switches']));
-                for (var id in this.switches) {
-                    this.switches[id].setPath(data['switchPath_' + id]);
+                for (var id_3 in this.switches) {
+                    this.switches[id_3].setPath(data['switchPath_' + id_3]);
                 }
                 // Door                     
                 this.setNumberDoors(parseInt(data['number_doors']));
-                for (var id in this.doors) {
-                    this.doors[id].setPath(data['doorPath_' + id]);
+                for (var id_4 in this.doors) {
+                    this.doors[id_4].setPath(data['doorPath_' + id_4]);
                 }
             }
         };
@@ -167,7 +221,7 @@ var OhsSiteData;
     var Thing = (function () {
         function Thing() {
             this.valid = false; //content of the forecast is valid        
-            this.path = '';
+            this.path = null; //OpenHS path     
         }
         Thing.prototype.setPath = function (path) {
             this.path = path;
@@ -189,8 +243,21 @@ var OhsSiteData;
     var Room = (function (_super) {
         __extends(Room, _super);
         function Room() {
-            _super.apply(this, arguments);
+            _super.call(this);
+            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
+            this.name = "no name :(";
         }
+        Room.prototype.getServerData = function () {
+            var req = {
+                orderId: "Room",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.name = data['name'];
+                this.valid = true;
+            }
+        };
         return Room;
     }(Thing));
     OhsSiteData.Room = Room;

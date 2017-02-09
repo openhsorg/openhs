@@ -75,7 +75,7 @@ public class MySiteServiceImpl implements ISiteService {
 			for (int i = 0; i <= rooms; i++) {
 
 				addThing("floors/Floor1/rooms/Room" + i, new Room());
-				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1", new Room());
+				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1", new TemperatureSensor());
 			}
 
 			addThing("floors/Floor2/rooms/Room1/sensors/SensorWC", "mqtt/0/path", new TemperatureSensor());

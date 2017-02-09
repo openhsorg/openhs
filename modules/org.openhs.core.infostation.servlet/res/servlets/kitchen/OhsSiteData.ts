@@ -12,7 +12,7 @@ module OhsSiteData {
         public floors: Array <Floor> = null;
         public rooms: Array <Room> = null;
         public tempSensors: Array <TemperatureSensor> = null;
-        public switches: Array <Switch> = null;
+        protected switches: Array <Switch> = null;
         public doors: Array <Door> = null;
         
         public timeString: string = "---";
@@ -30,6 +30,10 @@ module OhsSiteData {
         }
         
         private fastTimerGetDataEvent(step : number) {
+            
+            for (let id in this.rooms) {
+                this.rooms[id].getServerData();
+            }            
             
             for (let id in this.switches) {
                 this.switches[id].getServerData();
@@ -130,18 +134,77 @@ module OhsSiteData {
             } else if (num < this.switches.length) {            
                 this.switches.length = num;             
             }
-        }          
-
-        public getNumberSwitches () {
-            return this.switches.length;
+        }      
+        
+        public getSwitches() {
+            return this.switches;
         }
         
-        public getSwitch (num:  number){
-            if (num > this.switches.length || num < 1) {
+        public getParentPath (thing: Thing) {                        
+            if (thing == null) {
                 return null;
+                
+            } else {
+                                                
+                var path: string = thing.getPath();                                                
+                
+                if (path == null) {
+                    return null;
+                }                                
+                
+                var path2 = path
+                    .replace(/(^\s+|\s+$)/g,'') //remove leading and trailing whitespaces
+                    .replace(/(^\/+|\/+$)/g,''); //remove leading and trailing slashes
+                
+               // window.alert("*** getParent ***, Path: " + path + "  \n\nPath2:" + path2 +"|");
+                         
+                var parts = path2.split('/'); //split string
+                
+                parts.pop();
+                parts.pop();                
+                
+                let newPath: string = parts.join('/');
+                
+              //  window.alert("*** getParent ***, newPath: " + newPath);
+                
+                return newPath;                
+            }            
+        }
+        
+        public getThing (path: string){ 
+        
+            for (let id in this.floors) {                
+                if (this.floors[id].getPath() == path) {
+                    return this.floors[id];
+                }                    
             }
-            return this.switches[num - 1];
-        }   
+            
+            for (let id in this.rooms) {                
+                if (this.rooms[id].getPath() == path) {
+                    return this.rooms[id];
+                }                    
+            }  
+            
+            for (let id in this.tempSensors) {                
+                if (this.tempSensors[id].getPath() == path) {
+                    return this.tempSensors[id];
+                }                    
+            } 
+            
+            for (let id in this.switches) {                
+                if (this.switches[id].getPath() == path) {
+                    return this.switches[id];
+                }                    
+            }   
+            
+            for (let id in this.doors) {                
+                if (this.doors[id].getPath() == path) {
+                    return this.doors[id];
+                }                    
+            }               
+        
+            return null;
+        }
         
         public getServerData () {       
              
@@ -171,8 +234,13 @@ module OhsSiteData {
                 // Rooms            
                 this.setNumberRooms (parseInt(data['number_rooms']));
                 
-                for (let id in this.rooms) {                    
+                for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
+                    
+                    if (id == 0)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room0.png";                        
+                    if (id == 1)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room1.png";
+                    if (id == 2)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room2.png";
+                    if (id == 3)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
                 }             
                 
                 // TempSensors                              
@@ -202,10 +270,9 @@ module OhsSiteData {
     export class Thing {
         
         public valid: boolean = false; //content of the forecast is valid        
-        protected path:  string; //OpenHS path     
+        protected path:  string = null; //OpenHS path     
         
         constructor () {
-            this.path = '';
         }
         
         public setPath (path: string) {
@@ -223,7 +290,32 @@ module OhsSiteData {
     }
     
     export class Room extends Thing{
-              
+        
+        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
+        
+        public name: string = "no name :(";
+        
+        constructor () {
+            super ();
+                                    
+        }        
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "Room",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.name = data['name'];  
+                this.valid = true;
+            }  
+                                    
+        }         
+           
     }    
     
     export class TemperatureSensor extends Thing{

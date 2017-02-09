@@ -24,6 +24,7 @@ module KitchenInfoStation {
         
     import SiteData = OhsSiteData.SiteData;
     import Floor = OhsSiteData.Floor;
+    import Room = OhsSiteData.Room;
     import TemperatureSensor = OhsSiteData.TemperatureSensor;    
     import Door = OhsSiteData.Door;
     import Switch = OhsSiteData.Switch;
@@ -155,8 +156,8 @@ module KitchenInfoStation {
                 screen = this.m_forecastScreen;     
                        
             } else if (retVal.nextScreen == SwitchScreen.Room) {
-                screen = this.m_room;
-                            
+                screen = this.m_room;                
+                this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
             }
             
             // Switch screen
@@ -193,7 +194,7 @@ module KitchenInfoStation {
         public width:               number;
         public height:              number;      
         
-        protected thing: Thing = null;
+        private thing: Thing = null;
         
         protected timerPaint;       
         
@@ -283,7 +284,8 @@ module KitchenInfoStation {
             //---Graphics---
             this.iconStopWatch = new Icon (this.ctx, new Rect ((this.width / 2) + 180, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/stopwatch.png');
             this.iconVoiceMessage = new Icon (this.ctx, new Rect ((this.width / 2) - 220 , (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/voicemessage.png');
-            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 150, 150), imagePaths);
+            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 150, 150));
+            this.iconWeather.setImages(imagePaths);
             this.iconWind = new Icon (this.ctx, new Rect ( 140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
             this.iconHum = new Icon (this.ctx, new Rect ((this.width / 2) + 10 , (this.height / 2) + 70, 60, 60), '/infores/servlets/kitchen/drop.png');    
             
@@ -722,7 +724,8 @@ module KitchenInfoStation {
             this.weatherData = weatherData;
             this.numForecast = numForecast;
             
-            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 10, 10), imagePaths);             
+            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 10, 10));     
+            this.iconWeather.setImages(imagePaths);        
         }      
         
         setSize (x: number, y: number, width: number, height: number) {        
@@ -808,6 +811,7 @@ module KitchenInfoStation {
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {                
             super (canvas);
             
+            this.siteData = siteData;
             this.m_graphics = m_graphics;
 
             this.imgFloor = new Image();
@@ -825,13 +829,15 @@ module KitchenInfoStation {
                 nextScreen: SwitchScreen.Main,
                 nextThingPath: null                                  
             };            
-            
-            returnVal.nextScreen = SwitchScreen.Main;
                        
             var mousePos = getMousePos(this.canvas, event);
             
             var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y, this.getThingPath());
-            
+            /*
+            if (thing != null) {
+                window.alert("Floor clicked...! Path: " + thing.getPath());
+                }
+            */
             if (thing instanceof Switch) {
                 
                 var switchSensor: Switch = <Switch> thing;
@@ -844,16 +850,23 @@ module KitchenInfoStation {
                 
              } else if (thing instanceof TemperatureSensor) {
                 
-                var tempSensor: TemperatureSensor = <TemperatureSensor> thing;
+             //   var tempSensor: TemperatureSensor = <TemperatureSensor> thing;
                 
                 //return SwitchScreen.Room;
-                this.returnVal.nextScreen = SwitchScreen.Room;
+              //  this.returnVal.nextScreen = SwitchScreen.Room;                               
                                 
-                //window.alert("Temp sensor clicked...!: " + tempSensor.getPath());
+                //window.alert("Temp clicked...!");
+               // window.alert("Temp sensor clicked...!  Path:" + tempSensor.getPath());
+                
+                var pp = this.siteData.getParentPath(thing);                                                
+                //window.alert("Temp sensor Parent Path:" + pp);
+                
+                this.returnVal.nextScreen = SwitchScreen.Room; 
+                this.returnVal.nextThingPath = pp;
                 
              } else if (thing instanceof Door) {
                 
-                //window.alert("Door clicked...!");
+                window.alert("Door clicked...!");
                 
              } else {
                 this.returnVal.nextScreen = SwitchScreen.Main;
@@ -916,13 +929,15 @@ module KitchenInfoStation {
         private imgRoom:HTMLImageElement = null;        
         private imgRoomLoaded: boolean = false;
         
+        //private imgBkg: Iconset = null; 
+        
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
             
             this.m_graphics = m_graphics;         
             
             this.imgRoom = new Image();
-            this.imgRoom.src="/infores/servlets/kitchen/room1.png";  
+            this.imgRoom.src="/infores/servlets/kitchen/room_default.png";  
                             
             this.imgRoom.onload = function(){
               this.imgRoomLoaded = true;
@@ -936,7 +951,7 @@ module KitchenInfoStation {
            
             var mousePos = getMousePos(this.canvas, event);
             
-            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y, null);
+            var thing = this.m_graphics.isClicked(mousePos.x, mousePos.y, this.getThingPath());
             
             if (thing instanceof Switch) {
                 
@@ -972,18 +987,52 @@ module KitchenInfoStation {
         
         public paint() {
             const ctx = this.ctx;
+
+            var pathImage: string = null;
+                         
+            if (this.getThing() != null) {            
+                if (this.getThing() instanceof Room) {
+                    var room: Room = <Room> this.getThing();
+                    
+                    pathImage = room.imageBkgPath;
+                }
+            }
             
-            //Draw image... 
-            ctx.save();           
-            ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
-            ctx.restore();
+            var index: number = this.m_graphics.m_iconsetRoomBkg.getImagesPaths().indexOf(pathImage);
             
+            if (index == -1) {
+                //Draw default image... 
+                ctx.save();           
+                ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
+                ctx.restore(); 
+                               
+            } else {
+                //Draw default room image... 
+                this.m_graphics.m_iconsetRoomBkg.paint(index);                
+            }
+            
+           // window.alert('Paint path filter:' + this.getThingPath());
+                        
             // Temperature sensors...
-            var tempMarks = this.m_graphics.getTempMarks(null);
+            var tempMarks: Array<TempMark> = this.m_graphics.getTempMarks(this.getThingPath());
             
             for (let id in tempMarks) {
                 tempMarks[id].paint();            
-            }                    
+            }   
+                   //    window.alert('Paint path filter2:' + this.getThingPath());
+            // Switches sensors...
+            var switchMarks: Array<SwitchMark> = this.m_graphics.getSwitchMarks(this.getThingPath());
+            
+            for (let id in switchMarks) {
+                switchMarks[id].paint();            
+            }     
+            
+            // Doors
+            var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            
+            for (let id in doorMarks) {
+                doorMarks[id].paint();            
+            }               
         }             
     }    
      

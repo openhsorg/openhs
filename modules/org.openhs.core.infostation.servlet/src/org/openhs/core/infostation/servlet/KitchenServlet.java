@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.api.IInfostation;
@@ -197,7 +198,42 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();		
 	    			
-		    	} else if (value.toString().equals("DoorD")) {
+		    	} else if (value.toString().equals("Room")) {
+	    			
+					String path = request.getParameter("path").toString();
+					
+					Room room = null;
+					
+					try {
+						room = (Room) this.m_infostation.getThing(path);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//System.out.println("\n\n\n\n    Room name: " + room.getName());
+					
+					JSONObject json = new JSONObject();
+					
+					
+					if (room != null){
+						json.put("name", String.format(room.getName()));
+					} else {
+						json.put("name", String.format("Error!"));
+					}
+						    			
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = response.getWriter();	    			
+					
+					out.println(json.toString());
+					    
+					out.flush();
+					out.close();	
+					
+					
+		        } else if (value.toString().equals("DoorD")) {
 		    		
 	    			String path = request.getParameter("path").toString();
 					

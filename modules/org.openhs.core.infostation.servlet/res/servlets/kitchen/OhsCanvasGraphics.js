@@ -13,6 +13,7 @@ var OhsCanvasGraphics;
             this.m_tempMarks = null;
             this.m_switchMarks = null;
             this.m_doorMarks = null;
+            this.m_iconsetRoomBkg = null;
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             //---Data---
@@ -21,10 +22,18 @@ var OhsCanvasGraphics;
             this.m_tempMarks = new Array();
             this.m_switchMarks = new Array();
             this.m_doorMarks = new Array();
+            this.m_iconsetRoomBkg = new Iconset(this.ctx, new Rect(0, 0, this.canvas.width, this.canvas.height));
+            // this.m_iconsetRoomBkg = new Iconset();
             //---Timer---
             this.timerUpdateGraphicsEvent(10000);
         }
         Graphics.prototype.updateGraphics = function () {
+            //Rooms
+            var imgPaths = new Array();
+            for (var id in this.m_siteData.rooms) {
+                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);
+            }
+            this.m_iconsetRoomBkg.setImages(imgPaths);
             // Temperature
             if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
                 this.m_tempMarks.length = this.m_siteData.tempSensors.length;
@@ -34,22 +43,22 @@ var OhsCanvasGraphics;
                     this.m_tempMarks.push(new TempMark(this.ctx, new Rect(0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
                 }
             }
-            for (var id in this.m_siteData.tempSensors) {
-                this.m_tempMarks[id].setSize(new Rect(this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
+            for (var id_1 in this.m_siteData.tempSensors) {
+                this.m_tempMarks[id_1].setSize(new Rect(this.m_siteData.tempSensors[id_1].x, this.m_siteData.tempSensors[id_1].y, 80, 80));
                 // this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
-                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);
+                this.m_tempMarks[id_1].setData(this.m_siteData.tempSensors[id_1]);
             }
             // Switches
-            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
-                this.m_switchMarks.length = this.m_siteData.switches.length;
+            if (this.m_switchMarks.length > this.m_siteData.getSwitches().length) {
+                this.m_switchMarks.length = this.m_siteData.getSwitches().length;
             }
-            else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
-                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+            else if (this.m_switchMarks.length < this.m_siteData.getSwitches().length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.getSwitches().length; i++) {
                     this.m_switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
                 }
             }
-            for (var id in this.m_siteData.switches) {
-                this.m_switchMarks[id].thing = this.m_siteData.switches[id];
+            for (var id_2 in this.m_siteData.getSwitches()) {
+                this.m_switchMarks[id_2].thing = this.m_siteData.getSwitches()[id_2];
             }
             // Doors
             if (this.m_doorMarks.length > this.m_siteData.doors.length) {
@@ -60,10 +69,10 @@ var OhsCanvasGraphics;
                     this.m_doorMarks.push(new DoorMark(this.ctx, new Rect(0, 0, 0, 0)));
                 }
             }
-            for (var id in this.m_siteData.doors) {
-                this.m_doorMarks[id].setSize(new Rect(this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
-                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);
-                this.m_doorMarks[id].thing = this.m_siteData.doors[id];
+            for (var id_3 in this.m_siteData.doors) {
+                this.m_doorMarks[id_3].setSize(new Rect(this.m_siteData.doors[id_3].x, this.m_siteData.doors[id_3].y, 80, 80));
+                this.m_doorMarks[id_3].setState(this.m_siteData.doors[id_3].open, this.m_siteData.doors[id_3].locked);
+                this.m_doorMarks[id_3].thing = this.m_siteData.doors[id_3];
             }
         };
         Graphics.prototype.timerUpdateGraphicsEvent = function (step) {
@@ -98,12 +107,14 @@ var OhsCanvasGraphics;
             }
             else {
                 return this.m_tempMarks.filter(function (element) {
-                    if (element instanceof TempMark) {
-                        var mark = element;
-                        var thing = mark.getData();
-                        return thing.getPath().indexOf(path) === 0;
+                    /*
+                    var res: boolean =  element.getData().getPath().indexOf(path) >= 0;
+                    
+                    if (debug) {
+                       window.alert("Inside element member:" + element.getData().getPath() + "\n\nCompared with:" + path + "\n\nDecision:" + res);
                     }
-                    return false;
+                        */
+                    return element.getData().getPath().indexOf(path) >= 0;
                 });
             }
         };
@@ -113,12 +124,7 @@ var OhsCanvasGraphics;
             }
             else {
                 return this.m_switchMarks.filter(function (element) {
-                    if (element instanceof SwitchMark) {
-                        var mark = element;
-                        var thing = mark.getData();
-                        return thing.getPath().indexOf(path) === 0;
-                    }
-                    return false;
+                    return element.getData().getPath().indexOf(path) >= 0;
                 });
             }
         };
@@ -128,12 +134,7 @@ var OhsCanvasGraphics;
             }
             else {
                 return this.m_doorMarks.filter(function (element) {
-                    if (element instanceof DoorMark) {
-                        var mark = element;
-                        var thing = mark.getData();
-                        return thing.getPath().indexOf(path) === 0;
-                    }
-                    return false;
+                    return element.getData().getPath().indexOf(path) >= 0;
                 });
             }
         };
@@ -216,18 +217,37 @@ var OhsCanvasGraphics;
     OhsCanvasGraphics.Icon = Icon;
     var Iconset = (function (_super) {
         __extends(Iconset, _super);
-        //  public numImagePaint = 0;
-        function Iconset(ctx, rect, imgPaths) {
+        function Iconset(ctx, rect) {
             _super.call(this, ctx, rect);
-            this.border = false; //debug border
+            this.border = false; //debug border        
             this.images = new Array();
-            for (var i in imgPaths) {
+            this.imagesPaths = new Array();
+        }
+        Iconset.prototype.setImages = function (imgPaths) {
+            //window.alert("Size:" + imgPaths.length);
+            for (var i = 0; i < imgPaths.length; i++) {
                 var img = new Image();
                 img.src = imgPaths[i].toString();
-                this.images.push(img);
+                if (i < this.images.length) {
+                    this.images[i] = img;
+                }
+                else {
+                    this.images.push(img);
+                }
+                if (i < this.imagesPaths.length) {
+                    this.imagesPaths[i] = imgPaths[i].toString();
+                }
+                else {
+                    this.imagesPaths.push(imgPaths[i].toString());
+                }
             }
-            //this.numImagePaint = 0;
-        }
+        };
+        Iconset.prototype.getImages = function () {
+            return this.images;
+        };
+        Iconset.prototype.getImagesPaths = function () {
+            return this.imagesPaths;
+        };
         Iconset.prototype.paint = function (nImage) {
             //Draw image...            
             var image = this.images[nImage];

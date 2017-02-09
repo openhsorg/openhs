@@ -22,6 +22,8 @@ import Thing = OhsSiteData.Thing;
         public m_switchMarks: Array<SwitchMark> = null;
         protected m_doorMarks: Array<DoorMark> = null;  
         
+        public m_iconsetRoomBkg: Iconset = null;
+        
         private timerUpdateGraphics;
         
         constructor (canvas: HTMLCanvasElement, m_siteData: SiteData) {    
@@ -34,7 +36,11 @@ import Thing = OhsSiteData.Thing;
             //---Graphics---            
             this.m_tempMarks = new Array<TempMark>();
             this.m_switchMarks = new Array<SwitchMark>();
-            this.m_doorMarks = new Array<DoorMark>();     
+            this.m_doorMarks = new Array<DoorMark>();   
+            
+            this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
+            
+           // this.m_iconsetRoomBkg = new Iconset();
             
             //---Timer---
             this.timerUpdateGraphicsEvent(10000);
@@ -42,6 +48,18 @@ import Thing = OhsSiteData.Thing;
         }
         
         private updateGraphics () {
+           
+            //Rooms
+            var imgPaths: Array <String> = new Array <String> ();
+            
+            for (var id in this.m_siteData.rooms) {
+                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);   
+                
+               // window.alert("updateGraphics: " + this.m_siteData.rooms[id].imageBkgPath);
+            }
+            
+            this.m_iconsetRoomBkg.setImages(imgPaths);
+            
             // Temperature
             if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
                 this.m_tempMarks.length = this.m_siteData.tempSensors.length;
@@ -59,17 +77,17 @@ import Thing = OhsSiteData.Thing;
             }
             
             // Switches
-            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
-                this.m_switchMarks.length = this.m_siteData.switches.length;
+            if (this.m_switchMarks.length > this.m_siteData.getSwitches().length) {
+                this.m_switchMarks.length = this.m_siteData.getSwitches().length;
                 
-            } else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
-                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+            } else if (this.m_switchMarks.length < this.m_siteData.getSwitches().length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.getSwitches().length; i++) {
                     this.m_switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));                
                 }
             }            
     
-            for (let id in this.m_siteData.switches) {
-                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
+            for (let id in this.m_siteData.getSwitches()) {
+                this.m_switchMarks[id].thing = <Thing> this.m_siteData.getSwitches()[id];
             }          
                     
             // Doors
@@ -130,16 +148,14 @@ import Thing = OhsSiteData.Thing;
             } else {
             
                  return this.m_tempMarks.filter(function(element){
-                      
-                    if (element instanceof TempMark) {
+                     /*
+                     var res: boolean =  element.getData().getPath().indexOf(path) >= 0;
                      
-                        var mark: TempMark = <TempMark> element;
-                        
-                        var thing: TemperatureSensor = mark.getData();
-                        
-                        return thing.getPath().indexOf(path) === 0;
-                    }
-                    return false; 
+                     if (debug) {
+                        window.alert("Inside element member:" + element.getData().getPath() + "\n\nCompared with:" + path + "\n\nDecision:" + res);
+                     }
+                         */       
+                     return element.getData().getPath().indexOf(path) >= 0;
                  });                
              }
         } 
@@ -152,16 +168,8 @@ import Thing = OhsSiteData.Thing;
             } else {
             
                  return this.m_switchMarks.filter(function(element){
-                      
-                    if (element instanceof SwitchMark) {
-                     
-                        var mark: SwitchMark = <SwitchMark> element;
-                        
-                        var thing: Switch = mark.getData();
-                        
-                        return thing.getPath().indexOf(path) === 0;
-                    }
-                    return false; 
+
+                    return element.getData().getPath().indexOf(path) >= 0; 
                  });                
              }
         } 
@@ -174,16 +182,8 @@ import Thing = OhsSiteData.Thing;
             } else {
             
                  return this.m_doorMarks.filter(function(element){
-                      
-                    if (element instanceof DoorMark) {
-                     
-                        var mark: DoorMark = <DoorMark> element;
-                        
-                        var thing: Door = mark.getData();
-                        
-                        return thing.getPath().indexOf(path) === 0;
-                    }
-                    return false; 
+
+                    return element.getData().getPath().indexOf(path) >= 0;
                  });                
              }
         }         
@@ -279,32 +279,50 @@ import Thing = OhsSiteData.Thing;
     
     export class Iconset extends Mark {
         
-        protected border:    boolean = false; //debug border
+        protected border:    boolean = false; //debug border        
+        protected images: Array <HTMLImageElement>;
+        protected imagesPaths: Array <String>;               
         
-        public imagePaths: Array <String>;
-        public images: Array <HTMLImageElement>;
-        
-      //  public numImagePaint = 0;
-        
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, imgPaths: Array<String>) {
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
             super(ctx, rect);
             
             this.images = new Array <HTMLImageElement>();
-            
-            for (let i in imgPaths) {
+            this.imagesPaths = new Array <String>();
+
+        }    
+        
+        public setImages (imgPaths: Array<String>){   
+        
+            //window.alert("Size:" + imgPaths.length);
+            for (var i = 0; i < imgPaths.length; i ++) {
                 
                 var img: HTMLImageElement = new Image();
-                img.src = imgPaths[i].toString();
+                img.src = imgPaths[i].toString();               
                 
-                this.images.push(img);    
+                if (i < this.images.length) {
+                    this.images[i] = img;
+                }
+                else {
+                    this.images.push(img);    
+                }
                 
-          //      this.border = true;
-                
-              //  window.alert(imgPaths[i].toString());
-            }
-            
-            //this.numImagePaint = 0;
-        }    
+                if (i < this.imagesPaths.length) {
+                    this.imagesPaths[i] = imgPaths[i].toString();
+                }
+                else {
+                    this.imagesPaths.push(imgPaths[i].toString());    
+                }                
+            }      
+              
+        }
+        
+        public getImages () {
+            return this.images;
+        }
+        
+        public getImagesPaths () {
+            return this.imagesPaths;
+        }        
         
         public paint (nImage: number) {               
             //Draw image...            
