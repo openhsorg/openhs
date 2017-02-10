@@ -5,8 +5,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.openhs.core.commons.Room;
+import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.api.IInfostation;
-import org.openhs.core.infostation.Infostation;
 
 public class KitchenServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	IInfostation	m_infostation = null;
 	
@@ -37,17 +44,12 @@ public class KitchenServlet extends HttpServlet {
 		 	//System.out.println("\n\n...GET:");
 		 	
 		 	String value = request.getParameter("orderId");
-		 	//System.out.println("\n\n**GET Value:=" + value);
-		 	
-		 	//response.addHeader("Cache-Control","no-cache,no-store");
 	        
 	    	if (value != null) {
-	    		//System.out.println("Value:=" + value.toString());
-	    		
+	    	//	System.out.println("Value:=" + value.toString());
+	    		/*
 	    		if (value.toString().equals("InfoData")) {	    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
+	    	
 	    			JSONObject json = getDataToJSON();
 
 	    			//System.out.println("\nJSON:" + json.toString());
@@ -62,11 +64,65 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();
 	    			
-	    		} else if (value.toString().equals("Day0")) {			    		
+	    		} else
+	    			*/
+	    	    if (value.toString().equals("SiteData")) {	    		
+	    			/*
+	    			 * Get site data.
+	    			 */
+	    			
+	    			//System.out.println("\n\n\n\n ------> SiteData  <-----------------: ");
+	    			
+	    			JSONObject json = getSiteDataToJSON();
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();
+	    			
+	    		} else if (value.toString().contains("WeatherCurrent")) {	
 	    			/*
 	    			 * Get data from meteo module.
 	    			 */
-	    			JSONObject json = getDataToJSON_Day(0);
+	    			JSONObject json = getCurWeatherToJSON();
+
+	    			//System.out.println("\nWeatherCurrent JSON:" + json.toString());
+	    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();	    			
+	    			
+	    		} else if (value.toString().contains("WeatherForecast_")) {	
+	    			
+	    			// Divide
+	    			String delim = "[_]+";
+	    			String[] parts = value.toString().split(delim);
+
+	    			// Check for empty parts...
+	    			for (String str : parts) {
+	    				if (str.equals("")) {
+	    				}
+	    			}	    	
+	    				    				    			
+	    			int numForecast = Integer.parseInt(parts[1]);
+	    			
+	    		    //System.out.println("\n\n ***Forecast: " + numForecast);
+	    			
+	    			/*
+	    			 * Get data from meteo module.
+	    			 */
+	    			JSONObject json = getDataToJSON_Forecast(numForecast);
 
 	    			//System.out.println("\nJSON:" + json.toString());
 	    			
@@ -80,108 +136,26 @@ public class KitchenServlet extends HttpServlet {
 	    			out.flush();
 	    			out.close();		    			
 	    			
-	    		} else if (value.toString().equals("Day1")) {			    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(1);
-
-	    			//System.out.println("\nJSON:" + json.toString());
+	    		} else if (value.toString().equals("SwitchS")) {
+		    		
+//		    		System.out.println("\n\n\n\n    SwitchS  ");
 	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    		
-	    			
-	    		} else if (value.toString().equals("Day2")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(2);
-
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	  
-	    			
-	    		} else if (value.toString().equals("Day3")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Day(3);
-
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    			
-	    		} else if (value.toString().equals("floor1")) {		    		
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
-	    			JSONObject json = getDataToJSON_Data();
-
-	    			//System.out.println("\n\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    			
-	    		} else if (value.toString().equals("switch1")) {		    		
-	    			/*
-	    			 * Get data from core module.
-	    			 */
-	    				    				    			
+		    		String path2 = request.getParameter("path").toString();
+		    			
 	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
 	    			
 	    			try {
-	    				List<Boolean> list = m_infostation.getSwitchState("floors/Floor1/rooms/Room0/sensors/Kitchen_light");
-	    				
-	    				boolean state = list.get(0);
-	    				boolean stateDevice = list.get(1);
-	    				
-	    				if (stateDevice) { //device on
-	    					if (state) {
-	    						stateInt = 3; //request is on
-	    					} else {
-	    						stateInt = 4; //request is off
-	    					}
-	    				} else { //device off
-	    					if (state) { //request is on
-	    						stateInt = 2;
-	    					} else { // request is off
-	    						stateInt = 1;
-	    					}	    					
-	    				}	    					    				
+	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
 	    			} catch (Exception ex) {
 	    				
 	    			}
 	    			
+	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
 	    			JSONObject json = new JSONObject();
-	    			json.put("switchState", new Integer(stateInt));
+	    			json.put("state_sw", new Integer(stateInt));
+					json.put("x_coordinate", String.format("%d", 200));
+					json.put("y_coordinate", String.format("%d", 200));		    			
 	    				    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -191,23 +165,125 @@ public class KitchenServlet extends HttpServlet {
 	    			out.println(json.toString());
 		    	        
 	    			out.flush();
-	    			out.close();	    			
-		    	}		 	    		
-	    	}
-	    	else {
-	    		
-	    		//System.out.println("Value:= null");	    	
-		 
-	    		response.setContentType("text/html");
-		    	response.setCharacterEncoding("UTF-8");
-		    	response.setHeader("cache-control", "no-cache");		    	
+	    			out.close();	
+	    			
+		    	} else if (value.toString().equals("TempSensor")) {
+		    			    			
+		    		String path = request.getParameter("path").toString();
+	    			
+	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			JSONObject json = new JSONObject();
+										
+					if (path.contains("WC")) {
+						
+						json.put("temp", String.format("%.2f", m_infostation.getTempIn()));
+						json.put("x_coordinate", String.format("300"));
+						json.put("y_coordinate", String.format("150"));								
+						
+					} else {
+					
+						json.put("temp", String.format("%.2f", m_infostation.getTempOut()));
+						json.put("x_coordinate", String.format("300"));
+						json.put("y_coordinate", String.format("300"));		
+					}
+	    				    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
 
-	    		PrintWriter out = response.getWriter();
-	        
-	    		print_html (out);
-	    	        
-	    		out.close();	         
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
+		    	        
+	    			out.flush();
+	    			out.close();		
+	    			
+		    	} else if (value.toString().equals("Room")) {
+	    			
+					String path = request.getParameter("path").toString();
+					
+					Room room = null;
+					
+					try {
+						room = (Room) this.m_infostation.getThing(path);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//System.out.println("\n\n\n\n    Room name: " + room.getName());
+					
+					JSONObject json = new JSONObject();
+					
+					
+					if (room != null){
+						json.put("name", String.format(room.getName()));
+					} else {
+						json.put("name", String.format("Error!"));
+					}
+						    			
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = response.getWriter();	    			
+					
+					out.println(json.toString());
+					    
+					out.flush();
+					out.close();	
+					
+					
+		        } else if (value.toString().equals("DoorD")) {
+		    		
+	    			String path = request.getParameter("path").toString();
+					
+					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+					
+					JSONObject json = new JSONObject();
+										
+					if (path.contains("Door1")) {						
+						json.put("x_coordinate", String.format("%d", 100));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(true));
+						json.put("lock", new Boolean(false));												
+					} else if (path.contains("Door2")) {
+						json.put("x_coordinate", String.format("%d", 200));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(false));
+						json.put("lock", new Boolean(false));	
+					} else {
+						json.put("x_coordinate", String.format("%d", 300));
+						json.put("y_coordinate", String.format("%d", 50));						
+						json.put("open", new Boolean(false));
+						json.put("lock", new Boolean(true));	
+					}
+						    			
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = response.getWriter();	    			
+					
+					out.println(json.toString());
+					    
+					out.flush();
+					out.close();			    				    		
+				}
+	    		
+	    	} else {
+    		
+    		//System.out.println("Value:= null");	    	
+	 
+    		response.setContentType("text/html");
+	    	response.setCharacterEncoding("UTF-8");
+	    	response.setHeader("cache-control", "no-cache");		    	
+
+    		PrintWriter out = response.getWriter();
+        
+    		print_html (out);
+    	        
+    		out.close();	         
 	    	}
+	    	
 	    }
 
 	    @Override
@@ -231,6 +307,9 @@ public class KitchenServlet extends HttpServlet {
 		 				
 		 			}
 		 			
+		 		} else if (value.toString().equals("SwitchS")) {		 			
+		 			String path = request.getParameter("path").toString();				 			
+		 			m_infostation.setSwitch(path);		 			
 		 		}
 		 		
 		 		/*
@@ -282,17 +361,20 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='600' height='400' style='margin-top: -200px; margin-left: -300px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
-
+	    	
+	    	out.println("<script src='infores/servlets/kitchen/OhsSiteData.js' charset='utf-8'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsWeatherData.js' charset='utf-8'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsCanvasGraphics.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");
-	    	out.println("new KitchenInfoStation.BasicScreen(document.getElementById('infoCanvas'));");
+	    	out.println("new KitchenInfoStation.ApplicationKitchen(document.getElementById('infoCanvas'));");
 	    	out.println("</script>");
 	    	
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	   
+	   /*
 	    protected JSONObject getDataToJSON() {
 	    	
 	    	Weather wth = m_infostation.getForecastWeather6();
@@ -317,21 +399,153 @@ public class KitchenServlet extends HttpServlet {
 			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
 			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
 			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+		//	json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			
 			return json;
-	    }
+	    }	    	    
+	    */
+	    protected JSONObject getSiteDataToJSON() {
+		    Date curDate = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		    String time = format.format(curDate); 	 		  
+		    
+		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
+		    String date = format2.format(curDate); 	  	    	  		    		    	
+	    	
+			JSONObject json = new JSONObject();	
+			
+			json.put("time", time);
+			json.put("date", date);			
+			
+			// Floors
+			try {
+				Set<String> floorPaths = this.m_infostation.getFloorsPaths ();						
+				json.put("number_floors", String.format("%d", floorPaths.size()));
+				
+				int i = 0;
+				for (String item: floorPaths) {
+
+					String id = "floorPath_" + i;					
+					json.put(id, item);
+					
+					i ++;
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_floors", String.format("0"));								
+				e.printStackTrace();
+			}	
+			
+			// Rooms			
+			try {
+				Set<String> roomsPaths = this.m_infostation.getRoomsPaths ();						
+				json.put("number_rooms", String.format("%d", roomsPaths.size()));
+				
+				int i = 0;
+				for (String item: roomsPaths) {	
+					String id = "roomPath_" + i;					
+					json.put(id, item);
+					
+					i++;
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_rooms", String.format("0"));								
+				e.printStackTrace();
+			}		
+			
+			// temperatureSensors			
+			try {
+				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
+				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
+
+				int i = 0;
+				for (String item: tempSensorsPaths) {													
+					json.put("tempSensorPath_" + i, item);
+
+					i ++;
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);					
+				}				
+			} catch (SiteException e) {
+				json.put("number_tempsensors", String.format("0"));								
+				e.printStackTrace();
+			}		
+						
+			// Switch			
+			try {
+				Set<String> switchPaths = this.m_infostation.getSwitchPaths();						
+				json.put("number_switches", String.format("%d", switchPaths.size()));				
+								
+				int i = 0;
+				for (String item: switchPaths) {
+													
+					json.put("switchPath_" + i, item);
+
+					i ++;
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
+					
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_switches", String.format("0"));								
+				e.printStackTrace();
+			}			
+			
+			
+			// door		
+			Set<String> doorsPaths = new HashSet <String> (); 
+			/*
+			 * TEMPORARY code
+			 */
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door1"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door2"); //this.m_infostation.getTempSensorsPaths();
+			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door3"); //this.m_infostation.getTempSensorsPaths();
+			/*
+			 * TEMPORARY code end...
+			 */
+			
+			json.put("number_doors", String.format("%d", doorsPaths.size()));
+			
+			int i = 0;
+			for (String item: doorsPaths) {			
+				json.put("doorPath_" + i, item);
+				
+				i++;
+			}			
+			
+			/*
+			 * TEMPORARY code
+			 */			
+			json.put("open_door_0", new Boolean(true));
+			json.put("open_door_1", new Boolean(false));
+			json.put("open_door_2", new Boolean(false));
+			
+			json.put("lock_door_0", new Boolean(false));
+			json.put("lock_door_1", new Boolean(false));
+			json.put("lock_door_2", new Boolean(true));	
+			/*
+			 * TEMPORARY code end...
+			 */			
+			
+			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
+			
+			
+			
+			
+			return json;
+	    }	    
 	    
-	    protected JSONObject getDataToJSON_Day(int nDay) {
+	    protected JSONObject getDataToJSON_Forecast(int nFcs) {
 	    		    	
 	    	ArrayList<Weather> forecasts = m_infostation.getForecasts();
 	    	
-	    	if (nDay < 0 || nDay > 4) { 
-	    		nDay = 4;
+	    	if (nFcs < 0 || nFcs > 4) { 
+	    		nFcs = 4;
 	    	}
 	    	
-	    	int n = nDay * 8;
+	    	int n = nFcs * 8;
 	    	
 	    	if (forecasts.size() < n) {
 	    		return null;
@@ -355,13 +569,29 @@ public class KitchenServlet extends HttpServlet {
 			return json;
 	    }
 	    
+	    protected JSONObject getCurWeatherToJSON() {
+	    	
+	    	Weather wth = m_infostation.getForecastWeather6();		    
+		    		    
+			JSONObject json = new JSONObject();
+			json.put("tempIn", String.format("%.2f", m_infostation.getTempIn()));
+			json.put("tempOut", String.format("%.2f", m_infostation.getTempOut()));			
+			json.put("cloudPerc", m_infostation.getCloudsForecast());
+			json.put("tempForecast", m_infostation.getTempForecast());
+			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
+			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
+			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
+			
+			return json;
+	    }	    
+	    /*
 	    protected JSONObject getDataToJSON_Data() {
 	    	
 			JSONObject json = new JSONObject();
 														
 			int n = -1;
 			
-			/*
+			
 			
 			try {
 				n = this.m_infostation.m_siteService.getNumberThings("floors/Floor1/rooms");
@@ -371,9 +601,10 @@ public class KitchenServlet extends HttpServlet {
 			} catch (Exception ex) {	
 				//System.out.print("\nEXCPT: " + ex);
 			}
-	            			*/			
+	            						
 		    json.put("nRooms", String.format("%d",n));
 						
 			return json;
-	    }	    
+	    }	
+	    */
 }

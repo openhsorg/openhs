@@ -1,13 +1,19 @@
 package org.openhs.core.infostation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Floor;
+import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.commons.api.IInfostation;
@@ -110,6 +116,32 @@ public class Infostation implements IInfostation {
    		  return list;       
       }   
       
+      public int getSwitchIntState (String sitePath) throws SiteException {
+
+    	  	int stateInt = 0;
+    	  
+			List<Boolean> list = getSwitchState(sitePath);
+			
+			boolean state = list.get(0);
+			boolean stateDevice = list.get(1);
+			
+			if (stateDevice) { //device on
+				if (state) {
+					stateInt = 3; //request is on
+				} else {
+					stateInt = 4; //request is off
+				}
+			} else { //device off
+				if (state) { //request is on
+					stateInt = 2;
+				} else { // request is off
+					stateInt = 1;
+				}	    					
+			}	
+			
+   		  return stateInt;       
+      }       
+      
       public float getTempIn() {
     	  return this.m_meteo.getTempIn();
       }
@@ -136,5 +168,53 @@ public class Infostation implements IInfostation {
       
       public ArrayList<Weather> getForecasts() {    	    	    
     	  return this.m_meteo.getForecasts();
-      }          
+      }  
+
+      public int getNumberFloors() {
+    	  try {
+    		  Set<String> floorPaths = this.getFloorsPaths();
+    		  
+    		  return floorPaths.size();    		  
+    	  } catch (Exception ex){    		  
+    		  return 0;
+    	  }
+      }            
+      
+      public Set<Floor> getFloors () {
+    	  Set<Floor> floors = new HashSet <Floor> ();
+    	  
+    	  try {
+    		  Set<String> floorPaths = this.m_siteService.getChildren("floors");    		      		  
+    		  
+    		  for (String path: floorPaths) {
+    			  floors.add((Floor)this.m_siteService.getThing(path));
+    		  }
+    		  
+    		  return floors;
+    		      		  
+    	  } catch (Exception ex) {
+    		  return floors;
+    	  }
+      }
+      
+      public Set<String> getFloorsPaths () throws SiteException {
+    	  return this.m_siteService.getChildren("floors");    		      		      		    	  
+      }     
+      
+      public Set<String> getRoomsPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(Room.class);   		      		    	  
+      }     
+      
+      public Set<String> getTempSensorsPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(TemperatureSensor.class);   		      		    	  
+      }  
+      
+      public Set<String> getSwitchPaths () throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(Switch.class);   		      		    	  
+      }  
+      
+      public Thing getThing (String thingPath) throws SiteException {    	      	  
+    	  return this.m_siteService.getThing(thingPath);		      		    	  
+      }         
+      
 }

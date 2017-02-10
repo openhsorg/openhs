@@ -43,5 +43,7 @@ public interface ISiteService {
 	public void buildHouse(int rooms);
 	
 	void SaveXML (String path);
+	
+	public Set<String> getAllThingsPath (Class<?>  t) throws SiteException;
 
 }
