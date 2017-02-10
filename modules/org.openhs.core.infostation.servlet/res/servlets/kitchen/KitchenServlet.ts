@@ -132,7 +132,7 @@ module KitchenInfoStation {
         
         private MouseClickHandler(event) {
             
-            var mousePos = getMousePos(this.canvas, event);                        
+            var mousePos = getMousePos(this.canvas, event);                           
             
             /*
             * handling in current page...
@@ -156,6 +156,7 @@ module KitchenInfoStation {
                 screen = this.m_forecastScreen;     
                        
             } else if (retVal.nextScreen == SwitchScreen.Room) {
+                refresh = 50;
                 screen = this.m_room;                
                 this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
             }
@@ -889,7 +890,7 @@ module KitchenInfoStation {
 
         
             // Temperature sensors...
-            var tempMarks = this.m_graphics.getTempMarks(this.getThingPath());
+            var tempMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
             
             for (let id in tempMarks) {
                 tempMarks[id].paint();  
@@ -897,14 +898,14 @@ module KitchenInfoStation {
             }
             
             // Switches...
-            var switchMarks = this.m_graphics.getSwitchMarks(this.getThingPath());
+            var switchMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             
             for (let id in switchMarks) {
                 switchMarks[id].paint();            
             }        
             
             // Doors
-            var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
                 doorMarks[id].paint();            
@@ -1014,21 +1015,24 @@ module KitchenInfoStation {
            // window.alert('Paint path filter:' + this.getThingPath());
                         
             // Temperature sensors...
-            var tempMarks: Array<TempMark> = this.m_graphics.getTempMarks(this.getThingPath());
+            //var tempMarks: Array<TempMark> = this.m_graphics.getTempMarks(this.getThingPath());
+            var tempMarks: Array<TempMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
             
             for (let id in tempMarks) {
                 tempMarks[id].paint();            
             }   
                    //    window.alert('Paint path filter2:' + this.getThingPath());
             // Switches sensors...
-            var switchMarks: Array<SwitchMark> = this.m_graphics.getSwitchMarks(this.getThingPath());
+            //var switchMarks: Array<SwitchMark> = this.m_graphics.getSwitchMarks(this.getThingPath());
+            var switchMarks: Array<SwitchMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             
             for (let id in switchMarks) {
                 switchMarks[id].paint();            
             }     
             
             // Doors
-            var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            //var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            var doorMarks: Array<DoorMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
                 doorMarks[id].paint();            

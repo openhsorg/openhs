@@ -49,16 +49,16 @@ var OhsCanvasGraphics;
                 this.m_tempMarks[id_1].setData(this.m_siteData.tempSensors[id_1]);
             }
             // Switches
-            if (this.m_switchMarks.length > this.m_siteData.getSwitches().length) {
-                this.m_switchMarks.length = this.m_siteData.getSwitches().length;
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
             }
-            else if (this.m_switchMarks.length < this.m_siteData.getSwitches().length) {
-                for (var i = this.m_switchMarks.length; i < this.m_siteData.getSwitches().length; i++) {
+            else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
                     this.m_switchMarks.push(new SwitchMark(this.ctx, new Rect(0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));
                 }
             }
-            for (var id_2 in this.m_siteData.getSwitches()) {
-                this.m_switchMarks[id_2].thing = this.m_siteData.getSwitches()[id_2];
+            for (var id_2 in this.m_siteData.switches) {
+                this.m_switchMarks[id_2].thing = this.m_siteData.switches[id_2];
             }
             // Doors
             if (this.m_doorMarks.length > this.m_siteData.doors.length) {
@@ -81,60 +81,39 @@ var OhsCanvasGraphics;
             window.clearTimeout(this.timerUpdateGraphics);
             this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
         };
-        Graphics.prototype.isClicked = function (x, y, path) {
-            var switches = this.getSwitchMarks(path);
+        Graphics.prototype.isClicked = function (x, y, filterPath) {
+            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
             for (var id in switches) {
                 if (switches[id].isClicked(x, y)) {
                     return switches[id].getData();
                 }
             }
-            var temps = this.getTempMarks(path);
+            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
             for (var id in temps) {
                 if (temps[id].isClicked(x, y)) {
                     return temps[id].getData();
                 }
             }
-            var doors = this.getDoorMarks(path);
+            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
             for (var id in doors) {
                 if (doors[id].isClicked(x, y)) {
                     return doors[id].getData();
                 }
             }
         };
-        Graphics.prototype.getTempMarks = function (path) {
-            if (path == null) {
-                return this.m_tempMarks;
+        Graphics.prototype.getFilteredMarks = function (arg, filterPath) {
+            if (filterPath == null) {
+                return arg;
             }
             else {
-                return this.m_tempMarks.filter(function (element) {
-                    /*
-                    var res: boolean =  element.getData().getPath().indexOf(path) >= 0;
-                    
-                    if (debug) {
-                       window.alert("Inside element member:" + element.getData().getPath() + "\n\nCompared with:" + path + "\n\nDecision:" + res);
+                return arg.filter(function (element) {
+                    var mark = element;
+                    if (mark.thing == null) {
+                        return true;
                     }
-                        */
-                    return element.getData().getPath().indexOf(path) >= 0;
-                });
-            }
-        };
-        Graphics.prototype.getSwitchMarks = function (path) {
-            if (path == null) {
-                return this.m_switchMarks;
-            }
-            else {
-                return this.m_switchMarks.filter(function (element) {
-                    return element.getData().getPath().indexOf(path) >= 0;
-                });
-            }
-        };
-        Graphics.prototype.getDoorMarks = function (path) {
-            if (path == null) {
-                return this.m_doorMarks;
-            }
-            else {
-                return this.m_doorMarks.filter(function (element) {
-                    return element.getData().getPath().indexOf(path) >= 0;
+                    else {
+                        return mark.thing.getPath().indexOf(filterPath) >= 0;
+                    }
                 });
             }
         };

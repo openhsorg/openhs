@@ -10,11 +10,13 @@ var OhsSiteData;
 (function (OhsSiteData) {
     var SiteData = (function () {
         function SiteData() {
+            //---Site data---
             this.floors = null;
             this.rooms = null;
             this.tempSensors = null;
             this.switches = null;
             this.doors = null;
+            //---Other data---
             this.timeString = "---";
             this.dateString = "---";
             this.floors = new Array();
@@ -48,80 +50,125 @@ var OhsSiteData;
             window.clearTimeout(this.slowTimerGetData);
             this.slowTimerGetData = window.setTimeout(function () { return _this.slowTimerGetDataEvent(step); }, step);
         };
-        SiteData.prototype.getNumberFloors = function () {
+        /*
+        public getNumberFloors () {
             return this.floors.length;
-        };
-        SiteData.prototype.getNumberRooms = function () {
+        }
+        
+        public getNumberRooms () {
             return this.rooms.length;
-        };
-        SiteData.prototype.getFloor = function (num) {
+        }
+        */
+        /*
+        public getFloor (num:  number){
             if (num > this.floors.length || num < 1) {
                 return null;
             }
             return this.floors[num - 1];
+        }
+       */
+        SiteData.prototype.setNumber = function (num, arg, types) {
+            if (num > arg.length) {
+                for (var i = arg.length; i < num; i++) {
+                    var ss = new types();
+                    arg.push(ss);
+                }
+            }
+            else if (num < arg.length) {
+                arg.length = num;
+            }
         };
-        SiteData.prototype.setNumberFloors = function (num) {
+        /*
+        public getNumber<T>(arg: Array<T>) {
+            return arg.length;
+        }
+         */
+        /*
+        public setNumberFloors (num: number) {
             if (num > this.floors.length) {
                 for (var i = this.floors.length; i < num; i++) {
                     this.floors.push(new Floor());
                 }
-            }
-            else if (num < this.floors.length) {
+            } else if (num < this.floors.length) {
                 this.floors.length = num;
             }
-        };
-        SiteData.prototype.setNumberRooms = function (num) {
+        }
+        
+        public setNumberRooms (num: number) {
             if (num > this.rooms.length) {
                 for (var i = this.rooms.length; i < num; i++) {
                     this.rooms.push(new Room());
                 }
-            }
-            else if (num < this.rooms.length) {
+            } else if (num < this.rooms.length) {
                 this.rooms.length = num;
             }
-        };
-        SiteData.prototype.getNumberDoors = function () {
+        }
+        */
+        /*
+        public getNumberDoors () {
             return this.doors.length;
-        };
-        SiteData.prototype.getDoor = function (num) {
+        }
+        */
+        /*
+        public getDoor (num:  number){
             if (num > this.doors.length || num < 1) {
                 return null;
             }
             return this.doors[num - 1];
-        };
-        SiteData.prototype.setNumberTempSensors = function (num) {
+        }
+        */
+        /*
+        public setNumberTempSensors (num: number) {
             if (num > this.tempSensors.length) {
                 for (var i = this.tempSensors.length; i < num; i++) {
                     this.tempSensors.push(new TemperatureSensor());
                 }
-            }
-            else if (num < this.tempSensors.length) {
+            } else if (num < this.tempSensors.length) {
                 this.tempSensors.length = num;
             }
-        };
-        SiteData.prototype.setNumberDoors = function (num) {
+        }
+        
+        public setNumberDoors(num: number) {
             if (num > this.doors.length) {
                 for (var i = this.doors.length; i < num; i++) {
                     this.doors.push(new Door());
                 }
-            }
-            else if (num < this.doors.length) {
+            } else if (num < this.doors.length) {
                 this.doors.length = num;
             }
-        };
-        SiteData.prototype.setNumberSwitches = function (num) {
+        }
+        
+        public setNumberSwitches (num: number) {
             if (num > this.switches.length) {
                 for (var i = this.switches.length; i < num; i++) {
                     this.switches.push(new Switch());
                 }
-            }
-            else if (num < this.switches.length) {
+            } else if (num < this.switches.length) {
                 this.switches.length = num;
             }
-        };
-        SiteData.prototype.getSwitches = function () {
+        }
+        */
+        /*
+        public getSwitches() {
             return this.switches;
-        };
+        }
+        
+        public getDoors() {
+            return this.doors;
+        }
+        
+        public getTemperatureSensors() {
+            return this.tempSensors;
+        }
+        
+        public getRooms() {
+            return this.rooms;
+        }
+        
+        public getFloors() {
+            return this.floors;
+        }
+        */
         SiteData.prototype.getParentPath = function (thing) {
             if (thing == null) {
                 return null;
@@ -180,13 +227,16 @@ var OhsSiteData;
                 this.dateString = data['date'];
                 this.timeString = data['time'];
                 // Floors                  
-                this.setNumberFloors(parseInt(data['number_floors']));
-                //  window.alert("floors:   " + this.getNumberFloors());
+                // this.setNumberFloors (parseInt(data['number_floors']));
+                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
+                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
+                //window.alert("floors:   " + this.getNumberFloors());
                 for (var id_1 in this.floors) {
                     this.floors[id_1].setPath(data['floorPath_' + id_1]);
                 }
                 // Rooms            
-                this.setNumberRooms(parseInt(data['number_rooms']));
+                //this.setNumberRooms (parseInt(data['number_rooms']));
+                this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
                 for (var id = 0; id < this.rooms.length; id++) {
                     this.rooms[id].setPath(data['roomPath_' + id]);
                     if (id == 0)
@@ -199,17 +249,20 @@ var OhsSiteData;
                         this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
                 }
                 // TempSensors                              
-                this.setNumberTempSensors(parseInt(data['number_tempsensors']));
+                // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+                this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
                 for (var id_2 in this.tempSensors) {
                     this.tempSensors[id_2].setPath(data['tempSensorPath_' + id_2]);
                 }
                 // Switches                     
-                this.setNumberSwitches(parseInt(data['number_switches']));
+                //this.setNumberSwitches (parseInt(data['number_switches']));
+                this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
                 for (var id_3 in this.switches) {
                     this.switches[id_3].setPath(data['switchPath_' + id_3]);
                 }
                 // Door                     
-                this.setNumberDoors(parseInt(data['number_doors']));
+                //this.setNumberDoors (parseInt(data['number_doors']));
+                this.setNumber(parseInt(data['number_doors']), this.doors, Door);
                 for (var id_4 in this.doors) {
                     this.doors[id_4].setPath(data['doorPath_' + id_4]);
                 }
@@ -236,6 +289,7 @@ var OhsSiteData;
         __extends(Floor, _super);
         function Floor() {
             _super.apply(this, arguments);
+            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
         }
         return Floor;
     }(Thing));

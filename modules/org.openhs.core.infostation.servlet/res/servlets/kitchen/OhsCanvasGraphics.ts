@@ -18,9 +18,9 @@ import Thing = OhsSiteData.Thing;
         
         private m_siteData: SiteData = null;
         
-        private m_tempMarks: Array<TempMark> = null;
+        public m_tempMarks: Array<TempMark> = null;
         public m_switchMarks: Array<SwitchMark> = null;
-        protected m_doorMarks: Array<DoorMark> = null;  
+        public m_doorMarks: Array<DoorMark> = null;  
         
         public m_iconsetRoomBkg: Iconset = null;
         
@@ -77,17 +77,17 @@ import Thing = OhsSiteData.Thing;
             }
             
             // Switches
-            if (this.m_switchMarks.length > this.m_siteData.getSwitches().length) {
-                this.m_switchMarks.length = this.m_siteData.getSwitches().length;
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
                 
-            } else if (this.m_switchMarks.length < this.m_siteData.getSwitches().length) {
-                for (var i = this.m_switchMarks.length; i < this.m_siteData.getSwitches().length; i++) {
+            } else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
                     this.m_switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));                
                 }
             }            
     
-            for (let id in this.m_siteData.getSwitches()) {
-                this.m_switchMarks[id].thing = <Thing> this.m_siteData.getSwitches()[id];
+            for (let id in this.m_siteData.switches) {
+                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
             }          
                     
             // Doors
@@ -113,9 +113,9 @@ import Thing = OhsSiteData.Thing;
            this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
         }   
         
-        public isClicked(x: number, y: number, path: string) {
+        public isClicked(x: number, y: number, filterPath: string) {
             
-            var switches = this.getSwitchMarks(path);
+            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
             
             for (let id in switches) {                
                 if(switches[id].isClicked(x, y)) {
@@ -123,7 +123,7 @@ import Thing = OhsSiteData.Thing;
                 }
             }  
             
-            var temps = this.getTempMarks(path);
+            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
             
             for (let id in temps) {                
                 if(temps[id].isClicked(x, y)) {
@@ -131,15 +131,37 @@ import Thing = OhsSiteData.Thing;
                 }
             }
             
-            var doors = this.getDoorMarks(path);
+            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
             
             for (let id in doors) {                
                 if(doors[id].isClicked(x, y)) {
                     return <Thing> doors[id].getData();
                 }
             }              
-        }        
+        }     
         
+        public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){
+                     
+                     var mark: Mark = (<Mark><any>element);
+                     
+                     if (mark.thing == null) {
+                         return true;
+                         
+                     } else {
+                         
+                         return mark.thing.getPath().indexOf(filterPath) >= 0;                         
+                     }
+                 });                               
+             }
+        }            
+        /*
         public getTempMarks(path: string) {
             
             if (path == null) {
@@ -148,14 +170,8 @@ import Thing = OhsSiteData.Thing;
             } else {
             
                  return this.m_tempMarks.filter(function(element){
-                     /*
-                     var res: boolean =  element.getData().getPath().indexOf(path) >= 0;
-                     
-                     if (debug) {
-                        window.alert("Inside element member:" + element.getData().getPath() + "\n\nCompared with:" + path + "\n\nDecision:" + res);
-                     }
-                         */       
-                     return element.getData().getPath().indexOf(path) >= 0;
+                    
+                     return element.thing.getPath().indexOf(path) >= 0;
                  });                
              }
         } 
@@ -186,7 +202,9 @@ import Thing = OhsSiteData.Thing;
                     return element.getData().getPath().indexOf(path) >= 0;
                  });                
              }
-        }         
+        }
+        
+        */
     }
                 
     export class Rect {

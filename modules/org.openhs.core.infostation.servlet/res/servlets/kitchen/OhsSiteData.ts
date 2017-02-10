@@ -5,16 +5,19 @@
 module OhsSiteData {
      
     export class SiteData {
-                       
+
+        //---Timers---
         private fastTimerGetData;
         private slowTimerGetData;
         
+        //---Site data---
         public floors: Array <Floor> = null;
         public rooms: Array <Room> = null;
         public tempSensors: Array <TemperatureSensor> = null;
-        protected switches: Array <Switch> = null;
+        public switches: Array <Switch> = null;
         public doors: Array <Door> = null;
         
+        //---Other data---
         public timeString: string = "---";
         public dateString: string = "---";
         
@@ -58,7 +61,7 @@ module OhsSiteData {
            window.clearTimeout(this.slowTimerGetData);
            this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
         }         
-        
+        /*
         public getNumberFloors () {
             return this.floors.length;
         }
@@ -66,15 +69,31 @@ module OhsSiteData {
         public getNumberRooms () {
             return this.rooms.length;
         }        
-        
+        */
+        /*
         public getFloor (num:  number){
             if (num > this.floors.length || num < 1) {
                 return null;
             }
             return this.floors[num - 1];
         }
-       
-        
+       */
+        public setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;}) {
+            if (num > arg.length) {            
+                for (var i = arg.length; i < num; i++) {                    
+                    var ss = new types();
+                    arg.push(ss);
+                }
+            } else if (num < arg.length) {            
+                arg.length = num;             
+            }   
+        }
+        /*
+        public getNumber<T>(arg: Array<T>) {
+            return arg.length;
+        }        
+         */ 
+        /*
         public setNumberFloors (num: number) {         
             if (num > this.floors.length) {            
                 for (var i = this.floors.length; i < num; i++) {
@@ -94,18 +113,21 @@ module OhsSiteData {
                 this.rooms.length = num;             
             }
         }   
-        
+        */
+        /*
         public getNumberDoors () {
             return this.doors.length;
         }
-        
+        */
+        /*
         public getDoor (num:  number){
             if (num > this.doors.length || num < 1) {
                 return null;
             }
             return this.doors[num - 1];
-        }        
-        
+        }    
+        */    
+        /*
         public setNumberTempSensors (num: number) {         
             if (num > this.tempSensors.length) {            
                 for (var i = this.tempSensors.length; i < num; i++) {
@@ -135,11 +157,28 @@ module OhsSiteData {
                 this.switches.length = num;             
             }
         }      
-        
+        */
+        /*
         public getSwitches() {
             return this.switches;
         }
         
+        public getDoors() {
+            return this.doors;
+        }      
+        
+        public getTemperatureSensors() {
+            return this.tempSensors;
+        }    
+        
+        public getRooms() {
+            return this.rooms;
+        }    
+        
+        public getFloors() {
+            return this.floors;
+        }           
+        */
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
                 return null;
@@ -175,31 +214,31 @@ module OhsSiteData {
         
             for (let id in this.floors) {                
                 if (this.floors[id].getPath() == path) {
-                    return this.floors[id];
+                    return <Thing>this.floors[id];
                 }                    
             }
             
             for (let id in this.rooms) {                
                 if (this.rooms[id].getPath() == path) {
-                    return this.rooms[id];
+                    return <Thing>this.rooms[id];
                 }                    
             }  
             
             for (let id in this.tempSensors) {                
                 if (this.tempSensors[id].getPath() == path) {
-                    return this.tempSensors[id];
+                    return <Thing>this.tempSensors[id];
                 }                    
             } 
             
             for (let id in this.switches) {                
                 if (this.switches[id].getPath() == path) {
-                    return this.switches[id];
+                    return <Thing>this.switches[id];
                 }                    
             }   
             
             for (let id in this.doors) {                
                 if (this.doors[id].getPath() == path) {
-                    return this.doors[id];
+                    return <Thing>this.doors[id];
                 }                    
             }               
         
@@ -221,9 +260,12 @@ module OhsSiteData {
                 this.timeString = data['time'];
             
                 // Floors                  
-                this.setNumberFloors (parseInt(data['number_floors']));
+               // this.setNumberFloors (parseInt(data['number_floors']));
                 
-              //  window.alert("floors:   " + this.getNumberFloors());
+                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
+                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
+                
+                //window.alert("floors:   " + this.getNumberFloors());
                                         
                 for (let id in this.floors) {                    
                     this.floors[id].setPath(data['floorPath_' + id]);
@@ -232,7 +274,8 @@ module OhsSiteData {
                 }           
                 
                 // Rooms            
-                this.setNumberRooms (parseInt(data['number_rooms']));
+                //this.setNumberRooms (parseInt(data['number_rooms']));
+                this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
@@ -244,21 +287,24 @@ module OhsSiteData {
                 }             
                 
                 // TempSensors                              
-                this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+               // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+                this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
                 
                 for (let id in this.tempSensors) {                                
                     this.tempSensors[id].setPath(data['tempSensorPath_' + id]);                   
                 }     
                 
                 // Switches                     
-                this.setNumberSwitches (parseInt(data['number_switches']));
+                //this.setNumberSwitches (parseInt(data['number_switches']));
+                this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
                 
                 for (let id in this.switches) {                      
                     this.switches[id].setPath(data['switchPath_' + id]);
                 }              
                 
                 // Door                     
-                this.setNumberDoors (parseInt(data['number_doors']));
+                //this.setNumberDoors (parseInt(data['number_doors']));
+                this.setNumber(parseInt(data['number_doors']), this.doors, Door);
                             
                 for (let id in this.doors) {           
                     this.doors[id].setPath(data['doorPath_' + id]);
@@ -286,6 +332,8 @@ module OhsSiteData {
     }
         
     export class Floor extends Thing {
+        
+        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
                    
     }
     
@@ -312,10 +360,8 @@ module OhsSiteData {
             if (data != null) {
                 this.name = data['name'];  
                 this.valid = true;
-            }  
-                                    
-        }         
-           
+            }                                      
+        }                    
     }    
     
     export class TemperatureSensor extends Thing{
