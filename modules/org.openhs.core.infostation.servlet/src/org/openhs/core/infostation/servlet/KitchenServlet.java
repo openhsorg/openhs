@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Thing;
@@ -140,10 +141,17 @@ public class KitchenServlet extends HttpServlet {
 	    			out.close();		    			
 	    			
 	    		} else if (value.toString().equals("SwitchS")) {
-		    		
-//		    		System.out.println("\n\n\n\n    SwitchS  ");
 	    			
 		    		String path2 = request.getParameter("path").toString();
+		    		
+		    		Thing thing = null;
+					try {
+						thing = this.m_infostation.getThing(path2);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						//System.out.println("\n\n\n\n   Path:" + path2);
+						e.printStackTrace();
+					}		    		
 		    			
 	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
 	    			
@@ -156,9 +164,21 @@ public class KitchenServlet extends HttpServlet {
 	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
 	    			
 	    			JSONObject json = new JSONObject();
-	    			json.put("state_sw", new Integer(stateInt));
-					json.put("x_coordinate", String.format("%d", 200));
-					json.put("y_coordinate", String.format("%d", 200));		    			
+	    			
+		    		if (thing != null && thing instanceof Switch) {
+			    		
+		    			Switch sw = (Switch) thing;
+					    
+						json.put("validity", new Boolean(true));
+						json.put("state_sw", new Integer(stateInt));
+						json.put("x_coordinate", String.format("%d", sw.x));
+						json.put("y_coordinate", String.format("%d", sw.y));
+												
+						//System.out.println("\n\n\n\n   Path" + path2 + " Sensor x: " + sw.x + "S y:" + sw.y);
+					
+		    		} else {
+		    			json.put("validity", new Boolean(false));
+		    		}	    				    				    				    			
 	    				    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");

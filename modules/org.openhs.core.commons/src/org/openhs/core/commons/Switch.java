@@ -36,6 +36,14 @@ public class Switch extends Thing {
 	 * Timestamp of last written value.
 	 */
 	Timestamp timestamp = new Timestamp(0);
+	
+	/*
+	 *Coordinates in house  
+	 */
+	public int x = 0;
+	public int y = 0;
+	public int z = 0;	
+	
 		
 	public void setState(boolean state) throws SiteException
 	{

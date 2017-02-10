@@ -61,23 +61,7 @@ module OhsSiteData {
            window.clearTimeout(this.slowTimerGetData);
            this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
         }         
-        /*
-        public getNumberFloors () {
-            return this.floors.length;
-        }
-        
-        public getNumberRooms () {
-            return this.rooms.length;
-        }        
-        */
-        /*
-        public getFloor (num:  number){
-            if (num > this.floors.length || num < 1) {
-                return null;
-            }
-            return this.floors[num - 1];
-        }
-       */
+
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;}) {
             if (num > arg.length) {            
                 for (var i = arg.length; i < num; i++) {                    
@@ -88,97 +72,7 @@ module OhsSiteData {
                 arg.length = num;             
             }   
         }
-        /*
-        public getNumber<T>(arg: Array<T>) {
-            return arg.length;
-        }        
-         */ 
-        /*
-        public setNumberFloors (num: number) {         
-            if (num > this.floors.length) {            
-                for (var i = this.floors.length; i < num; i++) {
-                    this.floors.push(new Floor());
-                }
-            } else if (num < this.floors.length) {            
-                this.floors.length = num;             
-            }
-        }
-        
-        public setNumberRooms (num: number) {         
-            if (num > this.rooms.length) {            
-                for (var i = this.rooms.length; i < num; i++) {
-                    this.rooms.push(new Room());
-                }
-            } else if (num < this.rooms.length) {            
-                this.rooms.length = num;             
-            }
-        }   
-        */
-        /*
-        public getNumberDoors () {
-            return this.doors.length;
-        }
-        */
-        /*
-        public getDoor (num:  number){
-            if (num > this.doors.length || num < 1) {
-                return null;
-            }
-            return this.doors[num - 1];
-        }    
-        */    
-        /*
-        public setNumberTempSensors (num: number) {         
-            if (num > this.tempSensors.length) {            
-                for (var i = this.tempSensors.length; i < num; i++) {
-                    this.tempSensors.push(new TemperatureSensor());
-                }
-            } else if (num < this.tempSensors.length) {            
-                this.tempSensors.length = num;             
-            }
-        }    
-        
-        public setNumberDoors(num: number) {         
-            if (num > this.doors.length) {            
-                for (var i = this.doors.length; i < num; i++) {
-                    this.doors.push(new Door());
-                }
-            } else if (num < this.doors.length) {            
-                this.doors.length = num;             
-            }
-        }         
-        
-        public setNumberSwitches (num: number) {         
-            if (num > this.switches.length) {            
-                for (var i = this.switches.length; i < num; i++) {
-                    this.switches.push(new Switch());
-                }
-            } else if (num < this.switches.length) {            
-                this.switches.length = num;             
-            }
-        }      
-        */
-        /*
-        public getSwitches() {
-            return this.switches;
-        }
-        
-        public getDoors() {
-            return this.doors;
-        }      
-        
-        public getTemperatureSensors() {
-            return this.tempSensors;
-        }    
-        
-        public getRooms() {
-            return this.rooms;
-        }    
-        
-        public getFloors() {
-            return this.floors;
-        }           
-        */
+  
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
                 return null;
@@ -447,11 +341,13 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.stateInt = parseInt(data['state_sw']);
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
+                this.valid = JSON.parse(data['validity']);
                 
-                this.valid = true;
+                if (this.valid){
+                    this.stateInt = parseInt(data['state_sw']);
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                }                                
             }                            
         }
     }   
