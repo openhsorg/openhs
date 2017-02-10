@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.TemperatureSensor;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.api.IInfostation;
 
@@ -170,23 +173,33 @@ public class KitchenServlet extends HttpServlet {
 		    	} else if (value.toString().equals("TempSensor")) {
 		    			    			
 		    		String path = request.getParameter("path").toString();
-	    			
-	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
-	    			
-	    			JSONObject json = new JSONObject();
-										
-					if (path.contains("WC")) {
-						
-						json.put("temp", String.format("%.2f", m_infostation.getTempIn()));
-						json.put("x_coordinate", String.format("300"));
-						json.put("y_coordinate", String.format("150"));								
-						
-					} else {
-					
-						json.put("temp", String.format("%.2f", m_infostation.getTempOut()));
-						json.put("x_coordinate", String.format("300"));
-						json.put("y_coordinate", String.format("300"));		
+		    		
+		    		Thing thing = null;
+					try {
+						thing = this.m_infostation.getThing(path);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+		    		
+		    		JSONObject json = new JSONObject();
+		    		
+		    		if (thing != null && thing instanceof TemperatureSensor) {
+		    		
+			    		TemperatureSensor tempSensor = (TemperatureSensor) thing;
+						
+						Temperature temp = tempSensor.getTemperature();
+					    
+						json.put("validity", new Boolean(true));
+						json.put("temp", String.format("%.2f",  temp.getCelsius()));
+						json.put("x_coordinate", String.format("%d", tempSensor.x));
+						json.put("y_coordinate", String.format("%d", tempSensor.y));
+						
+						//System.out.println("\n\n\n\n   Path" + path + " Sensor x: " + tempSensor.x + "S y:" + tempSensor.y);
+					
+		    		} else {
+		    			json.put("validity", new Boolean(false));
+		    		}
 	    				    			
 	    			response.setContentType("application/json");
 	    			response.setCharacterEncoding("UTF-8");
@@ -217,8 +230,11 @@ public class KitchenServlet extends HttpServlet {
 					
 					
 					if (room != null){
+						json.put("validity", new Boolean(true));
 						json.put("name", String.format(room.getName()));
+						json.put("imgBkg", String.format(room.imagePath));
 					} else {
+						json.put("validity", new Boolean(false));
 						json.put("name", String.format("Error!"));
 					}
 						    			

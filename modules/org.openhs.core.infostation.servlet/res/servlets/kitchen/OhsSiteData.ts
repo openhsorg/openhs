@@ -28,7 +28,7 @@ module OhsSiteData {
             this.switches = new Array<Switch>();
             this.doors = new Array<Door>();    
                         
-            this.slowTimerGetDataEvent(5000);            
+            this.slowTimerGetDataEvent(1000);            
             this.fastTimerGetDataEvent(100);
         }
         
@@ -279,11 +279,12 @@ module OhsSiteData {
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
-                    
+                    /*
                     if (id == 0)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room0.png";                        
                     if (id == 1)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room1.png";
                     if (id == 2)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room2.png";
                     if (id == 3)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
+                    */
                 }             
                 
                 // TempSensors                              
@@ -358,8 +359,13 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.name = data['name'];  
-                this.valid = true;
+                this.valid = JSON.parse(data['validity']);
+                
+                if (this.valid) {
+                    this.name = data['name'];
+                    this.imageBkgPath = data['imgBkg'];
+                }  
+                
             }                                      
         }                    
     }    
@@ -387,10 +393,13 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
-                this.temp = parseFloat(data['temp']);  
-                this.valid = true;
+                this.valid = JSON.parse(data['validity']);
+
+                if (this.valid) {
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.temp = parseFloat(data['temp']);  
+                }
             }                            
         }        
     } 

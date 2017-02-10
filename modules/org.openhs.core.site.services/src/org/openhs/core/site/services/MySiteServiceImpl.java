@@ -73,12 +73,15 @@ public class MySiteServiceImpl implements ISiteService {
 			addThing("floors/Floor2", new Floor());
 
 			for (int i = 0; i <= rooms; i++) {
-
 				addThing("floors/Floor1/rooms/Room" + i, new Room());
-				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1", new TemperatureSensor());
+
 			}
 
-			addThing("floors/Floor2/rooms/Room1/sensors/SensorWC", "mqtt/0/path", new TemperatureSensor());
+			addThing("floors/Floor2/rooms/Room1", new Room());
+			
+			addThing("floors/Floor1/rooms/Room1/sensors/Livin_Room", "DummyService/dummy/0/Thermometer", new TemperatureSensor());
+			addThing("floors/Floor1/rooms/Room2/sensors/SensorWC", "DummyService/dummy/1/Thermometer", new TemperatureSensor());
+			addThing("floors/Floor1/rooms/Room0/sensors/Kitchen_light", "DummyService/dummy/0/Switch", new Switch());
 
 		} catch (Exception ex) {
 			System.out.println("\n\n EXception***:" + ex);
@@ -797,7 +800,57 @@ public class MySiteServiceImpl implements ISiteService {
 					Attr devicePathAttr = doc.createAttribute("devicePath");
 					devicePathAttr.setValue(this.getDevicePath(sitePath));
 					element.setAttributeNode(devicePathAttr);	
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((TemperatureSensor) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((TemperatureSensor) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((TemperatureSensor) thing).z));					
+					position.setAttributeNode(zCoord);
+					
+					
+				} else if (thing instanceof Switch) {
+					// devicePath attribute
+					
+					Attr devicePathAttr = doc.createAttribute("devicePath");
+					devicePathAttr.setValue(this.getDevicePath(sitePath));
+					element.setAttributeNode(devicePathAttr);
+					
+				} else if (thing instanceof Floor) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Floor) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
+				} else if (thing instanceof Room) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Room) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
 				}
+				
+				
 			}
 
 			// write the content into xml file
@@ -852,15 +905,44 @@ public class MySiteServiceImpl implements ISiteService {
 						String sitePath = elementSitePath.getAttribute("sitePath");
 						ss.things.put(sitePath, obj);
 						
-						if (obj instanceof TemperatureSensor) {
+						if (obj instanceof TemperatureSensor) {							
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 							
-							//System.out.println("\n+classXXX>" + devicePath + " : " + sitePath);
-						}
-						else if (obj instanceof Switch) {
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((TemperatureSensor) obj).x = x;
+									((TemperatureSensor) obj).y = y;
+									((TemperatureSensor) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}														
+						} else if (obj instanceof Switch) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
+							
+						} else if (obj instanceof Floor) {																					
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Floor) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
+							
+						} else if (obj instanceof Room) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Room) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
 						}
 					}
 				}
@@ -922,7 +1004,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 			System.out.println("\n++> File disabled -> I create some house :)");
 
-			buildHouse(6); // build some house....
+			buildHouse(4); // build some house....
 		}
 	}
 

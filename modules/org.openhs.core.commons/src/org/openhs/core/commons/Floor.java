@@ -4,6 +4,8 @@ import java.util.TreeMap;
 
 public class Floor extends Thing {
 	
+	public String imagePath = "no path";
+	
 	/*
 	 * Rooms.
 	 */
