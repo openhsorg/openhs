@@ -192,7 +192,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 					temp += 1.0;
 					hum += 1.0;
 					if (temp > 25.0)
-						temp = -4.0;
+						temp = 15.0;
 					if (hum > 50.0)
 						hum = 40.0;
 
@@ -206,7 +206,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 				{
 					temp1 += 1.0;
 					hum1 += 1.0;
-					if (temp1 > 20.0)
+					if (temp1 > 5.0)
 						temp1 = -15.0;
 					if (hum1 > 101.0)
 						hum1 = 80.0;

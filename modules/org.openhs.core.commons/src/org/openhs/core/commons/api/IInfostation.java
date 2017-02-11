@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.Floor;
 
@@ -33,5 +34,7 @@ public interface IInfostation {
 	public Set<String> getRoomsPaths () throws SiteException;
 	public Set<String> getTempSensorsPaths () throws SiteException;
 	public Set<String> getSwitchPaths () throws SiteException;
+	public Thing getThing (String thingPath) throws SiteException;
+	public Set<String> getThingPaths (Class<?> t) throws SiteException;
 	
 }

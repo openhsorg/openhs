@@ -8,7 +8,204 @@ import SiteData = OhsSiteData.SiteData;
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
-import Switch = OhsSiteData.Switch;         
+import Switch = OhsSiteData.Switch;
+import Thing = OhsSiteData.Thing;     
+    
+    export class Graphics {
+        
+        private canvas:              HTMLCanvasElement;
+        public ctx:                  CanvasRenderingContext2D;          
+        
+        private m_siteData: SiteData = null;
+        
+        public m_tempMarks: Array<TempMark> = null;
+        public m_switchMarks: Array<SwitchMark> = null;
+        public m_doorMarks: Array<DoorMark> = null;  
+        
+        public m_iconsetRoomBkg: Iconset = null;
+        
+        private timerUpdateGraphics;
+        
+        constructor (canvas: HTMLCanvasElement, m_siteData: SiteData) {    
+            this.canvas = canvas; 
+            this.ctx = canvas.getContext("2d");    
+            
+            //---Data---
+            this.m_siteData = m_siteData;
+            
+            //---Graphics---            
+            this.m_tempMarks = new Array<TempMark>();
+            this.m_switchMarks = new Array<SwitchMark>();
+            this.m_doorMarks = new Array<DoorMark>();   
+            
+            this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
+            
+           // this.m_iconsetRoomBkg = new Iconset();
+            
+            //---Timer---
+            this.timerUpdateGraphicsEvent(10000);
+            
+        }
+        
+        private updateGraphics () {
+           
+            //Rooms
+            var imgPaths: Array <String> = new Array <String> ();
+            
+            for (var id in this.m_siteData.rooms) {
+                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);   
+                
+               // window.alert("updateGraphics: " + this.m_siteData.rooms[id].imageBkgPath);
+            }
+            
+            this.m_iconsetRoomBkg.setImages(imgPaths);
+            
+            // Temperature
+            if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
+                this.m_tempMarks.length = this.m_siteData.tempSensors.length;
+                
+            } else if (this.m_tempMarks.length < this.m_siteData.tempSensors.length) {
+                for (var i = this.m_tempMarks.length; i < this.m_siteData.tempSensors.length; i++) {
+                    this.m_tempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+                }
+            }            
+    
+            for (let id in this.m_siteData.tempSensors) {
+                this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
+               // this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
+                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
+            }
+            
+            // Switches
+            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
+                this.m_switchMarks.length = this.m_siteData.switches.length;
+                
+            } else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
+                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
+                    this.m_switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));                
+                }
+            }            
+    
+            for (let id in this.m_siteData.switches) {
+                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
+            }          
+                    
+            // Doors
+            if (this.m_doorMarks.length > this.m_siteData.doors.length) {
+                this.m_doorMarks.length = this.m_siteData.doors.length;
+                
+            } else if (this.m_doorMarks.length < this.m_siteData.doors.length) {
+                for (var i = this.m_doorMarks.length; i < this.m_siteData.doors.length; i++) {
+                    this.m_doorMarks.push(new DoorMark (this.ctx, new Rect (0, 0, 0, 0)));
+                }
+            }            
+    
+            for (let id in this.m_siteData.doors) {
+                this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
+                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);    
+                this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];                    
+            }                       
+        }        
+        
+        private timerUpdateGraphicsEvent(step : number) {     
+           this.updateGraphics();  
+           window.clearTimeout(this.timerUpdateGraphics);
+           this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
+        }   
+        
+        public isClicked(x: number, y: number, filterPath: string) {
+            
+            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
+            
+            for (let id in switches) {                
+                if(switches[id].isClicked(x, y)) {
+                    return <Thing> switches[id].getData();
+                }
+            }  
+            
+            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
+            
+            for (let id in temps) {                
+                if(temps[id].isClicked(x, y)) {
+                    return <Thing> temps[id].getData();
+                }
+            }
+            
+            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
+            
+            for (let id in doors) {                
+                if(doors[id].isClicked(x, y)) {
+                    return <Thing> doors[id].getData();
+                }
+            }              
+        }     
+        
+        public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){
+                     
+                     var mark: Mark = (<Mark><any>element);
+                     
+                     if (mark.thing == null) {
+                         return true;
+                         
+                     } else {
+                         
+                         return mark.thing.getPath().indexOf(filterPath) >= 0;                         
+                     }
+                 });                               
+             }
+        }            
+        /*
+        public getTempMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_tempMarks;
+                
+            } else {
+            
+                 return this.m_tempMarks.filter(function(element){
+                    
+                     return element.thing.getPath().indexOf(path) >= 0;
+                 });                
+             }
+        } 
+        
+        public getSwitchMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_switchMarks;
+                
+            } else {
+            
+                 return this.m_switchMarks.filter(function(element){
+
+                    return element.getData().getPath().indexOf(path) >= 0; 
+                 });                
+             }
+        } 
+        
+        public getDoorMarks(path: string) {
+            
+            if (path == null) {
+                return this.m_doorMarks;
+                
+            } else {
+            
+                 return this.m_doorMarks.filter(function(element){
+
+                    return element.getData().getPath().indexOf(path) >= 0;
+                 });                
+             }
+        }
+        
+        */
+    }
                 
     export class Rect {
                                        
@@ -42,7 +239,9 @@ import Switch = OhsSiteData.Switch;
     export class Mark {
         
         protected   ctx:    CanvasRenderingContext2D;  
-        public      rect:   Rect;        
+        public      rect:   Rect;
+        
+        public thing: Thing = null;
         
         constructor (ctx: CanvasRenderingContext2D, rect: Rect){                    
             this.ctx = ctx;        
@@ -62,6 +261,108 @@ import Switch = OhsSiteData.Switch;
             return this.rect.isClicked(clx, cly);        
         }        
     }
+    
+    export class Icon extends Mark {
+        
+        private img:HTMLImageElement = null;
+        protected border:    boolean = false; //debug border
+        
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src: string) {
+            super(ctx, rect);
+            
+            this.img = new Image();                                
+            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
+        }    
+        
+        public paint () {   
+            
+            //Draw image...
+         //   if (this.imgLoaded) {     
+            this.ctx.save();
+            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            this.ctx.restore();        
+           // }            
+            
+            if (this.border){
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth=2;
+                this.ctx.strokeStyle="blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();
+             }                          
+         }                 
+    }
+    
+    export class Iconset extends Mark {
+        
+        protected border:    boolean = false; //debug border        
+        protected images: Array <HTMLImageElement>;
+        protected imagesPaths: Array <String>;               
+        
+        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
+            super(ctx, rect);
+            
+            this.images = new Array <HTMLImageElement>();
+            this.imagesPaths = new Array <String>();
+
+        }    
+        
+        public setImages (imgPaths: Array<String>){   
+        
+            //window.alert("Size:" + imgPaths.length);
+            for (var i = 0; i < imgPaths.length; i ++) {
+                
+                var img: HTMLImageElement = new Image();
+                img.src = imgPaths[i].toString();               
+                
+                if (i < this.images.length) {
+                    this.images[i] = img;
+                }
+                else {
+                    this.images.push(img);    
+                }
+                
+                if (i < this.imagesPaths.length) {
+                    this.imagesPaths[i] = imgPaths[i].toString();
+                }
+                else {
+                    this.imagesPaths.push(imgPaths[i].toString());    
+                }                
+            }      
+              
+        }
+        
+        public getImages () {
+            return this.images;
+        }
+        
+        public getImagesPaths () {
+            return this.imagesPaths;
+        }        
+        
+        public paint (nImage: number) {               
+            //Draw image...            
+            var image: HTMLImageElement = this.images[nImage];
+            
+            if (image != null) {            
+                this.ctx.save();
+                this.ctx.drawImage(image, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.restore();                                                                        
+             }
+            
+                if (this.border){
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.lineWidth=2;
+                    this.ctx.strokeStyle="blue";
+                    this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                    this.ctx.stroke();
+                    this.ctx.restore();
+                 }              
+         }                 
+    }    
     
     export class Text extends Mark {
     
@@ -139,7 +440,8 @@ import Switch = OhsSiteData.Switch;
         
         protected border:    boolean = false; //debug border
         
-        private temp:   number = -100.0;
+      //  private temp:   number = -100.0;
+      //  private tempSensor: TemperatureSensor = null;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
             super(ctx, rect);
@@ -157,11 +459,19 @@ import Switch = OhsSiteData.Switch;
             super.setSize(rect);     
             this.txt.setSize(rect);                    
          }
-        
+        /*
         setTemp (temp: number) {
             this.temp = temp;    
         }
-    
+        */
+        public setData (temp: TemperatureSensor){
+            this.thing = <Thing> temp;
+        }
+        
+        public getData () {
+            return <TemperatureSensor> this.thing;
+        }
+            
         public paint () {          
             this.ctx.save();
             this.ctx.beginPath();
@@ -175,7 +485,13 @@ import Switch = OhsSiteData.Switch;
                     
             //this.rect.x = this.rect.x + 20;
             this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(this.temp + " \u00B0C");
+            
+            if (this.thing != null) {
+                
+                var thingSensor: TemperatureSensor = <TemperatureSensor> this.thing;
+                
+                this.txt.paint(thingSensor.temp + " \u00B0C");
+            }
             
             //Draw image...
          //   if (this.imgLoaded) {     
@@ -198,7 +514,7 @@ import Switch = OhsSiteData.Switch;
     
     export class SwitchMark extends Mark {
 
-        public switch: Switch = null;        
+     //   public switch: Switch = null;        
         private txt:  Text;   
         private img:HTMLImageElement = null;
         private imgLoaded: boolean;// = false;    
@@ -221,31 +537,40 @@ import Switch = OhsSiteData.Switch;
             super.setSize(rect);    
             this.txt.setSize(rect);                 
          }
+        
+        public setData (switchIn: Switch){
+            this.thing = <Switch> switchIn;
+        }
+        
+        public getData () {
+            return <Switch> this.thing;
+        }        
                     
         public paint () {      
         
+            var switchVar: Switch = <Switch> this.thing;
             // Update this
-            this.rect.x = this.switch.x;
-            this.rect.y = this.switch.y;        
+            this.rect.x = switchVar.x;
+            this.rect.y = switchVar.y;        
             
             this.txt.setSize(this.rect);
                 
             var text: string = "---";    
 
             //logic of switch
-            if (this.switch.getState() == 0) {
+            if (switchVar.getState() == 0) {
                 this.colorButton = "#808080"; 
                 text = "---";
-            } else if (this.switch.getState() == 1) {
+            } else if (switchVar.getState() == 1) {
                 this.colorButton = "#3333ff";
                 text = "off";
-            } else if (this.switch.getState() == 2) {
+            } else if (switchVar.getState() == 2) {
                 this.colorButton = "#33cc33";
                 text = "->on";
-            } else if (this.switch.getState() == 3) {
+            } else if (switchVar.getState() == 3) {
                 this.colorButton = "#ffaa00";
                 text = "on";
-            } else if (this.switch.getState() == 4) {
+            } else if (switchVar.getState() == 4) {
                 this.colorButton = "#9999ff";
                 text = "->off";
             } else {
@@ -286,15 +611,16 @@ import Switch = OhsSiteData.Switch;
     }    
     
     export class DoorMark extends Mark {
-
-       // private txt:  Text;
     
         private imgOpen:HTMLImageElement = null;
         private imgClose:HTMLImageElement = null;
         private imgLock:HTMLImageElement = null;
         
+                                            
+            //this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";            
+        
         private imgLoaded: boolean;// = false;    
-        private colorButton: string = "black";
+        private colorButton: string = "white";
         private colorBorder: string = "black";     
         
         protected state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
@@ -303,27 +629,29 @@ import Switch = OhsSiteData.Switch;
     
         constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
             super(ctx, rect);
-/*
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            */
-            
+
             this.imgOpen = new Image();                                
-            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";     
+            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";               
             
             this.imgClose = new Image();                                
             this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 
             
             this.imgLock = new Image();                                
-            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";               
+            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";     
             
         }      
         
         public setSize (rect:  Rect) {        
             super.setSize(rect);                
          }
+        
+        public setData (door: Door){
+            this.thing = <Door> door;
+        }
+        
+        public getData () {
+            return <Door> this.thing;
+        }          
         
         public setState (open: boolean, lock: boolean) {
             if (open) this.state = 1;
@@ -336,6 +664,11 @@ import Switch = OhsSiteData.Switch;
         }
     
         public paint () {      
+        
+            var doorVar: Door = <Door> this.thing;
+            // Update this
+            this.rect.x = doorVar.x;
+            this.rect.y = doorVar.y;                 
             
             this.ctx.save();
             this.ctx.beginPath();

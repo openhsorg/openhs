@@ -40,7 +40,7 @@ public interface ISiteService {
 
 	boolean setSite (Site siteIn);
 	
-	public void buildHouse(int rooms);
+	public void buildHouse();
 	
 	void SaveXML (String path);
 	

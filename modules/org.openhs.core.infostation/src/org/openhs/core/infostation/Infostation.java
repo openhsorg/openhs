@@ -10,6 +10,7 @@ import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Weather;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.TemperatureSensor;
@@ -210,6 +211,14 @@ public class Infostation implements IInfostation {
       
       public Set<String> getSwitchPaths () throws SiteException {    	      	  
     	  return this.m_siteService.getAllThingsPath(Switch.class);   		      		    	  
-      }            
+      }  
+      
+      public Thing getThing (String thingPath) throws SiteException {    	      	  
+    	  return this.m_siteService.getThing(thingPath);		      		    	  
+      }        
+      
+      public Set<String> getThingPaths (Class<?> t) throws SiteException {    	      	  
+    	  return this.m_siteService.getAllThingsPath(t);   		      		    	  
+      }        
       
 }
