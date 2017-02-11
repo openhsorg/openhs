@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
@@ -97,23 +98,40 @@ public class MySiteServiceImpl implements ISiteService {
 			room.imagePath = "/infores/servlets/kitchen/room3.png";				
 			addThing("floors/Floor2/rooms/Room1", room);
 			
+			Door door = new Door();
+			door.setName("Outside");
+			door.x = 310;
+			door.y = 0;
+			door.z = 0;
+			door.imagePath = "/infores/servlets/kitchen/door1_close.JPG";
+			addThing("floors/Floor1/doors/Door1", door);			
+			
+			door = new Door();
+			door.setName("Inside");
+			door.x = 450;
+			door.y = 50;
+			door.z = 0;
+			door.imagePath = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/doors/Door2", door);				
+			
+			
 			TemperatureSensor sensor = new TemperatureSensor();
 			sensor.setName("LivingTemp");
-			sensor.x = 100;
-			sensor.y = 200;
+			sensor.x = 300;
+			sensor.y = 150;
 			sensor.z = 0;				
 			addThing("floors/Floor1/rooms/Room1/sensors/Livin_Room", "DummyService/dummy/0/Thermometer", sensor);
 						
 			sensor = new TemperatureSensor();
 			sensor.setName("Outside");
 			sensor.x = 300;
-			sensor.y = 250;
+			sensor.y = 300;
 			sensor.z = 0;				
 			addThing("floors/Floor1/rooms/Room0/sensors/SensorOut", "DummyService/dummy/1/Thermometer", sensor);
 			
 			Switch sw = new Switch();
 			sw.setName("Kitchen_Switch");
-			sw.x = 250;
+			sw.x = 220;
 			sw.y = 150;
 			sw.z = 0;								
 			addThing("floors/Floor1/rooms/Room1/sensors/Kitchen_Switch", "DummyService/dummy/0/Switch", sw);
@@ -423,6 +441,35 @@ public class MySiteServiceImpl implements ISiteService {
 					imageBkg.setValue(((Room) thing).imagePath);
 					images.setAttributeNode(imageBkg);	
 					
+				} else if (thing instanceof Door) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Door) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((Door) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((Door) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((Door) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
 				}
 				
 				
@@ -538,6 +585,32 @@ public class MySiteServiceImpl implements ISiteService {
 							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
 								((Room) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
 							}
+							
+						} else if (obj instanceof Door) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Door) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((Door) obj).x = x;
+									((Door) obj).y = y;
+									((Door) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}							
 						}
 					}
 				}

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.openhs.core.commons.Door;
+import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
@@ -274,25 +276,34 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path").toString();
 					
 					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			Door door = null;
+					
+					try {
+						door = (Door) this.m_infostation.getThing(path);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//System.out.println("\n\n\n\n    Room name: " + room.getName());
 					
 					JSONObject json = new JSONObject();
 										
-					if (path.contains("Door1")) {						
-						json.put("x_coordinate", String.format("%d", 100));
-						json.put("y_coordinate", String.format("%d", 50));						
-						json.put("open", new Boolean(true));
-						json.put("lock", new Boolean(false));												
-					} else if (path.contains("Door2")) {
-						json.put("x_coordinate", String.format("%d", 200));
-						json.put("y_coordinate", String.format("%d", 50));						
-						json.put("open", new Boolean(false));
-						json.put("lock", new Boolean(false));	
+					if (door != null){
+						json.put("validity", new Boolean(true));
+						json.put("name", String.format(door.getName()));
+						json.put("imgBkg", String.format(door.imagePath));
+						json.put("x_coordinate", String.format("%d", door.x));
+						json.put("y_coordinate", String.format("%d", door.y));
+						json.put("open", new Boolean(door.open));
+						json.put("lock", new Boolean(door.lock));
+						
+					//	System.out.println("\n\n\n\n    Door x: " + door.x + " Door y:" + door.y);
+						
 					} else {
-						json.put("x_coordinate", String.format("%d", 300));
-						json.put("y_coordinate", String.format("%d", 50));						
-						json.put("open", new Boolean(false));
-						json.put("lock", new Boolean(true));	
-					}
+						json.put("validity", new Boolean(false));	
+					}						    				   			
 						    			
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
@@ -457,7 +468,7 @@ public class KitchenServlet extends HttpServlet {
 			
 			// Floors
 			try {
-				Set<String> floorPaths = this.m_infostation.getFloorsPaths ();						
+				Set<String> floorPaths = this.m_infostation.getThingPaths (Floor.class);						
 				json.put("number_floors", String.format("%d", floorPaths.size()));
 				
 				int i = 0;
@@ -476,7 +487,7 @@ public class KitchenServlet extends HttpServlet {
 			
 			// Rooms			
 			try {
-				Set<String> roomsPaths = this.m_infostation.getRoomsPaths ();						
+				Set<String> roomsPaths = this.m_infostation.getThingPaths (Room.class);						
 				json.put("number_rooms", String.format("%d", roomsPaths.size()));
 				
 				int i = 0;
@@ -494,7 +505,7 @@ public class KitchenServlet extends HttpServlet {
 			
 			// temperatureSensors			
 			try {
-				Set<String> tempSensorsPaths = this.m_infostation.getTempSensorsPaths();						
+				Set<String> tempSensorsPaths = this.m_infostation.getThingPaths(TemperatureSensor.class);						
 				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
 
 				int i = 0;
@@ -528,42 +539,24 @@ public class KitchenServlet extends HttpServlet {
 				json.put("number_switches", String.format("0"));								
 				e.printStackTrace();
 			}			
-			
-			
-			// door		
-			Set<String> doorsPaths = new HashSet <String> (); 
-			/*
-			 * TEMPORARY code
-			 */
-			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door1"); //this.m_infostation.getTempSensorsPaths();
-			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door2"); //this.m_infostation.getTempSensorsPaths();
-			doorsPaths.add("floors/Floor1/rooms/Room0/doors/Door3"); //this.m_infostation.getTempSensorsPaths();
-			/*
-			 * TEMPORARY code end...
-			 */
-			
-			json.put("number_doors", String.format("%d", doorsPaths.size()));
-			
-			int i = 0;
-			for (String item: doorsPaths) {			
-				json.put("doorPath_" + i, item);
+		
+			// Doors			
+			try {
+				Set<String> doorsPaths = this.m_infostation.getThingPaths(Door.class);						
+				json.put("number_doors", String.format("%d", doorsPaths.size()));
 				
-				i++;
-			}			
-			
-			/*
-			 * TEMPORARY code
-			 */			
-			json.put("open_door_0", new Boolean(true));
-			json.put("open_door_1", new Boolean(false));
-			json.put("open_door_2", new Boolean(false));
-			
-			json.put("lock_door_0", new Boolean(false));
-			json.put("lock_door_1", new Boolean(false));
-			json.put("lock_door_2", new Boolean(true));	
-			/*
-			 * TEMPORARY code end...
-			 */			
+				int i = 0;
+				for (String item: doorsPaths) {	
+					String id = "doorPath_" + i;					
+					json.put(id, item);
+					
+					i++;
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_doors", String.format("0"));								
+				e.printStackTrace();
+			}				
 			
 			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
 			

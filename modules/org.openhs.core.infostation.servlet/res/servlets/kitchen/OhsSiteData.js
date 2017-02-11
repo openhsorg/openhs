@@ -271,6 +271,7 @@ var OhsSiteData;
         __extends(Door, _super);
         function Door() {
             _super.call(this);
+            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
             this.open = false;
             this.locked = false;
             this.x = 0;
@@ -299,11 +300,14 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
-                this.open = JSON.parse(data['open']);
-                this.locked = JSON.parse(data['lock']);
-                this.valid = true;
+                this.valid = JSON.parse(data['validity']);
+                if (this.valid) {
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);
+                    this.imageBkgPath = data['imgBkg'];
+                }
             }
         };
         return Door;

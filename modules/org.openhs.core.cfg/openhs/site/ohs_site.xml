@@ -3,20 +3,28 @@
 <thing name="My first floor" sitePath="floors/Floor1" type="Floor">
 <images imageBkg="no path"/>
 </thing>
+<thing name="Outside" sitePath="floors/Floor1/doors/Door1" type="Door">
+<images imageBkg="/infores/servlets/kitchen/door1_close.JPG"/>
+<position xCoord="310" yCoord="0" zCoord="0"/>
+</thing>
+<thing name="Inside" sitePath="floors/Floor1/doors/Door2" type="Door">
+<images imageBkg="/infores/servlets/kitchen/door2_close.JPG"/>
+<position xCoord="450" yCoord="50" zCoord="0"/>
+</thing>
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>
 </thing>
 <thing devicePath="DummyService/dummy/1/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
-<position xCoord="300" yCoord="250" zCoord="0"/>
+<position xCoord="300" yCoord="300" zCoord="0"/>
 </thing>
 <thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room1.png"/>
 </thing>
 <thing devicePath="DummyService/dummy/0/Switch" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
-<position xCoord="250" yCoord="150" zCoord="0"/>
+<position xCoord="220" yCoord="150" zCoord="0"/>
 </thing>
 <thing devicePath="DummyService/dummy/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
-<position xCoord="100" yCoord="200" zCoord="0"/>
+<position xCoord="300" yCoord="150" zCoord="0"/>
 </thing>
 <thing name="Kid1" sitePath="floors/Floor1/rooms/Room2" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room2.png"/>

@@ -173,12 +173,6 @@ module OhsSiteData {
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
-                    /*
-                    if (id == 0)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room0.png";                        
-                    if (id == 1)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room1.png";
-                    if (id == 2)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room2.png";
-                    if (id == 3)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
-                    */
                 }             
                 
                 // TempSensors                              
@@ -203,6 +197,8 @@ module OhsSiteData {
                             
                 for (let id in this.doors) {           
                     this.doors[id].setPath(data['doorPath_' + id]);
+                    
+                //    window.alert("Path:" + this.doors[id].getPath());
                 }                   
             }      
         }                        
@@ -354,6 +350,8 @@ module OhsSiteData {
     
     export class Door extends Thing {
         
+        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
+        
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
         
@@ -396,13 +394,16 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
-                this.open = JSON.parse(data['open']);
-                this.locked = JSON.parse(data['lock']);
+                this.valid = JSON.parse(data['validity']);
                 
-                this.valid = true;
-            }                            
+                if (this.valid){
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);  
+                    this.imageBkgPath = data['imgBkg'];         
+                }                                
+            }                                                       
         }        
     }    
     

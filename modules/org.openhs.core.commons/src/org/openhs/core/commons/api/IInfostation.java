@@ -35,5 +35,6 @@ public interface IInfostation {
 	public Set<String> getTempSensorsPaths () throws SiteException;
 	public Set<String> getSwitchPaths () throws SiteException;
 	public Thing getThing (String thingPath) throws SiteException;
+	public Set<String> getThingPaths (Class<?> t) throws SiteException;
 	
 }
