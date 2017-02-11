@@ -1,11 +1,10 @@
 package org.openhs.comm.iqrf.json;
 
 import org.json.JSONObject;
-import org.openhs.core.commons.TemperatureSensor;
-import org.openhs.core.commons.InputOutput;
+import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.ThingUpdater;
 
-public class InputOutputUpdater extends ThingUpdater {
+public class ContactSensorUpdater extends ThingUpdater {
 
 	private IqrfNode m_iqrfNode = null;
 	private boolean m_state;
@@ -13,16 +12,17 @@ public class InputOutputUpdater extends ThingUpdater {
 	private boolean m_dirOut = false;
 	private int m_bit = 0;
 	
-	public InputOutputUpdater() {
+	public ContactSensorUpdater() {
 		m_iqrfNode = new IqrfNode();
     	m_state = false;
 	}
 
-	public InputOutputUpdater(JSONObject jobj) {
+	public ContactSensorUpdater(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
 
 		m_port = jobj.getString("port");
 		m_dirOut = jobj.getBoolean("dirOut");
+		assert !m_dirOut; //must be false for ContactSensor if true it is Switch
 	    m_bit = jobj.getInt("bit");
 		
 		setDevicePath("Mqtt" + '/' + "Iqrf/DpaResponse" + '/' + 
@@ -46,7 +46,7 @@ public class InputOutputUpdater extends ThingUpdater {
 
 	@Override
 	public void updateIncoming() {
-		((InputOutput)getThing()).setState(m_state);
+		((ContactSensor)getThing()).setState(m_state);
 	}
 
 	@Override

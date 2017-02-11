@@ -22,7 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
-import org.openhs.core.commons.InputOutput;
+import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
@@ -527,6 +527,7 @@ public class MySiteServiceImpl implements ISiteService {
 						//Name attribute...
 						String sitePath = elementSitePath.getAttribute("sitePath");
 						ss.things.put(sitePath, obj);
+						obj.setSitePath(sitePath);
 						
 						//TODO use factory pattern
 						if (obj instanceof TemperatureSensor) {							
@@ -552,7 +553,7 @@ public class MySiteServiceImpl implements ISiteService {
 								} 
 							}
 						}
-						else if (obj instanceof InputOutput) {
+						else if (obj instanceof ContactSensor) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 						}

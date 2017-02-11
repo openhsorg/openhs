@@ -1,6 +1,6 @@
 package org.openhs.core.commons;
 
-public class InputOutput extends Thing {
+public class ContactSensor extends Thing {
 	
 	private Value m_state;
 	

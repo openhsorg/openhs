@@ -53,7 +53,7 @@ public class JsonMessageParser implements IMessageParser {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 		m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
 		m_updaterFactory.registerClass("LedR", SwitchUpdater.class);
-		m_updaterFactory.registerClass("IO", InputOutputUpdater.class);
+		m_updaterFactory.registerClass("IO", ContactSensorUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -131,13 +131,14 @@ public class JsonMessageParser implements IMessageParser {
         	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, thingJobj);
         	thingUpdater.setMessageHandler(m_messageHandler);
 
-        	logger.info(" Updater: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
-        			" DevicePath: " + thingUpdater.getDevicePath()
+        	logger.info("TU: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
+        			" DP: " + thingUpdater.getDevicePath()
         			);
     		
 			try {
 				Thing thing = m_siteService.getThingDevice(thingUpdater.getDevicePath());
 				thing.setUpdater(thingUpdater);
+	        	logger.info("  T: " + thing.getClass().getName() + " SP: " + thing.getSitePath());
 			} catch (SiteException e) {
 				logger.info(e.getMessage() + thingUpdater.getDevicePath());
 			}
