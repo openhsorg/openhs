@@ -20,7 +20,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.ObjectFactory;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Thing;
@@ -80,39 +79,6 @@ public class JsonMessageParser implements IMessageParser {
 			e.printStackTrace();
 		}
 		
-		/*
-		//TODO read cfg from props
-		if(properties != null && !properties.isEmpty()) {
-			Iterator<Entry<String, Object>> it = properties.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<String, Object> entry = it.next();
-				logger.info("    " + entry.getKey() + " = " +
-						entry.getValue() + " of type " + entry.getValue().getClass().toString());
-				if(entry.getKey().substring(0, 4).equals("IqrfJsonDeviceMapping.json")) {
-				/*
-				if(entry.getKey().substring(0, 4).equals("Mqtt")) {
-					try {
-						DevicePath devPath = new DevicePath(); 
-						devPath.parse((String) entry.getKey());
-						
-						ThingUpdater tu = m_updaterFactory.createObject(devPath.getType());
-						
-						logger.info("      updater: " + entry.getKey() + " " + (tu != null ? tu.getClass().getName() : "null"));
-						if (tu != null) {
-						
-							tu.setMessageHandler(m_messageHandler);
-							tu.setDevicePath(devPath);
-							
-							Thing th = m_siteService.getThingDevice(entry.getKey());
-							th.setUpdater(tu);
-						}
-					} catch (SiteException e) {
-						logger.info(e.getMessage());
-					}
-				}
-				
-			}
-		}*/
 	}
 	
     public void setService(ISiteService siteService) {
@@ -160,23 +126,18 @@ public class JsonMessageParser implements IMessageParser {
     	JSONArray things = jobj.getJSONArray("thingsMapping");
     	Iterator<Object> it = things.iterator();
     	while (it.hasNext()) {
-    		JSONObject thingMap = (JSONObject)it.next();
-    		//parse iqrf part
-    		JSONObject iqrf = thingMap.getJSONObject("iqrf");
-    		String iqrfType = iqrf.getString("Type");
-        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, iqrf);
+    		JSONObject thingJobj = (JSONObject)it.next();
+    		String iqrfType = thingJobj.getString("Type");
+        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, thingJobj);
         	thingUpdater.setMessageHandler(m_messageHandler);
 
-        	logger.info(" Updater: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null"));
+        	logger.info(" Updater: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
+        			" DevicePath: " + thingUpdater.getDevicePath()
+        			);
     		
-    		//parse site part
-    		//JSONObject site = thingMap.getJSONObject("site");
-    		//String sitePath = site.getString("path");
-    		//String siteType = site.getString("type");
-
 			try {
-    		Thing thing = m_siteService.getThingDevice(thingUpdater.getDevicePath());
-			thing.setUpdater(thingUpdater);
+				Thing thing = m_siteService.getThingDevice(thingUpdater.getDevicePath());
+				thing.setUpdater(thingUpdater);
 			} catch (SiteException e) {
 				logger.info(e.getMessage() + thingUpdater.getDevicePath());
 			}

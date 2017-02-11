@@ -16,7 +16,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.ThingUpdater;

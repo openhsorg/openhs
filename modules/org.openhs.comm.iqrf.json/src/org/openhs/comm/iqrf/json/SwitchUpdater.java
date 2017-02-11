@@ -18,7 +18,6 @@ public class SwitchUpdater extends ThingUpdater {
 	public SwitchUpdater() {
 	}
 
-	//{\"Type\":\"LedR\",\"Addr\":0,\"Comd\":\"PULSE\"}
 	public SwitchUpdater(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
 
@@ -40,21 +39,15 @@ public class SwitchUpdater extends ThingUpdater {
 		m_state = ((Switch)getThing()).getState();
 		String cmd;
 		if(m_state)
-    		//cmd = new String("ON");
     		cmd = "ON";
     	else
     		cmd = "OFF";
 		
-		//{\"Type\":\"LedR\",\"Addr\":0,\"Comd\":\"PULSE\"}
-//    	m_iqrfNode.setType("LedR");
-//    	m_iqrfNode.setAddress(Integer.valueOf(getDevicePath().getAddr()));
-//    	m_iqrfNode.setCommand(cmd);
+		m_iqrfNode.setCommand(cmd);
     	
     	JSONObject jobj = new JSONObject();
     	jobj = m_iqrfNode.encode(jobj);
     	
-    	//Message msg = new Message(getDevicePath().getChannel(), getDevicePath().getTopic(), dm.toString());
-    	//Message msg = new Message(getDevicePath().getChannel(), "Iqrf/DpaRequest", jobj.toString());
     	Message msg = new Message("Mqtt", "Iqrf/DpaRequest", jobj.toString());
     	getMessageHandler().handleOutcomingMessage(msg);
 	}

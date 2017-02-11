@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.ObjectFactory;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
