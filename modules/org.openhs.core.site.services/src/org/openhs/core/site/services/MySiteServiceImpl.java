@@ -22,7 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
-import org.openhs.core.commons.DigitalInput;
+import org.openhs.core.commons.InputOutput;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
@@ -864,7 +864,7 @@ public class MySiteServiceImpl implements ISiteService {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 						}
-						else if (obj instanceof DigitalInput) {
+						else if (obj instanceof InputOutput) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 						}

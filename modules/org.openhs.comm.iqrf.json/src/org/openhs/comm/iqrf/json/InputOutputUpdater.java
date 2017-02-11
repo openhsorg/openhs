@@ -2,24 +2,25 @@ package org.openhs.comm.iqrf.json;
 
 import org.json.JSONObject;
 import org.openhs.core.commons.TemperatureSensor;
-import org.openhs.core.commons.DigitalInput;
+import org.openhs.core.commons.InputOutput;
 import org.openhs.core.commons.ThingUpdater;
 
-public class DigitalInputUpdater extends ThingUpdater {
+public class InputOutputUpdater extends ThingUpdater {
 
 	private IqrfNode m_iqrfNode = null;
 	private boolean m_state;
 	
-	public DigitalInputUpdater() {
+	public InputOutputUpdater() {
 		m_iqrfNode = new IqrfNode();
     	m_state = false;
 	}
 
-	public DigitalInputUpdater(JSONObject jobj) {
+	public InputOutputUpdater(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
 
-		getDevicePath().setAddr(Integer.toString(m_iqrfNode.getAddress()));
-		getDevicePath().setType(m_iqrfNode.getType());
+		setDevicePath("Mqtt" + '/' + "Iqrf/DpaResponse" + '/' + Integer.toString(m_iqrfNode.getAddress())  + '/' + m_iqrfNode.getType());  
+//		getDevicePath().setAddr(Integer.toString(m_iqrfNode.getAddress()));
+//		getDevicePath().setType(m_iqrfNode.getType());
 
 		if (m_iqrfNode.getCommand().equals("READ") && m_iqrfNode.isResult()) {
 			m_state = jobj.getBoolean("State");
@@ -34,7 +35,7 @@ public class DigitalInputUpdater extends ThingUpdater {
 
 	@Override
 	public void updateIncoming() {
-		((DigitalInput)getThing()).setState(m_state);
+		((InputOutput)getThing()).setState(m_state);
 	}
 
 	@Override

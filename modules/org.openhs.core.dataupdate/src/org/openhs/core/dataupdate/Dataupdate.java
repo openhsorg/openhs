@@ -185,12 +185,13 @@ public class Dataupdate implements IMessageHandler {
     			logger.warn("Unsupported topic: " + msg.getTopic() + " from channel: " + msg.getChannel());
         	
     		if (tu != null) {
-    			DevicePath dp = tu.getDevicePath();
-    			
-    			dp.setChannel(msg.getChannel());
-    			dp.setTopic(msg.getTopic());
-
-        		String devicePath = dp.encode(); 
+//    			DevicePath dp = tu.getDevicePath();
+//    			
+//    			dp.setChannel(msg.getChannel());
+//    			dp.setTopic(msg.getTopic());
+//
+//        		String devicePath = dp.getDevicePath(); 
+        		String devicePath = tu.getDevicePath(); 
        			logger.debug("devicePath: " + devicePath);
 
         		if (m_siteService != null) {

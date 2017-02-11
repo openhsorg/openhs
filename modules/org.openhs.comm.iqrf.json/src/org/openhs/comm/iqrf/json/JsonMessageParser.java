@@ -1,9 +1,24 @@
 package org.openhs.comm.iqrf.json;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.ObjectFactory;
@@ -17,6 +32,12 @@ import org.openhs.core.site.api.ISiteService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class JsonMessageParser implements IMessageParser {
 
@@ -33,10 +54,7 @@ public class JsonMessageParser implements IMessageParser {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 		m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
 		m_updaterFactory.registerClass("LedR", SwitchUpdater.class);
-		m_updaterFactory.registerClass("In1", DigitalInputUpdater.class);
-		m_updaterFactory.registerClass("In2", DigitalInputUpdater.class);
-		m_updaterFactory.registerClass("Out1", SwitchUpdater.class);
-		m_updaterFactory.registerClass("Out2", SwitchUpdater.class);
+		m_updaterFactory.registerClass("IO", InputOutputUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -51,6 +69,18 @@ public class JsonMessageParser implements IMessageParser {
 	public void updated(Map<String, Object> properties) {
 		logger.info("**** updated()");
 
+		String configFileName = (String) properties.get("ConfigFile");
+		String openhsHome = (String) properties.get("openhsHome");
+		String configFilePathName = openhsHome + configFileName;
+		
+		try {
+			loadConfig(configFilePathName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*
 		//TODO read cfg from props
 		if(properties != null && !properties.isEmpty()) {
 			Iterator<Entry<String, Object>> it = properties.entrySet().iterator();
@@ -58,6 +88,8 @@ public class JsonMessageParser implements IMessageParser {
 				Entry<String, Object> entry = it.next();
 				logger.info("    " + entry.getKey() + " = " +
 						entry.getValue() + " of type " + entry.getValue().getClass().toString());
+				if(entry.getKey().substring(0, 4).equals("IqrfJsonDeviceMapping.json")) {
+				/*
 				if(entry.getKey().substring(0, 4).equals("Mqtt")) {
 					try {
 						DevicePath devPath = new DevicePath(); 
@@ -78,8 +110,9 @@ public class JsonMessageParser implements IMessageParser {
 						logger.info(e.getMessage());
 					}
 				}
+				
 			}
-		}
+		}*/
 	}
 	
     public void setService(ISiteService siteService) {
@@ -115,6 +148,40 @@ public class JsonMessageParser implements IMessageParser {
 	@Override
 	public String getParserName() {
     	return m_parserName;
+	}
+
+	public void loadConfig(String path) throws IOException {
+        InputStream is;
+        is = new FileInputStream(path);
+        String jsonTxt;
+		jsonTxt = IOUtils.toString(is);
+    	JSONObject jobj = new JSONObject(jsonTxt);
+    	
+    	JSONArray things = jobj.getJSONArray("thingsMapping");
+    	Iterator<Object> it = things.iterator();
+    	while (it.hasNext()) {
+    		JSONObject thingMap = (JSONObject)it.next();
+    		//parse iqrf part
+    		JSONObject iqrf = thingMap.getJSONObject("iqrf");
+    		String iqrfType = iqrf.getString("Type");
+        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, iqrf);
+        	thingUpdater.setMessageHandler(m_messageHandler);
+
+        	logger.info(" Updater: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null"));
+    		
+    		//parse site part
+    		//JSONObject site = thingMap.getJSONObject("site");
+    		//String sitePath = site.getString("path");
+    		//String siteType = site.getString("type");
+
+			try {
+    		Thing thing = m_siteService.getThingDevice(thingUpdater.getDevicePath());
+			thing.setUpdater(thingUpdater);
+			} catch (SiteException e) {
+				logger.info(e.getMessage() + thingUpdater.getDevicePath());
+			}
+
+    	}
 	}
 
 }

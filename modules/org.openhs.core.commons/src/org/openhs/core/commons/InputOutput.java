@@ -1,6 +1,6 @@
 package org.openhs.core.commons;
 
-public class DigitalInput extends Thing {
+public class InputOutput extends Thing {
 	
 	private Value m_state;
 	
