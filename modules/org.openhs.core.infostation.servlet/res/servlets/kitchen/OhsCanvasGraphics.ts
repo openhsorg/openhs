@@ -638,7 +638,6 @@ import Thing = OhsSiteData.Thing;
             
             this.imgLock = new Image();                                
             this.imgLock.src = "/infores/servlets/kitchen/padlock.png";     
-
             
         }      
         
@@ -670,7 +669,6 @@ import Thing = OhsSiteData.Thing;
             // Update this
             this.rect.x = doorVar.x;
             this.rect.y = doorVar.y;                 
-
             
             this.ctx.save();
             this.ctx.beginPath();

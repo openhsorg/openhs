@@ -94,9 +94,7 @@ var KitchenInfoStation;
             var self = this;
             this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
             //---Timer Setup---
-
             //    this.timerGetServerDataEvent(this.refreshRateMain);  
-
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
         }
@@ -169,25 +167,9 @@ var KitchenInfoStation;
         Screen.prototype.timerPaintEvent = function (step) {
             var _this = this;
             this.paint();
-            clearTimeout(this.timerPaint);
-            this.timerPaint = setTimeout(function () { return _this.timerPaintEvent(step); }, step);
+            window.clearTimeout(this.timerPaint);
+            this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
         };
-        Screen.prototype.open = function (refresh) {
-            this.timerPaintEvent(refresh);
-            return this;
-        };
-        Screen.prototype.close = function () {
-            clearTimeout(this.timerPaint);
-        };
-        Screen.prototype.getServerData = function (url) {
-        };
-        Screen.prototype.setThing = function (thing) {
-            this.thing = thing;
-        };
-        Screen.prototype.getThing = function () {
-            return this.thing;
-        };
-
         Screen.prototype.open = function (refresh) {
             this.timerPaintEvent(refresh);
             return this;
@@ -203,7 +185,6 @@ var KitchenInfoStation;
         Screen.prototype.getThing = function () {
             return this.thing;
         };
-
         Screen.prototype.getThingPath = function () {
             return this.thing.getPath();
         };

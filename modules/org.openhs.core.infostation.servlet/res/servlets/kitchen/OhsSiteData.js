@@ -24,9 +24,7 @@ var OhsSiteData;
             this.tempSensors = new Array();
             this.switches = new Array();
             this.doors = new Array();
-
             this.slowTimerGetDataEvent(1000);
-
             this.fastTimerGetDataEvent(100);
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
@@ -52,7 +50,6 @@ var OhsSiteData;
             window.clearTimeout(this.slowTimerGetData);
             this.slowTimerGetData = window.setTimeout(function () { return _this.slowTimerGetDataEvent(step); }, step);
         };
-
         SiteData.prototype.setNumber = function (num, arg, types) {
             if (num > arg.length) {
                 for (var i = arg.length; i < num; i++) {
@@ -64,7 +61,6 @@ var OhsSiteData;
                 arg.length = num;
             }
         };
-
         SiteData.prototype.getParentPath = function (thing) {
             if (thing == null) {
                 return null;
@@ -135,7 +131,6 @@ var OhsSiteData;
                 this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
                 for (var id = 0; id < this.rooms.length; id++) {
                     this.rooms[id].setPath(data['roomPath_' + id]);
-
                 }
                 // TempSensors                              
                 // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
@@ -197,13 +192,11 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
-
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
                     this.name = data['name'];
                     this.imageBkgPath = data['imgBkg'];
                 }
-
             }
         };
         return Room;
@@ -224,14 +217,12 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
-
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                     this.temp = parseFloat(data['temp']);
                 }
-
             }
         };
         return TemperatureSensor;
@@ -265,14 +256,12 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
-
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
                     this.stateInt = parseInt(data['state_sw']);
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                 }
-
             }
         };
         return Switch;
@@ -282,9 +271,7 @@ var OhsSiteData;
         __extends(Door, _super);
         function Door() {
             _super.call(this);
-
             this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
-
             this.open = false;
             this.locked = false;
             this.x = 0;
@@ -313,7 +300,6 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             if (data != null) {
-
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
                     this.x = parseInt(data['x_coordinate']);
@@ -322,7 +308,6 @@ var OhsSiteData;
                     this.locked = JSON.parse(data['lock']);
                     this.imageBkgPath = data['imgBkg'];
                 }
-
             }
         };
         return Door;
