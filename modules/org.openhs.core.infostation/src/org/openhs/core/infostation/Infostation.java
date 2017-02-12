@@ -219,6 +219,6 @@ public class Infostation implements IInfostation {
       
       public Set<String> getThingPaths (Class<?> t) throws SiteException {    	      	  
     	  return this.m_siteService.getAllThingsPath(t);   		      		    	  
-      }        
+      }       
       
 }

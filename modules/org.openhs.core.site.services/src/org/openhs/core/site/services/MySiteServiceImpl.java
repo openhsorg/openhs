@@ -316,9 +316,12 @@ public class MySiteServiceImpl implements ISiteService {
 			
 				keySet.add(item);
 			}						
-		}
 				
+		
+		}
+
 		return keySet;
+
 	}
 	
 
@@ -556,8 +559,9 @@ public class MySiteServiceImpl implements ISiteService {
 						else if (obj instanceof ContactSensor) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
-						}
-						else if (obj instanceof Switch) {
+								} 
+							}														
+						} else if (obj instanceof Switch) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 							

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
@@ -252,12 +253,12 @@ public class KitchenServlet extends HttpServlet {
 					
 					
 					if (room != null){
+
 						json.put("validity", new Boolean(true));
 						json.put("name", String.format(room.getName()));
 						json.put("imgBkg", String.format(room.imagePath));
 					} else {
 						json.put("validity", new Boolean(false));
-						json.put("name", String.format("Error!"));
 					}
 						    			
 					response.setContentType("application/json");
@@ -304,6 +305,7 @@ public class KitchenServlet extends HttpServlet {
 					} else {
 						json.put("validity", new Boolean(false));	
 					}						    				   			
+
 						    			
 					response.setContentType("application/json");
 					response.setCharacterEncoding("UTF-8");
@@ -468,7 +470,9 @@ public class KitchenServlet extends HttpServlet {
 			
 			// Floors
 			try {
+
 				Set<String> floorPaths = this.m_infostation.getThingPaths (Floor.class);						
+
 				json.put("number_floors", String.format("%d", floorPaths.size()));
 				
 				int i = 0;
@@ -487,7 +491,9 @@ public class KitchenServlet extends HttpServlet {
 			
 			// Rooms			
 			try {
+
 				Set<String> roomsPaths = this.m_infostation.getThingPaths (Room.class);						
+
 				json.put("number_rooms", String.format("%d", roomsPaths.size()));
 				
 				int i = 0;
@@ -505,7 +511,9 @@ public class KitchenServlet extends HttpServlet {
 			
 			// temperatureSensors			
 			try {
+
 				Set<String> tempSensorsPaths = this.m_infostation.getThingPaths(TemperatureSensor.class);						
+
 				json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
 
 				int i = 0;
