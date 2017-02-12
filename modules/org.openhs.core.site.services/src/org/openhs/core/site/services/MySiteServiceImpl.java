@@ -315,13 +315,11 @@ public class MySiteServiceImpl implements ISiteService {
 			if (t.isInstance(thing)) {
 			
 				keySet.add(item);
-			}						
-				
+			}										
 		
 		}
 
 		return keySet;
-
 	}
 	
 
@@ -532,7 +530,9 @@ public class MySiteServiceImpl implements ISiteService {
 						ss.things.put(sitePath, obj);
 						obj.setSitePath(sitePath);
 						
+
 						//TODO use factory pattern
+
 						if (obj instanceof TemperatureSensor) {							
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
@@ -554,12 +554,14 @@ public class MySiteServiceImpl implements ISiteService {
 								} catch (Exception ex) {
 								
 								} 
+
 							}
 						}
 						else if (obj instanceof ContactSensor) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 								} 
+
 							}														
 						} else if (obj instanceof Switch) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
