@@ -28,7 +28,9 @@ module OhsSiteData {
             this.switches = new Array<Switch>();
             this.doors = new Array<Door>();    
                         
+
             this.slowTimerGetDataEvent(1000);            
+
             this.fastTimerGetDataEvent(100);
         }
         
@@ -72,7 +74,29 @@ module OhsSiteData {
                 arg.length = num;             
             }   
         }
-  
+
+        }    
+        
+        public setNumberDoors(num: number) {         
+            if (num > this.doors.length) {            
+                for (var i = this.doors.length; i < num; i++) {
+                    this.doors.push(new Door());
+                }
+            } else if (num < this.doors.length) {            
+                this.doors.length = num;             
+            }
+        }         
+        
+        public setNumberSwitches (num: number) {         
+            if (num > this.switches.length) {            
+                for (var i = this.switches.length; i < num; i++) {
+                    this.switches.push(new Switch());
+                }
+            } else if (num < this.switches.length) {            
+                this.switches.length = num;             
+            }
+        }      
+
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
                 return null;
@@ -173,6 +197,7 @@ module OhsSiteData {
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
+
                 }             
                 
                 // TempSensors                              
@@ -197,8 +222,7 @@ module OhsSiteData {
                             
                 for (let id in this.doors) {           
                     this.doors[id].setPath(data['doorPath_' + id]);
-                    
-                //    window.alert("Path:" + this.doors[id].getPath());
+
                 }                   
             }      
         }                        
@@ -249,6 +273,7 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
+
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid) {
@@ -256,6 +281,7 @@ module OhsSiteData {
                     this.imageBkgPath = data['imgBkg'];
                 }  
                 
+
             }                                      
         }                    
     }    
@@ -283,6 +309,7 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
+
                 this.valid = JSON.parse(data['validity']);
 
                 if (this.valid) {
@@ -290,6 +317,7 @@ module OhsSiteData {
                     this.y = parseInt(data['y_coordinate']);
                     this.temp = parseFloat(data['temp']);  
                 }
+
             }                            
         }        
     } 
@@ -337,6 +365,7 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
+
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid){
@@ -344,14 +373,16 @@ module OhsSiteData {
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                 }                                
+
             }                            
         }
     }   
     
     export class Door extends Thing {
         
+
         public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
-        
+
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
         
@@ -394,6 +425,7 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
+
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid){
@@ -404,6 +436,7 @@ module OhsSiteData {
                     this.imageBkgPath = data['imgBkg'];         
                 }                                
             }                                                       
+
         }        
     }    
     

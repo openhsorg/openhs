@@ -124,7 +124,9 @@ module KitchenInfoStation {
             this.canvas.addEventListener('click',function(event){self.MouseClickHandler(event);}, false);                           
             
             //---Timer Setup---
+
         //    this.timerGetServerDataEvent(this.refreshRateMain);  
+
                           
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
@@ -165,11 +167,13 @@ module KitchenInfoStation {
             this.openPage(screen, refresh);
         }
         
+
         private openPage(next: Screen, refreshRate: number) {                                 
             if (next != null) {
                 if (this.currPage != null) {                                
                     this.currPage.close();                                                     
                 }                
+
                 
                 this.currPage = next.open(refreshRate);
             }
@@ -222,8 +226,10 @@ module KitchenInfoStation {
     
         protected timerPaintEvent(step : number) {     
            this.paint();  
+
            window.clearTimeout(this.timerPaint);
            this.timerPaint = window.setTimeout(() => this.timerPaintEvent(step), step); 
+
         }  
 
         public open (refresh: number) {
