@@ -37,8 +37,8 @@ public class Meteostation implements IMeteostation {
     //public String sensorInString = "floors/Floor1/rooms/Room0/sensors/Room0_Sensor1";
     //public String sensorOutString = "floors/Floor1/rooms/Room1/sensors/Room1_Sensor1";
     
-    public String sensorInString = "floors/Floor1/rooms/Room0/sensors/Sensor_WC";
-    public String sensorOutString = "floors/Floor1/rooms/Room1/sensors/Room1_Sensor1";
+    public String sensorInString = "floors/Floor1/rooms/Room1/sensors/Livin_Room";
+    public String sensorOutString = "floors/Floor1/rooms/Room0/sensors/SensorOut";
 
     /*
      * Indicators.

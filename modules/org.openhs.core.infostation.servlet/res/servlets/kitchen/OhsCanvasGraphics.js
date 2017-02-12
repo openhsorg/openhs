@@ -498,6 +498,12 @@ var OhsCanvasGraphics;
             }
         };
         DoorMark.prototype.paint = function () {
+
+            var doorVar = this.thing;
+            // Update this
+            this.rect.x = doorVar.x;
+            this.rect.y = doorVar.y;
+
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 3, 0, 2 * Math.PI, false);

@@ -637,7 +637,8 @@ import Thing = OhsSiteData.Thing;
             this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 
             
             this.imgLock = new Image();                                
-            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";               
+            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";     
+
             
         }      
         
@@ -664,6 +665,12 @@ import Thing = OhsSiteData.Thing;
         }
     
         public paint () {      
+        
+            var doorVar: Door = <Door> this.thing;
+            // Update this
+            this.rect.x = doorVar.x;
+            this.rect.y = doorVar.y;                 
+
             
             this.ctx.save();
             this.ctx.beginPath();

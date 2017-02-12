@@ -12,6 +12,8 @@ import java.util.TreeMap;
 
 public class Room extends Thing {
 	
+	public String imagePath = "no path";
+	
 	/*
 	 * Set of sensors in room
 	 */

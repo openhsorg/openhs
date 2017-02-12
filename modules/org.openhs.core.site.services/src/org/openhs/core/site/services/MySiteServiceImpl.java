@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
@@ -66,20 +67,84 @@ public class MySiteServiceImpl implements ISiteService {
 	}
 
 	@Override
-	public void buildHouse(int rooms) {
+	public void buildHouse() {
 
 		try {
-			addThing("floors/Floor1", new Floor());
-			addThing("floors/Floor2", new Floor());
+			Floor floor = new Floor();
+			floor.setName("My first floor");
+			addThing("floors/Floor1", floor);
+			
+			floor = new Floor();
+			floor.setName("My second floor");
+			addThing("floors/Floor2", floor);
 
-			for (int i = 0; i <= rooms; i++) {
+			Room room = new Room();
+			room.setName("Outside");
+			room.imagePath = "/infores/servlets/kitchen/room0.png";
+			addThing("floors/Floor1/rooms/Room0", room);
+			
+			room = new Room();
+			room.setName("Living room");
+			room.imagePath = "/infores/servlets/kitchen/room1.png";			
+			addThing("floors/Floor1/rooms/Room1", room);
+			
+			room = new Room();
+			room.setName("Kid1");
+			room.imagePath = "/infores/servlets/kitchen/room2.png";			
+			addThing("floors/Floor1/rooms/Room2", room);			
+						
+			room = new Room();
+			room.setName("Kid2");
+			room.imagePath = "/infores/servlets/kitchen/room3.png";				
+			addThing("floors/Floor2/rooms/Room1", room);
+			
+			Door door = new Door();
+			door.setName("Outside");
+			door.x = 310;
+			door.y = 0;
+			door.z = 0;
+			door.imagePath = "/infores/servlets/kitchen/door1_close.JPG";
+			addThing("floors/Floor1/doors/Door1", door);			
+			
+			door = new Door();
+			door.setName("Inside");
+			door.x = 450;
+			door.y = 50;
+			door.z = 0;
+			door.imagePath = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/doors/Door2", door);				
+			
+			
+			TemperatureSensor sensor = new TemperatureSensor();
+			sensor.setName("LivingTemp");
+			sensor.x = 300;
+			sensor.y = 150;
+			sensor.z = 0;				
+			addThing("floors/Floor1/rooms/Room1/sensors/Livin_Room", "DummyService/dummy/0/Thermometer", sensor);
+						
+			sensor = new TemperatureSensor();
+			sensor.setName("Outside");
+			sensor.x = 300;
+			sensor.y = 300;
+			sensor.z = 0;				
+			addThing("floors/Floor1/rooms/Room0/sensors/SensorOut", "DummyService/dummy/1/Thermometer", sensor);
+			
+			Switch sw = new Switch();
+			sw.setName("Kitchen_Switch");
+			sw.x = 220;
+			sw.y = 150;
+			sw.z = 0;								
+			addThing("floors/Floor1/rooms/Room1/sensors/Kitchen_Switch", "DummyService/dummy/0/Switch", sw);
+			
+			sw = new Switch();
+			sw.setName("Bathroom Switch");
+			sw.x = 420;
+			sw.y = 150;
+			sw.z = 0;								
+			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);			
 
-				addThing("floors/Floor1/rooms/Room" + i, new Room());
-				addThing("floors/Floor1/rooms/Room" + i + "/sensors/" + "Room" + i + "_Sensor1", new TemperatureSensor());
-			}
-
-			addThing("floors/Floor2/rooms/Room1/sensors/SensorWC", "mqtt/0/path", new TemperatureSensor());
-
+			
+			
 		} catch (Exception ex) {
 			System.out.println("\n\n EXception***:" + ex);
 		}
@@ -96,111 +161,7 @@ public class MySiteServiceImpl implements ISiteService {
 	public void setId(String newID) {
 		ss.setId(newID);
 	}
-/*
-	public int getNumberThings(String keyPath) throws SiteException {
 
-		Object item = getThing(keyPath);
-		if (item == null) {
-			throw new SiteException("Bad object specifications");
-		}
-
-		if (item instanceof TreeMap) {
-
-			String key = keyPath.substring(keyPath.lastIndexOf("/") + 1, keyPath.length());
-
-			// System.out.println("\n\nXXX: " + key + " : " + keyPath);
-
-			if (key.equals("floors")) {
-				TreeMap<String, Floor> floors = (TreeMap<String, Floor>) item;
-				return floors.size();
-			} else if (key.equals("rooms")) {
-				TreeMap<String, Room> rooms = (TreeMap<String, Room>) item;
-				return rooms.size();
-			} else if (key.equals("sensors")) {
-				TreeMap<String, Sensor> sensors = (TreeMap<String, Sensor>) item;
-				return sensors.size();
-			} else {
-				throw new SiteException("Bad key specifications -> doesn't exists");
-			}
-
-		} else {
-			throw new SiteException("Bad object specifications");
-		}
-
-	}
-
-	public Object getThing(String keyPath) throws SiteException {
-
-		if (keyPath.equals("")) {
-			throw new SiteException("Bad keyPath");
-		}
-
-		// Divide
-		String delim = "[/]+";
-		String[] parts = keyPath.split(delim);
-
-		// Check for empty parts...
-		for (String str : parts) {
-			if (str.equals("")) {
-				System.out.println("\n\n eeeee");
-				throw new SiteException("keyPath contaims empty strings...");
-			}
-		}
-
-		// System.out.println("\n\n------+++>: " + parts[0] + " : " +
-		// parts.length);
-
-		Object item = ss;
-		String strItem = "";
-
-		for (String str : parts) {
-
-			if (item instanceof TreeMap) {
-				if (strItem.equals("floors")) {
-					item = ((TreeMap<String, Floor>) item).get(str);
-				} else if (strItem.equals("rooms")) {
-					item = ((TreeMap<String, Room>) item).get(str);
-				} else if (strItem.equals("sensors")) {
-					item = ((TreeMap<String, Sensor>) item).get(str);
-				} else {
-					throw new SiteException("keyPath error... TreeMap");
-				}
-			} else if (item instanceof Site) {
-				if (str.equals("floors")) {
-					Site site = (Site) item;
-					item = site.floors;
-				} else {
-					throw new SiteException("keyPath error... Site");
-				}
-			} else if (item instanceof Floor) {
-				if (str.equals("rooms")) {
-					Floor floor = (Floor) item;
-					item = floor.rooms;
-				} else {
-					throw new SiteException("keyPath error... Floor");
-				}
-			} else if (item instanceof Room) {
-				if (str.equals("sensors")) {
-					Room room = (Room) item;
-					item = room.sensors;
-				} else {
-					throw new SiteException("keyPath error... Room");
-				}
-
-			} else {
-				throw new SiteException("keyPath class type error...");
-			}
-
-			strItem = str;
-
-			if (item == null) {
-				throw new SiteException("keyPath cannot get object...");
-			}
-		}
-
-		return item;
-	}
-	*/
 	public boolean addThing (String sitePath, Thing thing){
 		
 		if (ss.things.get(sitePath) == null) {
@@ -216,21 +177,10 @@ public class MySiteServiceImpl implements ISiteService {
 		
 		if (addThing(sitePath, thing)) {
 			ss.devPaths.put(devicePath, sitePath);
-			/*
-			if (thing instanceof Floor) {
-				ss.floorPaths.add(sitePath);
-			} else if (thing instanceof Floor) {
-				ss.roomPaths.add(sitePath);
-			}
-			*/
+
 			return true;
 		}
-		/*
-		if (ss.things.get(sitePath) == null) {
-			ss.things.put(sitePath,  thing);
-			ss.devPaths.put(devicePath, sitePath);
-		}
-*/
+
 		return false;
 	}	
 	
@@ -370,203 +320,7 @@ public class MySiteServiceImpl implements ISiteService {
 		return keySet;
 	}
 	
-/*
-	public Object addThing(String keyPath) throws SiteException {
 
-		if (keyPath.equals("")) {
-			throw new SiteException("Bad keyPath");
-		}
-
-		// Divide
-		String delim = "[/]+";
-		String[] parts = keyPath.split(delim);
-
-		// Check for empty parts...
-		for (String str : parts) {
-			if (str.equals("")) {
-				System.out.println("\n\n eeeee");
-				throw new SiteException("keyPath contaims empty strings...");
-			}
-		}
-
-		// System.out.println("\n\n------+++>: " + parts[0] + " : " +
-		// parts.length);
-
-		Object item = ss;
-		String strItem = "";
-
-		for (String str : parts) {
-
-			if (item instanceof TreeMap) {
-				if (strItem.equals("floors")) {
-					TreeMap<String, Floor> floors = (TreeMap<String, Floor>) item;
-					item = floors.get(str);
-
-					if (item == null) {
-						Floor floor = new Floor();
-						floors.put(str, floor);
-						item = floor;
-
-						//System.out.println("\n>>>Floor created:" + str + " : " + strItem);
-					}
-				} else if (strItem.equals("rooms")) {
-					TreeMap<String, Room> rooms = (TreeMap<String, Room>) item;
-					item = rooms.get(str);
-
-					if (item == null) {
-						Room room = new Room();
-						rooms.put(str, room);
-						item = room;
-					}
-
-				} else if (strItem.equals("sensors")) {
-					TreeMap<String, Sensor> sensors = (TreeMap<String, Sensor>) item;
-					item = sensors.get(str);
-
-					if (item == null) {
-						Sensor sensor = new Sensor();
-						sensors.put(str, sensor);
-						item = sensor;
-					}
-				} else {
-					throw new SiteException("keyPath error...O-O");
-				}
-
-			} else if (item instanceof Site) {
-				if (str.equals("floors")) {
-					item = ((Site) item).floors;
-				} else {
-					throw new SiteException("keyPath error... floor");
-				}
-
-			} else if (item instanceof Floor) {
-				if (str.equals("rooms")) {
-					item = ((Floor) item).rooms;
-				} else {
-					throw new SiteException("keyPath error...floor");
-				}
-			} else if (item instanceof Room) {
-				if (str.equals("sensors")) {
-					item = ((Room) item).sensors;
-
-				} else {
-					throw new SiteException("keyPath error...room");
-				}
-			} else {
-				throw new SiteException("keyPath class type error...OOO");
-			}
-
-			strItem = str;
-
-			if (item == null) {
-				throw new SiteException("keyPath cannot get object...");
-			}
-		}
-
-		return item;
-	}
-*/
-	/*
-	@Override
-	public Temperature getSensorTemperature(String keyPath) throws SiteException {
-		TemperatureSensor sensor = null;
-		// keyPath = "rrr";
-		try {
-			Object obj = getThing(keyPath);
-
-			if (obj == null)
-				throw new SiteException("Cannot get thing!");
-
-			if (!(obj instanceof TemperatureSensor)) {
-				throw new SiteException("Sensor path required!");
-			} else {
-				sensor = (TemperatureSensor) obj;
-			}
-
-		} catch (SiteException ex) {
-
-			throw ex;
-		}
-
-		return sensor.getTemperature();
-	}
-
-	@Override
-	public boolean setSensorTemperature(String keyPath, Temperature temp) throws SiteException {
-		TemperatureSensor sensor = null;
-
-		try {
-
-			Object obj = getThing(keyPath);
-
-			if (obj == null) {
-				System.out.println("Cannot find object...");
-				throw new SiteException("Cannot get thing!");
-
-			}
-
-			if (!(obj instanceof TemperatureSensor)) {
-				throw new SiteException("Sensor path required!");
-			} else {
-				sensor = (TemperatureSensor) obj;
-			}
-
-		} catch (SiteException ex) {
-			System.out.println("Exeption get:...: " + ex);
-			return false;
-		}
-
-		sensor.setTemperature(temp);
-
-		return true;
-	}
-
-	@Override
-	public Humidity getSensorHumidity(String keyPath) throws SiteException {
-		HumiditySensor sensor = null;
-
-		try {
-			Object obj = getThing(keyPath);
-
-			if (obj == null)
-				throw new SiteException("Cannot get thing!");
-
-			if (!(obj instanceof HumiditySensor)) {
-				throw new SiteException("Sensor path required!");
-			} else {
-				sensor = (HumiditySensor) obj;
-			}
-		} catch (SiteException ex) {
-			throw ex;
-		}
-
-		return sensor.getHumidity();
-	}
-
-	@Override
-	public boolean setSensorHumidity(String keyPath, Humidity hum) {
-		HumiditySensor sensor = null;
-
-		try {
-			Object obj = getThing(keyPath);
-
-			if (obj == null)
-				throw new SiteException("Cannot get thing!");
-
-			if (!(obj instanceof HumiditySensor)) {
-				throw new SiteException("Sensor path required!");
-			} else {
-				sensor = (HumiditySensor) obj;
-			}
-		} catch (SiteException ex) {
-			return false;
-		}
-
-		sensor.setHumidity(hum);
-
-		return true;
-	}
-*/
 	public Site getSite() {
 		return ss;
 	}
@@ -576,184 +330,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return true;
 	}
-
-	/*
-	 * public boolean setRoomKey (String oldKey, String newKey) { Room room =
-	 * ss.rooms.remove(oldKey);
-	 * 
-	 * ss.rooms.put(newKey, room);
-	 * 
-	 * return true; }
-	 * 
-	 * public boolean setSensorKey (String oldKey, String newKey) { Set<String>
-	 * roomKeys = ss.rooms.keySet();
-	 * 
-	 * for (String roomKey : roomKeys){
-	 * 
-	 * try { //Room room = getRoom(roomKey); Room room = ss.rooms.get(roomKey);
-	 * 
-	 * if(room.sensors.containsKey(oldKey)){
-	 * 
-	 * Sensor sensor = room.sensors.remove(oldKey);
-	 * 
-	 * room.sensors.put(newKey, sensor); } } catch (Exception ex) {
-	 * 
-	 * } }
-	 * 
-	 * return true; }
-	 */
-	
-	/*
-
-	public void LoadXML(String path) {
-
-		try {
-			File inputFile = new File(path);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(inputFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList listFloor = doc.getElementsByTagName("floor");
-
-			for (int i1 = 0; i1 < listFloor.getLength(); i1++) {
-				Node nFloor = listFloor.item(i1);
-				//System.out.println("\n+>Current Element:" + nFloor.getNodeName());
-
-				if (nFloor.getNodeType() == Node.ELEMENT_NODE) {
-
-					Element eFloor = (Element) nFloor;
-
-					String keyFloor = eFloor.getAttribute("name");
-
-					// System.out.println("\n+>" + keyFloor);
-
-					// Create Floor
-					addThing("floors/" + keyFloor);
-
-					NodeList listRoom = eFloor.getElementsByTagName("room");
-
-					for (int i2 = 0; i2 < listRoom.getLength(); i2++) {
-						Node nRoom = listRoom.item(i2);
-
-						if (nRoom.getNodeType() == Node.ELEMENT_NODE) {
-
-							Element eRoom = (Element) nRoom;
-
-							String keyRoom = eRoom.getAttribute("name");
-
-							// System.out.println("\n+>" + keyRoom);
-
-							// Create Room
-							addThing("floors/" + keyFloor + "/rooms/" + keyRoom);
-
-							NodeList listSensor = eRoom.getElementsByTagName("sensor");
-
-							for (int i3 = 0; i3 < listSensor.getLength(); i3++) {
-								Node nSensor = listSensor.item(i3);
-
-								if (nSensor.getNodeType() == Node.ELEMENT_NODE) {
-
-									Element eSensor = (Element) nSensor;
-
-									String keySensor = eSensor.getAttribute("name");
-
-									// System.out.println("\n++>" + keySensor);
-
-									// Create Sensor
-									addThing("floors/" + keyFloor + "/rooms/" + keyRoom + "/sensors/" + keySensor);
-								}
-							}
-						}
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-*/
-/*	
-	public void SaveXML(String path) {
-
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.newDocument();
-
-			// root element
-			Element rootElement = doc.createElement("site");
-			doc.appendChild(rootElement);
-
-			Site site = getSite();
-			Set<String> keysF = site.floors.keySet();
-
-			for (String keyF : keysF) {
-
-				// floors element
-				Element floor = doc.createElement("floor");
-				rootElement.appendChild(floor);
-
-				// setting attribute to element
-				Attr attr = doc.createAttribute("name");
-				attr.setValue(keyF);
-				floor.setAttributeNode(attr);
-
-				Floor m_floor = (Floor) getThing("floors/" + keyF);
-				Set<String> keysR = m_floor.rooms.keySet();
-
-				for (String keyR : keysR) {
-
-					// room element
-					Element room = doc.createElement("room");
-					floor.appendChild(room);
-
-					// setting attribute to element
-					Attr attrR = doc.createAttribute("name");
-					attrR.setValue(keyR);
-					room.setAttributeNode(attrR);
-
-					Room m_room = (Room) getThing("floors/" + keyF + "/rooms/" + keyR);
-					Set<String> keysS = m_room.sensors.keySet();
-
-					for (String keyS : keysS) {
-						// sensor element
-						Element sensor = doc.createElement("sensor");
-						room.appendChild(sensor);
-
-						// setting attribute to element
-						Attr attrS = doc.createAttribute("name");
-						attrS.setValue(keyS);
-						sensor.setAttributeNode(attrS);
-						
-						// setting attribute to element
-						Attr attrDp = doc.createAttribute("devicePath");
-						attrDp.setValue("test path...");
-						sensor.setAttributeNode(attrDp);						
-					}
-				}
-			}
-
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(path));
-			transformer.transform(source, result);
-			// Output to console for testing
-			// StreamResult consoleResult = new StreamResult(System.out);
-			// transformer.transform(source, consoleResult);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	*/
-	
-	
+		
 	public void SaveXML(String path) {
 
 		try {
@@ -797,7 +374,105 @@ public class MySiteServiceImpl implements ISiteService {
 					Attr devicePathAttr = doc.createAttribute("devicePath");
 					devicePathAttr.setValue(this.getDevicePath(sitePath));
 					element.setAttributeNode(devicePathAttr);	
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((TemperatureSensor) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((TemperatureSensor) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((TemperatureSensor) thing).z));					
+					position.setAttributeNode(zCoord);
+					
+					
+				} else if (thing instanceof Switch) {
+					// devicePath attribute
+					
+					Attr devicePathAttr = doc.createAttribute("devicePath");
+					devicePathAttr.setValue(this.getDevicePath(sitePath));
+					element.setAttributeNode(devicePathAttr);
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((Switch) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((Switch) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((Switch) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
+				} else if (thing instanceof Floor) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Floor) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
+				} else if (thing instanceof Room) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Room) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
+				} else if (thing instanceof Door) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageBkg = doc.createAttribute("imageBkg");
+					imageBkg.setValue(((Door) thing).imagePath);
+					images.setAttributeNode(imageBkg);	
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((Door) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((Door) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((Door) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
 				}
+				
+				
 			}
 
 			// write the content into xml file
@@ -852,15 +527,90 @@ public class MySiteServiceImpl implements ISiteService {
 						String sitePath = elementSitePath.getAttribute("sitePath");
 						ss.things.put(sitePath, obj);
 						
-						if (obj instanceof TemperatureSensor) {
+						if (obj instanceof TemperatureSensor) {							
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
 							
-							//System.out.println("\n+classXXX>" + devicePath + " : " + sitePath);
-						}
-						else if (obj instanceof Switch) {
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((TemperatureSensor) obj).x = x;
+									((TemperatureSensor) obj).y = y;
+									((TemperatureSensor) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}														
+						} else if (obj instanceof Switch) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((Switch) obj).x = x;
+									((Switch) obj).y = y;
+									((Switch) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}							
+							
+						} else if (obj instanceof Floor) {																					
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Floor) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
+							
+						} else if (obj instanceof Room) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Room) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
+							
+						} else if (obj instanceof Door) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Door) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+							}
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((Door) obj).x = x;
+									((Door) obj).y = y;
+									((Door) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}							
 						}
 					}
 				}
@@ -899,7 +649,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 				//System.out.println("\n++> LOADING XML... but file is not here :( -> create something");
 
-				buildHouse(4); // build some house....
+				buildHouse(); // build some house....
 
 				try {
 					SaveXML(xmlFileNamePath);
@@ -922,7 +672,7 @@ public class MySiteServiceImpl implements ISiteService {
 
 			System.out.println("\n++> File disabled -> I create some house :)");
 
-			buildHouse(6); // build some house....
+			buildHouse(); // build some house....
 		}
 	}
 

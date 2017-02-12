@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <site>
-<thing name="first floor" sitePath="floors/Floor2" type="Floor"/>
-<thing name="Basic floor" sitePath="floors/Floor1" type="Floor"/>
-<thing name="Living room" sitePath="floors/Floor1/rooms/Room0" type="Room"/>
-<thing name="Outside" sitePath="floors/Floor1/rooms/Room1" type="Room"/>
-<thing name="Bathroom" sitePath="floors/Floor1/rooms/Room2" type="Room"/>
-<thing name="Kid1" sitePath="floors/Floor2/rooms/Room0" type="Room"/>
-<thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room"/>
-<thing devicePath="" name="no name" sitePath="floors/Floor1/rooms/Room2/sensors/Room2_Sensor1" type="TemperatureSensor"/>
-<thing devicePath="mqtt/0/path" name="no name" sitePath="floors/Floor2/rooms/Room1/sensors/SensorWC" type="TemperatureSensor"/>
-<thing devicePath="DummyService/dummy/0/Thermometer" name="teplomer1" sitePath="floors/Floor1/rooms/Room0/sensors/Sensor_WC" type="TemperatureSensor"/>
-<thing devicePath="DummyService/dummy/1/Thermometer" name="teplomer2" sitePath="floors/Floor1/rooms/Room1/sensors/Sensor_Koupelna" type="TemperatureSensor"/>
-<!--thing devicePath="Mqtt/Iqrf/DpaResponse/0/Thermometer" name="teplomer1" sitePath="floors/Floor1/rooms/Room0/sensors/Sensor_WC" type="TemperatureSensor"/-->
-<!--thing devicePath="Mqtt/Iqrf/DpaResponse/1/Thermometer" name="teplomer2" sitePath="floors/Floor1/rooms/Room1/sensors/Sensor_Koupelna" type="TemperatureSensor"/-->
-<thing devicePath="DummyService/dummy/0/Switch" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room0/sensors/Kitchen_light" type="Switch"/>
-<!--thing devicePath="Mqtt/Iqrf/DpaResponse/0/LedR" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room0/sensors/Kitchen_light" type="Switch"/-->
-
+<thing name="My first floor" sitePath="floors/Floor1" type="Floor">
+<images imageBkg="no path"/>
+</thing>
+<thing name="Outside" sitePath="floors/Floor1/doors/Door1" type="Door">
+<images imageBkg="/infores/servlets/kitchen/door1_close.JPG"/>
+<position xCoord="310" yCoord="0" zCoord="0"/>
+</thing>
+<thing name="Inside" sitePath="floors/Floor1/doors/Door2" type="Door">
+<images imageBkg="/infores/servlets/kitchen/door2_close.JPG"/>
+<position xCoord="450" yCoord="50" zCoord="0"/>
+</thing>
+<thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room0.png"/>
+</thing>
+<thing devicePath="DummyService/dummy/1/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
+<position xCoord="300" yCoord="300" zCoord="0"/>
+</thing>
+<thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room1.png"/>
+</thing>
+<thing devicePath="DummyService/dummy/0/Switch" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<position xCoord="220" yCoord="150" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
+<position xCoord="300" yCoord="150" zCoord="0"/>
+</thing>
+<thing name="Kid1" sitePath="floors/Floor1/rooms/Room2" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room2.png"/>
+</thing>
+<thing devicePath="DummyService/dummy/1/Switch" name="Bathroom Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid1_Switch" type="Switch">
+<position xCoord="420" yCoord="150" zCoord="0"/>
+</thing>
+<thing name="My second floor" sitePath="floors/Floor2" type="Floor">
+<images imageBkg="no path"/>
+</thing>
+<thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room3.png"/>
+</thing>
 </site>

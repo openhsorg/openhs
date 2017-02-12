@@ -28,7 +28,9 @@ module OhsSiteData {
             this.switches = new Array<Switch>();
             this.doors = new Array<Door>();    
                         
-            this.slowTimerGetDataEvent(5000);            
+
+            this.slowTimerGetDataEvent(1000);            
+
             this.fastTimerGetDataEvent(100);
         }
         
@@ -61,23 +63,7 @@ module OhsSiteData {
            window.clearTimeout(this.slowTimerGetData);
            this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
         }         
-        /*
-        public getNumberFloors () {
-            return this.floors.length;
-        }
-        
-        public getNumberRooms () {
-            return this.rooms.length;
-        }        
-        */
-        /*
-        public getFloor (num:  number){
-            if (num > this.floors.length || num < 1) {
-                return null;
-            }
-            return this.floors[num - 1];
-        }
-       */
+
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;}) {
             if (num > arg.length) {            
                 for (var i = arg.length; i < num; i++) {                    
@@ -88,54 +74,7 @@ module OhsSiteData {
                 arg.length = num;             
             }   
         }
-        /*
-        public getNumber<T>(arg: Array<T>) {
-            return arg.length;
-        }        
-         */ 
-        /*
-        public setNumberFloors (num: number) {         
-            if (num > this.floors.length) {            
-                for (var i = this.floors.length; i < num; i++) {
-                    this.floors.push(new Floor());
-                }
-            } else if (num < this.floors.length) {            
-                this.floors.length = num;             
-            }
-        }
-        
-        public setNumberRooms (num: number) {         
-            if (num > this.rooms.length) {            
-                for (var i = this.rooms.length; i < num; i++) {
-                    this.rooms.push(new Room());
-                }
-            } else if (num < this.rooms.length) {            
-                this.rooms.length = num;             
-            }
-        }   
-        */
-        /*
-        public getNumberDoors () {
-            return this.doors.length;
-        }
-        */
-        /*
-        public getDoor (num:  number){
-            if (num > this.doors.length || num < 1) {
-                return null;
-            }
-            return this.doors[num - 1];
-        }    
-        */    
-        /*
-        public setNumberTempSensors (num: number) {         
-            if (num > this.tempSensors.length) {            
-                for (var i = this.tempSensors.length; i < num; i++) {
-                    this.tempSensors.push(new TemperatureSensor());
-                }
-            } else if (num < this.tempSensors.length) {            
-                this.tempSensors.length = num;             
-            }
+
         }    
         
         public setNumberDoors(num: number) {         
@@ -157,28 +96,7 @@ module OhsSiteData {
                 this.switches.length = num;             
             }
         }      
-        */
-        /*
-        public getSwitches() {
-            return this.switches;
-        }
-        
-        public getDoors() {
-            return this.doors;
-        }      
-        
-        public getTemperatureSensors() {
-            return this.tempSensors;
-        }    
-        
-        public getRooms() {
-            return this.rooms;
-        }    
-        
-        public getFloors() {
-            return this.floors;
-        }           
-        */
+
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
                 return null;
@@ -279,11 +197,7 @@ module OhsSiteData {
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
-                    
-                    if (id == 0)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room0.png";                        
-                    if (id == 1)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room1.png";
-                    if (id == 2)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room2.png";
-                    if (id == 3)  this.rooms[id].imageBkgPath = "/infores/servlets/kitchen/room3.png";
+
                 }             
                 
                 // TempSensors                              
@@ -308,6 +222,7 @@ module OhsSiteData {
                             
                 for (let id in this.doors) {           
                     this.doors[id].setPath(data['doorPath_' + id]);
+
                 }                   
             }      
         }                        
@@ -358,8 +273,15 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.name = data['name'];  
-                this.valid = true;
+
+                this.valid = JSON.parse(data['validity']);
+                
+                if (this.valid) {
+                    this.name = data['name'];
+                    this.imageBkgPath = data['imgBkg'];
+                }  
+                
+
             }                                      
         }                    
     }    
@@ -387,10 +309,15 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
-                this.temp = parseFloat(data['temp']);  
-                this.valid = true;
+
+                this.valid = JSON.parse(data['validity']);
+
+                if (this.valid) {
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.temp = parseFloat(data['temp']);  
+                }
+
             }                            
         }        
     } 
@@ -438,17 +365,24 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.stateInt = parseInt(data['state_sw']);
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
+
+                this.valid = JSON.parse(data['validity']);
                 
-                this.valid = true;
+                if (this.valid){
+                    this.stateInt = parseInt(data['state_sw']);
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                }                                
+
             }                            
         }
     }   
     
     export class Door extends Thing {
         
+
+        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
+
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
         
@@ -491,13 +425,18 @@ module OhsSiteData {
             var data: string = getAjax("kitchen", req); 
             
             if (data != null) {
-                this.x = parseInt(data['x_coordinate']);
-                this.y = parseInt(data['y_coordinate']);
-                this.open = JSON.parse(data['open']);
-                this.locked = JSON.parse(data['lock']);
+
+                this.valid = JSON.parse(data['validity']);
                 
-                this.valid = true;
-            }                            
+                if (this.valid){
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);  
+                    this.imageBkgPath = data['imgBkg'];         
+                }                                
+            }                                                       
+
         }        
     }    
     
