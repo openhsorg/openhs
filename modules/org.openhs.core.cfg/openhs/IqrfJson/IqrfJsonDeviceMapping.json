@@ -1,0 +1,48 @@
+{
+  "thingsMapping": [
+    {
+      "Addr": 0,
+      "Type": "Thermometer"
+    },
+    {
+      "Addr": 1,
+      "Type": "Thermometer"
+    },
+    {
+      "Addr": 0,
+      "Type": "LedR"
+    },
+    {
+      "Addr": 1,
+      "Type": "LedR"
+    },
+    {
+      "Addr": 1,
+      "Type": "IO",
+      "port": "PORTA",
+      "dirOut": true,
+      "bit": 0
+    },
+    {
+      "Addr": 1,
+      "Type": "IO",
+      "port": "PORTA",
+      "dirOut": false,
+      "bit": 1
+    },
+    {
+      "Addr": 1,
+      "Type": "IO",
+      "port": "PORTA",
+      "dirOut": true,
+      "bit": 2
+    },
+    {
+      "Addr": 1,
+      "Type": "IO",
+      "port": "PORTA",
+      "dirOut": false,
+      "bit": 3
+    }
+  ]
+}

@@ -4,6 +4,7 @@ public class Thing {
 	private ThingUpdater m_updater = null;
 
 	protected String name = "no name";
+	protected String m_sitePath = "unknown";
 	
 	public String getName () {
 		return this.name;
@@ -13,6 +14,14 @@ public class Thing {
 		this.name = name;
 	}
 
+	public String getSitePath () {
+		return m_sitePath;
+	}
+	
+	public void setSitePath (String sitePath) {
+		m_sitePath = sitePath;
+	}
+	
 	public ThingUpdater getUpdater() {
 		return m_updater;
 	}

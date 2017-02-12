@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <site>
 <thing name="My first floor" sitePath="floors/Floor1" type="Floor">
 <images imageBkg="no path"/>

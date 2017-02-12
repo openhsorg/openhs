@@ -11,23 +11,21 @@ public class TemperatureSensorUpdater extends ThingUpdater {
 	
 	public TemperatureSensorUpdater() {
 		m_iqrfNode = new IqrfNode();
-
     	m_temperature = -273.15;
 	}
 
 	public TemperatureSensorUpdater(JSONObject jobj) {
 		m_iqrfNode = new IqrfNode(jobj);
 
-		getDevicePath().setAddr(Integer.toString(m_iqrfNode.getAddress()));
-		getDevicePath().setType(m_iqrfNode.getType());
+		setDevicePath("Mqtt" + '/' + "Iqrf/DpaResponse" + '/' + Integer.toString(m_iqrfNode.getAddress())  + '/' + m_iqrfNode.getType());  
 
 		if (m_iqrfNode.getCommand().equals("READ") && m_iqrfNode.isResult()) {
-			m_temperature = jobj.getDouble("Temperature");
+			m_temperature = jobj.optDouble("Temperature");
 		}
 		else 
 	    	m_temperature = -273.15;
 	}
-
+	
 	public IqrfNode getIqrfNode() {
 		return m_iqrfNode;
 	}

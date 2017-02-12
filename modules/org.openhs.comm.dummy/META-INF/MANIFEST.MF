@@ -5,7 +5,9 @@ Bundle-SymbolicName: org.openhs.comm.dummy
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/component.xml
-Import-Package: org.openhs.core.commons,
+Import-Package: org.apache.commons.io,
+ org.json;version="20160810.0.0",
+ org.openhs.core.commons,
  org.openhs.core.commons.api,
  org.openhs.core.site.api,
  org.osgi.service.component;version="1.2.2",

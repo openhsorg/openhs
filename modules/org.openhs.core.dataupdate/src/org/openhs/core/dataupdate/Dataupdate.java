@@ -16,7 +16,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.openhs.core.commons.DevicePath;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.ThingUpdater;
@@ -185,12 +184,13 @@ public class Dataupdate implements IMessageHandler {
     			logger.warn("Unsupported topic: " + msg.getTopic() + " from channel: " + msg.getChannel());
         	
     		if (tu != null) {
-    			DevicePath dp = tu.getDevicePath();
-    			
-    			dp.setChannel(msg.getChannel());
-    			dp.setTopic(msg.getTopic());
-
-        		String devicePath = dp.encode(); 
+//    			DevicePath dp = tu.getDevicePath();
+//    			
+//    			dp.setChannel(msg.getChannel());
+//    			dp.setTopic(msg.getTopic());
+//
+//        		String devicePath = dp.getDevicePath(); 
+        		String devicePath = tu.getDevicePath(); 
        			logger.debug("devicePath: " + devicePath);
 
         		if (m_siteService != null) {

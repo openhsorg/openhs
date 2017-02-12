@@ -1,0 +1,20 @@
+{
+  "thingsMapping": [
+    {
+      "Addr": 0,
+      "Type": "Thermometer"
+    },
+    {
+      "Addr": 1,
+      "Type": "Thermometer"
+    },
+    {
+      "Addr": 0,
+      "Type": "Switch"
+    },
+    {
+      "Addr": 1,
+      "Type": "Switch"
+    }
+  ]
+}

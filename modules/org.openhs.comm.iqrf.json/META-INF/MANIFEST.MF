@@ -4,7 +4,8 @@ Bundle-Name: Json
 Bundle-SymbolicName: org.openhs.comm.iqrf.json
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.json;version="20160810.0.0",
+Import-Package: org.apache.commons.io,
+ org.json;version="20160810.0.0",
  org.openhs.core.commons,
  org.openhs.core.commons.api,
  org.openhs.core.site.api,

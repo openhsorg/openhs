@@ -5,7 +5,8 @@ import org.openhs.core.commons.api.Message;
 
 public abstract class ThingUpdater {
 	private Thing m_thing;
-	private DevicePath m_devicePath = new DevicePath();
+	//private DevicePath m_devicePath = new DevicePath();
+	private String m_devicePath = new String("none");
 	private IMessageHandler m_messageHandler = null;
 	protected boolean m_valid = false;
 
@@ -25,15 +26,15 @@ public abstract class ThingUpdater {
 		updateIncoming();
 	}
 
-	public DevicePath getDevicePath() {
+	public String getDevicePath() {
 		return m_devicePath;
 	}
 
-	public void setDevicePath(DevicePath devicePath) {
+	protected void setDevicePath(String devicePath) {
 		m_devicePath = devicePath;
 	}
 	
-	boolean isValid() {
+	public boolean isValid() {
 		return m_valid;
 	}
 

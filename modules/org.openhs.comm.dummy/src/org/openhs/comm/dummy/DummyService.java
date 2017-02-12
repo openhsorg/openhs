@@ -1,14 +1,20 @@
 package org.openhs.comm.dummy;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.openhs.core.commons.DevicePath;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openhs.core.commons.ObjectFactory;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.ThingUpdater;
 import org.openhs.core.commons.api.ICommService;
@@ -33,13 +39,13 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
     private ISiteService m_siteService = null;
     private IMessageHandler m_messageHandler = null;
     
-    private ObjectFactory<ThingUpdater, String> m_updaterFactory;
+    private ObjectFactory<ThingUpdater, JSONObject> m_updaterFactory;
     
-    private DummyMessage m_thm0 = new DummyMessage("0", "Thermometer", "0.0","");
-    private DummyMessage m_thm1 = new DummyMessage("1", "Thermometer", "0.0","");
+    private DummyMessage m_thm0 = new DummyMessage(0, "Thermometer", "0.0","");
+    private DummyMessage m_thm1 = new DummyMessage(1, "Thermometer", "0.0","");
 
     public DummyService() {
-    	m_updaterFactory = new ObjectFactory<ThingUpdater, String>(ThingUpdater.class);
+    	m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 
     	m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
     	m_updaterFactory.registerClass("Switch", SwitchUpdater.class);
@@ -66,35 +72,43 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 	public void updated(Map<String, Object> properties) {
 		logger.info("**** updated()");
 
-		//TODO read cfg from props
-		if(properties != null && !properties.isEmpty()) {
-			Iterator<Entry<String, Object>> it = properties.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<String, Object> entry = it.next();
-				logger.info("    " + entry.getKey() + " = " +
-						entry.getValue() + " of type " + entry.getValue().getClass().toString());
-				if(entry.getKey().substring(0, 5).equals("Dummy")) {
-					try {
-						DevicePath devPath = new DevicePath(); 
-						devPath.parse((String) entry.getKey());
-						
-						ThingUpdater tu = m_updaterFactory.createObject(devPath.getType());
-						
-						logger.info("      updater: " + entry.getKey() + " " + (tu != null ? tu.getClass().getName() : "null"));
-						if (tu != null) {
-						
-							tu.setMessageHandler(m_messageHandler);
-							tu.setDevicePath(devPath);
-							
-							Thing th = m_siteService.getThingDevice(entry.getKey());
-							th.setUpdater(tu);
-						}
-					} catch (SiteException e) {
-						logger.info(e.getMessage());
-					}
-				}
-			}
+		String configFileName = (String) properties.get("ConfigFile");
+		String openhsHome = (String) properties.get("openhsHome");
+		String configFilePathName = openhsHome + configFileName;
+		
+		try {
+			loadConfig(configFilePathName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
+		
+	public void loadConfig(String path) throws IOException {
+        InputStream is;
+        is = new FileInputStream(path);
+        String jsonTxt;
+		jsonTxt = IOUtils.toString(is);
+    	JSONObject jobj = new JSONObject(jsonTxt);
+    	
+    	JSONArray things = jobj.getJSONArray("thingsMapping");
+    	Iterator<Object> it = things.iterator();
+    	while (it.hasNext()) {
+    		JSONObject thingJobj = (JSONObject)it.next();
+    		String iqrfType = thingJobj.getString("Type");
+        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, thingJobj);
+        	thingUpdater.setMessageHandler(m_messageHandler);
+
+        	logger.info(" Updater: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null"));
+    		
+			try {
+				Thing thing = m_siteService.getThingDevice(thingUpdater.getDevicePath());
+				thing.setUpdater(thingUpdater);
+			} catch (SiteException e) {
+				logger.info(e.getMessage() + thingUpdater.getDevicePath());
+			}
+
+    	}
 	}
 	
     public void terminate() {
@@ -107,9 +121,8 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		
 		//send back response - just workaround here to mimic switch response
 		ThingUpdater tu = parseMessage(m);
-		DevicePath dp = tu.getDevicePath();
 		
-		if (dp.getType().equals("Switch")) {
+		if (tu instanceof SwitchUpdater) {
 			
 			try {
 				Thread.sleep(50);
@@ -120,9 +133,9 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 			
 			SwitchUpdater dsu = (SwitchUpdater) tu;
 
-		    DummyMessage dmm = new DummyMessage("0", "Switch", "true", "OK");
+		    DummyMessage dmm = new DummyMessage(0, "Switch", "true", "OK");
 			
-			dmm.m_addr = dp.getAddr();
+			dmm.m_addr = ((SwitchUpdater)tu).getAddr();
 			dmm.m_value = Boolean.toString(dsu.isState());
 
 			Message mes = new Message(m_name, "dummy", dmm.toString());
@@ -217,10 +230,9 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 
 	@Override
 	public ThingUpdater parseMessage(Message msg) {
-		String[] parts = msg.getData().split(Pattern.quote("|"));
-		String id = parts[1];
-
-   		return m_updaterFactory.createObject(id, msg.getData());
+    	JSONObject jobj = new JSONObject(msg.getData());
+    	String id = jobj.getString("Type");
+    	return m_updaterFactory.createObject(id, jobj);
 	}
 
 	@Override
