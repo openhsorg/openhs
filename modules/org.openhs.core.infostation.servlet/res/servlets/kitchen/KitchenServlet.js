@@ -848,9 +848,11 @@ var KitchenInfoStation;
             _super.call(this, canvas);
             this.m_graphics = null;
             this.m_siteData = null;
+            this.m_iconBkgImage = null;
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
             this.m_arrayViewDoor = new Array();
+            this.m_iconBkgImage = new Icon(this.ctx, new Rect(0, 0, 0, 0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');
         }
         ScreenDoorList.prototype.setup = function () {
             //Setup view array ...
@@ -875,6 +877,8 @@ var KitchenInfoStation;
             ctx.fillStyle = whiteColor;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
+            this.m_iconBkgImage.setSize(new Rect(0, 0, this.width, this.height));
+            this.m_iconBkgImage.paint();
             for (var id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint();
             }
@@ -901,9 +905,9 @@ var KitchenInfoStation;
         ScreenDoorList.prototype.setGrid = function (numHorizontal, numVertical) {
             // Set number views...
             var maxItems = numHorizontal * numVertical;
-            var spaceHor = 5.0;
-            var spaceVer = 5.0;
-            var belowStrip = 50;
+            var spaceHor = 25.0;
+            var spaceVer = 25.0;
+            var belowStrip = 80;
             var widthView = (this.width - ((numHorizontal + 1) * spaceHor)) / numHorizontal;
             var heightView = ((this.height - belowStrip) - ((numVertical + 1) * spaceVer)) / numVertical;
             var nItem = 0;
@@ -928,7 +932,7 @@ var KitchenInfoStation;
             this.m_graphics = null;
             this.m_iconDoorOpen = null;
             this.m_iconDoorClose = null;
-            this.border = true;
+            this.border = false;
             this.m_graphics = m_graphics;
             this.textDoorName = new Text(this.ctx, new Rect(0, 0, 0, 0));
         }

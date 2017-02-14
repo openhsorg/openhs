@@ -1128,6 +1128,7 @@ module KitchenInfoStation {
         protected m_graphics: Graphics = null;       
         protected m_siteData: SiteData = null;
         protected m_arrayViewDoor:  Array<ViewDoor>; //View of doors
+        protected m_iconBkgImage:   Icon = null;
         
         constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
@@ -1136,6 +1137,8 @@ module KitchenInfoStation {
             this.m_graphics = m_graphics;
             
             this.m_arrayViewDoor = new Array<ViewDoor>();
+            
+            this.m_iconBkgImage = new Icon(this.ctx, new Rect(0,0,0,0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');
         }
         
         protected setup() {
@@ -1168,6 +1171,9 @@ module KitchenInfoStation {
             ctx.fillStyle = whiteColor;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
+            
+            this.m_iconBkgImage.setSize(new Rect (0, 0, this.width, this.height));
+            this.m_iconBkgImage.paint();
             
             for (let id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint();                
@@ -1205,9 +1211,9 @@ module KitchenInfoStation {
             // Set number views...
             var maxItems = numHorizontal * numVertical;
                         
-            var spaceHor: number = 5.0;
-            var spaceVer: number = 5.0;
-            var belowStrip: number = 50;                        
+            var spaceHor: number = 25.0;
+            var spaceVer: number = 25.0;
+            var belowStrip: number = 80;                        
             
             var widthView: number =  (this.width - ((numHorizontal + 1) * spaceHor)) / numHorizontal;
             var heightView: number =  ((this.height - belowStrip) - ((numVertical + 1) * spaceVer)) / numVertical;
@@ -1236,7 +1242,7 @@ module KitchenInfoStation {
         public m_iconDoorOpen:      Icon = null;
         public m_iconDoorClose:     Icon = null;
         
-        private border: boolean = true;
+        private border: boolean = false;
                 
         constructor (ctx: CanvasRenderingContext2D, m_graphics: Graphics) {
             super(ctx, new Rect (0, 0, 0, 0));      
