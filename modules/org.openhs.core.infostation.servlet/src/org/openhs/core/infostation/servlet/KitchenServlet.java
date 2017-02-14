@@ -41,7 +41,7 @@ public class KitchenServlet extends HttpServlet {
 	String addressPrev = "/";
 	String addressNext = "/";		
 
-	KitchenServlet(IInfostation m_infostation) {
+	KitchenServlet(IInfostation m_infostation) {		
 		this.m_infostation = m_infostation;		
 	}   	
 
@@ -270,8 +270,7 @@ public class KitchenServlet extends HttpServlet {
 					    
 					out.flush();
 					out.close();	
-					
-					
+																				
 		        } else if (value.toString().equals("DoorD")) {
 		    		
 	    			String path = request.getParameter("path").toString();
@@ -294,7 +293,8 @@ public class KitchenServlet extends HttpServlet {
 					if (door != null){
 						json.put("validity", new Boolean(true));
 						json.put("name", String.format(door.getName()));
-						json.put("imgBkg", String.format(door.imagePath));
+						json.put("image_open", String.format(door.imagePath_open));
+						json.put("image_close", String.format(door.imagePath_close));
 						json.put("x_coordinate", String.format("%d", door.x));
 						json.put("y_coordinate", String.format("%d", door.y));
 						json.put("open", new Boolean(door.open));

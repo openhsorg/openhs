@@ -154,12 +154,7 @@ module OhsSiteData {
                 this.timeString = data['time'];
             
                 // Floors                  
-               // this.setNumberFloors (parseInt(data['number_floors']));
-                
-                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
-                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
-                
-                //window.alert("floors:   " + this.getNumberFloors());
+                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);                                
                                         
                 for (let id in this.floors) {                    
                     this.floors[id].setPath(data['floorPath_' + id]);
@@ -168,31 +163,27 @@ module OhsSiteData {
                 }           
                 
                 // Rooms            
-                //this.setNumberRooms (parseInt(data['number_rooms']));
                 this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
                 
                 for (var id = 0; id < this.rooms.length; id ++) {                    
                     this.rooms[id].setPath(data['roomPath_' + id]);
                 }             
                 
-                // TempSensors                              
-               // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+                // TempSensors                                             
                 this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
                 
                 for (let id in this.tempSensors) {                                
                     this.tempSensors[id].setPath(data['tempSensorPath_' + id]);                   
                 }     
                 
-                // Switches                     
-                //this.setNumberSwitches (parseInt(data['number_switches']));
+                // Switches                                     
                 this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
                 
                 for (let id in this.switches) {                      
                     this.switches[id].setPath(data['switchPath_' + id]);
                 }              
                 
-                // Door                     
-                //this.setNumberDoors (parseInt(data['number_doors']));
+                // Door                                     
                 this.setNumber(parseInt(data['number_doors']), this.doors, Door);
                             
                 for (let id in this.doors) {           
@@ -350,7 +341,8 @@ module OhsSiteData {
     
     export class Door extends Thing {
         
-        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
+        public image_open: string = "/infores/servlets/kitchen/room_default.png";
+        public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
@@ -401,7 +393,8 @@ module OhsSiteData {
                     this.y = parseInt(data['y_coordinate']);
                     this.open = JSON.parse(data['open']);
                     this.locked = JSON.parse(data['lock']);  
-                    this.imageBkgPath = data['imgBkg'];         
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];          
                 }                                
             }                                                       
         }        

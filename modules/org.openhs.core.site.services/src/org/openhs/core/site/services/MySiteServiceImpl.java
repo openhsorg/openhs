@@ -104,7 +104,8 @@ public class MySiteServiceImpl implements ISiteService {
 			door.x = 310;
 			door.y = 0;
 			door.z = 0;
-			door.imagePath = "/infores/servlets/kitchen/door1_close.JPG";
+			door.imagePath_open = "/infores/servlets/kitchen/door1_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door1_close.JPG";
 			addThing("floors/Floor1/doors/Door1", door);			
 			
 			door = new Door();
@@ -112,7 +113,8 @@ public class MySiteServiceImpl implements ISiteService {
 			door.x = 450;
 			door.y = 50;
 			door.z = 0;
-			door.imagePath = "/infores/servlets/kitchen/door2_close.JPG";
+			door.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/doors/Door2", door);				
 			
 			
@@ -449,9 +451,14 @@ public class MySiteServiceImpl implements ISiteService {
 					element.appendChild(images);
 					
 					// Image path
-					Attr imageBkg = doc.createAttribute("imageBkg");
-					imageBkg.setValue(((Door) thing).imagePath);
-					images.setAttributeNode(imageBkg);	
+					Attr imageOpen = doc.createAttribute("imageOpen");
+					imageOpen.setValue(((Door) thing).imagePath_open);
+					images.setAttributeNode(imageOpen);	
+					
+					// Image path
+					Attr imageClose = doc.createAttribute("imageClose");
+					imageClose.setValue(((Door) thing).imagePath_close);
+					images.setAttributeNode(imageClose);						
 					
 					//Element position
 					Element position = doc.createElement("position");
@@ -604,8 +611,12 @@ public class MySiteServiceImpl implements ISiteService {
 							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
 							
 							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
-								((Door) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+								((Door) obj).imagePath_open = ((Element) imagesNode).getAttribute("imageOpen");
 							}
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Door) obj).imagePath_close = ((Element) imagesNode).getAttribute("imageClose");
+							}							
 							
 							//Element position
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);

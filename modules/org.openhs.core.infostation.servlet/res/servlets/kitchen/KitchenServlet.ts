@@ -10,32 +10,36 @@
 
 module KitchenInfoStation {        
 
-    import Rect = OhsCanvasGraphics.Rect;
-    import Text = OhsCanvasGraphics.Text;
-    import TempMark = OhsCanvasGraphics.TempMark;
+    import Rect =       OhsCanvasGraphics.Rect;
+    import Text =       OhsCanvasGraphics.Text;
+    import TempMark =   OhsCanvasGraphics.TempMark;
     import SwitchMark = OhsCanvasGraphics.SwitchMark;
-    import DoorMark = OhsCanvasGraphics.DoorMark;
-    import Icon = OhsCanvasGraphics.Icon;
-    import Iconset = OhsCanvasGraphics.Iconset;
-    import Graphics = OhsCanvasGraphics.Graphics;
+    import DoorMark =   OhsCanvasGraphics.DoorMark;
+   // import DoorMark2 =   OhsCanvasGraphics.DoorMark2;
+    import Icon =       OhsCanvasGraphics.Icon;
+    import Iconset =    OhsCanvasGraphics.Iconset;
+    import Graphics =   OhsCanvasGraphics.Graphics;
+    import Mark =   OhsCanvasGraphics.Mark;
         
     import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
-    import WeatherForecast = OhsWeatherData.WeatherForecast;    
+    import WeatherForecast =     OhsWeatherData.WeatherForecast;    
         
-    import SiteData = OhsSiteData.SiteData;
-    import Floor = OhsSiteData.Floor;
-    import Room = OhsSiteData.Room;
-    import TemperatureSensor = OhsSiteData.TemperatureSensor;    
-    import Door = OhsSiteData.Door;
-    import Switch = OhsSiteData.Switch;
-    import Thing = OhsSiteData.Thing;                   
+    import SiteData =           OhsSiteData.SiteData;
+    import Floor =              OhsSiteData.Floor;
+    import Room =               OhsSiteData.Room;
+    import TemperatureSensor =  OhsSiteData.TemperatureSensor;    
+    import Door =               OhsSiteData.Door;
+    import Switch =             OhsSiteData.Switch;
+    import Thing =              OhsSiteData.Thing;                   
 
     enum SwitchScreen {
         Main,
         Watch,    
         Floor,
         WeatherForecast,
-        Room
+        Room,
+        DoorList,
+        DoorScreen
     }    
     
     var imagePaths: Array <String> = [
@@ -47,18 +51,18 @@ module KitchenInfoStation {
            "/infores/servlets/kitchen/cloudSnow.png"       
     ];     
         
-    const whiteColor       = "#FFFFFF";
-    const blackColor       = "#000000";
-    const borderColor      = "#C0C0C0";
-    const secPtrColor      = "#CC0000";
-    const textColor        = "#000000";
-    const circleColor        = "#c0c0c0";
-    let fontSizeTempIn:      number = 54;
-    let fontSizeTempOut:      number = 50;    
-    let fontSizeWind:      number = 24;      
-    let fontSizeHum:      number = 27;
-    let fontSizeTime:      number = fontSizeTempOut;
-    let fontSizeDate:      number = fontSizeWind;         
+    const whiteColor        = "#FFFFFF";
+    const blackColor        = "#000000";
+    const borderColor       = "#C0C0C0";
+    const secPtrColor       = "#CC0000";
+    const textColor         = "#000000";
+    const circleColor       = "#c0c0c0";
+    let fontSizeTempIn:     number = 54;
+    let fontSizeTempOut:    number = 50;    
+    let fontSizeWind:       number = 24;      
+    let fontSizeHum:        number = 27;
+    let fontSizeTime:       number = fontSizeTempOut;
+    let fontSizeDate:       number = fontSizeWind;         
     
     //Meteorological data    
     var timeString = "";
@@ -81,7 +85,7 @@ module KitchenInfoStation {
         
         // Data
         public m_weatherData: WeatherDataForecast = new WeatherDataForecast(); // General weather
-        public m_siteData:    SiteData = null; //general Site Data        
+        public m_siteData:    SiteData = null; //general Site Data      
         
         // Timers
         private timerData;
@@ -93,6 +97,8 @@ module KitchenInfoStation {
         public m_forecastScreen: ScreenWeatherForecast = null; //forecast screen            
         private m_room: ScreenRoom = null;
         private m_floor: ScreenFloor =  null;
+        private m_screenDoorList: ScreenDoorList = null;
+        private m_screenDoor: ScreenDoor = null;
                
         //Graphics
         private m_graphics: Graphics = null;        
@@ -117,7 +123,9 @@ module KitchenInfoStation {
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
             this.m_floor = new ScreenFloor(this.canvas, this.m_siteData, this.m_graphics);
             this.m_room = new ScreenRoom(this.canvas, this.m_siteData, this.m_graphics);      
-            this.m_forecastScreen = new ScreenWeatherForecast (this.canvas, this.m_weatherData);                               
+            this.m_forecastScreen = new ScreenWeatherForecast (this.canvas, this.m_weatherData);   
+            this.m_screenDoorList = new ScreenDoorList (this.canvas, this.m_siteData, this.m_graphics);
+            this.m_screenDoor = new ScreenDoor (this.canvas, this.m_siteData, this.m_graphics);                                  
             
             //---Mouse Handler---
             var self = this;                    
@@ -159,6 +167,13 @@ module KitchenInfoStation {
                 refresh = 50;
                 screen = this.m_room;                
                 this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
+                
+            } else if (retVal.nextScreen == SwitchScreen.DoorList) {
+                screen = this.m_screenDoorList;     
+                           
+            } else if (retVal.nextScreen == SwitchScreen.DoorScreen) {
+                screen = this.m_screenDoor;  
+                this.m_screenDoor.setThing(this.m_siteData.getThing(retVal.nextThingPath));              
             }
             
             // Switch screen
@@ -260,17 +275,18 @@ module KitchenInfoStation {
         private m_weatherData: WeatherDataForecast = null;
         
         //Graphics
-        public stopWatch: StopWatch = null;  
-        private iconStopWatch: Icon;
-        private iconVoiceMessage: Icon;
-        private iconWind: Icon;
-        private iconHum: Icon;
-        private iconWeather: Iconset;
-        public tmpInText:  Text;
-        public tmpOutText:  Text;
-        public timeText:  Text;
-        public dateText:  Text;
-        public windText:  Text;     
+        public stopWatch:           StopWatch = null;  
+        private iconStopWatch:      Icon;
+        private iconVoiceMessage:   Icon;
+        private iconDoor:           Icon;
+        private iconWind:           Icon;
+        private iconHum:            Icon;
+        private iconWeather:        Iconset;
+        public tmpInText:           Text;
+        public tmpOutText:          Text;
+        public timeText:            Text;
+        public dateText:            Text;
+        public windText:            Text;     
 
         private appWatch: boolean = false;
         
@@ -285,6 +301,7 @@ module KitchenInfoStation {
             //---Graphics---
             this.iconStopWatch = new Icon (this.ctx, new Rect ((this.width / 2) + 180, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/stopwatch.png');
             this.iconVoiceMessage = new Icon (this.ctx, new Rect ((this.width / 2) - 220 , (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/voicemessage.png');
+            this.iconDoor = new Icon (this.ctx, new Rect ((this.width / 2) + 150, (this.height / 2) + 120, 60, 60), '/infores/servlets/kitchen/door_icon.png');
             this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 150, 150));
             this.iconWeather.setImages(imagePaths);
             this.iconWind = new Icon (this.ctx, new Rect ( 140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
@@ -329,6 +346,10 @@ module KitchenInfoStation {
                     this.appWatch = true;
                     this.open(30);
                        
+                } else if (this.iconDoor.isClicked(mousePos.x, mousePos.y)) {                
+                    returnVal.nextScreen = SwitchScreen.DoorList;
+                    return returnVal;
+                
                 } else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
                    // return SwitchScreen.Floor;  
                     //window.clearTimeout(this.timerPaint);
@@ -362,11 +383,12 @@ module KitchenInfoStation {
             //Hum
             this.iconHum.paint();
 
-            //Voice message
+            //Face icons
+            this.iconStopWatch.paint();                                    
             this.iconVoiceMessage.paint();
+            this.iconDoor.paint();
     
-            //Stopwatch
-            this.iconStopWatch.paint();
+
     
             //Wind outside
             this.windText.fontSize = fontSizeWind;
@@ -908,7 +930,7 @@ module KitchenInfoStation {
             var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
-                doorMarks[id].paint();            
+                doorMarks[id].paintByThing(80, 80);            
             }                  
             
              //Number rooms
@@ -1035,10 +1057,246 @@ module KitchenInfoStation {
             var doorMarks: Array<DoorMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
-                doorMarks[id].paint();            
+                doorMarks[id].paintByThing(80,80);            
             }               
         }             
-    }    
+    } 
+    
+    class ScreenDoor extends Screen {
+        
+        protected m_graphics: Graphics = null;       
+        protected m_siteData: SiteData = null;   
+        
+        protected m_iconDoorOpen: Icon = null;
+        protected m_iconDoorClose: Icon = null;
+        
+        public m_doorMark:          DoorMark = null;       // Mark of doors
+        
+        constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
+            super(canvas);
+            
+            this.m_siteData = m_siteData;
+            this.m_graphics = m_graphics;
+        }
+      
+        protected paint() {
+            
+            if (this.m_iconDoorOpen != null){
+                this.m_iconDoorOpen.paint();
+            }
+            
+            if(this.m_doorMark != null) {
+                this.m_doorMark.setSize(new Rect (5, 20, 80, 80));
+                this.m_doorMark.paint(0);
+            }               
+                                    
+        }
+        
+        public setThing(thing: Thing){
+            
+            var oldThing: Thing = super.getThing(); 
+            
+            super.setThing(thing);
+            
+            //update other data
+            if (thing != oldThing) {
+                if (thing instanceof Door) {
+                    
+                    //Reload pictures etc...?
+                    var door: Door = <Door> this.getThing();
+                    this.m_iconDoorOpen = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_open);
+                    this.m_iconDoorClose = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_close);    
+                    
+                    this.m_doorMark = new DoorMark(this.ctx, new Rect (0,0,0,0));
+                    this.m_doorMark.setData(door);                    
+                }                
+            }            
+        } 
+        
+        public MouseClickHandler(event) {                                           
+           
+            var mousePos = getMousePos(this.canvas, event);
+
+            this.returnVal.nextScreen = SwitchScreen.DoorList;
+            
+            return this.returnVal;
+        }           
+    }
+    
+    class ScreenDoorList extends Screen {
+        
+        protected m_graphics: Graphics = null;       
+        protected m_siteData: SiteData = null;
+        protected m_arrayViewDoor:  Array<ViewDoor>; //View of doors
+        
+        constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
+            super(canvas);
+            
+            this.m_siteData = m_siteData;
+            this.m_graphics = m_graphics;
+            
+            this.m_arrayViewDoor = new Array<ViewDoor>();
+        }
+        
+        protected setup() {
+            //Setup view array ...
+            for (var i = 0; i < this.m_siteData.doors.length; i++) {
+                if(this.m_arrayViewDoor.length < i + 1) {
+                    this.m_arrayViewDoor.push(new ViewDoor(this.ctx, this.m_graphics));
+                }
+                
+                //Align data...
+                this.m_arrayViewDoor[i].setData(this.m_siteData.doors[i]);                
+            }
+            
+            //Cut over-remaining View parts
+            if (this.m_arrayViewDoor.length > this.m_siteData.doors.length){
+                this.m_arrayViewDoor.length = this.m_siteData.doors.length;                
+            }
+                  
+        }
+        
+        protected paint() {
+            const ctx = this.ctx;
+            
+            this.setup();
+            
+            this.setGrid(3, 2);
+            
+            // Repaint background
+            ctx.save();
+            ctx.fillStyle = whiteColor;
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
+            
+            for (let id in this.m_arrayViewDoor) {
+                this.m_arrayViewDoor[id].paint();                
+            }
+        }     
+                        
+        MouseClickHandler(event) { 
+        
+            var returnVal = {
+                nextScreen: SwitchScreen.Main,
+                nextThingPath: null                                  
+            };            
+                       
+            var mousePos = getMousePos(this.canvas, event);
+            
+            var viewDoorClicked: ViewDoor = null;
+                        
+            for (let i in this.m_arrayViewDoor) {
+                if(this.m_arrayViewDoor[i].isClicked(mousePos.x, mousePos.y)){
+                    viewDoorClicked = this.m_arrayViewDoor[i];
+                    break;
+                }                                    
+            }            
+            
+            if (viewDoorClicked != null) {
+                returnVal.nextScreen = SwitchScreen.DoorScreen;
+                returnVal.nextThingPath = viewDoorClicked.thing.getPath();
+            }
+            
+            return returnVal;
+        }       
+        
+        protected setGrid (numHorizontal: number, numVertical: number) {                        
+            
+            // Set number views...
+            var maxItems = numHorizontal * numVertical;
+                        
+            var spaceHor: number = 5.0;
+            var spaceVer: number = 5.0;
+            var belowStrip: number = 50;                        
+            
+            var widthView: number =  (this.width - ((numHorizontal + 1) * spaceHor)) / numHorizontal;
+            var heightView: number =  ((this.height - belowStrip) - ((numVertical + 1) * spaceVer)) / numVertical;
+                                    
+            var nItem: number = 0;
+            for (var j = 1; j <= numVertical; j ++) {
+                for (var i = 1; i <= numHorizontal; i ++) {                                        
+                    if (nItem < this.m_arrayViewDoor.length) {
+                        var x: number = ((i - 1) * widthView) + ( i * spaceHor);
+                        var y: number = ((j - 1) * heightView) + ( j * spaceVer); 
+                        
+                        this.m_arrayViewDoor[nItem].setSize(new Rect (x, y, widthView, heightView));
+                    }                    
+                    nItem ++;
+                }                
+            }                                    
+        }        
+    }
+    
+    class ViewDoor extends Mark {
+                
+        public m_doorMark:          DoorMark = null;       // Mark of doors
+        public textDoorName:        Text;                  //Name of doors
+        public m_graphics:          Graphics = null;
+        
+        public m_iconDoorOpen:      Icon = null;
+        public m_iconDoorClose:     Icon = null;
+        
+        private border: boolean = true;
+                
+        constructor (ctx: CanvasRenderingContext2D, m_graphics: Graphics) {
+            super(ctx, new Rect (0, 0, 0, 0));      
+            
+            this.m_graphics = m_graphics;
+            this.textDoorName = new Text(this.ctx, new Rect (0, 0, 0, 0));
+        }
+        
+        public setData(m_door: Door){
+            var m_doorOld: Door = <Door> this.thing;
+            
+            if (m_doorOld != m_door) {
+                this.thing = <Thing> m_door;
+ 
+                //Reload pictures etc...?
+                var door: Door = <Door> this.thing;
+                this.m_iconDoorOpen = new Icon (this.ctx, this.rect, door.image_open);
+                this.m_iconDoorClose = new Icon (this.ctx, this.rect, door.image_close);
+             //   this.test = new Icon (this.ctx, this.rect, "/infores/servlets/kitchen/door_open.png");        
+                
+                this.m_doorMark = new DoorMark(this.ctx, new Rect (0,0,0,0));
+                this.m_doorMark.setData(door);
+            }        
+        }        
+        
+        public setSize (rect: Rect) {
+            super.setSize(rect);    
+            this.m_iconDoorOpen.setSize(rect);
+            this.m_iconDoorClose.setSize(rect);
+        }
+        
+        public paint () {            
+            
+            if (this.m_iconDoorOpen != null) {
+                this.m_iconDoorOpen.paint();
+            }
+            
+            if (this.m_iconDoorClose != null) {
+                this.m_iconDoorClose.paint();
+            }    
+
+            if(this.m_doorMark != null) {
+                this.m_doorMark.setSize(new Rect (this.rect.x + 5, this.rect.y + 20, 80, 80));
+                this.m_doorMark.paint(0);
+            }              
+            
+            this.textDoorName.setSize(new Rect (this.rect.x + 5, this.rect.y + 5, 80, 80));
+            this.textDoorName.paint("name");
+            
+            if (this.border) {                
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.lineWidth=2;
+                this.ctx.strokeStyle="blue";
+                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.stroke();
+                this.ctx.restore();            
+            }
+        }        
+    }
      
     //Function to get the mouse position
     function getMousePos(canvas, event) {

@@ -119,33 +119,26 @@ var OhsSiteData;
                 this.dateString = data['date'];
                 this.timeString = data['time'];
                 // Floors                  
-                // this.setNumberFloors (parseInt(data['number_floors']));
-                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
                 this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
-                //window.alert("floors:   " + this.getNumberFloors());
                 for (var id_1 in this.floors) {
                     this.floors[id_1].setPath(data['floorPath_' + id_1]);
                 }
                 // Rooms            
-                //this.setNumberRooms (parseInt(data['number_rooms']));
                 this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
                 for (var id = 0; id < this.rooms.length; id++) {
                     this.rooms[id].setPath(data['roomPath_' + id]);
                 }
-                // TempSensors                              
-                // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
+                // TempSensors                                             
                 this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
                 for (var id_2 in this.tempSensors) {
                     this.tempSensors[id_2].setPath(data['tempSensorPath_' + id_2]);
                 }
-                // Switches                     
-                //this.setNumberSwitches (parseInt(data['number_switches']));
+                // Switches                                     
                 this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
                 for (var id_3 in this.switches) {
                     this.switches[id_3].setPath(data['switchPath_' + id_3]);
                 }
-                // Door                     
-                //this.setNumberDoors (parseInt(data['number_doors']));
+                // Door                                     
                 this.setNumber(parseInt(data['number_doors']), this.doors, Door);
                 for (var id_4 in this.doors) {
                     this.doors[id_4].setPath(data['doorPath_' + id_4]);
@@ -271,7 +264,8 @@ var OhsSiteData;
         __extends(Door, _super);
         function Door() {
             _super.call(this);
-            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
+            this.image_open = "/infores/servlets/kitchen/room_default.png";
+            this.image_close = "/infores/servlets/kitchen/room_default.png";
             this.open = false;
             this.locked = false;
             this.x = 0;
@@ -306,7 +300,8 @@ var OhsSiteData;
                     this.y = parseInt(data['y_coordinate']);
                     this.open = JSON.parse(data['open']);
                     this.locked = JSON.parse(data['lock']);
-                    this.imageBkgPath = data['imgBkg'];
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];
                 }
             }
         };

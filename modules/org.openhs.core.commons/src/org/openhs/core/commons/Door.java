@@ -2,7 +2,8 @@ package org.openhs.core.commons;
 
 public class Door extends Thing {
 	
-	public String imagePath = "no path";
+	public String imagePath_open = "no path";
+	public String imagePath_close = "no path";
 	
 	//Coordinates in house 
 	public int x = 0;
