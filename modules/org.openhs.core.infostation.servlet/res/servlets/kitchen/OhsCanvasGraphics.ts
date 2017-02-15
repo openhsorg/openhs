@@ -19,9 +19,9 @@ import Thing = OhsSiteData.Thing;
         private m_siteData: SiteData = null;
         
       //  public m_tempMarks: Array<TempMark> = null;
-        public m_switchMarks: Array<SwitchMark> = null;
+      //  public m_switchMarks: Array<SwitchMark> = null;
       //  public m_doorMarks: Array<DoorMark> = null;
-        public m_doorPictures: Array<Iconset> = null;    
+     //   public m_doorPictures: Array<Iconset> = null;    
         
         public m_iconsetRoomBkg: Iconset = null; //room images...
         
@@ -36,9 +36,9 @@ import Thing = OhsSiteData.Thing;
             
             //---Graphics---            
           //  this.m_tempMarks = new Array<TempMark>();
-            this.m_switchMarks = new Array<SwitchMark>();
+          //  this.m_switchMarks = new Array<SwitchMark>();
           //  this.m_doorMarks = new Array<DoorMark>();   
-            this.m_doorPictures = new Array<Iconset>();
+       //     this.m_doorPictures = new Array<Iconset>();
             
             this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
             
@@ -85,13 +85,15 @@ import Thing = OhsSiteData.Thing;
             this.m_iconsetRoomBkg.setImages(imgPaths);            
             
          // Doors images
+            /*
             this.setNumber(this.m_siteData.doors.length, this.m_doorPictures, Iconset, this.ctx, new Rect (0, 0, 0, 0));
  
             for (let id in this.m_siteData.doors) {                  
                 this.m_doorPictures[id].thing = <Thing> this.m_siteData.doors[id];    
                 this.m_doorPictures[id].setImages(new Array<String>(this.m_siteData.doors[id].image_open, this.m_siteData.doors[id].image_close))
                 //this.m_doorPictures[id].                                
-            }              
+            }        
+            */      
             /*
             // Temperature
             this.setNumber(this.m_siteData.tempSensors.length, this.m_tempMarks, TempMark, this.ctx, new Rect (0, 0, 0, 0));
@@ -102,11 +104,13 @@ import Thing = OhsSiteData.Thing;
             }
             */
             // Switches
+            /*
             this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect (0, 0, 80, 80));
 
             for (let id in this.m_siteData.switches) {
                 this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
-            }          
+            }   
+            */       
                     /*
             // Doors symbols
             this.setNumber(this.m_siteData.doors.length, this.m_doorMarks, DoorMark, this.ctx, new Rect (0, 0, 0, 0));
@@ -125,35 +129,7 @@ import Thing = OhsSiteData.Thing;
            window.clearTimeout(this.timerUpdateGraphics);
            this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
         }   
-        
-        public isClicked(x: number, y: number, filterPath: string) {
-            
-            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
-            
-            for (let id in switches) {                
-                if(switches[id].isClicked(x, y)) {
-                    return <Thing> switches[id].getData();
-                }
-            }  
-            /*
-            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
-            
-            for (let id in temps) {                
-                if(temps[id].isClicked(x, y)) {
-                    return <Thing> temps[id].getData();
-                }
-            }
-            */
-            /*
-            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
-            
-            for (let id in doors) {                
-                if(doors[id].isClicked(x, y)) {
-                    return <Thing> doors[id].getData();
-                }
-            }      
-            */        
-        }     
+                
         
         public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
             
@@ -260,9 +236,10 @@ import Thing = OhsSiteData.Thing;
         
         public paint (ctx: CanvasRenderingContext2D){
             ctx.save();
-            super.paint(ctx);
             
+            super.paint(ctx);
             if (this.radius != 0) {
+                
                 ctx.clip();
             }
             
@@ -363,6 +340,9 @@ import Thing = OhsSiteData.Thing;
     export class Mark2 extends Rect {
         
         protected thing: Thing = null;
+        
+        protected colorIncideReady: string = '#a6a6a6';
+        protected colorBorderReady: string = '#595959';
         
         constructor (x: number, y: number, w: number, h: number){
             super(x, y, w, h);
@@ -767,7 +747,7 @@ import Thing = OhsSiteData.Thing;
             var colorBorder: string = '#595959';
             
             if (tempSensor != null){
-                colorInside = '#33cc33';
+                colorInside = '#ccffe6';
                 colorBorder = '#196619';             
             }
                                                 
@@ -877,6 +857,119 @@ import Thing = OhsSiteData.Thing;
          }            
     }          
     */
+    
+     export class SwitchMark2 extends Mark2 {
+        
+        protected imgBulbOn:          ImageRect = null;
+        protected imgBulbOff:         ImageRect = null;
+       // protected textState:          TextSimple = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgBulbOn = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn.png');
+            this.imgBulbOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff.png');      
+         //   this.textState = new TextSimple(x, y, w, h);                  
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var dx: number = 1;
+            var dy: number = 1;
+            
+            this.imgBulbOn.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgBulbOff.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));     
+          // this.textState.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
+        
+        }
+        
+        public getSwitchThing() {
+            var swtch: Switch = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Switch){
+                    swtch = <Switch> this.thing;        
+                }            
+            }            
+            return swtch;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var swtch = this.getSwitchThing();
+                        
+            if (swtch != null) {                                    
+                this.size(swtch.x, swtch.y, 80, 80);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var swtch: Switch = this.getSwitchThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (swtch != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw temperature text
+            if (swtch == null) {
+                //this.imgBulbOff.paint(ctx);
+                
+            } else {
+
+                //logic of switch
+                if (swtch.getState() == 0) { //off-line
+                    this.imgBulbOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 1) { //OFF
+                    this.imgBulbOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 2) {//-> ON
+                    this.imgBulbOn.paint(ctx);
+                    
+                } else if (swtch.getState() == 3) { //ON
+                    this.imgBulbOn.paint(ctx);
+                    
+                } else if (swtch.getState() == 4) { //->OFF";
+                    this.imgBulbOff.paint(ctx);
+                    
+                } else {
+                    this.imgBulbOff.paint(ctx);
+                }                                                            
+                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    } 
+    /*
     export class SwitchMark extends Mark {
 
      //   public switch: Switch = null;        
@@ -974,7 +1067,7 @@ import Thing = OhsSiteData.Thing;
              }                          
          }          
     }  
-    
+    */
      
    /*
     export class DoorMark extends Mark {

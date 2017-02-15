@@ -9,13 +9,14 @@ var OhsCanvasGraphics;
 (function (OhsCanvasGraphics) {
     var TemperatureSensor = OhsSiteData.TemperatureSensor;
     var Door = OhsSiteData.Door;
+    var Switch = OhsSiteData.Switch;
     var Graphics = (function () {
         function Graphics(canvas, m_siteData) {
             this.m_siteData = null;
             //  public m_tempMarks: Array<TempMark> = null;
-            this.m_switchMarks = null;
+            //  public m_switchMarks: Array<SwitchMark> = null;
             //  public m_doorMarks: Array<DoorMark> = null;
-            this.m_doorPictures = null;
+            //   public m_doorPictures: Array<Iconset> = null;    
             this.m_iconsetRoomBkg = null; //room images...
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
@@ -23,9 +24,9 @@ var OhsCanvasGraphics;
             this.m_siteData = m_siteData;
             //---Graphics---            
             //  this.m_tempMarks = new Array<TempMark>();
-            this.m_switchMarks = new Array();
+            //  this.m_switchMarks = new Array<SwitchMark>();
             //  this.m_doorMarks = new Array<DoorMark>();   
-            this.m_doorPictures = new Array();
+            //     this.m_doorPictures = new Array<Iconset>();
             this.m_iconsetRoomBkg = new Iconset(this.ctx, new Rect(0, 0, this.canvas.width, this.canvas.height));
             // this.m_iconsetRoomBkg = new Iconset();
             //---Timer---
@@ -61,11 +62,15 @@ var OhsCanvasGraphics;
             }
             this.m_iconsetRoomBkg.setImages(imgPaths);
             // Doors images
-            this.setNumber(this.m_siteData.doors.length, this.m_doorPictures, Iconset, this.ctx, new Rect(0, 0, 0, 0));
-            for (var id_1 in this.m_siteData.doors) {
-                this.m_doorPictures[id_1].thing = this.m_siteData.doors[id_1];
-                this.m_doorPictures[id_1].setImages(new Array(this.m_siteData.doors[id_1].image_open, this.m_siteData.doors[id_1].image_close));
+            /*
+            this.setNumber(this.m_siteData.doors.length, this.m_doorPictures, Iconset, this.ctx, new Rect (0, 0, 0, 0));
+ 
+            for (let id in this.m_siteData.doors) {
+                this.m_doorPictures[id].thing = <Thing> this.m_siteData.doors[id];
+                this.m_doorPictures[id].setImages(new Array<String>(this.m_siteData.doors[id].image_open, this.m_siteData.doors[id].image_close))
+                //this.m_doorPictures[id].
             }
+            */
             /*
             // Temperature
             this.setNumber(this.m_siteData.tempSensors.length, this.m_tempMarks, TempMark, this.ctx, new Rect (0, 0, 0, 0));
@@ -76,10 +81,13 @@ var OhsCanvasGraphics;
             }
             */
             // Switches
-            this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect(0, 0, 80, 80));
-            for (var id_2 in this.m_siteData.switches) {
-                this.m_switchMarks[id_2].thing = this.m_siteData.switches[id_2];
+            /*
+            this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect (0, 0, 80, 80));
+
+            for (let id in this.m_siteData.switches) {
+                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
             }
+            */
             /*
     // Doors symbols
     this.setNumber(this.m_siteData.doors.length, this.m_doorMarks, DoorMark, this.ctx, new Rect (0, 0, 0, 0));
@@ -96,32 +104,6 @@ var OhsCanvasGraphics;
             this.updateGraphics();
             window.clearTimeout(this.timerUpdateGraphics);
             this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
-        };
-        Graphics.prototype.isClicked = function (x, y, filterPath) {
-            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
-            for (var id in switches) {
-                if (switches[id].isClicked(x, y)) {
-                    return switches[id].getData();
-                }
-            }
-            /*
-            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
-            
-            for (let id in temps) {
-                if(temps[id].isClicked(x, y)) {
-                    return <Thing> temps[id].getData();
-                }
-            }
-            */
-            /*
-            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
-            
-            for (let id in doors) {
-                if(doors[id].isClicked(x, y)) {
-                    return <Thing> doors[id].getData();
-                }
-            }
-            */
         };
         Graphics.prototype.getFilteredMarks = function (arg, filterPath) {
             if (filterPath == null) {
@@ -300,6 +282,8 @@ var OhsCanvasGraphics;
         function Mark2(x, y, w, h) {
             _super.call(this, x, y, w, h);
             this.thing = null;
+            this.colorIncideReady = '#a6a6a6';
+            this.colorBorderReady = '#595959';
         }
         Mark2.prototype.setThing = function (thing) {
             this.thing = thing;
@@ -619,7 +603,7 @@ var OhsCanvasGraphics;
             var colorInside = '#a6a6a6';
             var colorBorder = '#595959';
             if (tempSensor != null) {
-                colorInside = '#33cc33';
+                colorInside = '#ccffe6';
                 colorBorder = '#196619';
             }
             ctx.save();
@@ -727,90 +711,93 @@ var OhsCanvasGraphics;
          }
     }
     */
-    var SwitchMark = (function (_super) {
-        __extends(SwitchMark, _super);
-        function SwitchMark(ctx, rect) {
-            _super.call(this, ctx, rect);
-            this.img = null;
-            this.colorButton = "#666699";
-            this.border = false; //debug border        
-            this.txt = new Text(ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            this.img = new Image();
-            this.img.src = '/infores/servlets/kitchen/BulbSymbol.png';
+    var SwitchMark2 = (function (_super) {
+        __extends(SwitchMark2, _super);
+        function SwitchMark2(x, y, w, h) {
+            _super.call(this, x, y, w, h);
+            this.imgBulbOn = null;
+            this.imgBulbOff = null;
+            // protected textState:          TextSimple = null;
+            this.border = false;
+            this.imgBulbOn = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn.png');
+            this.imgBulbOff = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff.png');
+            //   this.textState = new TextSimple(x, y, w, h);                  
+            this.size(x, y, w, h);
         }
-        SwitchMark.prototype.setSize = function (rect) {
-            _super.prototype.setSize.call(this, rect);
-            this.txt.setSize(rect);
+        SwitchMark2.prototype.size = function (x, y, w, h) {
+            _super.prototype.size.call(this, x, y, w, h);
+            var dx = 1;
+            var dy = 1;
+            this.imgBulbOn.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgBulbOff.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            // this.textState.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
         };
-        SwitchMark.prototype.setData = function (switchIn) {
-            this.thing = switchIn;
+        SwitchMark2.prototype.getSwitchThing = function () {
+            var swtch = null;
+            if (this.thing) {
+                if (this.thing instanceof Switch) {
+                    swtch = this.thing;
+                }
+            }
+            return swtch;
         };
-        SwitchMark.prototype.getData = function () {
-            return this.thing;
+        SwitchMark2.prototype.paintByThing = function (ctx) {
+            var swtch = this.getSwitchThing();
+            if (swtch != null) {
+                this.size(swtch.x, swtch.y, 80, 80);
+            }
+            this.paint(ctx);
         };
-        SwitchMark.prototype.paint = function () {
-            var switchVar = this.thing;
-            // Update this
-            this.rect.x = switchVar.x;
-            this.rect.y = switchVar.y;
-            this.txt.setSize(this.rect);
-            var text = "---";
-            //logic of switch
-            if (switchVar.getState() == 0) {
-                this.colorButton = "#808080";
-                text = "---";
+        SwitchMark2.prototype.paint = function (ctx) {
+            var swtch = this.getSwitchThing();
+            var colorInside = '#a6a6a6';
+            var colorBorder = '#595959';
+            if (swtch != null) {
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';
             }
-            else if (switchVar.getState() == 1) {
-                this.colorButton = "#3333ff";
-                text = "off";
-            }
-            else if (switchVar.getState() == 2) {
-                this.colorButton = "#33cc33";
-                text = "->on";
-            }
-            else if (switchVar.getState() == 3) {
-                this.colorButton = "#ffaa00";
-                text = "on";
-            }
-            else if (switchVar.getState() == 4) {
-                this.colorButton = "#9999ff";
-                text = "->off";
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();
+            //Draw temperature text
+            if (swtch == null) {
             }
             else {
-                this.colorButton = "#808080";
-                text = "---";
+                //logic of switch
+                if (swtch.getState() == 0) {
+                    this.imgBulbOff.paint(ctx);
+                }
+                else if (swtch.getState() == 1) {
+                    this.imgBulbOff.paint(ctx);
+                }
+                else if (swtch.getState() == 2) {
+                    this.imgBulbOn.paint(ctx);
+                }
+                else if (swtch.getState() == 3) {
+                    this.imgBulbOn.paint(ctx);
+                }
+                else if (swtch.getState() == 4) {
+                    this.imgBulbOff.paint(ctx);
+                }
+                else {
+                    this.imgBulbOff.paint(ctx);
+                }
             }
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = this.colorButton;
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();
-            this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
-            //Draw image...
-            //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
-            this.ctx.restore();
-            // }                        
             if (this.border) {
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = "blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
+                ctx.save();
+                _super.prototype.paint.call(this, ctx);
+                ctx.restore();
             }
         };
-        return SwitchMark;
-    }(Mark));
-    OhsCanvasGraphics.SwitchMark = SwitchMark;
+        return SwitchMark2;
+    }(Mark2));
+    OhsCanvasGraphics.SwitchMark2 = SwitchMark2;
 })(OhsCanvasGraphics || (OhsCanvasGraphics = {}));
