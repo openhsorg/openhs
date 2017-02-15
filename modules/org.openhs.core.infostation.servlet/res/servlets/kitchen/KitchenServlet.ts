@@ -11,15 +11,18 @@
 module KitchenInfoStation {        
 
     import Rect =       OhsCanvasGraphics.Rect;
+    import RectRounded =       OhsCanvasGraphics.RectRounded;
+    import ImageRect =       OhsCanvasGraphics.ImageRect;
     import Text =       OhsCanvasGraphics.Text;
     import TempMark =   OhsCanvasGraphics.TempMark;
     import SwitchMark = OhsCanvasGraphics.SwitchMark;
     import DoorMark =   OhsCanvasGraphics.DoorMark;
-   // import DoorMark2 =   OhsCanvasGraphics.DoorMark2;
+    import DoorMark2 =   OhsCanvasGraphics.DoorMark2;
     import Icon =       OhsCanvasGraphics.Icon;
     import Iconset =    OhsCanvasGraphics.Iconset;
     import Graphics =   OhsCanvasGraphics.Graphics;
     import Mark =   OhsCanvasGraphics.Mark;
+    import Mark2 =   OhsCanvasGraphics.Mark2;
         
     import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     import WeatherForecast =     OhsWeatherData.WeatherForecast;    
@@ -1070,7 +1073,7 @@ module KitchenInfoStation {
         protected m_iconDoorOpen: Icon = null;
         protected m_iconDoorClose: Icon = null;
         
-        public m_doorMark:          DoorMark = null;       // Mark of doors
+        public m_doorMark2:          DoorMark2 = null;       // Mark of doors
         
         constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
@@ -1085,9 +1088,9 @@ module KitchenInfoStation {
                 this.m_iconDoorOpen.paint();
             }
             
-            if(this.m_doorMark != null) {
-                this.m_doorMark.setSize(new Rect (5, 20, 80, 80));
-                this.m_doorMark.paint(0);
+            if(this.m_doorMark2 != null) {
+                this.m_doorMark2.size(5, 20, 80, 80);
+                this.m_doorMark2.paint(this.ctx);
             }               
                                     
         }
@@ -1107,8 +1110,8 @@ module KitchenInfoStation {
                     this.m_iconDoorOpen = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_open);
                     this.m_iconDoorClose = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_close);    
                     
-                    this.m_doorMark = new DoorMark(this.ctx, new Rect (0,0,0,0));
-                    this.m_doorMark.setData(door);                    
+                    this.m_doorMark2 = new DoorMark2(0, 0, 0, 0);
+                    this.m_doorMark2.setThing(thing);                    
                 }                
             }            
         } 
@@ -1130,6 +1133,10 @@ module KitchenInfoStation {
         protected m_arrayViewDoor:  Array<ViewDoor>; //View of doors
         protected m_iconBkgImage:   Icon = null;
         
+        protected panelBottom: RectRounded = null;
+        protected imgLock: ImageRect = null;
+        protected imgUnLock: ImageRect = null;
+        
         constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
             
@@ -1138,7 +1145,11 @@ module KitchenInfoStation {
             
             this.m_arrayViewDoor = new Array<ViewDoor>();
             
-            this.m_iconBkgImage = new Icon(this.ctx, new Rect(0,0,0,0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');
+            this.m_iconBkgImage = new Icon(this.ctx, new Rect(0,0,0,0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');            
+            this.panelBottom = new RectRounded(20, this.height - 100, this.width - 50, 80, 40);
+            
+            this.imgLock = new ImageRect ((this.width / 2) - 10 - 80, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
+            this.imgUnLock = new ImageRect ((this.width / 2) + 10, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
         }
         
         protected setup() {
@@ -1149,7 +1160,7 @@ module KitchenInfoStation {
                 }
                 
                 //Align data...
-                this.m_arrayViewDoor[i].setData(this.m_siteData.doors[i]);                
+                this.m_arrayViewDoor[i].setThing(this.m_siteData.doors[i]);                
             }
             
             //Cut over-remaining View parts
@@ -1178,6 +1189,22 @@ module KitchenInfoStation {
             for (let id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint();                
             }
+            
+            //Paint bottom panel
+            ctx.save();            
+            this.panelBottom.paint(this.ctx);
+            ctx.fillStyle = "white";
+            ctx.lineWidth=2;
+            ctx.strokeStyle="gray";            
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+            
+            //Paint buttons on panel
+            ctx.save();
+            this.imgLock.paint(this.ctx);
+            this.imgUnLock.paint(this.ctx);
+            ctx.restore();
         }     
                         
         MouseClickHandler(event) { 
@@ -1202,6 +1229,18 @@ module KitchenInfoStation {
                 returnVal.nextScreen = SwitchScreen.DoorScreen;
                 returnVal.nextThingPath = viewDoorClicked.thing.getPath();
             }
+            
+            if (this.panelBottom.isClicked(mousePos.x, mousePos.y) == true) {
+                returnVal = null;
+            }
+            
+            if(this.imgLock.isClicked(mousePos.x, mousePos.y)){
+                window.alert("All doors locked!");
+            }
+            
+            if(this.imgUnLock.isClicked(mousePos.x, mousePos.y)){
+                window.alert("All doors UN-locked!");
+            }            
             
             return returnVal;
         }       
@@ -1235,12 +1274,11 @@ module KitchenInfoStation {
     
     class ViewDoor extends Mark {
                 
-        public m_doorMark:          DoorMark = null;       // Mark of doors
+        public m_doorMark2:          DoorMark2 = null;       // Mark of doors
         public textDoorName:        Text;                  //Name of doors
         public m_graphics:          Graphics = null;
         
-        public m_iconDoorOpen:      Icon = null;
-        public m_iconDoorClose:     Icon = null;
+        public m_imgDoorOpen:  ImageRect = null;
         
         private border: boolean = false;
                 
@@ -1251,31 +1289,40 @@ module KitchenInfoStation {
             this.textDoorName = new Text(this.ctx, new Rect (0, 0, 0, 0));
         }
         
-        public setData(m_door: Door){
+        public setThing(m_door: Door){
             var m_doorOld: Door = <Door> this.thing;
             
             if (m_doorOld != m_door) {
                 this.thing = <Thing> m_door;
  
                 //Reload pictures etc...?
-                var door: Door = <Door> this.thing;
-                this.m_iconDoorOpen = new Icon (this.ctx, this.rect, door.image_open);
-                this.m_iconDoorClose = new Icon (this.ctx, this.rect, door.image_close);
-             //   this.test = new Icon (this.ctx, this.rect, "/infores/servlets/kitchen/door_open.png");        
+                var door: Door = <Door> this.thing;                
+               // this.m_iconDoorOpen = new Icon (this.ctx, this.rect, door.image_open);
+               // this.m_iconDoorClose = new Icon (this.ctx, this.rect, door.image_close);
+             //   this.test = new Icon (this.ctx, this.rect, "/infores/servlets/kitchen/door_open.png");
+                this.m_imgDoorOpen = new ImageRect (this.rect.x, this.rect.y, this.rect.w, this.rect.h, 10, door.image_close);        
                 
-                this.m_doorMark = new DoorMark(this.ctx, new Rect (0,0,0,0));
-                this.m_doorMark.setData(door);
+                this.m_doorMark2 = new DoorMark2(0, 0, 0, 0);
+                this.m_doorMark2.setThing(this.thing);
             }        
         }        
         
         public setSize (rect: Rect) {
             super.setSize(rect);    
-            this.m_iconDoorOpen.setSize(rect);
-            this.m_iconDoorClose.setSize(rect);
+           // this.m_iconDoorOpen.setSize(rect);
+            //this.m_iconDoorClose.setSize(rect);
+            if (this.m_imgDoorOpen != null) {
+                this.m_imgDoorOpen.size(rect.x, rect.y, rect.w, rect.h);
+            }
+            
+            if (this.m_doorMark2 != null) {
+                this.m_doorMark2.size(rect.x + 30, rect.y + 20, 80, 80);
+            }   
+                     
         }
         
         public paint () {            
-            
+            /*
             if (this.m_iconDoorOpen != null) {
                 this.m_iconDoorOpen.paint();
             }
@@ -1283,10 +1330,14 @@ module KitchenInfoStation {
             if (this.m_iconDoorClose != null) {
                 this.m_iconDoorClose.paint();
             }    
-
-            if(this.m_doorMark != null) {
-                this.m_doorMark.setSize(new Rect (this.rect.x + 5, this.rect.y + 20, 80, 80));
-                this.m_doorMark.paint(0);
+*/
+            if (this.m_imgDoorOpen != null) {                
+                this.m_imgDoorOpen.paint(this.ctx);
+            }
+            
+            if(this.m_doorMark2 != null) {
+                //this.m_doorMark2.size(this.rect.x + 30, this.rect.y + 20, 80, 80);
+                this.m_doorMark2.paint(this.ctx);
             }              
             
             this.textDoorName.setSize(new Rect (this.rect.x + 5, this.rect.y + 5, 80, 80));
