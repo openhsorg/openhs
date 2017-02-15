@@ -72,6 +72,28 @@ module OhsSiteData {
                 arg.length = num;             
             }   
         }
+        
+        public getFilteredThings<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){
+                     
+                     var thing: Thing = (<Thing><any>element);
+                     
+                     //if (mark.thing == null) {
+                       //  return true;
+                         
+                     //} else {
+                         
+                         return thing.getPath().indexOf(filterPath) >= 0;                         
+                     //}
+                 });                               
+             }
+        }          
   
         public getParentPath (thing: Thing) {                        
             if (thing == null) {

@@ -18,9 +18,9 @@ import Thing = OhsSiteData.Thing;
         
         private m_siteData: SiteData = null;
         
-        public m_tempMarks: Array<TempMark> = null;
+      //  public m_tempMarks: Array<TempMark> = null;
         public m_switchMarks: Array<SwitchMark> = null;
-        public m_doorMarks: Array<DoorMark> = null;
+      //  public m_doorMarks: Array<DoorMark> = null;
         public m_doorPictures: Array<Iconset> = null;    
         
         public m_iconsetRoomBkg: Iconset = null; //room images...
@@ -35,9 +35,9 @@ import Thing = OhsSiteData.Thing;
             this.m_siteData = m_siteData;
             
             //---Graphics---            
-            this.m_tempMarks = new Array<TempMark>();
+          //  this.m_tempMarks = new Array<TempMark>();
             this.m_switchMarks = new Array<SwitchMark>();
-            this.m_doorMarks = new Array<DoorMark>();   
+          //  this.m_doorMarks = new Array<DoorMark>();   
             this.m_doorPictures = new Array<Iconset>();
             
             this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
@@ -53,6 +53,17 @@ import Thing = OhsSiteData.Thing;
             if (num > arg.length) {            
                 for (var i = arg.length; i < num; i++) {                    
                     var ss = new types(ctx, rect);
+                    arg.push(ss);
+                }
+            } else if (num < arg.length) {            
+                arg.length = num;             
+            }   
+        }  
+        
+        public setNumber2<T>(num:  number, arg: Array<T>, types: { new(x: number, y: number, w: number, h: number): T ;}, x: number, y: number, w: number, h: number) {
+            if (num > arg.length) {            
+                for (var i = arg.length; i < num; i++) {                    
+                    var ss = new types(x, y, w, h);
                     arg.push(ss);
                 }
             } else if (num < arg.length) {            
@@ -81,7 +92,7 @@ import Thing = OhsSiteData.Thing;
                 this.m_doorPictures[id].setImages(new Array<String>(this.m_siteData.doors[id].image_open, this.m_siteData.doors[id].image_close))
                 //this.m_doorPictures[id].                                
             }              
-            
+            /*
             // Temperature
             this.setNumber(this.m_siteData.tempSensors.length, this.m_tempMarks, TempMark, this.ctx, new Rect (0, 0, 0, 0));
   
@@ -89,14 +100,14 @@ import Thing = OhsSiteData.Thing;
                 this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
                 this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
             }
-            
+            */
             // Switches
             this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect (0, 0, 80, 80));
 
             for (let id in this.m_siteData.switches) {
                 this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
             }          
-                    
+                    /*
             // Doors symbols
             this.setNumber(this.m_siteData.doors.length, this.m_doorMarks, DoorMark, this.ctx, new Rect (0, 0, 0, 0));
  
@@ -105,7 +116,7 @@ import Thing = OhsSiteData.Thing;
                // this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);    
                 this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];                    
             }       
-            
+            */
                
         }        
         
@@ -124,7 +135,7 @@ import Thing = OhsSiteData.Thing;
                     return <Thing> switches[id].getData();
                 }
             }  
-            
+            /*
             var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
             
             for (let id in temps) {                
@@ -132,14 +143,16 @@ import Thing = OhsSiteData.Thing;
                     return <Thing> temps[id].getData();
                 }
             }
-            
+            */
+            /*
             var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
             
             for (let id in doors) {                
                 if(doors[id].isClicked(x, y)) {
                     return <Thing> doors[id].getData();
                 }
-            }              
+            }      
+            */        
         }     
         
         public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
@@ -258,6 +271,65 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
+    export class TextSimple extends Rect {
+        
+        public fontSize:      number = 20; 
+        public fontColor:     string = "#000000";
+        public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+        public textAlign:   string = "center";
+        public textBaseline:   string = "middle";    
+                        
+        protected text: string = '';
+        
+        protected border: boolean = false;
+        
+        constructor(x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+        }
+                
+        public painitText (ctx: CanvasRenderingContext2D, text: string){
+            
+            this.text = text;
+            
+            this.paint(ctx);
+            
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {            
+            
+            var x: number = this.x;
+            var y: number = this.y;
+            var align: String = this.textAlign.toString();
+            var baseline: String = this.textBaseline.toString();
+                        
+            if(align == "right" || align == "end") {
+                x = this.x + this.w;
+            } else if (align == "center"){
+                x = this.x + (this.w / 2);
+            }
+            
+            if(baseline == "bottom" || baseline == "alphabetic") {
+                y = this.y + this.h;
+            } else if (baseline == "middle"){
+                y = this.y + (this.h / 2);
+            }            
+            
+            ctx.save();
+            ctx.font = this.fontSize + this.fontFamily;
+            ctx.textAlign = this.textAlign;
+            ctx.textBaseline = this.textBaseline;
+            ctx.fillStyle = this.fontColor;                                  
+            ctx.fillText(this.text, x, y);
+            ctx.restore();   
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }              
+            
+        }
+    }
          
     /**
      * Graphical symbol...
@@ -633,8 +705,101 @@ import Thing = OhsSiteData.Thing;
         public setSize (rect:   Rect){
             super.setSize(rect);
         }              
-    }    
+    }   
     
+    export class TempMark2 extends Mark2 {
+        
+        protected imgThermometer:   ImageRect = null;
+        protected imgFrost:         ImageRect = null;
+        protected textTemp:         TextSimple = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgThermometer = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/tempSymbol.png');
+            this.imgFrost = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/tempSymbol.png');      
+            this.textTemp = new TextSimple(x, y, w, h);                  
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var dx: number = 8;
+            var dy: number = 8;
+            
+            this.imgThermometer.size(x - dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgFrost.size(x + dx - 3, y + dy, w - (2 * dx), h - (2 * dy));     
+            this.textTemp.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
+        
+        }
+        
+        public getTemperatureSensorThing() {
+            var tempSensor: TemperatureSensor = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof TemperatureSensor){
+                    tempSensor = <TemperatureSensor> this.thing;        
+                }            
+            }            
+            return tempSensor;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var tempSensor = this.getTemperatureSensorThing();
+                        
+            if (tempSensor != null) {                                    
+                this.size(tempSensor.x, tempSensor.y, 80, 80);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var tempSensor: TemperatureSensor = this.getTemperatureSensorThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (tempSensor != null){
+                colorInside = '#33cc33';
+                colorBorder = '#196619';             
+            }
+                                                
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+            
+            //Draw image...
+            this.imgThermometer.paint(ctx);
+                    
+            //Draw temperature text
+            if (tempSensor == null) {
+                this.textTemp.painitText(ctx, "---");
+                
+            } else {
+                this.textTemp.painitText(ctx, tempSensor.temp + ' \u00B0C');
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
+    /*
     export class TempMark extends Mark {
 
         public txt:  Text;
@@ -711,7 +876,7 @@ import Thing = OhsSiteData.Thing;
              }                          
          }            
     }          
-    
+    */
     export class SwitchMark extends Mark {
 
      //   public switch: Switch = null;        
@@ -810,8 +975,8 @@ import Thing = OhsSiteData.Thing;
          }          
     }  
     
-    //export class DoorMark2 extends Rectangle 
-   
+     
+   /*
     export class DoorMark extends Mark {
     
         private imgOpen:HTMLImageElement = null;
@@ -937,4 +1102,5 @@ import Thing = OhsSiteData.Thing;
              }                          
          }          
     }       
+    */
 }

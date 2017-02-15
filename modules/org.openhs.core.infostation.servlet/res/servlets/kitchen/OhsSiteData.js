@@ -61,6 +61,21 @@ var OhsSiteData;
                 arg.length = num;
             }
         };
+        SiteData.prototype.getFilteredThings = function (arg, filterPath) {
+            if (filterPath == null) {
+                return arg;
+            }
+            else {
+                return arg.filter(function (element) {
+                    var thing = element;
+                    //if (mark.thing == null) {
+                    //  return true;
+                    //} else {
+                    return thing.getPath().indexOf(filterPath) >= 0;
+                    //}
+                });
+            }
+        };
         SiteData.prototype.getParentPath = function (thing) {
             if (thing == null) {
                 return null;

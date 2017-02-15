@@ -14,9 +14,10 @@ module KitchenInfoStation {
     import RectRounded =       OhsCanvasGraphics.RectRounded;
     import ImageRect =       OhsCanvasGraphics.ImageRect;
     import Text =       OhsCanvasGraphics.Text;
-    import TempMark =   OhsCanvasGraphics.TempMark;
+    //import TempMark =   OhsCanvasGraphics.TempMark;
+    import TempMark2 =   OhsCanvasGraphics.TempMark2;
     import SwitchMark = OhsCanvasGraphics.SwitchMark;
-    import DoorMark =   OhsCanvasGraphics.DoorMark;
+    //import DoorMark =   OhsCanvasGraphics.DoorMark;
     import DoorMark2 =   OhsCanvasGraphics.DoorMark2;
     import Icon =       OhsCanvasGraphics.Icon;
     import Iconset =    OhsCanvasGraphics.Iconset;
@@ -152,6 +153,8 @@ module KitchenInfoStation {
             
             var refresh = this.refreshRateMain;
             var screen = null;
+            
+            //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
                     
             if (retVal.nextScreen == SwitchScreen.Floor) {               
                 refresh = 50;
@@ -176,7 +179,9 @@ module KitchenInfoStation {
                            
             } else if (retVal.nextScreen == SwitchScreen.DoorScreen) {
                 screen = this.m_screenDoor;  
-                this.m_screenDoor.setThing(this.m_siteData.getThing(retVal.nextThingPath));              
+                this.m_screenDoor.setThing(this.m_siteData.getThing(retVal.nextThingPath));
+                
+                
             }
             
             // Switch screen
@@ -834,6 +839,10 @@ module KitchenInfoStation {
         private txtNumRooms:  Text;
         private timerData;
         
+        //**********
+        public m_doorMarks:          Array<DoorMark2> = null;       // Doors marks
+        public m_tempMarks:          Array<TempMark2> = null;       // Doors marks
+        
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {                
             super (canvas);
             
@@ -846,8 +855,54 @@ module KitchenInfoStation {
             this.txtNumRooms = new Text (this.ctx, new Rect (0, 0, 250, 100));
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
-            this.txtNumRooms.fontSize = 40;                
+            this.txtNumRooms.fontSize = 40;       
+            
+            this.m_doorMarks = new Array<DoorMark2>();
+            this.m_tempMarks = new Array<TempMark2>();
         }  
+        
+        public setThing(thing: Thing){
+            
+            var oldThing: Thing = super.getThing(); 
+            
+            super.setThing(thing);
+            
+            //update other data
+            if (thing != oldThing) {
+                
+                if (thing instanceof Floor) {
+                    
+                    //Doors
+                    var doors: Array<Door> = this.siteData.getFilteredThings(this.siteData.doors, thing.getPath());
+                    
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    
+                    for (let id in this.m_doorMarks) {
+                        this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
+                    }
+                    
+                    //Marks
+                    var temps: Array<TemperatureSensor> = this.siteData.getFilteredThings(this.siteData.tempSensors, thing.getPath());
+                    
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    
+                    for (let id in this.m_tempMarks) {
+                        this.m_tempMarks[id].setThing(<Thing>temps[id]);                        
+                    }                    
+                    
+                    
+                    /*
+                    var door: Door = <Door> this.getThing();
+                    this.m_iconDoorOpen = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_open);
+                    this.m_iconDoorClose = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_close);    
+                    
+                    this.m_doorMark2 = new DoorMark2(0, 0, 0, 0);
+                    this.m_doorMark2.setThing(thing);  
+                    */                  
+                }  
+                             
+            }            
+        }              
     
         MouseClickHandler(event) { 
         
@@ -883,21 +938,39 @@ module KitchenInfoStation {
                                 
                 //window.alert("Temp clicked...!");
                // window.alert("Temp sensor clicked...!  Path:" + tempSensor.getPath());
-                
+                /*
                 var pp = this.siteData.getParentPath(thing);                                                
                 //window.alert("Temp sensor Parent Path:" + pp);
                 
                 this.returnVal.nextScreen = SwitchScreen.Room; 
                 this.returnVal.nextThingPath = pp;
+                */
                 
              } else if (thing instanceof Door) {
                 
-                window.alert("Door clicked...!");
+               // window.alert("Door clicked...!");
                 
              } else {
                 this.returnVal.nextScreen = SwitchScreen.Main;
              }
-
+            
+            
+        
+           for (let id in this.m_doorMarks) {
+               if (this.m_doorMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                   this.returnVal.nextScreen = SwitchScreen.DoorScreen;
+                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getPath();
+                   }
+           }
+            
+           for (let id in this.m_tempMarks) {
+               if (this.m_tempMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                   this.returnVal.nextScreen = SwitchScreen.Room;
+                   
+                   this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
+              }
+           }            
+            
            return this.returnVal;
         }    
         
@@ -915,13 +988,14 @@ module KitchenInfoStation {
 
         
             // Temperature sensors...
+            /*
             var tempMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
             
             for (let id in tempMarks) {
                 tempMarks[id].paint();  
                // tempMarks.filter()          
             }
-            
+            */
             // Switches...
             var switchMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             
@@ -930,11 +1004,22 @@ module KitchenInfoStation {
             }        
             
             // Doors
+            /*
             var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
                 doorMarks[id].paintByThing(80, 80);            
             }                  
+            */
+            //New doors...            
+            for (let id in this.m_doorMarks) {
+                this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            
+            //Temperature sensors
+            for (let id in this.m_tempMarks) {
+                this.m_tempMarks[id].paintByThing(this.ctx);
+            }
             
              //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;
@@ -948,7 +1033,11 @@ module KitchenInfoStation {
     }
         
     class ScreenRoom extends Screen {
-                    
+                  
+        protected m_siteData: SiteData = null;  
+        public m_doorMarks:          Array<DoorMark2> = null;       // Doors marks
+        public m_tempMarks:          Array<TempMark2> = null;       // Temps marks
+        
         //Graphics
         private m_graphics: Graphics = null;    
         
@@ -960,7 +1049,11 @@ module KitchenInfoStation {
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
             
-            this.m_graphics = m_graphics;         
+            this.m_graphics = m_graphics;  
+            this.m_siteData = siteData;  
+            
+            this.m_doorMarks = new Array<DoorMark2>();
+            this.m_tempMarks = new Array<TempMark2>();
             
             this.imgRoom = new Image();
             this.imgRoom.src="/infores/servlets/kitchen/room_default.png";  
@@ -1009,7 +1102,40 @@ module KitchenInfoStation {
              }
 
             return this.returnVal;
-        }            
+        }       
+        
+        public setThing(thing: Thing){
+            
+            var oldThing: Thing = super.getThing(); 
+            
+            super.setThing(thing);
+            
+            //update other data
+            if (thing != oldThing) {
+                
+                if (thing instanceof Room) {
+                    
+                    //Doors
+                    var doors: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.doors, thing.getPath());
+                    
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    
+                    for (let id in this.m_doorMarks) {
+                        this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
+                    }
+                    
+                    //Temp marks
+                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.tempSensors, thing.getPath());
+                    
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    
+                    for (let id in this.m_tempMarks) {
+                        this.m_tempMarks[id].setThing(<Thing>temps[id]);                        
+                    }                    
+                    
+                }                               
+            }            
+        }         
         
         public paint() {
             const ctx = this.ctx;
@@ -1041,14 +1167,15 @@ module KitchenInfoStation {
                         
             // Temperature sensors...
             //var tempMarks: Array<TempMark> = this.m_graphics.getTempMarks(this.getThingPath());
+            /*
             var tempMarks: Array<TempMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
             
             for (let id in tempMarks) {
                 tempMarks[id].paint();            
             }   
+            */
                    //    window.alert('Paint path filter2:' + this.getThingPath());
-            // Switches sensors...
-            //var switchMarks: Array<SwitchMark> = this.m_graphics.getSwitchMarks(this.getThingPath());
+            // Switches sensors...            
             var switchMarks: Array<SwitchMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             
             for (let id in switchMarks) {
@@ -1057,11 +1184,23 @@ module KitchenInfoStation {
             
             // Doors
             //var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
+            /*
             var doorMarks: Array<DoorMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
             
             for (let id in doorMarks) {
                 doorMarks[id].paintByThing(80,80);            
-            }               
+            }   
+            */
+            
+            //New door marks....
+            for (let id in this.m_doorMarks) {
+                this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            
+            //New temp marks....
+            for (let id in this.m_tempMarks) {
+                this.m_tempMarks[id].paintByThing(this.ctx);
+            }            
         }             
     } 
     
@@ -1148,8 +1287,8 @@ module KitchenInfoStation {
             this.m_iconBkgImage = new Icon(this.ctx, new Rect(0,0,0,0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');            
             this.panelBottom = new RectRounded(20, this.height - 100, this.width - 50, 80, 40);
             
-            this.imgLock = new ImageRect ((this.width / 2) - 10 - 80, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
-            this.imgUnLock = new ImageRect ((this.width / 2) + 10, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
+            this.imgLock = new ImageRect ((this.width / 2) - 30, this.height - 120, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
+            this.imgUnLock = new ImageRect ((this.width / 2) + 15, this.height - 75, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
         }
         
         protected setup() {
@@ -1191,6 +1330,7 @@ module KitchenInfoStation {
             }
             
             //Paint bottom panel
+            /*
             ctx.save();            
             this.panelBottom.paint(this.ctx);
             ctx.fillStyle = "white";
@@ -1199,7 +1339,7 @@ module KitchenInfoStation {
             ctx.fill();
             ctx.stroke();
             ctx.restore();
-            
+            */
             //Paint buttons on panel
             ctx.save();
             this.imgLock.paint(this.ctx);

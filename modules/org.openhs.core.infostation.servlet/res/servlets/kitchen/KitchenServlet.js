@@ -17,6 +17,9 @@ var KitchenInfoStation;
     var RectRounded = OhsCanvasGraphics.RectRounded;
     var ImageRect = OhsCanvasGraphics.ImageRect;
     var Text = OhsCanvasGraphics.Text;
+    //import TempMark =   OhsCanvasGraphics.TempMark;
+    var TempMark2 = OhsCanvasGraphics.TempMark2;
+    //import DoorMark =   OhsCanvasGraphics.DoorMark;
     var DoorMark2 = OhsCanvasGraphics.DoorMark2;
     var Icon = OhsCanvasGraphics.Icon;
     var Iconset = OhsCanvasGraphics.Iconset;
@@ -24,6 +27,7 @@ var KitchenInfoStation;
     var Mark = OhsCanvasGraphics.Mark;
     var WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     var SiteData = OhsSiteData.SiteData;
+    var Floor = OhsSiteData.Floor;
     var Room = OhsSiteData.Room;
     var TemperatureSensor = OhsSiteData.TemperatureSensor;
     var Door = OhsSiteData.Door;
@@ -116,6 +120,7 @@ var KitchenInfoStation;
             var retVal = this.currPage.MouseClickHandler(event);
             var refresh = this.refreshRateMain;
             var screen = null;
+            //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
             if (retVal.nextScreen == SwitchScreen.Floor) {
                 refresh = 50;
                 screen = this.m_floor;
@@ -632,6 +637,9 @@ var KitchenInfoStation;
             this.imgFloor = null;
             this.imgFloorLoaded = false;
             this.numRooms = 0;
+            //**********
+            this.m_doorMarks = null; // Doors marks
+            this.m_tempMarks = null; // Doors marks
             this.siteData = siteData;
             this.m_graphics = m_graphics;
             this.imgFloor = new Image();
@@ -640,7 +648,30 @@ var KitchenInfoStation;
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
+            this.m_doorMarks = new Array();
+            this.m_tempMarks = new Array();
         }
+        ScreenFloor.prototype.setThing = function (thing) {
+            var oldThing = _super.prototype.getThing.call(this);
+            _super.prototype.setThing.call(this, thing);
+            //update other data
+            if (thing != oldThing) {
+                if (thing instanceof Floor) {
+                    //Doors
+                    var doors = this.siteData.getFilteredThings(this.siteData.doors, thing.getPath());
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    for (var id in this.m_doorMarks) {
+                        this.m_doorMarks[id].setThing(doors[id]);
+                    }
+                    //Marks
+                    var temps = this.siteData.getFilteredThings(this.siteData.tempSensors, thing.getPath());
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    for (var id in this.m_tempMarks) {
+                        this.m_tempMarks[id].setThing(temps[id]);
+                    }
+                }
+            }
+        };
         ScreenFloor.prototype.MouseClickHandler = function (event) {
             var returnVal = {
                 nextScreen: SwitchScreen.Main,
@@ -661,21 +692,23 @@ var KitchenInfoStation;
                 this.returnVal.nextScreen = null;
             }
             else if (thing instanceof TemperatureSensor) {
-                //   var tempSensor: TemperatureSensor = <TemperatureSensor> thing;
-                //return SwitchScreen.Room;
-                //  this.returnVal.nextScreen = SwitchScreen.Room;                               
-                //window.alert("Temp clicked...!");
-                // window.alert("Temp sensor clicked...!  Path:" + tempSensor.getPath());
-                var pp = this.siteData.getParentPath(thing);
-                //window.alert("Temp sensor Parent Path:" + pp);
-                this.returnVal.nextScreen = SwitchScreen.Room;
-                this.returnVal.nextThingPath = pp;
             }
             else if (thing instanceof Door) {
-                window.alert("Door clicked...!");
             }
             else {
                 this.returnVal.nextScreen = SwitchScreen.Main;
+            }
+            for (var id in this.m_doorMarks) {
+                if (this.m_doorMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                    this.returnVal.nextScreen = SwitchScreen.DoorScreen;
+                    this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getPath();
+                }
+            }
+            for (var id in this.m_tempMarks) {
+                if (this.m_tempMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                    this.returnVal.nextScreen = SwitchScreen.Room;
+                    this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
+                }
             }
             return this.returnVal;
         };
@@ -689,19 +722,34 @@ var KitchenInfoStation;
             //   }      
             //            var pth: string = this.getThingPath();
             // Temperature sensors...
+            /*
             var tempMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
-            for (var id in tempMarks) {
+            
+            for (let id in tempMarks) {
                 tempMarks[id].paint();
+               // tempMarks.filter()
             }
+            */
             // Switches...
             var switchMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             for (var id in switchMarks) {
                 switchMarks[id].paint();
             }
             // Doors
+            /*
             var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
-            for (var id in doorMarks) {
+            
+            for (let id in doorMarks) {
                 doorMarks[id].paintByThing(80, 80);
+            }
+            */
+            //New doors...            
+            for (var id in this.m_doorMarks) {
+                this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            //Temperature sensors
+            for (var id in this.m_tempMarks) {
+                this.m_tempMarks[id].paintByThing(this.ctx);
             }
             //Number rooms
             this.txtNumRooms.rect.x = this.width - 10;
@@ -719,11 +767,17 @@ var KitchenInfoStation;
         //private imgBkg: Iconset = null; 
         function ScreenRoom(canvas, siteData, m_graphics) {
             _super.call(this, canvas);
+            this.m_siteData = null;
+            this.m_doorMarks = null; // Doors marks
+            this.m_tempMarks = null; // Temps marks
             //Graphics
             this.m_graphics = null;
             this.imgRoom = null;
             this.imgRoomLoaded = false;
             this.m_graphics = m_graphics;
+            this.m_siteData = siteData;
+            this.m_doorMarks = new Array();
+            this.m_tempMarks = new Array();
             this.imgRoom = new Image();
             this.imgRoom.src = "/infores/servlets/kitchen/room_default.png";
             this.imgRoom.onload = function () {
@@ -757,6 +811,27 @@ var KitchenInfoStation;
             }
             return this.returnVal;
         };
+        ScreenRoom.prototype.setThing = function (thing) {
+            var oldThing = _super.prototype.getThing.call(this);
+            _super.prototype.setThing.call(this, thing);
+            //update other data
+            if (thing != oldThing) {
+                if (thing instanceof Room) {
+                    //Doors
+                    var doors = this.m_siteData.getFilteredThings(this.m_siteData.doors, thing.getPath());
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    for (var id in this.m_doorMarks) {
+                        this.m_doorMarks[id].setThing(doors[id]);
+                    }
+                    //Temp marks
+                    var temps = this.m_siteData.getFilteredThings(this.m_siteData.tempSensors, thing.getPath());
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    for (var id in this.m_tempMarks) {
+                        this.m_tempMarks[id].setThing(temps[id]);
+                    }
+                }
+            }
+        };
         ScreenRoom.prototype.paint = function () {
             var ctx = this.ctx;
             var pathImage = null;
@@ -780,22 +855,35 @@ var KitchenInfoStation;
             // window.alert('Paint path filter:' + this.getThingPath());
             // Temperature sensors...
             //var tempMarks: Array<TempMark> = this.m_graphics.getTempMarks(this.getThingPath());
-            var tempMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
-            for (var id in tempMarks) {
+            /*
+            var tempMarks: Array<TempMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
+            
+            for (let id in tempMarks) {
                 tempMarks[id].paint();
             }
+            */
             //    window.alert('Paint path filter2:' + this.getThingPath());
-            // Switches sensors...
-            //var switchMarks: Array<SwitchMark> = this.m_graphics.getSwitchMarks(this.getThingPath());
+            // Switches sensors...            
             var switchMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
             for (var id in switchMarks) {
                 switchMarks[id].paint();
             }
             // Doors
             //var doorMarks = this.m_graphics.getDoorMarks(this.getThingPath());
-            var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
-            for (var id in doorMarks) {
-                doorMarks[id].paintByThing(80, 80);
+            /*
+            var doorMarks: Array<DoorMark> = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
+            
+            for (let id in doorMarks) {
+                doorMarks[id].paintByThing(80,80);
+            }
+            */
+            //New door marks....
+            for (var id in this.m_doorMarks) {
+                this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            //New temp marks....
+            for (var id in this.m_tempMarks) {
+                this.m_tempMarks[id].paintByThing(this.ctx);
             }
         };
         return ScreenRoom;
@@ -858,8 +946,8 @@ var KitchenInfoStation;
             this.m_arrayViewDoor = new Array();
             this.m_iconBkgImage = new Icon(this.ctx, new Rect(0, 0, 0, 0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');
             this.panelBottom = new RectRounded(20, this.height - 100, this.width - 50, 80, 40);
-            this.imgLock = new ImageRect((this.width / 2) - 10 - 80, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
-            this.imgUnLock = new ImageRect((this.width / 2) + 10, this.height - 100, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
+            this.imgLock = new ImageRect((this.width / 2) - 30, this.height - 120, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
+            this.imgUnLock = new ImageRect((this.width / 2) + 15, this.height - 75, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
         }
         ScreenDoorList.prototype.setup = function () {
             //Setup view array ...
@@ -890,14 +978,16 @@ var KitchenInfoStation;
                 this.m_arrayViewDoor[id].paint();
             }
             //Paint bottom panel
+            /*
             ctx.save();
             this.panelBottom.paint(this.ctx);
             ctx.fillStyle = "white";
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "gray";
+            ctx.lineWidth=2;
+            ctx.strokeStyle="gray";
             ctx.fill();
             ctx.stroke();
             ctx.restore();
+            */
             //Paint buttons on panel
             ctx.save();
             this.imgLock.paint(this.ctx);
