@@ -135,7 +135,6 @@ var OhsCanvasGraphics;
             this.imgSrc = '---';
             this.loaded = false;
             this.img = new Image();
-            //   this.img.src = imgSrc;        
             this.img.onload = function (event) {
                 _this.onImageLoad(event);
             };
@@ -346,35 +345,6 @@ var OhsCanvasGraphics;
         return DoorMark;
     }(Mark2));
     OhsCanvasGraphics.DoorMark = DoorMark;
-    var Icon = (function (_super) {
-        __extends(Icon, _super);
-        function Icon(ctx, rect, src) {
-            _super.call(this, ctx, rect);
-            this.img = null;
-            this.border = false; //debug border
-            this.img = new Image();
-            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
-        }
-        Icon.prototype.paint = function () {
-            //Draw image...
-            //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            this.ctx.restore();
-            // }            
-            if (this.border) {
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = "blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-            }
-        };
-        return Icon;
-    }(Mark));
-    OhsCanvasGraphics.Icon = Icon;
     var Iconset = (function (_super) {
         __extends(Iconset, _super);
         function Iconset(ctx, rect) {

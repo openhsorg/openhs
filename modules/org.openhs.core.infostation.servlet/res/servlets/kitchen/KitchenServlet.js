@@ -20,7 +20,7 @@ var KitchenInfoStation;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
     var DoorMark = OhsCanvasGraphics.DoorMark;
-    var Icon = OhsCanvasGraphics.Icon;
+    //import Icon =       OhsCanvasGraphics.Icon;
     var Iconset = OhsCanvasGraphics.Iconset;
     var Graphics = OhsCanvasGraphics.Graphics;
     var Mark = OhsCanvasGraphics.Mark;
@@ -230,13 +230,13 @@ var KitchenInfoStation;
             this.m_siteData = m_siteData;
             this.m_weatherData = m_weatherData;
             //---Graphics---
-            this.iconStopWatch = new Icon(this.ctx, new Rect((this.width / 2) + 180, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/stopwatch.png');
-            this.iconVoiceMessage = new Icon(this.ctx, new Rect((this.width / 2) - 220, (this.height / 2) + 20, 60, 60), '/infores/servlets/kitchen/voicemessage.png');
-            this.iconDoor = new Icon(this.ctx, new Rect((this.width / 2) + 150, (this.height / 2) + 120, 60, 60), '/infores/servlets/kitchen/door_icon.png');
+            this.iconStopWatch = new ImageRect((this.width / 2) + 180, (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/stopwatch.png');
+            this.iconVoiceMessage = new ImageRect((this.width / 2) - 220, (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/voicemessage.png');
+            this.iconDoor = new ImageRect((this.width / 2) + 150, (this.height / 2) + 120, 60, 60, 0, '/infores/servlets/kitchen/door_icon.png');
             this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 150, 150));
             this.iconWeather.setImages(imagePaths);
-            this.iconWind = new Icon(this.ctx, new Rect(140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
-            this.iconHum = new Icon(this.ctx, new Rect((this.width / 2) + 10, (this.height / 2) + 70, 60, 60), '/infores/servlets/kitchen/drop.png');
+            this.iconWind = new ImageRect(140, 70, 50, 50, 0, '/infores/servlets/kitchen/wind.png');
+            this.iconHum = new ImageRect((this.width / 2) + 10, (this.height / 2) + 70, 60, 60, 0, '/infores/servlets/kitchen/drop.png');
             this.tmpInText = new Text(this.ctx, new Rect((this.width / 2) - 120, (this.height / 2) - 10, 220, 60));
             this.tmpOutText = new Text(this.ctx, new Rect((this.width / 2), (this.height / 2) + 50, 150, 60));
             this.timeText = new Text(this.ctx, new Rect((this.width) - 150, 5, 150, 60));
@@ -297,13 +297,13 @@ var KitchenInfoStation;
             //Weather outside...
             this.iconWeather.paint(this.m_weatherData.getCurrent().weatherSymbol - 1);
             //Wind
-            this.iconWind.paint();
+            this.iconWind.paint(this.ctx);
             //Hum
-            this.iconHum.paint();
+            this.iconHum.paint(this.ctx);
             //Face icons
-            this.iconStopWatch.paint();
-            this.iconVoiceMessage.paint();
-            this.iconDoor.paint();
+            this.iconStopWatch.paint(this.ctx);
+            this.iconVoiceMessage.paint(this.ctx);
+            this.iconDoor.paint(this.ctx);
             //Wind outside
             this.windText.fontSize = fontSizeWind;
             this.windText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -568,7 +568,7 @@ var KitchenInfoStation;
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
-            this.iconWind = new Icon(this.ctx, new Rect(140, 70, 50, 50), '/infores/servlets/kitchen/wind.png');
+            this.iconWind = new ImageRect(140, 70, 50, 50, 0, '/infores/servlets/kitchen/wind.png');
             this.weatherData = weatherData;
             this.numForecast = numForecast;
             this.iconWeather = new Iconset(this.ctx, new Rect(0, 0, 10, 10));
@@ -614,8 +614,8 @@ var KitchenInfoStation;
                 this.txt.textAlign = "right";
                 this.txt.paint(weatherForecast.tempOut + " \u00B0C");
                 //wind image
-                this.iconWind.setSize(new Rect(this.x + (this.width * 0.1), this.width * 1.5, 40, 40));
-                this.iconWind.paint();
+                this.iconWind.size(this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
+                this.iconWind.paint(this.ctx);
                 //wind text
                 this.txtWind.rect.x = this.x + (this.width - 70);
                 this.txtWind.rect.y = this.width * 1.6 - 10;
@@ -945,7 +945,7 @@ var KitchenInfoStation;
             this.m_graphics = m_graphics;
             this.m_arrayViewDoor = new Array();
             this.setup();
-            this.m_iconBkgImage = new Icon(this.ctx, new Rect(0, 0, 0, 0), '/infores/servlets/kitchen/bkgDoorsList3.jpg');
+            this.m_iconBkgImage = new ImageRect(0, 0, 0, 0, 0, '/infores/servlets/kitchen/bkgDoorsList3.jpg');
             this.panelBottom = new RectRounded(20, this.height - 100, this.width - 50, 80, 40);
             this.imgLock = new ImageRect((this.width / 2) - 30, this.height - 120, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
             this.imgUnLock = new ImageRect((this.width / 2) + 15, this.height - 75, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
@@ -973,8 +973,8 @@ var KitchenInfoStation;
             ctx.fillStyle = whiteColor;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
-            this.m_iconBkgImage.setSize(new Rect(0, 0, this.width, this.height));
-            this.m_iconBkgImage.paint();
+            this.m_iconBkgImage.size(0, 0, this.width, this.height);
+            this.m_iconBkgImage.paint(this.ctx);
             for (var id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint();
             }

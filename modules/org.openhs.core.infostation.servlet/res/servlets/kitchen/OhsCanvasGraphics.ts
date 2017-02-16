@@ -155,11 +155,9 @@ import Thing = OhsSiteData.Thing;
         public loaded: boolean = false;
         
         constructor (x: number, y: number, w: number, h: number, radius: number, imgSrc: string) {
-            super(x, y, w, h, radius);
-            
+            super(x, y, w, h, radius);            
             
             this.img = new Image();                                
-         //   this.img.src = imgSrc;        
             
             this.img.onload = (event) => {
                   this.onImageLoad(event);
@@ -329,8 +327,7 @@ import Thing = OhsSiteData.Thing;
             
             this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
             this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);              
-        
+            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);                      
         }
         
         public getDoorThing() {
@@ -424,40 +421,7 @@ import Thing = OhsSiteData.Thing;
             }                        
         }
     }
-    
-    export class Icon extends Mark {
-        
-        private img:HTMLImageElement = null;
-        protected border:    boolean = false; //debug border
-        
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src: string) {
-            super(ctx, rect);
-            
-            this.img = new Image();                                
-            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
-        }    
-        
-        public paint () {   
-            
-            //Draw image...
-         //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            this.ctx.restore();        
-           // }            
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }                 
-    }
-    
+ 
     export class Iconset extends Mark {
         
         protected border:    boolean = false; //debug border        
@@ -838,231 +802,4 @@ import Thing = OhsSiteData.Thing;
              }           
         }
     } 
-    /*
-    export class SwitchMark extends Mark {
-
-     //   public switch: Switch = null;        
-        private txt:  Text;   
-        private img:HTMLImageElement = null;
-        private imgLoaded: boolean;// = false;    
-        private colorButton: string = "#666699";    
-        protected border:    boolean = false; //debug border        
-            
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
-            super(ctx, rect);
-
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            
-            this.img = new Image();                                
-            this.img.src = '/infores/servlets/kitchen/BulbSymbol.png';                    
-        }                              
-        
-        setSize (rect:  Rect) {        
-            super.setSize(rect);    
-            this.txt.setSize(rect);                 
-         }
-        
-        public setData (switchIn: Switch){
-            this.thing = <Switch> switchIn;
-        }
-        
-        public getData () {
-            return <Switch> this.thing;
-        }        
-                    
-        public paint () {      
-        
-            var switchVar: Switch = <Switch> this.thing;
-            // Update this
-            this.rect.x = switchVar.x;
-            this.rect.y = switchVar.y;        
-            
-            this.txt.setSize(this.rect);
-                
-            var text: string = "---";    
-
-            //logic of switch
-            if (switchVar.getState() == 0) {
-                this.colorButton = "#808080"; 
-                text = "---";
-            } else if (switchVar.getState() == 1) {
-                this.colorButton = "#3333ff";
-                text = "off";
-            } else if (switchVar.getState() == 2) {
-                this.colorButton = "#33cc33";
-                text = "->on";
-            } else if (switchVar.getState() == 3) {
-                this.colorButton = "#ffaa00";
-                text = "on";
-            } else if (switchVar.getState() == 4) {
-                this.colorButton = "#9999ff";
-                text = "->off";
-            } else {
-                this.colorButton = "#808080"; 
-                text = "---";
-            }        
-        
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = this.colorButton;
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();      
-                    
-            this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
-        
-        //Draw image...
-     //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
-            this.ctx.restore();        
-       // }                        
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }          
-    }  
-    */
-     
-   /*
-    export class DoorMark extends Mark {
-    
-        private imgOpen:HTMLImageElement = null;
-        private imgClose:HTMLImageElement = null;
-        private imgLock:HTMLImageElement = null;
-        
-        private colorButton: string = "white";
-        private colorBorder: string = "black";     
-
-        protected border:    boolean = true; //debug border
-    
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
-            super(ctx, rect);
-
-            this.imgOpen = new Image();                                
-            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";               
-            
-            this.imgClose = new Image();                                
-            this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 
-            
-            this.imgLock = new Image();                                
-            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";     
-            
-        }      
-        
-        public setSize (rect:  Rect) {        
-            super.setSize(rect);                
-         }
-        
-        public setData (door: Door){
-            this.thing = <Door> door;
-           
-        }
-        
-        public getData () {
-            return <Door> this.thing;
-        }          
-        
-        public paintByThing(w: number, h: number) {
-             if (this.thing != null) {
-                var doorVar: Door = <Door> this.thing;
-                // Update this
-                this.rect.x = doorVar.x;
-                this.rect.y = doorVar.y;
-                               
-                var state = 0;
-                 
-                //Set state by door....
-                if(doorVar.open) {
-                    state = 1;
-                } else {
-                    if (!doorVar.locked) state = 2;
-                    else state = 3;                
-                }        
-                 
-            }
-            
-            this.paint(state);        
-        }
-    
-        public paint (state: number) {                    
-            
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 3, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = this.colorButton;
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = this.colorBorder;
-            this.ctx.stroke();
-            this.ctx.restore();              
-            
-            //logic of switch
-            if (state == 0) {
-                this.colorButton = "#808080";  
-                this.colorBorder = "#00cc69";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
-                
-            } else if (state == 1) {
-                this.colorButton = "#ccffe6";
-                this.colorBorder = "#00cc69";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgOpen, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
-                
-            } else if (state == 2) {
-                this.colorButton = "#ccffe6";
-                this.colorBorder = "#00cc69";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
-                
-            } else if (state == 3) {
-                this.colorButton = "#ff8080";
-                this.colorBorder = "red";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                  
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgLock, this.rect.x + 20 + 10, this.rect.y + 30, 20, 20);
-                this.ctx.restore();                  
-                
-            } else {
-                this.colorButton = "#808080"; 
-                
-            }        
-                                        
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }          
-    }       
-    */
 }
