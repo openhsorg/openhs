@@ -13,13 +13,10 @@ module KitchenInfoStation {
     import Rect =       OhsCanvasGraphics.Rect;
     import RectRounded =       OhsCanvasGraphics.RectRounded;
     import ImageRect =       OhsCanvasGraphics.ImageRect;
-    import Text =       OhsCanvasGraphics.Text;
-    //import TempMark =   OhsCanvasGraphics.TempMark;
-    import TempMark2 =   OhsCanvasGraphics.TempMark2;
-    //import SwitchMark = OhsCanvasGraphics.SwitchMark;
-    import SwitchMark2 = OhsCanvasGraphics.SwitchMark2;
-    //import DoorMark =   OhsCanvasGraphics.DoorMark;
-    import DoorMark2 =   OhsCanvasGraphics.DoorMark2;
+    import Text =       OhsCanvasGraphics.Text;    
+    import TempMark =   OhsCanvasGraphics.TempMark;    
+    import SwitchMark = OhsCanvasGraphics.SwitchMark;    
+    import DoorMark =   OhsCanvasGraphics.DoorMark;
     import Icon =       OhsCanvasGraphics.Icon;
     import Iconset =    OhsCanvasGraphics.Iconset;
     import Graphics =   OhsCanvasGraphics.Graphics;
@@ -122,7 +119,7 @@ module KitchenInfoStation {
             this.m_weatherData = new WeatherDataForecast ();
             
             //---Graphics---
-            this.m_graphics = new Graphics(this.canvas, this.m_siteData);                  
+            this.m_graphics = new Graphics(this.canvas);                  
             
             //---Screens---
             this.m_screenMain = new ScreenMain(this.canvas, this.m_siteData, this.m_weatherData);
@@ -841,9 +838,9 @@ module KitchenInfoStation {
         private timerData;
         
         //**********
-        public m_doorMarks:          Array<DoorMark2> = null;       // Doors marks
-        public m_tempMarks:          Array<TempMark2> = null;       // Temp marks
-        public m_switchMarks:          Array<SwitchMark2> = null;       // Switch marks
+        public m_doorMarks:          Array<DoorMark> = null;       // Doors marks
+        public m_tempMarks:          Array<TempMark> = null;       // Temp marks
+        public m_switchMarks:          Array<SwitchMark> = null;       // Switch marks
         
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {                
             super (canvas);
@@ -859,9 +856,9 @@ module KitchenInfoStation {
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;       
             
-            this.m_doorMarks = new Array<DoorMark2>();
-            this.m_tempMarks = new Array<TempMark2>();
-            this.m_switchMarks = new Array<SwitchMark2>();
+            this.m_doorMarks = new Array<DoorMark>();
+            this.m_tempMarks = new Array<TempMark>();
+            this.m_switchMarks = new Array<SwitchMark>();
         }  
         
         public setThing(thing: Thing){
@@ -878,7 +875,7 @@ module KitchenInfoStation {
                     //Doors
                     var doors: Array<Door> = this.siteData.getFilteredThings(this.siteData.doors, thing.getPath());
                     
-                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_doorMarks) {
                         this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
@@ -887,7 +884,7 @@ module KitchenInfoStation {
                     //Marks
                     var temps: Array<TemperatureSensor> = this.siteData.getFilteredThings(this.siteData.tempSensors, thing.getPath());
                     
-                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_tempMarks) {
                         this.m_tempMarks[id].setThing(<Thing>temps[id]);                        
@@ -896,7 +893,7 @@ module KitchenInfoStation {
                     //Switch
                     var switches: Array<Switch> = this.siteData.getFilteredThings(this.siteData.switches, thing.getPath());
                     
-                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_switchMarks) {
                         this.m_switchMarks[id].setThing(<Thing>switches[id]);                        
@@ -953,43 +950,12 @@ module KitchenInfoStation {
         protected paint() {
             const ctx = this.ctx;
             
-            //Draw image...
-     //   if (this.imgFloorLoaded) {     
+            //Draw image...       
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();        
-         //   }      
-            
-//            var pth: string = this.getThingPath();
-
-        
-            // Temperature sensors...
-            /*
-            var tempMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_tempMarks, this.getThingPath());
-            
-            for (let id in tempMarks) {
-                tempMarks[id].paint();  
-               // tempMarks.filter()          
-            }
-            */
-            // Switches...
-            /*
-            var switchMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_switchMarks, this.getThingPath());
-            
-            for (let id in switchMarks) {
-                switchMarks[id].paint();            
-            }        
-            */
-            
-            // Doors
-            /*
-            var doorMarks = this.m_graphics.getFilteredMarks(this.m_graphics.m_doorMarks, this.getThingPath());
-            
-            for (let id in doorMarks) {
-                doorMarks[id].paintByThing(80, 80);            
-            }                  
-            */
-            //New doors...            
+  
+            //Doors...            
             for (let id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
             }
@@ -1018,9 +984,9 @@ module KitchenInfoStation {
     class ScreenRoom extends Screen {
                   
         protected m_siteData:       SiteData = null;  
-        public m_doorMarks:         Array<DoorMark2> = null;       // Doors marks
-        public m_tempMarks:         Array<TempMark2> = null;       // Temps marks
-        public m_switchMarks:       Array<SwitchMark2> = null;       // Switch marks
+        public m_doorMarks:         Array<DoorMark> = null;       // Doors marks
+        public m_tempMarks:         Array<TempMark> = null;       // Temps marks
+        public m_switchMarks:       Array<SwitchMark> = null;       // Switch marks
         
         //Graphics
         private m_graphics: Graphics = null;    
@@ -1030,28 +996,15 @@ module KitchenInfoStation {
         protected m_imgRoom2Array:      Array<ImageRect> = null;    //Array of images
         protected m_imgRoom2:           ImageRect = null;           //Selected image
         
-    //    private imgRoom:HTMLImageElement = null;        
-   //     private imgRoomLoaded: boolean = false;
-        
-        //private imgBkg: Iconset = null; 
-        
         constructor (canvas: HTMLCanvasElement, siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
             
             this.m_graphics = m_graphics;  
             this.m_siteData = siteData;  
             
-            this.m_doorMarks = new Array<DoorMark2>();
-            this.m_tempMarks = new Array<TempMark2>();
-            this.m_switchMarks = new Array<SwitchMark2>();
-            /*
-            this.imgRoom = new Image();
-            this.imgRoom.src="/infores/servlets/kitchen/room_default.png";  
-                            
-            this.imgRoom.onload = function(){
-              this.imgRoomLoaded = true;
-            }          
-            */
+            this.m_doorMarks = new Array<DoorMark>();
+            this.m_tempMarks = new Array<TempMark>();
+            this.m_switchMarks = new Array<SwitchMark>();
             this.m_imgRoomDefault = new ImageRect(0, 0, 0, 0, 0, '/infores/servlets/kitchen/room_default.png');
             
             this.m_imgRoom2Array = new Array<ImageRect>();
@@ -1138,7 +1091,7 @@ module KitchenInfoStation {
                     //Doors
                     var doors: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.doors, thing.getPath());
                     
-                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_doorMarks) {
                         this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
@@ -1147,7 +1100,7 @@ module KitchenInfoStation {
                     //Temp marks
                     var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.tempSensors, thing.getPath());
                     
-                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_tempMarks) {
                         this.m_tempMarks[id].setThing(<Thing>temps[id]);                        
@@ -1156,7 +1109,7 @@ module KitchenInfoStation {
                     //Switch marks
                     var switches: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.switches, thing.getPath());
                     
-                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark2, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_switchMarks) {
                         this.m_switchMarks[id].setThing(<Thing> switches[id]);                        
@@ -1184,32 +1137,7 @@ module KitchenInfoStation {
                     this.m_imgRoom2.size(0, 0, this.width, this.height);
                     this.m_imgRoom2.paint(this.ctx);
                 }
-            }         
-              
-/*
-            var pathImage: string = null;
-                         
-            if (this.getThing() != null) {            
-                if (this.getThing() instanceof Room) {
-                    var room: Room = <Room> this.getThing();
-                    
-                    pathImage = room.imageBkgPath;
-                }
-            }
-            
-            var index: number = this.m_graphics.m_iconsetRoomBkg.getImagesPaths().indexOf(pathImage);
-            
-            if (index == -1) {
-                //Draw default image... 
-                ctx.save();           
-                ctx.drawImage(this.imgRoom, 0, 0, this.width, this.height);        
-                ctx.restore(); 
-                               
-            } else {
-                //Draw default room image... 
-                this.m_graphics.m_iconsetRoomBkg.paint(index);                
-            }
-            */
+            }           
             
             //New door marks....
             for (let id in this.m_doorMarks) {
@@ -1233,7 +1161,7 @@ module KitchenInfoStation {
         protected m_graphics:   Graphics = null;       
         protected m_siteData:   SiteData = null;   
         
-        public m_doorMark2:     DoorMark2 = null;       // Doors marks
+        public m_doorMark2:     DoorMark = null;       // Doors marks
                 
         protected m_imgOpenArray:   Array<ImageRect> = null;    //Array of images
         protected m_imgOpen:        ImageRect = null;           //Selected image
@@ -1261,11 +1189,6 @@ module KitchenInfoStation {
                 this.m_imgOpen.paint(this.ctx);
             }
             
-            /*
-            this.m_imgOpenArray[this.n].size(0, 0, this.width, this.height);
-            this.m_imgOpenArray[this.n].paint(this.ctx);
-            */
-            
             if(this.m_doorMark2 != null) {
                 this.m_doorMark2.size(5, 20, 80, 80);
                 this.m_doorMark2.paint(this.ctx);
@@ -1283,28 +1206,20 @@ module KitchenInfoStation {
                 if (thing instanceof Door) {
                     
                     //Reload pictures etc...?
-                    var door: Door = <Door> this.getThing();
-            //        this.m_iconDoorOpen = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_open);
-           //         this.m_iconDoorClose = new Icon (this.ctx, new Rect(0, 0, this.width, this.height), door.image_close);
-                   // window.alert('***:' + this.canvas.getAttribute());
+                    var door: Door = <Door> this.getThing();           
                     
                     var img = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_open);
                     
                     if (img == null) {
                         img = new ImageRect (0, 0, this.width, this.height, 0, door.image_open);
                         this.m_imgOpenArray.push(img);
-                        
-                       // this.n = n - 1;
-                                                
-                    //    this.m_imgOpen = img;
-                      //  this.n = 
-                       //    window.alert('kkkkkkk:' + door.image_open);
+
                     } else {
                         this.m_imgOpen = img;
-                        //this.n = n;
+                        
                     }
                     
-                    this.m_doorMark2 = new DoorMark2(0, 0, 0, 0);
+                    this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
                     this.m_doorMark2.setThing(thing);   
                     
                     this.paint();
@@ -1473,7 +1388,7 @@ module KitchenInfoStation {
     
     class ViewDoor extends Mark {
                 
-        public m_doorMark2:          DoorMark2 = null;       // Mark of doors
+        public m_doorMark2:          DoorMark = null;       // Mark of doors
         public textDoorName:        Text;                  //Name of doors
         public m_graphics:          Graphics = null;
         
@@ -1499,7 +1414,7 @@ module KitchenInfoStation {
                          
                 this.m_imgDoorOpen = new ImageRect (this.rect.x, this.rect.y, this.rect.w, this.rect.h, 10, door.image_close);        
                 
-                this.m_doorMark2 = new DoorMark2(0, 0, 0, 0);
+                this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
                 this.m_doorMark2.setThing(this.thing);
             }        
         }        
@@ -1598,12 +1513,7 @@ module KitchenInfoStation {
         var unixtime_ms = new Date().getTime();
         while(new Date().getTime() < unixtime_ms + ms) {}
     }        
-//Function to check whether a point is inside a rectangle
-    /*
-function isInside(pos, rect){
-    return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.heigth && pos.y > rect.y
-}
-*/
+
 } // end module KitchenInfoStation
 
 

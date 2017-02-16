@@ -2,9 +2,8 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsSiteData.ts'/>
 
-module OhsCanvasGraphics {
-    
-import SiteData = OhsSiteData.SiteData;
+module OhsCanvasGraphics {    
+
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
@@ -14,28 +13,12 @@ import Thing = OhsSiteData.Thing;
     export class Graphics {
         
         private canvas:              HTMLCanvasElement;
-        public ctx:                  CanvasRenderingContext2D;          
-        
-        private m_siteData: SiteData = null;
-        
-       // public m_iconsetRoomBkg: Iconset = null; //room images...
-        
+        public ctx:                  CanvasRenderingContext2D;                  
         private timerUpdateGraphics;
         
-        constructor (canvas: HTMLCanvasElement, m_siteData: SiteData) {    
+        constructor (canvas: HTMLCanvasElement) {    
             this.canvas = canvas; 
             this.ctx = canvas.getContext("2d");    
-            
-            //---Data---
-            this.m_siteData = m_siteData;
-            
-            //---Graphics---                        
-        //    this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
-            
-           // this.m_iconsetRoomBkg = new Iconset();
-            
-            //---Timer---
-           // this.timerUpdateGraphicsEvent(10000);
             
         }
         
@@ -187,12 +170,9 @@ import Thing = OhsSiteData.Thing;
             this.imgSrc = imgSrc;
         }
         
-       private onImageLoad(event):void
-        {
-           this.loaded = true;
-            //console.log("onImageLoad");
-            //this.ir = true;
-           //return true;
+       private onImageLoad(event):void {
+        
+           this.loaded = true;            
         }          
         
         public paint (ctx: CanvasRenderingContext2D){
@@ -272,8 +252,7 @@ import Thing = OhsSiteData.Thing;
                 ctx.save();
                 super.paint(ctx);
                 ctx.restore();
-             }              
-            
+             }                          
         }
     }
          
@@ -305,7 +284,7 @@ import Thing = OhsSiteData.Thing;
             return this.rect.isClicked(clx, cly);        
         }        
     }
-    
+   
     export class Mark2 extends Rect {
         
         protected thing: Thing = null;
@@ -326,7 +305,7 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
-    export class DoorMark2 extends Mark2 {
+    export class DoorMark extends Mark2 {
         
         protected imgOpen:      ImageRect = null;
         protected imgClose:     ImageRect = null;
@@ -655,7 +634,7 @@ import Thing = OhsSiteData.Thing;
         }              
     }   
     
-    export class TempMark2 extends Mark2 {
+    export class TempMark extends Mark2 {
         
         protected imgThermometer:   ImageRect = null;
         protected imgFrost:         ImageRect = null;
@@ -747,86 +726,8 @@ import Thing = OhsSiteData.Thing;
              }           
         }
     }    
-    /*
-    export class TempMark extends Mark {
-
-        public txt:  Text;
     
-        private img:HTMLImageElement = null;
-        private imgLoaded: boolean;// = false;     
-        
-        protected border:    boolean = false; //debug border
-        
-      //  private temp:   number = -100.0;
-      //  private tempSensor: TemperatureSensor = null;
-    
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
-            super(ctx, rect);
-
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 18;
-            
-            this.img = new Image();                                
-            this.img.src = '/infores/servlets/kitchen/tempSymbol.png';              
-        }      
-        
-        setSize (rect:  Rect) {                      
-            super.setSize(rect);     
-            this.txt.setSize(rect);                    
-         }
-
-        public setData (temp: TemperatureSensor){
-            this.thing = <Thing> temp;
-        }
-        
-        public getData () {
-            return <TemperatureSensor> this.thing;
-        }
-            
-        public paint () {          
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = '#ccffe6';
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();      
-                    
-            //this.rect.x = this.rect.x + 20;
-            this.txt.rect.x = this.rect.x - 10;
-            
-            if (this.thing != null) {
-                
-                var thingSensor: TemperatureSensor = <TemperatureSensor> this.thing;
-                
-                this.txt.paint(thingSensor.temp + " \u00B0C");
-            }
-            
-            //Draw image...
-         //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x + (this.rect.w / 2) - 20, this.rect.y - 20, 40, 40);
-            this.ctx.restore();        
-           // }            
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }            
-    }          
-    */
-    
-     export class SwitchMark2 extends Mark2 {
+     export class SwitchMark extends Mark2 {
         
         protected imgBulbOn:          ImageRect = null;
         protected imgBulbOff:         ImageRect = null;
