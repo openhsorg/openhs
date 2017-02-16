@@ -13,24 +13,15 @@ var OhsCanvasGraphics;
     var Graphics = (function () {
         function Graphics(canvas, m_siteData) {
             this.m_siteData = null;
-            //  public m_tempMarks: Array<TempMark> = null;
-            //  public m_switchMarks: Array<SwitchMark> = null;
-            //  public m_doorMarks: Array<DoorMark> = null;
-            //   public m_doorPictures: Array<Iconset> = null;    
-            this.m_iconsetRoomBkg = null; //room images...
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
             //---Data---
             this.m_siteData = m_siteData;
-            //---Graphics---            
-            //  this.m_tempMarks = new Array<TempMark>();
-            //  this.m_switchMarks = new Array<SwitchMark>();
-            //  this.m_doorMarks = new Array<DoorMark>();   
-            //     this.m_doorPictures = new Array<Iconset>();
-            this.m_iconsetRoomBkg = new Iconset(this.ctx, new Rect(0, 0, this.canvas.width, this.canvas.height));
+            //---Graphics---                        
+            //    this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
             // this.m_iconsetRoomBkg = new Iconset();
             //---Timer---
-            this.timerUpdateGraphicsEvent(10000);
+            // this.timerUpdateGraphicsEvent(10000);
         }
         Graphics.prototype.setNumber = function (num, arg, types, ctx, rect) {
             if (num > arg.length) {
@@ -54,57 +45,6 @@ var OhsCanvasGraphics;
                 arg.length = num;
             }
         };
-        Graphics.prototype.updateGraphics = function () {
-            //Rooms
-            var imgPaths = new Array();
-            for (var id in this.m_siteData.rooms) {
-                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);
-            }
-            this.m_iconsetRoomBkg.setImages(imgPaths);
-            // Doors images
-            /*
-            this.setNumber(this.m_siteData.doors.length, this.m_doorPictures, Iconset, this.ctx, new Rect (0, 0, 0, 0));
- 
-            for (let id in this.m_siteData.doors) {
-                this.m_doorPictures[id].thing = <Thing> this.m_siteData.doors[id];
-                this.m_doorPictures[id].setImages(new Array<String>(this.m_siteData.doors[id].image_open, this.m_siteData.doors[id].image_close))
-                //this.m_doorPictures[id].
-            }
-            */
-            /*
-            // Temperature
-            this.setNumber(this.m_siteData.tempSensors.length, this.m_tempMarks, TempMark, this.ctx, new Rect (0, 0, 0, 0));
-  
-            for (let id in this.m_siteData.tempSensors) {
-                this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
-                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);
-            }
-            */
-            // Switches
-            /*
-            this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect (0, 0, 80, 80));
-
-            for (let id in this.m_siteData.switches) {
-                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
-            }
-            */
-            /*
-    // Doors symbols
-    this.setNumber(this.m_siteData.doors.length, this.m_doorMarks, DoorMark, this.ctx, new Rect (0, 0, 0, 0));
-
-    for (let id in this.m_siteData.doors) {
-        this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
-       // this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);
-        this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];
-    }
-    */
-        };
-        Graphics.prototype.timerUpdateGraphicsEvent = function (step) {
-            var _this = this;
-            this.updateGraphics();
-            window.clearTimeout(this.timerUpdateGraphics);
-            this.timerUpdateGraphics = window.setTimeout(function () { return _this.timerUpdateGraphicsEvent(step); }, step);
-        };
         Graphics.prototype.getFilteredMarks = function (arg, filterPath) {
             if (filterPath == null) {
                 return arg;
@@ -120,6 +60,14 @@ var OhsCanvasGraphics;
                     }
                 });
             }
+        };
+        Graphics.prototype.getFilteredImage = function (array, src) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].getImageSrc() == src) {
+                    return array[i];
+                }
+            }
+            return null;
         };
         return Graphics;
     }());
@@ -189,11 +137,25 @@ var OhsCanvasGraphics;
     var ImageRect = (function (_super) {
         __extends(ImageRect, _super);
         function ImageRect(x, y, w, h, radius, imgSrc) {
+            var _this = this;
             _super.call(this, x, y, w, h, radius);
             this.img = null;
+            this.imgSrc = '---';
+            this.loaded = false;
             this.img = new Image();
+            //   this.img.src = imgSrc;        
+            this.img.onload = function (event) {
+                _this.onImageLoad(event);
+            };
             this.img.src = imgSrc;
+            this.imgSrc = imgSrc;
         }
+        ImageRect.prototype.onImageLoad = function (event) {
+            this.loaded = true;
+            //console.log("onImageLoad");
+            //this.ir = true;
+            //return true;
+        };
         ImageRect.prototype.paint = function (ctx) {
             ctx.save();
             _super.prototype.paint.call(this, ctx);
@@ -202,6 +164,12 @@ var OhsCanvasGraphics;
             }
             ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
             ctx.restore();
+        };
+        ImageRect.prototype.getImage = function () {
+            return this.img;
+        };
+        ImageRect.prototype.getImageSrc = function () {
+            return this.imgSrc;
         };
         return ImageRect;
     }(RectRounded));

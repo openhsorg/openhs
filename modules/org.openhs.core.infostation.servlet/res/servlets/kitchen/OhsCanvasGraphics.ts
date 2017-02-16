@@ -18,12 +18,7 @@ import Thing = OhsSiteData.Thing;
         
         private m_siteData: SiteData = null;
         
-      //  public m_tempMarks: Array<TempMark> = null;
-      //  public m_switchMarks: Array<SwitchMark> = null;
-      //  public m_doorMarks: Array<DoorMark> = null;
-     //   public m_doorPictures: Array<Iconset> = null;    
-        
-        public m_iconsetRoomBkg: Iconset = null; //room images...
+       // public m_iconsetRoomBkg: Iconset = null; //room images...
         
         private timerUpdateGraphics;
         
@@ -34,18 +29,13 @@ import Thing = OhsSiteData.Thing;
             //---Data---
             this.m_siteData = m_siteData;
             
-            //---Graphics---            
-          //  this.m_tempMarks = new Array<TempMark>();
-          //  this.m_switchMarks = new Array<SwitchMark>();
-          //  this.m_doorMarks = new Array<DoorMark>();   
-       //     this.m_doorPictures = new Array<Iconset>();
-            
-            this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
+            //---Graphics---                        
+        //    this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
             
            // this.m_iconsetRoomBkg = new Iconset();
             
             //---Timer---
-            this.timerUpdateGraphicsEvent(10000);
+           // this.timerUpdateGraphicsEvent(10000);
             
         }
         
@@ -69,67 +59,7 @@ import Thing = OhsSiteData.Thing;
             } else if (num < arg.length) {            
                 arg.length = num;             
             }   
-        }        
-        
-        private updateGraphics () {                      
-            
-            //Rooms
-            var imgPaths: Array <String> = new Array <String> ();
-            
-            for (var id in this.m_siteData.rooms) {
-                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);   
-                
-               // window.alert("updateGraphics: " + this.m_siteData.rooms[id].imageBkgPath);
-            }
-            
-            this.m_iconsetRoomBkg.setImages(imgPaths);            
-            
-         // Doors images
-            /*
-            this.setNumber(this.m_siteData.doors.length, this.m_doorPictures, Iconset, this.ctx, new Rect (0, 0, 0, 0));
- 
-            for (let id in this.m_siteData.doors) {                  
-                this.m_doorPictures[id].thing = <Thing> this.m_siteData.doors[id];    
-                this.m_doorPictures[id].setImages(new Array<String>(this.m_siteData.doors[id].image_open, this.m_siteData.doors[id].image_close))
-                //this.m_doorPictures[id].                                
-            }        
-            */      
-            /*
-            // Temperature
-            this.setNumber(this.m_siteData.tempSensors.length, this.m_tempMarks, TempMark, this.ctx, new Rect (0, 0, 0, 0));
-  
-            for (let id in this.m_siteData.tempSensors) {
-                this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
-                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
-            }
-            */
-            // Switches
-            /*
-            this.setNumber(this.m_siteData.switches.length, this.m_switchMarks, SwitchMark, this.ctx, new Rect (0, 0, 80, 80));
-
-            for (let id in this.m_siteData.switches) {
-                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
-            }   
-            */       
-                    /*
-            // Doors symbols
-            this.setNumber(this.m_siteData.doors.length, this.m_doorMarks, DoorMark, this.ctx, new Rect (0, 0, 0, 0));
- 
-            for (let id in this.m_siteData.doors) {
-                this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
-               // this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);    
-                this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];                    
-            }       
-            */
-               
-        }        
-        
-        private timerUpdateGraphicsEvent(step : number) {     
-           this.updateGraphics();  
-           window.clearTimeout(this.timerUpdateGraphics);
-           this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
-        }   
-                
+        }                       
         
         public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
             
@@ -151,7 +81,18 @@ import Thing = OhsSiteData.Thing;
                      }
                  });                               
              }
-        }                   
+        }   
+        
+        public getFilteredImage(array: Array<ImageRect>, src: string) {
+            for (var i = 0; i < array.length; i++) {                                              
+                if (array[i].getImageSrc() == src){                                                           
+                    return array[i];               
+                    
+                }
+            }
+            
+            return null;
+        }
     }
                 
     export class Rect {
@@ -226,13 +167,33 @@ import Thing = OhsSiteData.Thing;
     export class ImageRect extends RectRounded {
         
         private img:HTMLImageElement = null;
+        private imgSrc: string = '---';
+        
+        public loaded: boolean = false;
         
         constructor (x: number, y: number, w: number, h: number, radius: number, imgSrc: string) {
             super(x, y, w, h, radius);
             
+            
             this.img = new Image();                                
-            this.img.src = imgSrc;        
+         //   this.img.src = imgSrc;        
+            
+            this.img.onload = (event) => {
+                  this.onImageLoad(event);
+            }
+                                               
+            this.img.src = imgSrc;
+            
+            this.imgSrc = imgSrc;
         }
+        
+       private onImageLoad(event):void
+        {
+           this.loaded = true;
+            //console.log("onImageLoad");
+            //this.ir = true;
+           //return true;
+        }          
         
         public paint (ctx: CanvasRenderingContext2D){
             ctx.save();
@@ -245,6 +206,14 @@ import Thing = OhsSiteData.Thing;
             
             ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
             ctx.restore();            
+        }
+        
+        public getImage() {
+            return this.img;            
+        }
+        
+        public getImageSrc() {
+            return this.imgSrc;
         }
     }
     
@@ -525,7 +494,6 @@ import Thing = OhsSiteData.Thing;
             this.images = new Array <HTMLImageElement>();
             this.imagesPaths = new Array <String>();
             this.imagesReady = new Array <boolean>();
-
         }    
         
         public setImages (imgPaths: Array<String>){   
