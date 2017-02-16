@@ -4,11 +4,11 @@
 <images imageBkg="no path"/>
 </thing>
 <thing name="Outside" sitePath="floors/Floor1/doors/Door1" type="Door">
-<images imageBkg="/infores/servlets/kitchen/door1_close.JPG"/>
+<images imageClose="/infores/servlets/kitchen/door1_close.JPG" imageOpen="/infores/servlets/kitchen/door1_open.JPG"/>
 <position xCoord="310" yCoord="0" zCoord="0"/>
 </thing>
 <thing name="Inside" sitePath="floors/Floor1/doors/Door2" type="Door">
-<images imageBkg="/infores/servlets/kitchen/door2_close.JPG"/>
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
 <position xCoord="450" yCoord="50" zCoord="0"/>
 </thing>
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
