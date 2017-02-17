@@ -212,10 +212,23 @@ var OhsCanvasGraphics;
         return ImageRectArray;
     }(RectRounded));
     OhsCanvasGraphics.ImageRectArray = ImageRectArray;
+    /*
+    export class TextRich extends TextSimple {
+        
+        public borderWidth: number = 0;
+        
+        constructor(x: number, y: number, w: number, h: number, rad: number){
+            super(x, y, w, h);
+            
+            this.radius = rad;
+        }
+        
+    }
+    */
     var TextSimple = (function (_super) {
         __extends(TextSimple, _super);
         function TextSimple(x, y, w, h) {
-            _super.call(this, x, y, w, h);
+            _super.call(this, x, y, w, h, 0);
             this.fontSize = 20;
             this.fontColor = "#000000";
             this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
@@ -267,7 +280,7 @@ var OhsCanvasGraphics;
             this.textBaseline = txtIn.textBaseline;
         };
         return TextSimple;
-    }(Rect));
+    }(RectRounded));
     OhsCanvasGraphics.TextSimple = TextSimple;
     var Mark = (function (_super) {
         __extends(Mark, _super);

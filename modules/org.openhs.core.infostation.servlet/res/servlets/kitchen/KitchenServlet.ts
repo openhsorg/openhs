@@ -1393,8 +1393,8 @@ module KitchenInfoStation {
         public m_doorMark2:         DoorMark = null;       // Mark of doors
         public textDoorName:        TextSimple;                  //Name of doors
         public m_graphics:          Graphics = null;
-        
-        public m_imgDoorOpen:  ImageRect = null;
+        protected rectName:         RectRounded = null;
+        public m_imgDoorOpen:       ImageRect = null;
         
         private border: boolean = false;
                 
@@ -1416,6 +1416,7 @@ module KitchenInfoStation {
                 //Reload pictures etc...?
                 var door: Door = <Door> this.thing;       
                          
+                this.rectName = new RectRounded (0, 0, 0, 0, 0);
                 this.m_imgDoorOpen = new ImageRect (this.x, this.y, this.w, this.h, 10, door.image_close);        
                 
                 this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
@@ -1432,21 +1433,13 @@ module KitchenInfoStation {
             }
             
             if (this.m_doorMark2 != null) {
-                this.m_doorMark2.size(x + 30, y + 20, 60, 60);
+                this.m_doorMark2.size(x + 5, y + 20, 60, 60);
             }   
                      
         }
         
         public paint () {            
-            /*
-            if (this.m_iconDoorOpen != null) {
-                this.m_iconDoorOpen.paint();
-            }
-            
-            if (this.m_iconDoorClose != null) {
-                this.m_iconDoorClose.paint();
-            }    
-*/
+ 
             if (this.m_imgDoorOpen != null) {                
                 this.m_imgDoorOpen.paint(this.ctx);
             }
@@ -1456,8 +1449,24 @@ module KitchenInfoStation {
                 this.m_doorMark2.paint(this.ctx);
             }              
             
+            //Doors name
+            this.ctx.save();            
+            this.rectName.radius = 10;
+            var dx = 120;
+            var dy = 30;
+            this.rectName.size(this.x + 5, this.y + this.h - dy - 5, dx, dy);
+            this.rectName.paint(this.ctx);
+            this.ctx.fillStyle = "white";
+            this.ctx.lineWidth=2;
+            this.ctx.strokeStyle="gray";            
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.restore();            
+            
             this.textDoorName.fontSize = 15;
-            this.textDoorName.size(this.x + 5, this.y + 5, 80, 80);
+            this.textDoorName.textAlign = 'center';
+            this.textDoorName.textBaseline = 'bottom';
+            this.textDoorName.size(this.rectName.x + 5, this.rectName.y - 5, dx, dy);
             this.textDoorName.paintText(this.ctx, "name");
             
             if (this.border) {                

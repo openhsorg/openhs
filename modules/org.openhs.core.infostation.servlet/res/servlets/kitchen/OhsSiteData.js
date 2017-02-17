@@ -279,6 +279,7 @@ var OhsSiteData;
         __extends(Door, _super);
         function Door() {
             _super.call(this);
+            this.name = "no name";
             this.image_open = "/infores/servlets/kitchen/room_default.png";
             this.image_close = "/infores/servlets/kitchen/room_default.png";
             this.open = false;

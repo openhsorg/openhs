@@ -363,6 +363,7 @@ module OhsSiteData {
     
     export class Door extends Thing {
         
+        public name: string = "no name";
         public image_open: string = "/infores/servlets/kitchen/room_default.png";
         public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         

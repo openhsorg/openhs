@@ -256,13 +256,25 @@ import Thing = OhsSiteData.Thing;
             return paths;
         }         
     }
-    
-    export class TextSimple extends Rect {
+    /*
+    export class TextRich extends TextSimple {
+        
+        public borderWidth: number = 0; 
+        
+        constructor(x: number, y: number, w: number, h: number, rad: number){
+            super(x, y, w, h);
+            
+            this.radius = rad;
+        }        
+        
+    }
+    */
+    export class TextSimple extends RectRounded {
         
         public fontSize:      number = 20; 
         public fontColor:     string = "#000000";
         public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-        public textAlign:   string = "center";
+        public textAlign:     string = "center";
         public textBaseline:   string = "middle";    
                         
         protected text: string = '';
@@ -270,7 +282,7 @@ import Thing = OhsSiteData.Thing;
         protected border: boolean = false;
         
         constructor(x: number, y: number, w: number, h: number){
-            super(x, y, w, h);
+            super(x, y, w, h, 0);
         }
                 
         public paintText (ctx: CanvasRenderingContext2D, text: string){

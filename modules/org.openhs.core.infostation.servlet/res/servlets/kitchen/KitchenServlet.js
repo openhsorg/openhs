@@ -1052,6 +1052,7 @@ var KitchenInfoStation;
             _super.call(this, 0, 0, 0, 0);
             this.m_doorMark2 = null; // Mark of doors
             this.m_graphics = null;
+            this.rectName = null;
             this.m_imgDoorOpen = null;
             this.border = false;
             this.ctx = ctx;
@@ -1064,6 +1065,7 @@ var KitchenInfoStation;
                 this.thing = m_door;
                 //Reload pictures etc...?
                 var door = this.thing;
+                this.rectName = new RectRounded(0, 0, 0, 0, 0);
                 this.m_imgDoorOpen = new ImageRect(this.x, this.y, this.w, this.h, 10, door.image_close);
                 this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
                 this.m_doorMark2.setThing(this.thing);
@@ -1077,19 +1079,10 @@ var KitchenInfoStation;
                 this.m_imgDoorOpen.size(x, y, w, h);
             }
             if (this.m_doorMark2 != null) {
-                this.m_doorMark2.size(x + 30, y + 20, 60, 60);
+                this.m_doorMark2.size(x + 5, y + 20, 60, 60);
             }
         };
         ViewDoor.prototype.paint = function () {
-            /*
-            if (this.m_iconDoorOpen != null) {
-                this.m_iconDoorOpen.paint();
-            }
-            
-            if (this.m_iconDoorClose != null) {
-                this.m_iconDoorClose.paint();
-            }
-*/
             if (this.m_imgDoorOpen != null) {
                 this.m_imgDoorOpen.paint(this.ctx);
             }
@@ -1097,8 +1090,23 @@ var KitchenInfoStation;
                 //this.m_doorMark2.size(this.rect.x + 30, this.rect.y + 20, 80, 80);
                 this.m_doorMark2.paint(this.ctx);
             }
+            //Doors name
+            this.ctx.save();
+            this.rectName.radius = 10;
+            var dx = 120;
+            var dy = 30;
+            this.rectName.size(this.x + 5, this.y + this.h - dy - 5, dx, dy);
+            this.rectName.paint(this.ctx);
+            this.ctx.fillStyle = "white";
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = "gray";
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.restore();
             this.textDoorName.fontSize = 15;
-            this.textDoorName.size(this.x + 5, this.y + 5, 80, 80);
+            this.textDoorName.textAlign = 'center';
+            this.textDoorName.textBaseline = 'bottom';
+            this.textDoorName.size(this.rectName.x + 5, this.rectName.y - 5, dx, dy);
             this.textDoorName.paintText(this.ctx, "name");
             if (this.border) {
                 this.ctx.save();
