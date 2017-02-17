@@ -43,29 +43,7 @@ import Thing = OhsSiteData.Thing;
                 arg.length = num;             
             }   
         }                       
-        
-        public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
-            
-            if (filterPath == null) {
-                return arg;
-                
-            } else {
-   
-                 return arg.filter(function(element){
-                     
-                     var mark: Mark = (<Mark><any>element);
-                     
-                     if (mark.thing == null) {
-                         return true;
-                         
-                     } else {
-                         
-                         return mark.thing.getPath().indexOf(filterPath) >= 0;                         
-                     }
-                 });                               
-             }
-        }   
-        
+ 
         public getFilteredImage(array: Array<ImageRect>, src: string) {
             for (var i = 0; i < array.length; i++) {                                              
                 if (array[i].getImageSrc() == src){                                                           
@@ -109,6 +87,18 @@ import Thing = OhsSiteData.Thing;
             this.w = w;
             this.h = h;
         }
+        
+        public scaleSize (perc: number) {
+            
+            var old_w: number = this.w;
+            var old_h: number = this.h;
+            
+            this.w = this.w * perc;
+            this.h = this.h * perc;
+            
+            this.x = this.x + ((old_w - this.w) / 2);
+            this.y = this.y + ((old_h - this.h) / 2);
+        }        
         
         public paint(ctx: CanvasRenderingContext2D) {
           ctx.beginPath();
@@ -195,6 +185,78 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
+    export class ImageRectArray extends RectRounded {
+        
+        protected array: Array<ImageRect> = null;
+        
+        protected border: boolean = false;
+        
+        constructor(x: number, y: number, w: number, h: number, radius: number) {
+            super(x, y, w, h, radius);
+            
+            this.array = new Array<ImageRect>();
+        }
+        
+        public setImages (imgPaths: Array<String>){               
+        
+            for (let i = 0; i < imgPaths.length; i++) {
+                
+                if (this.array.length < i + 1) {                    
+                    var img: ImageRect = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                    this.array.push(img);
+                                    
+                } else {
+                    //Compare images...
+                    if (imgPaths[i].toString() == this.array[i].getImageSrc()) {
+                        // This images exists = do not load it again...
+                    } else {
+                        //Replace image on position 'i'
+                        var img: ImageRect = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                        this.array.splice(i, 1, img);
+                    }                    
+                }                                 
+            }
+            
+            //Check lenght of array and cut            
+            if (this.array.length > imgPaths.length){
+                this.array.length = imgPaths.length;
+            }            
+        }
+        
+        public paintImage (ctx: CanvasRenderingContext2D, nImage: number){
+            if (!(nImage <= 0 || nImage > this.array.length)) {
+            
+                this.array[nImage].size(this.x, this.y, this.w, this.h);
+                
+                this.array[nImage].paint(ctx);            
+            }
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);                
+                ctx.lineWidth=2;
+                ctx.strokeStyle="red";                
+                ctx.stroke();
+                ctx.restore();
+             }  
+        }
+        
+        public getImages () {
+            return this.array;
+        }
+        
+        public getImagesPaths () {
+            var paths: Array<String> = new Array<String>();
+            
+            for (let id in this.array){            
+                var str: string = this.array[id].getImageSrc();
+                paths.push(str);
+            }
+            
+            return paths;
+        }         
+    }
+    
     export class TextSimple extends Rect {
         
         public fontSize:      number = 20; 
@@ -211,7 +273,7 @@ import Thing = OhsSiteData.Thing;
             super(x, y, w, h);
         }
                 
-        public painitText (ctx: CanvasRenderingContext2D, text: string){
+        public paintText (ctx: CanvasRenderingContext2D, text: string){
             
             this.text = text;
             
@@ -252,38 +314,18 @@ import Thing = OhsSiteData.Thing;
                 ctx.restore();
              }                          
         }
-    }
-         
-    /**
-     * Graphical symbol...
-     */
-    export class Mark {
         
-        protected   ctx:    CanvasRenderingContext2D;  
-        public      rect:   Rect;
-        
-        public thing: Thing = null; //data
-        
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect){                    
-            this.ctx = ctx;        
-            this.rect = new Rect (rect.x, rect.y, rect.w, rect.h);             
+        public equals (txtIn: TextSimple) {
+            super.equals(txtIn);
+            this.fontSize = txtIn.fontSize;
+            this.fontColor = txtIn.fontColor;
+            this.fontFamily = txtIn.fontFamily;
+            this.textAlign = txtIn.textAlign;
+            this.textBaseline = txtIn.textBaseline;
         }
-        
-        public equals (mark:   Mark){
-            this.ctx = mark.ctx;
-            this.rect.equals(mark.rect);
-        }
-        
-        public setSize (rect:   Rect){
-            this.rect.equals(rect);
-        }  
-        
-        public isClicked (clx:number, cly:number) {                
-            return this.rect.isClicked(clx, cly);        
-        }        
     }
-   
-    export class Mark2 extends Rect {
+    
+    export class Mark extends Rect {
         
         protected thing: Thing = null;
         
@@ -303,7 +345,7 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
-    export class DoorMark extends Mark2 {
+    export class DoorMark extends Mark {
         
         protected imgOpen:      ImageRect = null;
         protected imgClose:     ImageRect = null;
@@ -320,14 +362,29 @@ import Thing = OhsSiteData.Thing;
         }      
         
         public size (x: number, y: number, w: number, h: number) {
-            super.size(x, y, w, h);
+            super.size(x, y, w, h);                        
             
+            //Size of images
+            
+            var perc: number = 0.7;
+            
+            this.imgOpen.size(x, y, w, h);
+            this.imgOpen.scaleSize(perc);
+            
+            this.imgClose.size(x, y, w, h);
+            this.imgClose.scaleSize(perc);
+            
+            this.imgLock.size(x, y, w, h);
+            this.imgLock.scaleSize(0.5);            
+            
+            /*
             var dx: number = 20;
             var dy: number = 20;
             
             this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
             this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);                      
+            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);  
+              */                  
         }
         
         public getDoorThing() {
@@ -347,9 +404,7 @@ import Thing = OhsSiteData.Thing;
             var door = this.getDoorThing();
                         
             if (door != null) {                                    
-                //this.x = door.x;
-                //this.y = door.y;
-                this.size(door.x, door.y, 80, 80);                                  
+                this.size(door.x, door.y, 60, 60);                                  
             }
             
             this.paint(ctx);
@@ -393,7 +448,7 @@ import Thing = OhsSiteData.Thing;
             
             ctx.save();
             ctx.beginPath();
-            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 3, 0, 2 * Math.PI, false);
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
             ctx.fillStyle = colorInside;
             ctx.fill();
             ctx.lineWidth = 2;
@@ -421,184 +476,8 @@ import Thing = OhsSiteData.Thing;
             }                        
         }
     }
- 
-    export class Iconset extends Mark {
-        
-        protected border:    boolean = false; //debug border        
-        protected images: Array <HTMLImageElement>;
-        protected imagesPaths: Array <String>;
-        protected imagesReady: Array <boolean>;  
-        
-        protected ir: boolean = false;
-        
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
-            super(ctx, rect);
-            
-            this.images = new Array <HTMLImageElement>();
-            this.imagesPaths = new Array <String>();
-            this.imagesReady = new Array <boolean>();
-        }    
-        
-        public setImages (imgPaths: Array<String>){   
-        
-            if (this.imagesReady.length < imgPaths.length) {
-                this.imagesReady.push(false);
-            }
-            else {
-                this.imagesReady.length = imgPaths.length;   
-            }                 
-            this.ir = false;
-             
-            //window.alert("Size:" + imgPaths.length);
-            for (var i = 0; i < imgPaths.length; i ++) {
-                
-                this.imagesReady[i] = false;
-                
-                var img: HTMLImageElement = new Image();                         
-                
-                if (i < this.images.length) {
-                    this.images[i] = img;
-                }
-                else {
-                    this.images.push(img);    
-                }
-                
-                if (i < this.imagesPaths.length) {
-                    this.imagesPaths[i] = imgPaths[i].toString();
-                }
-                else {
-                    this.imagesPaths.push(imgPaths[i].toString());    
-                }                
-            }    
-            
-            //load images....            
-            for (let id in this.images) {                                
-                
-                this.images[id].onload = (event) => {
-                        this.onImageLoad(event);
-                 }
-                                               
-                this.images[id].src = imgPaths[id].toString();                                     
-            }
-                        
-        }
-        
-        private onImageLoad(event):void
-        {
-            console.log("onImageLoad");
-            this.ir = true;
-        }        
-        
-        protected imageReady (img: HTMLImageElement, path: string) {
-            img.src = path;
-        }
-        
-        public getImages () {
-            return this.images;
-        }
-        
-        public getImagesPaths () {
-            return this.imagesPaths;
-        }        
-        
-        public paint (nImage: number) {               
-            //Draw image... 
-            var ret = false;           
-            
-         //   var image: HTMLImageElement = this.images[nImage];
-            
-            if (this.images[nImage] != null) {                                            
-                if (this.images[nImage].onload) {
-                    this.ctx.save(); 
-                    this.ctx.drawImage(this.images[nImage], this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                    this.ctx.restore();  
-                    
-                    ret = true;
-                }                                                                                                     
-             }
-            
-                if (this.border){
-                    this.ctx.save();
-                    this.ctx.beginPath();
-                    this.ctx.lineWidth=2;
-                    this.ctx.strokeStyle="blue";
-                    this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                    this.ctx.stroke();
-                    this.ctx.restore();
-                 }       
-            
-            return ret;
-         }                 
-    }    
-    
-    export class Text extends Mark {
-    
-        public fontSize:      number = 10; 
-        public fontColor:     string = "#000000";
-        public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-        public textAlign:   string = "center";
-        public textBaseline:   string = "middle";    
-        
-        protected border:    boolean = false; //debug border
 
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
-            super(ctx, rect);
-        }          
-    
-        public paint (text: string) {        
-        
-            var x: number = this.rect.x;
-            var y: number = this.rect.y;
-            var align: String = this.textAlign.toString();
-            var baseline: String = this.textBaseline.toString();
-                        
-            if(align == "right" || align == "end") {
-                x = this.rect.x + this.rect.w;
-            } else if (align == "center"){
-                x = this.rect.x + (this.rect.w / 2);
-            }
-            
-            if(baseline == "bottom" || baseline == "alphabetic") {
-                y = this.rect.y + this.rect.h;
-            } else if (baseline == "middle"){
-                y = this.rect.y + (this.rect.h / 2);
-            }            
-            
-            this.ctx.save();
-            this.ctx.font = this.fontSize + this.fontFamily;
-            this.ctx.textAlign = this.textAlign;
-            this.ctx.textBaseline = this.textBaseline;
-            this.ctx.fillStyle = this.fontColor;                                  
-            this.ctx.fillText(text, x, y);
-            this.ctx.restore();   
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="red";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }       
-        }   
-
-        public equals(tx: Text) {                    
-            this.rect.equals(tx.rect);
-            this.ctx = tx.ctx;
-            this.fontSize = tx.fontSize;
-            this.fontColor = tx.fontColor;
-            this.fontFamily = tx.fontFamily;
-            this.textAlign = tx.textAlign;
-            this.textBaseline = tx.textBaseline;
-        }
-        
-        public setSize (rect:   Rect){
-            super.setSize(rect);
-        }              
-    }   
-    
-    export class TempMark extends Mark2 {
+    export class TempMark extends Mark {
         
         protected imgThermometer:   ImageRect = null;
         protected imgFrost:         ImageRect = null;
@@ -617,7 +496,7 @@ import Thing = OhsSiteData.Thing;
         }      
         
         public size (x: number, y: number, w: number, h: number) {
-            super.size(x, y, w, h);
+            super.size(x, y, w, h);                       
             
             var dx: number = 8;
             var dy: number = 8;
@@ -644,7 +523,7 @@ import Thing = OhsSiteData.Thing;
             var tempSensor = this.getTemperatureSensorThing();
                         
             if (tempSensor != null) {                                    
-                this.size(tempSensor.x, tempSensor.y, 80, 80);                                  
+                this.size(tempSensor.x, tempSensor.y, 60, 60);                                  
             }
             
             this.paint(ctx);
@@ -677,10 +556,10 @@ import Thing = OhsSiteData.Thing;
                     
             //Draw temperature text
             if (tempSensor == null) {
-                this.textTemp.painitText(ctx, "---");
+                this.textTemp.paintText(ctx, "---");
                 
             } else {
-                this.textTemp.painitText(ctx, tempSensor.temp + ' \u00B0C');
+                this.textTemp.paintText(ctx, tempSensor.temp + ' \u00B0C');
             }                      
             
             if (this.border){
@@ -691,11 +570,12 @@ import Thing = OhsSiteData.Thing;
         }
     }    
     
-     export class SwitchMark extends Mark2 {
+     export class SwitchMark extends Mark {
         
         protected imgBulbOn:          ImageRect = null;
         protected imgBulbOff:         ImageRect = null;
-       // protected textState:          TextSimple = null;
+        protected imgBulbOn_Off:      ImageRect = null;
+        protected imgBulbOff_On:      ImageRect = null;
         
         protected border: boolean = false;
                  
@@ -704,7 +584,8 @@ import Thing = OhsSiteData.Thing;
             
             this.imgBulbOn = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn.png');
             this.imgBulbOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff.png');      
-         //   this.textState = new TextSimple(x, y, w, h);                  
+            this.imgBulbOn_Off = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn_Off.png');
+            this.imgBulbOff_On = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff_On.png');      
             
             this.size(x, y, w, h);
         }      
@@ -712,12 +593,19 @@ import Thing = OhsSiteData.Thing;
         public size (x: number, y: number, w: number, h: number) {
             super.size(x, y, w, h);
             
-            var dx: number = 1;
-            var dy: number = 1;
+            var perc: number = 0.9;
             
-            this.imgBulbOn.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgBulbOff.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));     
-          // this.textState.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
+            this.imgBulbOn.size(x, y, w, h);
+            this.imgBulbOn.scaleSize(perc);
+            
+            this.imgBulbOff.size(x, y, w, h);
+            this.imgBulbOff.scaleSize(perc);
+            
+            this.imgBulbOn_Off.size(x, y, w, h);
+            this.imgBulbOn_Off.scaleSize(perc);         
+            
+            this.imgBulbOff_On.size(x, y, w, h);
+            this.imgBulbOff_On.scaleSize(perc);                               
         
         }
         
@@ -737,7 +625,7 @@ import Thing = OhsSiteData.Thing;
             var swtch = this.getSwitchThing();
                         
             if (swtch != null) {                                    
-                this.size(swtch.x, swtch.y, 80, 80);                                  
+                this.size(swtch.x, swtch.y, 60, 60);                                  
             }
             
             this.paint(ctx);
@@ -781,13 +669,13 @@ import Thing = OhsSiteData.Thing;
                     this.imgBulbOff.paint(ctx);
                     
                 } else if (swtch.getState() == 2) {//-> ON
-                    this.imgBulbOn.paint(ctx);
+                    this.imgBulbOff_On.paint(ctx);
                     
                 } else if (swtch.getState() == 3) { //ON
                     this.imgBulbOn.paint(ctx);
                     
                 } else if (swtch.getState() == 4) { //->OFF";
-                    this.imgBulbOff.paint(ctx);
+                    this.imgBulbOn_Off.paint(ctx);
                     
                 } else {
                     this.imgBulbOff.paint(ctx);

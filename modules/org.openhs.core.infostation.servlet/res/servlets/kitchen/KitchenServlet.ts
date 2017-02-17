@@ -13,15 +13,13 @@ module KitchenInfoStation {
     import Rect =       OhsCanvasGraphics.Rect;
     import RectRounded =       OhsCanvasGraphics.RectRounded;
     import ImageRect =       OhsCanvasGraphics.ImageRect;
-    import Text =       OhsCanvasGraphics.Text;    
+    import TextSimple =       OhsCanvasGraphics.TextSimple;    
     import TempMark =   OhsCanvasGraphics.TempMark;    
     import SwitchMark = OhsCanvasGraphics.SwitchMark;    
     import DoorMark =   OhsCanvasGraphics.DoorMark;
-    //import Icon =       OhsCanvasGraphics.Icon;
-    import Iconset =    OhsCanvasGraphics.Iconset;
+    import ImageRectArray =  OhsCanvasGraphics.ImageRectArray;
     import Graphics =   OhsCanvasGraphics.Graphics;
     import Mark =   OhsCanvasGraphics.Mark;
-    import Mark2 =   OhsCanvasGraphics.Mark2;
         
     import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     import WeatherForecast =     OhsWeatherData.WeatherForecast;    
@@ -155,7 +153,7 @@ module KitchenInfoStation {
             //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
                     
             if (retVal.nextScreen == SwitchScreen.Floor) {               
-                refresh = 50;
+                refresh = 100;
                 screen = this.m_floor;
                 this.m_floor.setThing(<Thing>this.m_siteData.floors[1]);
                 
@@ -168,7 +166,7 @@ module KitchenInfoStation {
                 screen = this.m_forecastScreen;     
                        
             } else if (retVal.nextScreen == SwitchScreen.Room) {
-                refresh = 50;
+                refresh = 100;
                 screen = this.m_room;                
                 this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
                 
@@ -290,12 +288,12 @@ module KitchenInfoStation {
         private iconDoor:           ImageRect;
         private iconWind:           ImageRect;
         private iconHum:            ImageRect;
-        private iconWeather:        Iconset;
-        public tmpInText:           Text;
-        public tmpOutText:          Text;
-        public timeText:            Text;
-        public dateText:            Text;
-        public windText:            Text;     
+        private iconWeather:        ImageRectArray;
+        public tmpInText:           TextSimple;
+        public tmpOutText:          TextSimple;
+        public timeText:            TextSimple;
+        public dateText:            TextSimple;
+        public windText:            TextSimple;     
 
         private appWatch: boolean = false;
         
@@ -311,16 +309,16 @@ module KitchenInfoStation {
             this.iconStopWatch = new ImageRect ((this.width / 2) + 180, (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/stopwatch.png');
             this.iconVoiceMessage = new ImageRect ((this.width / 2) - 220 , (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/voicemessage.png');
             this.iconDoor = new ImageRect ((this.width / 2) + 150, (this.height / 2) + 120, 60, 60, 0, '/infores/servlets/kitchen/door_icon.png');
-            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 150, 150));
+            this.iconWeather = new ImageRectArray (0, 0, 150, 150, 0);
             this.iconWeather.setImages(imagePaths);
             this.iconWind = new ImageRect (140, 70, 50, 50, 0, '/infores/servlets/kitchen/wind.png');
             this.iconHum = new ImageRect ((this.width / 2) + 10 , (this.height / 2) + 70, 60, 60, 0, '/infores/servlets/kitchen/drop.png');    
             
-            this.tmpInText = new Text (this.ctx, new Rect ((this.width / 2) - 120, (this.height / 2) - 10, 220, 60));
-            this.tmpOutText = new Text (this.ctx, new Rect ((this.width / 2), (this.height / 2) + 50, 150, 60));
-            this.timeText = new Text (this.ctx, new Rect ((this.width) - 150, 5, 150, 60));
-            this.dateText = new Text (this.ctx, new Rect ((this.width) / 2 + 70, 80, 230, 40));
-            this.windText = new Text (this.ctx, new Rect (160, 80, 140, 40));           
+            this.tmpInText = new TextSimple ((this.width / 2) - 120, (this.height / 2) - 10, 220, 60);
+            this.tmpOutText = new TextSimple ((this.width / 2), (this.height / 2) + 50, 150, 60);
+            this.timeText = new TextSimple ((this.width) - 150, 5, 150, 60);
+            this.dateText = new TextSimple ((this.width) / 2 + 70, 80, 230, 40);
+            this.windText = new TextSimple (160, 80, 140, 40);           
             
             this.stopWatch = new StopWatch (canvas);
             this.stopWatch.arcCenterX = this.width / 2;
@@ -384,7 +382,7 @@ module KitchenInfoStation {
             const ctx = this.ctx;
         
             //Weather outside...
-            this.iconWeather.paint(this.m_weatherData.getCurrent().weatherSymbol - 1);
+            this.iconWeather.paintImage(this.ctx, this.m_weatherData.getCurrent().weatherSymbol);
     
             //Wind
             this.iconWind.paint(this.ctx);
@@ -403,7 +401,7 @@ module KitchenInfoStation {
             this.windText.fontColor = textColor;
             this.windText.textAlign = "right";
             this.windText.textBaseline = "middle";                       
-            this.windText.paint(this.m_weatherData.getCurrent().windSpeed + " m/s");                
+            this.windText.paintText(this.ctx, this.m_weatherData.getCurrent().windSpeed + " m/s");                
             
             //Time          
             this.timeText.fontSize = fontSizeTime;
@@ -411,7 +409,7 @@ module KitchenInfoStation {
             this.timeText.fontColor = textColor;
             this.timeText.textAlign = "right";
             this.timeText.textBaseline = "middle";           
-            this.timeText.paint(this.m_siteData.timeString);        
+            this.timeText.paintText(this.ctx, this.m_siteData.timeString);        
                     
             //Date
             this.dateText.fontSize = fontSizeDate;
@@ -419,10 +417,10 @@ module KitchenInfoStation {
             this.dateText.fontColor = textColor;
             this.dateText.textAlign = "right";
             this.dateText.textBaseline = "middle";           
-            this.dateText.paint(this.m_siteData.dateString);                
+            this.dateText.paintText(this.ctx, this.m_siteData.dateString);                
             
             //Inside temperature
-            this.tmpInText.rect.y =  220;
+            this.tmpInText.y =  220;
             this.tmpInText.fontSize = fontSizeTempIn;
             this.tmpInText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.tmpInText.fontColor = textColor;
@@ -430,14 +428,14 @@ module KitchenInfoStation {
             this.tmpInText.textBaseline = "middle";     
             
             //Temperature from sensor 1...            
-            this.tmpInText.paint(this.m_weatherData.getCurrent().tempIn.toPrecision(2) + " \u00B0C");
+            this.tmpInText.paintText(this.ctx, this.m_weatherData.getCurrent().tempIn.toPrecision(2) + " \u00B0C");
             
             //Outside temperature    
             this.tmpOutText.equals(this.tmpInText);    
-            this.tmpOutText.rect.x = 80;
-            this.tmpOutText.rect.y =  5;     
+            this.tmpOutText.x = 80;
+            this.tmpOutText.y =  5;     
             this.tmpOutText.textAlign = "right";   
-            this.tmpOutText.paint(this.m_weatherData.getCurrent().tempOut.toPrecision(2) + " \u00B0C");    
+            this.tmpOutText.paintText(this.ctx, this.m_weatherData.getCurrent().tempOut.toPrecision(2) + " \u00B0C");    
                 
             //Humidity
             ctx.save();
@@ -727,23 +725,23 @@ module KitchenInfoStation {
         public lineWidth: number = 2.0;
         public weatherData: WeatherDataForecast = null; //weather data source        
         private numForecast:        number = 0;    
-        public txtValid:  Text;   
-        private txt:  Text;
-        private txtWind:  Text;        
+        public txtValid:  TextSimple;   
+        private txt:  TextSimple;
+        private txtWind:  TextSimple;        
         imgWind:HTMLImageElement = null;
         
-        private iconWeather: Iconset = null;
+        private iconWeather: ImageRectArray = null;
         private iconWind: ImageRect;
         
         constructor (ctx: CanvasRenderingContext2D, weatherData:  WeatherDataForecast, numForecast: number ) {         
             this.ctx = ctx;
-            this.txtValid = new Text (ctx, new Rect (10, 10, 60, 10));        
+            this.txtValid = new TextSimple (10, 10, 60, 10);        
             this.txtValid.textAlign = "left";
             this.txtValid.textBaseline = "top";
             this.txtValid.fontSize = 20;
     
-            this.txtWind = new Text (ctx, new Rect (0, 0, 0, 0));
-            this.txt = new Text (ctx, new Rect (0, 0, 0, 0));
+            this.txtWind = new TextSimple (0, 0, 0, 0);
+            this.txt = new TextSimple (0, 0, 0, 0);
             this.txt.textAlign = "left";
             this.txt.textBaseline = "middle";
             this.txt.fontSize = 20;
@@ -753,7 +751,7 @@ module KitchenInfoStation {
             this.weatherData = weatherData;
             this.numForecast = numForecast;
             
-            this.iconWeather = new Iconset (this.ctx, new Rect (0, 0, 10, 10));     
+            this.iconWeather = new ImageRectArray (0, 0, 10, 10, 0);     
             this.iconWeather.setImages(imagePaths);        
         }      
         
@@ -763,10 +761,10 @@ module KitchenInfoStation {
             this.width = width;
             this.height = height;     
             
-            this.txt.rect.x = x;
-            this.txt.rect.y = y;
-            this.txt.rect.w = width;
-            this.txt.rect.h = height;    
+            this.txt.x = x;
+            this.txt.y = y;
+            this.txt.w = width;
+            this.txt.h = height;    
         }
     
         public paint (ctx: CanvasRenderingContext2D) {
@@ -785,37 +783,37 @@ module KitchenInfoStation {
             var weatherForecast:    WeatherForecast = this.weatherData.getForecast(this.numForecast);
             
             if (!weatherForecast.valid){
-                this.txtValid.setSize(new Rect(this.x + 5, this.y + 1, 20, 10));
-                this.txtValid.paint("Not valid...");
+                this.txtValid.size(this.x + 5, this.y + 1, 20, 10);
+                this.txtValid.paintText(ctx, "Not valid...");
             } else {
                                  
                     //Draw forecast image
                     if (this.iconWeather != null) {
-                        this.iconWeather.setSize(new Rect (this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth)));
-                        this.iconWeather.paint(weatherForecast.weatherSymbol - 1);
+                        this.iconWeather.size(this.x + this.lineWidth, this.y + this.lineWidth, this.width - (2 * this.lineWidth), this.width - (2 * this.lineWidth));
+                        this.iconWeather.paintImage(ctx, weatherForecast.weatherSymbol);
                     }
                     
                     //Draw temperature...
-                    this.txt.rect.x = this.x + (this.width - 110);
-                    this.txt.rect.y = this.height * 0.8;
-                    this.txt.rect.w = 100;
-                    this.txt.rect.h = 30;
+                    this.txt.x = this.x + (this.width - 110);
+                    this.txt.y = this.height * 0.8;
+                    this.txt.w = 100;
+                    this.txt.h = 30;
                     this.txt.textAlign = "right";
-                    this.txt.paint(weatherForecast.tempOut + " \u00B0C");
+                    this.txt.paintText(ctx, weatherForecast.tempOut + " \u00B0C");
                             
                     //wind image
                     this.iconWind.size(this.x + (this.width * 0.1), this.width * 1.5, 40, 40);
                     this.iconWind.paint(this.ctx);
            
                     //wind text
-                    this.txtWind.rect.x = this.x + (this.width - 70);
-                    this.txtWind.rect.y = this.width * 1.6 - 10;
-                    this.txtWind.rect.w = 60;
-                    this.txtWind.rect.h = 30;
+                    this.txtWind.x = this.x + (this.width - 70);
+                    this.txtWind.y = this.width * 1.6 - 10;
+                    this.txtWind.w = 60;
+                    this.txtWind.h = 30;
                     this.txtWind.textAlign = "right";
                     this.txtWind.fontSize = 15;
                     this.txtWind.textBaseline = "middle";
-                    this.txtWind.paint(weatherForecast.windSpeed + " \u00B0C");
+                    this.txtWind.paintText(ctx, weatherForecast.windSpeed + " \u00B0C");
                 }        
         }     
     }        
@@ -834,7 +832,7 @@ module KitchenInfoStation {
         
         private numRooms: number = 0;
         
-        private txtNumRooms:  Text;
+        private txtNumRooms:  TextSimple;
         private timerData;
         
         //**********
@@ -851,7 +849,7 @@ module KitchenInfoStation {
             this.imgFloor = new Image();
             this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";            
          
-            this.txtNumRooms = new Text (this.ctx, new Rect (0, 0, 250, 100));
+            this.txtNumRooms = new TextSimple (0, 0, 250, 100);
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;       
@@ -936,8 +934,11 @@ module KitchenInfoStation {
                 var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
                 
                 switchSensor.postServerClick();
+                   this.paint();
                 switchSensor.getServerData();
-                this.paint();
+                   this.paint();
+                   
+             //   this.paint();
                 
                 this.returnVal.nextScreen = null;                         
                    
@@ -971,13 +972,13 @@ module KitchenInfoStation {
             }            
             
              //Number rooms
-            this.txtNumRooms.rect.x = this.width - 10;
-            this.txtNumRooms.rect.y = this.height - 10;
-            this.txtNumRooms.rect.w = this.width * 0.4;
+            this.txtNumRooms.x = this.width - 10;
+            this.txtNumRooms.y = this.height - 10;
+            this.txtNumRooms.w = this.width * 0.4;
             this.txtNumRooms.textAlign = "right";
             this.txtNumRooms.fontSize = 26;
             this.txtNumRooms.textBaseline = "bottom";
-            this.txtNumRooms.paint("Number Rooms:" + this.numRooms);                         
+            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);                         
         }       
     }
         
@@ -1190,7 +1191,7 @@ module KitchenInfoStation {
             }
             
             if(this.m_doorMark2 != null) {
-                this.m_doorMark2.size(5, 20, 80, 80);
+                this.m_doorMark2.size(5, 20, 60, 60);
                 this.m_doorMark2.paint(this.ctx);
             }                                                   
         }
@@ -1341,7 +1342,7 @@ module KitchenInfoStation {
             
             if (viewDoorClicked != null) {
                 returnVal.nextScreen = SwitchScreen.DoorScreen;
-                returnVal.nextThingPath = viewDoorClicked.thing.getPath();
+                returnVal.nextThingPath = viewDoorClicked.getThing().getPath();
             }
             
             if (this.panelBottom.isClicked(mousePos.x, mousePos.y) == true) {
@@ -1378,7 +1379,7 @@ module KitchenInfoStation {
                         var x: number = ((i - 1) * widthView) + ( i * spaceHor);
                         var y: number = ((j - 1) * heightView) + ( j * spaceVer); 
                         
-                        this.m_arrayViewDoor[nItem].setSize(new Rect (x, y, widthView, heightView));
+                        this.m_arrayViewDoor[nItem].size(x, y, widthView, heightView);
                     }                    
                     nItem ++;
                 }                
@@ -1388,8 +1389,9 @@ module KitchenInfoStation {
     
     class ViewDoor extends Mark {
                 
-        public m_doorMark2:          DoorMark = null;       // Mark of doors
-        public textDoorName:        Text;                  //Name of doors
+        public ctx:                 CanvasRenderingContext2D;  
+        public m_doorMark2:         DoorMark = null;       // Mark of doors
+        public textDoorName:        TextSimple;                  //Name of doors
         public m_graphics:          Graphics = null;
         
         public m_imgDoorOpen:  ImageRect = null;
@@ -1397,10 +1399,12 @@ module KitchenInfoStation {
         private border: boolean = false;
                 
         constructor (ctx: CanvasRenderingContext2D, m_graphics: Graphics) {
-            super(ctx, new Rect (0, 0, 0, 0));      
+            super(0, 0, 0, 0);     
+            
+            this.ctx = ctx;
             
             this.m_graphics = m_graphics;
-            this.textDoorName = new Text(this.ctx, new Rect (0, 0, 0, 0));
+            this.textDoorName = new TextSimple(0, 0, 0, 0);
         }
         
         public setThing(m_door: Door){
@@ -1412,23 +1416,23 @@ module KitchenInfoStation {
                 //Reload pictures etc...?
                 var door: Door = <Door> this.thing;       
                          
-                this.m_imgDoorOpen = new ImageRect (this.rect.x, this.rect.y, this.rect.w, this.rect.h, 10, door.image_close);        
+                this.m_imgDoorOpen = new ImageRect (this.x, this.y, this.w, this.h, 10, door.image_close);        
                 
                 this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
                 this.m_doorMark2.setThing(this.thing);
             }        
         }        
         
-        public setSize (rect: Rect) {
-            super.setSize(rect);    
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);    
            // this.m_iconDoorOpen.setSize(rect);
             //this.m_iconDoorClose.setSize(rect);
             if (this.m_imgDoorOpen != null) {
-                this.m_imgDoorOpen.size(rect.x, rect.y, rect.w, rect.h);
+                this.m_imgDoorOpen.size(x, y, w, h);
             }
             
             if (this.m_doorMark2 != null) {
-                this.m_doorMark2.size(rect.x + 30, rect.y + 20, 80, 80);
+                this.m_doorMark2.size(x + 30, y + 20, 60, 60);
             }   
                      
         }
@@ -1452,15 +1456,16 @@ module KitchenInfoStation {
                 this.m_doorMark2.paint(this.ctx);
             }              
             
-            this.textDoorName.setSize(new Rect (this.rect.x + 5, this.rect.y + 5, 80, 80));
-            this.textDoorName.paint("name");
+            this.textDoorName.fontSize = 15;
+            this.textDoorName.size(this.x + 5, this.y + 5, 80, 80);
+            this.textDoorName.paintText(this.ctx, "name");
             
             if (this.border) {                
                 this.ctx.save();
                 this.ctx.beginPath();
                 this.ctx.lineWidth=2;
                 this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                this.ctx.rect(this.x, this.y, this.w, this.h);
                 this.ctx.stroke();
                 this.ctx.restore();            
             }

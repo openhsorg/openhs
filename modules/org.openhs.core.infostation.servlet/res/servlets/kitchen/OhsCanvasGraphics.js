@@ -37,22 +37,6 @@ var OhsCanvasGraphics;
                 arg.length = num;
             }
         };
-        Graphics.prototype.getFilteredMarks = function (arg, filterPath) {
-            if (filterPath == null) {
-                return arg;
-            }
-            else {
-                return arg.filter(function (element) {
-                    var mark = element;
-                    if (mark.thing == null) {
-                        return true;
-                    }
-                    else {
-                        return mark.thing.getPath().indexOf(filterPath) >= 0;
-                    }
-                });
-            }
-        };
         Graphics.prototype.getFilteredImage = function (array, src) {
             for (var i = 0; i < array.length; i++) {
                 if (array[i].getImageSrc() == src) {
@@ -89,6 +73,14 @@ var OhsCanvasGraphics;
             this.y = y;
             this.w = w;
             this.h = h;
+        };
+        Rect.prototype.scaleSize = function (perc) {
+            var old_w = this.w;
+            var old_h = this.h;
+            this.w = this.w * perc;
+            this.h = this.h * perc;
+            this.x = this.x + ((old_w - this.w) / 2);
+            this.y = this.y + ((old_h - this.h) / 2);
         };
         Rect.prototype.paint = function (ctx) {
             ctx.beginPath();
@@ -162,6 +154,64 @@ var OhsCanvasGraphics;
         return ImageRect;
     }(RectRounded));
     OhsCanvasGraphics.ImageRect = ImageRect;
+    var ImageRectArray = (function (_super) {
+        __extends(ImageRectArray, _super);
+        function ImageRectArray(x, y, w, h, radius) {
+            _super.call(this, x, y, w, h, radius);
+            this.array = null;
+            this.border = false;
+            this.array = new Array();
+        }
+        ImageRectArray.prototype.setImages = function (imgPaths) {
+            for (var i = 0; i < imgPaths.length; i++) {
+                if (this.array.length < i + 1) {
+                    var img = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                    this.array.push(img);
+                }
+                else {
+                    //Compare images...
+                    if (imgPaths[i].toString() == this.array[i].getImageSrc()) {
+                    }
+                    else {
+                        //Replace image on position 'i'
+                        var img = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                        this.array.splice(i, 1, img);
+                    }
+                }
+            }
+            //Check lenght of array and cut            
+            if (this.array.length > imgPaths.length) {
+                this.array.length = imgPaths.length;
+            }
+        };
+        ImageRectArray.prototype.paintImage = function (ctx, nImage) {
+            if (!(nImage <= 0 || nImage > this.array.length)) {
+                this.array[nImage].size(this.x, this.y, this.w, this.h);
+                this.array[nImage].paint(ctx);
+            }
+            if (this.border) {
+                ctx.save();
+                _super.prototype.paint.call(this, ctx);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+        ImageRectArray.prototype.getImages = function () {
+            return this.array;
+        };
+        ImageRectArray.prototype.getImagesPaths = function () {
+            var paths = new Array();
+            for (var id in this.array) {
+                var str = this.array[id].getImageSrc();
+                paths.push(str);
+            }
+            return paths;
+        };
+        return ImageRectArray;
+    }(RectRounded));
+    OhsCanvasGraphics.ImageRectArray = ImageRectArray;
     var TextSimple = (function (_super) {
         __extends(TextSimple, _super);
         function TextSimple(x, y, w, h) {
@@ -174,7 +224,7 @@ var OhsCanvasGraphics;
             this.text = '';
             this.border = false;
         }
-        TextSimple.prototype.painitText = function (ctx, text) {
+        TextSimple.prototype.paintText = function (ctx, text) {
             this.text = text;
             this.paint(ctx);
         };
@@ -208,48 +258,34 @@ var OhsCanvasGraphics;
                 ctx.restore();
             }
         };
+        TextSimple.prototype.equals = function (txtIn) {
+            _super.prototype.equals.call(this, txtIn);
+            this.fontSize = txtIn.fontSize;
+            this.fontColor = txtIn.fontColor;
+            this.fontFamily = txtIn.fontFamily;
+            this.textAlign = txtIn.textAlign;
+            this.textBaseline = txtIn.textBaseline;
+        };
         return TextSimple;
     }(Rect));
     OhsCanvasGraphics.TextSimple = TextSimple;
-    /**
-     * Graphical symbol...
-     */
-    var Mark = (function () {
-        function Mark(ctx, rect) {
-            this.thing = null; //data
-            this.ctx = ctx;
-            this.rect = new Rect(rect.x, rect.y, rect.w, rect.h);
-        }
-        Mark.prototype.equals = function (mark) {
-            this.ctx = mark.ctx;
-            this.rect.equals(mark.rect);
-        };
-        Mark.prototype.setSize = function (rect) {
-            this.rect.equals(rect);
-        };
-        Mark.prototype.isClicked = function (clx, cly) {
-            return this.rect.isClicked(clx, cly);
-        };
-        return Mark;
-    }());
-    OhsCanvasGraphics.Mark = Mark;
-    var Mark2 = (function (_super) {
-        __extends(Mark2, _super);
-        function Mark2(x, y, w, h) {
+    var Mark = (function (_super) {
+        __extends(Mark, _super);
+        function Mark(x, y, w, h) {
             _super.call(this, x, y, w, h);
             this.thing = null;
             this.colorIncideReady = '#a6a6a6';
             this.colorBorderReady = '#595959';
         }
-        Mark2.prototype.setThing = function (thing) {
+        Mark.prototype.setThing = function (thing) {
             this.thing = thing;
         };
-        Mark2.prototype.getThing = function () {
+        Mark.prototype.getThing = function () {
             return this.thing;
         };
-        return Mark2;
+        return Mark;
     }(Rect));
-    OhsCanvasGraphics.Mark2 = Mark2;
+    OhsCanvasGraphics.Mark = Mark;
     var DoorMark = (function (_super) {
         __extends(DoorMark, _super);
         function DoorMark(x, y, w, h) {
@@ -264,11 +300,22 @@ var OhsCanvasGraphics;
         }
         DoorMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
-            var dx = 20;
-            var dy = 20;
+            //Size of images
+            var perc = 0.7;
+            this.imgOpen.size(x, y, w, h);
+            this.imgOpen.scaleSize(perc);
+            this.imgClose.size(x, y, w, h);
+            this.imgClose.scaleSize(perc);
+            this.imgLock.size(x, y, w, h);
+            this.imgLock.scaleSize(0.5);
+            /*
+            var dx: number = 20;
+            var dy: number = 20;
+            
             this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
             this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
             this.imgLock.size(x + dx, y + dy, w - dx, h - dy);
+              */
         };
         DoorMark.prototype.getDoorThing = function () {
             var door = null;
@@ -282,9 +329,7 @@ var OhsCanvasGraphics;
         DoorMark.prototype.paintByThing = function (ctx) {
             var door = this.getDoorThing();
             if (door != null) {
-                //this.x = door.x;
-                //this.y = door.y;
-                this.size(door.x, door.y, 80, 80);
+                this.size(door.x, door.y, 60, 60);
             }
             this.paint(ctx);
         };
@@ -318,7 +363,7 @@ var OhsCanvasGraphics;
             }
             ctx.save();
             ctx.beginPath();
-            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 3, 0, 2 * Math.PI, false);
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
             ctx.fillStyle = colorInside;
             ctx.fill();
             ctx.lineWidth = 2;
@@ -343,151 +388,8 @@ var OhsCanvasGraphics;
             }
         };
         return DoorMark;
-    }(Mark2));
+    }(Mark));
     OhsCanvasGraphics.DoorMark = DoorMark;
-    var Iconset = (function (_super) {
-        __extends(Iconset, _super);
-        function Iconset(ctx, rect) {
-            _super.call(this, ctx, rect);
-            this.border = false; //debug border        
-            this.ir = false;
-            this.images = new Array();
-            this.imagesPaths = new Array();
-            this.imagesReady = new Array();
-        }
-        Iconset.prototype.setImages = function (imgPaths) {
-            var _this = this;
-            if (this.imagesReady.length < imgPaths.length) {
-                this.imagesReady.push(false);
-            }
-            else {
-                this.imagesReady.length = imgPaths.length;
-            }
-            this.ir = false;
-            //window.alert("Size:" + imgPaths.length);
-            for (var i = 0; i < imgPaths.length; i++) {
-                this.imagesReady[i] = false;
-                var img = new Image();
-                if (i < this.images.length) {
-                    this.images[i] = img;
-                }
-                else {
-                    this.images.push(img);
-                }
-                if (i < this.imagesPaths.length) {
-                    this.imagesPaths[i] = imgPaths[i].toString();
-                }
-                else {
-                    this.imagesPaths.push(imgPaths[i].toString());
-                }
-            }
-            //load images....            
-            for (var id in this.images) {
-                this.images[id].onload = function (event) {
-                    _this.onImageLoad(event);
-                };
-                this.images[id].src = imgPaths[id].toString();
-            }
-        };
-        Iconset.prototype.onImageLoad = function (event) {
-            console.log("onImageLoad");
-            this.ir = true;
-        };
-        Iconset.prototype.imageReady = function (img, path) {
-            img.src = path;
-        };
-        Iconset.prototype.getImages = function () {
-            return this.images;
-        };
-        Iconset.prototype.getImagesPaths = function () {
-            return this.imagesPaths;
-        };
-        Iconset.prototype.paint = function (nImage) {
-            //Draw image... 
-            var ret = false;
-            //   var image: HTMLImageElement = this.images[nImage];
-            if (this.images[nImage] != null) {
-                if (this.images[nImage].onload) {
-                    this.ctx.save();
-                    this.ctx.drawImage(this.images[nImage], this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                    this.ctx.restore();
-                    ret = true;
-                }
-            }
-            if (this.border) {
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = "blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-            }
-            return ret;
-        };
-        return Iconset;
-    }(Mark));
-    OhsCanvasGraphics.Iconset = Iconset;
-    var Text = (function (_super) {
-        __extends(Text, _super);
-        function Text(ctx, rect) {
-            _super.call(this, ctx, rect);
-            this.fontSize = 10;
-            this.fontColor = "#000000";
-            this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.textAlign = "center";
-            this.textBaseline = "middle";
-            this.border = false; //debug border
-        }
-        Text.prototype.paint = function (text) {
-            var x = this.rect.x;
-            var y = this.rect.y;
-            var align = this.textAlign.toString();
-            var baseline = this.textBaseline.toString();
-            if (align == "right" || align == "end") {
-                x = this.rect.x + this.rect.w;
-            }
-            else if (align == "center") {
-                x = this.rect.x + (this.rect.w / 2);
-            }
-            if (baseline == "bottom" || baseline == "alphabetic") {
-                y = this.rect.y + this.rect.h;
-            }
-            else if (baseline == "middle") {
-                y = this.rect.y + (this.rect.h / 2);
-            }
-            this.ctx.save();
-            this.ctx.font = this.fontSize + this.fontFamily;
-            this.ctx.textAlign = this.textAlign;
-            this.ctx.textBaseline = this.textBaseline;
-            this.ctx.fillStyle = this.fontColor;
-            this.ctx.fillText(text, x, y);
-            this.ctx.restore();
-            if (this.border) {
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = "red";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-            }
-        };
-        Text.prototype.equals = function (tx) {
-            this.rect.equals(tx.rect);
-            this.ctx = tx.ctx;
-            this.fontSize = tx.fontSize;
-            this.fontColor = tx.fontColor;
-            this.fontFamily = tx.fontFamily;
-            this.textAlign = tx.textAlign;
-            this.textBaseline = tx.textBaseline;
-        };
-        Text.prototype.setSize = function (rect) {
-            _super.prototype.setSize.call(this, rect);
-        };
-        return Text;
-    }(Mark));
-    OhsCanvasGraphics.Text = Text;
     var TempMark = (function (_super) {
         __extends(TempMark, _super);
         function TempMark(x, y, w, h) {
@@ -521,7 +423,7 @@ var OhsCanvasGraphics;
         TempMark.prototype.paintByThing = function (ctx) {
             var tempSensor = this.getTemperatureSensorThing();
             if (tempSensor != null) {
-                this.size(tempSensor.x, tempSensor.y, 80, 80);
+                this.size(tempSensor.x, tempSensor.y, 60, 60);
             }
             this.paint(ctx);
         };
@@ -546,10 +448,10 @@ var OhsCanvasGraphics;
             this.imgThermometer.paint(ctx);
             //Draw temperature text
             if (tempSensor == null) {
-                this.textTemp.painitText(ctx, "---");
+                this.textTemp.paintText(ctx, "---");
             }
             else {
-                this.textTemp.painitText(ctx, tempSensor.temp + ' \u00B0C');
+                this.textTemp.paintText(ctx, tempSensor.temp + ' \u00B0C');
             }
             if (this.border) {
                 ctx.save();
@@ -558,7 +460,7 @@ var OhsCanvasGraphics;
             }
         };
         return TempMark;
-    }(Mark2));
+    }(Mark));
     OhsCanvasGraphics.TempMark = TempMark;
     var SwitchMark = (function (_super) {
         __extends(SwitchMark, _super);
@@ -566,20 +468,26 @@ var OhsCanvasGraphics;
             _super.call(this, x, y, w, h);
             this.imgBulbOn = null;
             this.imgBulbOff = null;
-            // protected textState:          TextSimple = null;
+            this.imgBulbOn_Off = null;
+            this.imgBulbOff_On = null;
             this.border = false;
             this.imgBulbOn = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn.png');
             this.imgBulbOff = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff.png');
-            //   this.textState = new TextSimple(x, y, w, h);                  
+            this.imgBulbOn_Off = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn_Off.png');
+            this.imgBulbOff_On = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff_On.png');
             this.size(x, y, w, h);
         }
         SwitchMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
-            var dx = 1;
-            var dy = 1;
-            this.imgBulbOn.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgBulbOff.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            // this.textState.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
+            var perc = 0.9;
+            this.imgBulbOn.size(x, y, w, h);
+            this.imgBulbOn.scaleSize(perc);
+            this.imgBulbOff.size(x, y, w, h);
+            this.imgBulbOff.scaleSize(perc);
+            this.imgBulbOn_Off.size(x, y, w, h);
+            this.imgBulbOn_Off.scaleSize(perc);
+            this.imgBulbOff_On.size(x, y, w, h);
+            this.imgBulbOff_On.scaleSize(perc);
         };
         SwitchMark.prototype.getSwitchThing = function () {
             var swtch = null;
@@ -593,7 +501,7 @@ var OhsCanvasGraphics;
         SwitchMark.prototype.paintByThing = function (ctx) {
             var swtch = this.getSwitchThing();
             if (swtch != null) {
-                this.size(swtch.x, swtch.y, 80, 80);
+                this.size(swtch.x, swtch.y, 60, 60);
             }
             this.paint(ctx);
         };
@@ -628,13 +536,13 @@ var OhsCanvasGraphics;
                     this.imgBulbOff.paint(ctx);
                 }
                 else if (swtch.getState() == 2) {
-                    this.imgBulbOn.paint(ctx);
+                    this.imgBulbOff_On.paint(ctx);
                 }
                 else if (swtch.getState() == 3) {
                     this.imgBulbOn.paint(ctx);
                 }
                 else if (swtch.getState() == 4) {
-                    this.imgBulbOff.paint(ctx);
+                    this.imgBulbOn_Off.paint(ctx);
                 }
                 else {
                     this.imgBulbOff.paint(ctx);
@@ -647,6 +555,6 @@ var OhsCanvasGraphics;
             }
         };
         return SwitchMark;
-    }(Mark2));
+    }(Mark));
     OhsCanvasGraphics.SwitchMark = SwitchMark;
 })(OhsCanvasGraphics || (OhsCanvasGraphics = {}));

@@ -159,7 +159,8 @@ public class KitchenServlet extends HttpServlet {
 	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
 	    			
 	    			try {
-	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
+	    				stateInt = m_infostation.getSwitchIntState(path2);	
+	    			//	System.out.println("\n\n\n\n    State: " + stateInt);
 	    			} catch (Exception ex) {
 	    				
 	    			}
