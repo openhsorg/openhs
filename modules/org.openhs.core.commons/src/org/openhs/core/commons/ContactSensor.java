@@ -2,7 +2,7 @@ package org.openhs.core.commons;
 
 public class ContactSensor extends Thing {
 	
-	private Value m_state;
+	private Value m_state = new Value();
 	
 	public boolean getState ()
 	{

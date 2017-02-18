@@ -5,16 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhs.core.commons.ObjectFactory;
 import org.openhs.core.commons.SiteException;
-import org.openhs.core.commons.Switch;
-import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.ThingUpdater;
 import org.openhs.core.commons.api.ICommService;
@@ -43,12 +38,15 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
     
     private DummyMessage m_thm0 = new DummyMessage(0, "Thermometer", "0.0","");
     private DummyMessage m_thm1 = new DummyMessage(1, "Thermometer", "0.0","");
+    private DummyMessage m_conc2 = new DummyMessage(2, "ContactSensor", "0.0","");
+    private DummyMessage m_conc3 = new DummyMessage(3, "ContactSensor", "0.0","");
 
     public DummyService() {
     	m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 
     	m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
     	m_updaterFactory.registerClass("Switch", SwitchUpdater.class);
+    	m_updaterFactory.registerClass("ContactSensor", ContactSensorUpdater.class);
     }
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -183,7 +181,12 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		
 		double temp1 = -10.0;
 		double hum1 = 80.0;
-
+		
+		int icon2 = 0;
+		int icon3 = 0;
+		boolean bcon2 = false;
+		boolean bcon3 = false;
+		
 		while (running) {
 									
 			if (m_messageHandler != null) {			
@@ -217,6 +220,27 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 					m_messageHandler.handleIncomingMessage(mes);
 				}
 			
+				//msg 2
+				{
+					icon2 += 1;
+					if (0 == icon2 % 3) {
+						bcon2 = !bcon2;
+						m_conc2.m_value = bcon2 ? "1.0" : "0.0";
+						Message mes = new Message(m_name, "dummy", m_conc2.toString());
+						m_messageHandler.handleIncomingMessage(mes);
+					}
+				}
+
+				//msg 3
+				{
+					icon3 += 1;
+					if (0 == icon3 % 4) {
+						bcon3 = !bcon3;
+						m_conc2.m_value = bcon3 ? "1.0" : "0.0";
+						Message mes = new Message(m_name, "dummy", m_conc2.toString());
+						m_messageHandler.handleIncomingMessage(mes);
+					}
+				}
 			}
           	try {
 				Thread.sleep (2000);

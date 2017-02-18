@@ -38,4 +38,10 @@
 <thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room3.png"/>
 </thing>
+
+<thing devicePath="DummyService/dummy/2/Switch" name="MainDoor" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoor" type="Switch"/>
+<thing devicePath="DummyService/dummy/2/ContactSensor" name="MainDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoorClosed" type="ContactSensor"/>
+<thing devicePath="DummyService/dummy/3/Switch" name="SideDoor" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoor" type="Switch"/>
+<thing devicePath="DummyService/dummy/3/ContactSensor" name="SideDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoorClosed" type="ContactSensor"/>
+
 </site>
