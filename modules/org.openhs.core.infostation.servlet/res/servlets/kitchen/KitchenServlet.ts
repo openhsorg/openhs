@@ -10,16 +10,16 @@
 
 module KitchenInfoStation {        
 
-    import Rect =       OhsCanvasGraphics.Rect;
-    import RectRounded =       OhsCanvasGraphics.RectRounded;
-    import ImageRect =       OhsCanvasGraphics.ImageRect;
-    import TextSimple =       OhsCanvasGraphics.TextSimple;    
-    import TempMark =   OhsCanvasGraphics.TempMark;    
-    import SwitchMark = OhsCanvasGraphics.SwitchMark;    
-    import DoorMark =   OhsCanvasGraphics.DoorMark;
-    import ImageRectArray =  OhsCanvasGraphics.ImageRectArray;
-    import Graphics =   OhsCanvasGraphics.Graphics;
-    import Mark =   OhsCanvasGraphics.Mark;
+    import Rect =               OhsCanvasGraphics.Rect;
+    import RectRounded =        OhsCanvasGraphics.RectRounded;
+    import ImageRect =          OhsCanvasGraphics.ImageRect;
+    import TextSimple =         OhsCanvasGraphics.TextSimple;    
+    import TempMark =           OhsCanvasGraphics.TempMark;    
+    import SwitchMark =         OhsCanvasGraphics.SwitchMark;    
+    import DoorMark =           OhsCanvasGraphics.DoorMark;
+    import ImageRectArray =     OhsCanvasGraphics.ImageRectArray;
+    import Graphics =           OhsCanvasGraphics.Graphics;
+    import Mark =               OhsCanvasGraphics.Mark;
         
     import WeatherDataForecast = OhsWeatherData.WeatherDataForecast;
     import WeatherForecast =     OhsWeatherData.WeatherForecast;    
@@ -40,7 +40,7 @@ module KitchenInfoStation {
         Room,
         DoorList,
         DoorScreen
-    }    
+    }          
     
     var imagePaths: Array <String> = [
             "/infores/servlets/kitchen/sunny.png",        
@@ -79,13 +79,13 @@ module KitchenInfoStation {
     
     export class ApplicationKitchen {
         
-        private canvas:              HTMLCanvasElement;
+        private canvas:             HTMLCanvasElement;
         public ctx:                 CanvasRenderingContext2D;  
-        private url: string = "kitchen";
+        private url:                string = "kitchen";
         
         // Data
-        public m_weatherData: WeatherDataForecast = new WeatherDataForecast(); // General weather
-        public m_siteData:    SiteData = null; //general Site Data      
+        public m_weatherData:       WeatherDataForecast = new WeatherDataForecast(); // General weather
+        public m_siteData:          SiteData = null; //general Site Data      
         
         // Timers
         private timerData;
@@ -93,12 +93,12 @@ module KitchenInfoStation {
         private timerLoadGraphics;
         
         // Screens
-        private m_screenMain: ScreenMain = null;
-        public m_forecastScreen: ScreenWeatherForecast = null; //forecast screen            
-        private m_room: ScreenRoom = null;
-        private m_floor: ScreenFloor =  null;
-        private m_screenDoorList: ScreenDoorList = null;
-        private m_screenDoor: ScreenDoor = null;
+        private m_screenMain:       ScreenMain = null;
+        public m_forecastScreen:    ScreenWeatherForecast = null; //forecast screen            
+        private m_room:             ScreenRoom = null;
+        private m_floor:            ScreenFloor =  null;
+        private m_screenDoorList:   ScreenDoorList = null;
+        private m_screenDoor:       ScreenDoor = null;
                
         //Graphics
         private m_graphics: Graphics = null;        
@@ -136,6 +136,7 @@ module KitchenInfoStation {
                           
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
+
         }
         
         private MouseClickHandler(event) {
@@ -155,13 +156,12 @@ module KitchenInfoStation {
             if (retVal.nextScreen == SwitchScreen.Floor) {               
                 refresh = 100;
                 screen = this.m_floor;
-                this.m_floor.setThing(<Thing>this.m_siteData.floors[1]);
+                this.m_floor.setThing(<Thing>this.m_siteData.m_floorArray[1]);
                 
-                 // window.alert("path:   " + this.m_siteData.floors[0].getPath());
+                 // window.alert("path:   " + this.m_siteData.m_floorArray[0].getPath());
                 
             } else if (retVal.nextScreen == SwitchScreen.Main) {
-                screen = this.m_screenMain;
-                                
+                screen = this.m_screenMain;     
             } else if (retVal.nextScreen == SwitchScreen.WeatherForecast) {
                 screen = this.m_forecastScreen;     
                        
@@ -175,7 +175,8 @@ module KitchenInfoStation {
                 screen = this.m_screenDoorList;     
                            
             } else if (retVal.nextScreen == SwitchScreen.DoorScreen) {
-             //   refresh = 100;
+             //   refresh = 100;                      
+                
                 screen = this.m_screenDoor;  
                 this.m_screenDoor.setThing(this.m_siteData.getThing(retVal.nextThingPath));                            
             }
@@ -189,7 +190,8 @@ module KitchenInfoStation {
                 if (this.currPage != null) {                                
                     this.currPage.close();                                                     
                 }                
-                
+                                
+                next.prevPage = this.currPage;
                 this.currPage = next.open(refreshRate);
             }
         }
@@ -213,6 +215,8 @@ module KitchenInfoStation {
         public ctx:                 CanvasRenderingContext2D;  
         public width:               number;
         public height:              number;      
+        
+        public prevPage: Screen = null;
         
         private thing: Thing = null;
         
@@ -278,8 +282,8 @@ module KitchenInfoStation {
     export class ScreenMain extends Screen {                  
         
         //Data
-        private m_siteData: SiteData = null;
-        private m_weatherData: WeatherDataForecast = null;
+        private m_siteData:         SiteData = null;
+        private m_weatherData:      WeatherDataForecast = null;
         
         //Graphics
         public stopWatch:           StopWatch = null;  
@@ -334,7 +338,7 @@ module KitchenInfoStation {
             };     
             
             var mousePos = getMousePos(this.canvas, event);
-            
+       
             if (this.appWatch) {
                 if (this.stopWatch.getStatus()) {
                     if(this.stopWatch.stopwatchRect.isClicked(mousePos.x, mousePos.y)) {                                
@@ -369,8 +373,9 @@ module KitchenInfoStation {
                     return returnVal;                                      
                 }
             }        
+
             
-            return null;
+            //return null;
         }
         
         protected paint () {
@@ -871,16 +876,16 @@ module KitchenInfoStation {
                 if (thing instanceof Floor) {
                     
                     //Doors
-                    var doors: Array<Door> = this.siteData.getFilteredThings(this.siteData.doors, thing.getPath());
+                    var m_doorArray: Array<Door> = this.siteData.getFilteredThings(this.siteData.m_doorArray, thing.getPath());
                     
-                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(m_doorArray.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_doorMarks) {
-                        this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
+                        this.m_doorMarks[id].setThing(<Thing>m_doorArray[id]);                        
                     }
                     
                     //Marks
-                    var temps: Array<TemperatureSensor> = this.siteData.getFilteredThings(this.siteData.tempSensors, thing.getPath());
+                    var temps: Array<TemperatureSensor> = this.siteData.getFilteredThings(this.siteData.m_tempSensorArray, thing.getPath());
                     
                     this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
                     
@@ -889,12 +894,12 @@ module KitchenInfoStation {
                     }                    
                     
                     //Switch
-                    var switches: Array<Switch> = this.siteData.getFilteredThings(this.siteData.switches, thing.getPath());
+                    var m_switchArray: Array<Switch> = this.siteData.getFilteredThings(this.siteData.m_switchArray, thing.getPath());
                     
-                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(m_switchArray.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(<Thing>switches[id]);                        
+                        this.m_switchMarks[id].setThing(<Thing>m_switchArray[id]);                        
                     }                   
                 }                               
             }            
@@ -904,9 +909,12 @@ module KitchenInfoStation {
         
             var returnVal = {
                 nextScreen: SwitchScreen.Main,
-                nextThingPath: null                                  
-            };            
-                       
+                nextThingPath: null                                        
+            };    
+            
+
+  
+            
             var mousePos = getMousePos(this.canvas, event);
             
             
@@ -966,12 +974,12 @@ module KitchenInfoStation {
                 this.m_tempMarks[id].paintByThing(this.ctx);
             }
             
-            //switches
+            //m_switchArray
             for (let id in this.m_switchMarks) {
                 this.m_switchMarks[id].paintByThing(this.ctx);
             }            
             
-             //Number rooms
+             //Number m_roomArray
             this.txtNumRooms.x = this.width - 10;
             this.txtNumRooms.y = this.height - 10;
             this.txtNumRooms.w = this.width * 0.4;
@@ -1010,12 +1018,12 @@ module KitchenInfoStation {
             
             this.m_imgRoom2Array = new Array<ImageRect>();
             
-            for (let id in this.m_siteData.rooms){                
-                var img: ImageRect = new ImageRect (0, 0, this.width, this.height, 0, this.m_siteData.rooms[id].imageBkgPath);
+            for (let id in this.m_siteData.m_roomArray){                
+                var img: ImageRect = new ImageRect (0, 0, this.width, this.height, 0, this.m_siteData.m_roomArray[id].imageBkgPath);
                 
                 /*
                 if (!img.getImage().onload) {
-                    window.alert("Path:" + this.m_siteData.rooms[id].imageBkgPath);
+                    window.alert("Path:" + this.m_siteData.m_roomArray[id].imageBkgPath);
                 }
        */         
                 this.m_imgRoom2Array.push(img);                 
@@ -1090,16 +1098,16 @@ module KitchenInfoStation {
                     }                                        
                                        
                     //Doors
-                    var doors: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.doors, thing.getPath());
+                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getPath());
                     
-                    this.m_graphics.setNumber2(doors.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(m_doorArray.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_doorMarks) {
-                        this.m_doorMarks[id].setThing(<Thing>doors[id]);                        
+                        this.m_doorMarks[id].setThing(<Thing>m_doorArray[id]);                        
                     }
                     
                     //Temp marks
-                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.tempSensors, thing.getPath());
+                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getPath());
                     
                     this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
                     
@@ -1108,12 +1116,12 @@ module KitchenInfoStation {
                     }                    
                     
                     //Switch marks
-                    var switches: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.switches, thing.getPath());
+                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getPath());
                     
-                    this.m_graphics.setNumber2(switches.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(m_switchArray.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(<Thing> switches[id]);                        
+                        this.m_switchMarks[id].setThing(<Thing> m_switchArray[id]);                        
                     }                                          
                 }                               
             }            
@@ -1176,8 +1184,8 @@ module KitchenInfoStation {
             
             this.m_imgOpenArray = new Array<ImageRect>();
             
-            for (let id in this.m_siteData.doors){                
-                var img: ImageRect = new ImageRect (0, 0, this.width, this.height, 0, this.m_siteData.doors[id].image_open);
+            for (let id in this.m_siteData.m_doorArray){                
+                var img: ImageRect = new ImageRect (0, 0, this.width, this.height, 0, this.m_siteData.m_doorArray[id].image_open);
                 this.m_imgOpenArray.push(img); 
             }
         }
@@ -1231,8 +1239,19 @@ module KitchenInfoStation {
         public MouseClickHandler(event) {                                           
            
             var mousePos = getMousePos(this.canvas, event);
-
-            this.returnVal.nextScreen = SwitchScreen.DoorList;
+            
+            if (this.m_doorMark2.isClicked(mousePos.x, mousePos.y)){                
+                
+                    var door: Door = <Door> this.m_doorMark2.getThing();
+                    
+                    window.alert('Door clicked: ' + door.getPath());
+                    this.returnVal.nextScreen = null;
+                
+            } else { // Return back            
+            
+                this.returnVal.nextScreen = SwitchScreen.DoorList;
+            }
+              
             
             return this.returnVal;
         }           
@@ -1242,10 +1261,9 @@ module KitchenInfoStation {
         
         protected m_graphics: Graphics = null;       
         protected m_siteData: SiteData = null;
-        protected m_arrayViewDoor:  Array<ViewDoor>; //View of doors
+        protected m_arrayViewDoor:  Array<ViewDoor>; //View of m_doorArray
         protected m_iconBkgImage:   ImageRect = null;
         
-        protected panelBottom: RectRounded = null;
         protected imgLock: ImageRect = null;
         protected imgUnLock: ImageRect = null;
         
@@ -1260,7 +1278,6 @@ module KitchenInfoStation {
             this.setup();
             
             this.m_iconBkgImage = new ImageRect(0, 0, 0, 0, 0, '/infores/servlets/kitchen/bkgDoorsList3.jpg');            
-            this.panelBottom = new RectRounded(20, this.height - 100, this.width - 50, 80, 40);
             
             this.imgLock = new ImageRect ((this.width / 2) - 30, this.height - 120, 80, 80, 40, '/infores/servlets/kitchen/padlock_symbol.png');
             this.imgUnLock = new ImageRect ((this.width / 2) + 15, this.height - 75, 80, 80, 40, '/infores/servlets/kitchen/padlockCrossed_symbol.png');
@@ -1268,18 +1285,18 @@ module KitchenInfoStation {
         
         protected setup() {
             //Setup view array ...
-            for (var i = 0; i < this.m_siteData.doors.length; i++) {
+            for (var i = 0; i < this.m_siteData.m_doorArray.length; i++) {
                 if(this.m_arrayViewDoor.length < i + 1) {
                     this.m_arrayViewDoor.push(new ViewDoor(this.ctx, this.m_graphics));
                 }
                 
                 //Align data...
-                this.m_arrayViewDoor[i].setThing(this.m_siteData.doors[i]);                
+                this.m_arrayViewDoor[i].setThing(this.m_siteData.m_doorArray[i]);                
             }
             
             //Cut over-remaining View parts
-            if (this.m_arrayViewDoor.length > this.m_siteData.doors.length){
-                this.m_arrayViewDoor.length = this.m_siteData.doors.length;                
+            if (this.m_arrayViewDoor.length > this.m_siteData.m_doorArray.length){
+                this.m_arrayViewDoor.length = this.m_siteData.m_doorArray.length;                
             }
                   
         }
@@ -1303,18 +1320,7 @@ module KitchenInfoStation {
             for (let id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint();                
             }
-            
-            //Paint bottom panel
-            /*
-            ctx.save();            
-            this.panelBottom.paint(this.ctx);
-            ctx.fillStyle = "white";
-            ctx.lineWidth=2;
-            ctx.strokeStyle="gray";            
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-            */
+ 
             //Paint buttons on panel
             ctx.save();
             this.imgLock.paint(this.ctx);
@@ -1334,27 +1340,36 @@ module KitchenInfoStation {
             var viewDoorClicked: ViewDoor = null;
                         
             for (let i in this.m_arrayViewDoor) {
-                if(this.m_arrayViewDoor[i].isClicked(mousePos.x, mousePos.y)){
-                    viewDoorClicked = this.m_arrayViewDoor[i];
-                    break;
-                }                                    
+                
+                if (this.m_arrayViewDoor[i].m_doorMark2.isClicked(mousePos.x, mousePos.y)){
+                    
+                    var door: Door = <Door> this.m_arrayViewDoor[i].m_doorMark2.getThing();
+                    
+                    window.alert('Door clicked: ' + door.getPath());
+                    returnVal.nextScreen = null;
+                } else {                
+                    if(this.m_arrayViewDoor[i].isClicked(mousePos.x, mousePos.y)){
+                        viewDoorClicked = this.m_arrayViewDoor[i];
+                        break;
+                    }   
+               }                                 
             }            
             
             if (viewDoorClicked != null) {
                 returnVal.nextScreen = SwitchScreen.DoorScreen;
                 returnVal.nextThingPath = viewDoorClicked.getThing().getPath();
             }
-            
+            /*
             if (this.panelBottom.isClicked(mousePos.x, mousePos.y) == true) {
                 returnVal = null;
             }
-            
+            */
             if(this.imgLock.isClicked(mousePos.x, mousePos.y)){
-                window.alert("All doors locked!");
+                window.alert("All m_doorArray locked!");
             }
             
             if(this.imgUnLock.isClicked(mousePos.x, mousePos.y)){
-                window.alert("All doors UN-locked!");
+                window.alert("All m_doorArray UN-locked!");
             }            
             
             return returnVal;
@@ -1390,11 +1405,11 @@ module KitchenInfoStation {
     class ViewDoor extends Mark {
                 
         public ctx:                 CanvasRenderingContext2D;  
-        public m_doorMark2:         DoorMark = null;       // Mark of doors
-        public textDoorName:        TextSimple;                  //Name of doors
+        public m_doorMark2:         DoorMark = null;       // Mark of m_doorArray
+        public textDoorName:        TextSimple;                  //Name of m_doorArray
         public m_graphics:          Graphics = null;
         protected rectName:         RectRounded = null;
-        public m_imgDoorOpen:       ImageRect = null;
+        public m_imgDoorOpen:       ImageRect = null;                               
         
         private border: boolean = false;
                 
@@ -1479,6 +1494,13 @@ module KitchenInfoStation {
                 this.ctx.restore();            
             }
         }        
+    }
+    
+    class retV {
+        
+        public cname: any = null;
+        public path: string = null;
+        
     }
      
     //Function to get the mouse position
