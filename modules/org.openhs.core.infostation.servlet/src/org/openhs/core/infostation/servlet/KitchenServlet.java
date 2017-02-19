@@ -200,7 +200,7 @@ public class KitchenServlet extends HttpServlet {
 		    			ContactSensor contact = (ContactSensor) thing;
 					    
 						json.put("validity", new Boolean(true));
-						json.put("state_sw", new Boolean(contact.getState()));
+						json.put("state", new Boolean(contact.getState()));
 						json.put("x_coordinate", String.format("%d", contact.x));
 						json.put("y_coordinate", String.format("%d", contact.y));
 												
@@ -576,7 +576,7 @@ public class KitchenServlet extends HttpServlet {
 			
 			// ContactSensor			
 			try {
-				Set<String> contactSensorPaths = this.m_infostation.getSwitchPaths();						
+				Set<String> contactSensorPaths = this.m_infostation.getThingPaths(ContactSensor.class);						
 				json.put("number_contactSensors", String.format("%d", contactSensorPaths.size()));				
 								
 				int i = 0;

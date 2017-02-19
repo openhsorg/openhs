@@ -8,6 +8,7 @@ import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
 import Switch = OhsSiteData.Switch;
+import ContactSensor = OhsSiteData.ContactSensor;
 import Thing = OhsSiteData.Thing;     
     
     export class Graphics {
@@ -582,7 +583,7 @@ import Thing = OhsSiteData.Thing;
         }
     }    
     
-     export class SwitchMark extends Mark {
+    export class SwitchMark extends Mark {
         
         protected imgBulbOn:          ImageRect = null;
         protected imgBulbOff:         ImageRect = null;
@@ -701,5 +702,111 @@ import Thing = OhsSiteData.Thing;
                 ctx.restore();
              }           
         }
-    } 
+    }
+    
+    export class ContactSensorMark extends Mark {
+        
+        protected imgSensorOpen:            ImageRect = null;
+        protected imgSensorClosed:          ImageRect = null;
+        protected imgSensorOff:             ImageRect = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgSensorOpen = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_open.png');
+            this.imgSensorClosed = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_close.png');      
+            this.imgSensorOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');              
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var perc: number = 0.9;
+            
+            this.imgSensorOpen.size(x, y, w, h);
+            this.imgSensorOpen.scaleSize(perc);
+            
+            this.imgSensorClosed.size(x, y, w, h);
+            this.imgSensorClosed.scaleSize(perc);
+            
+            this.imgSensorOff.size(x, y, w, h);
+            this.imgSensorOff.scaleSize(perc);                                             
+        }
+        
+        public getContactSensorThing() {
+            var contact: ContactSensor = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof ContactSensor){
+                    contact = <ContactSensor> this.thing;        
+                }            
+            }            
+            return contact;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var contact = this.getContactSensorThing();
+                        
+            if (contact != null) {                                    
+                this.size(contact.x, contact.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var contact: ContactSensor = this.getContactSensorThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (contact != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw sensor
+            if (contact == null) {
+                this.imgSensorOff.paint(ctx);
+                
+            } else {
+                if (!contact.isValid()){
+                    this.imgSensorOff.paint(ctx);
+                } else {
+
+                    //logic of switch
+                    if (contact.getState()) { //open
+                        this.imgSensorOpen.paint(ctx);
+                        
+                    } else { //closed
+                        this.imgSensorClosed.paint(ctx);
+                    }                      
+                }                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
 }

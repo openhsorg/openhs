@@ -7,9 +7,21 @@
 <images imageClose="/infores/servlets/kitchen/door1_close.JPG" imageOpen="/infores/servlets/kitchen/door1_open.JPG"/>
 <position xCoord="310" yCoord="0" zCoord="0"/>
 </thing>
+<thing devicePath="DummyService/dummy/2/ContactSensor" name="MainDoor Closed" sitePath="floors/Floor1/doors/Door1/sensors/Contact" type="ContactSensor">
+<position xCoord="10" yCoord="30" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/2/Switch" name="Main Door Lock" sitePath="floors/Floor1/doors/Door1/sensors/Lock" type="Switch">
+<position xCoord="100" yCoord="30" zCoord="0"/>
+</thing>
 <thing name="Inside" sitePath="floors/Floor1/doors/Door2" type="Door">
 <images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
 <position xCoord="450" yCoord="50" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/3/ContactSensor" name="SideDoor Closed" sitePath="floors/Floor1/doors/Door2/sensors/Contact" type="ContactSensor">
+<position xCoord="60" yCoord="80" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/3/Switch" name="Side Door Lock" sitePath="floors/Floor1/doors/Door2/sensors/Lock" type="Switch">
+<position xCoord="150" yCoord="80" zCoord="0"/>
 </thing>
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>
@@ -38,10 +50,4 @@
 <thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room3.png"/>
 </thing>
-
-<thing devicePath="DummyService/dummy/2/Switch" name="MainDoor" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoor" type="Switch"/>
-<thing devicePath="DummyService/dummy/2/ContactSensor" name="MainDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoorClosed" type="ContactSensor"/>
-<thing devicePath="DummyService/dummy/3/Switch" name="SideDoor" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoor" type="Switch"/>
-<thing devicePath="DummyService/dummy/3/ContactSensor" name="SideDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoorClosed" type="ContactSensor"/>
-
 </site>

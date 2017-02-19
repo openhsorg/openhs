@@ -10,6 +10,7 @@ var OhsCanvasGraphics;
     var TemperatureSensor = OhsSiteData.TemperatureSensor;
     var Door = OhsSiteData.Door;
     var Switch = OhsSiteData.Switch;
+    var ContactSensor = OhsSiteData.ContactSensor;
     var Graphics = (function () {
         function Graphics(canvas) {
             this.canvas = canvas;
@@ -570,4 +571,89 @@ var OhsCanvasGraphics;
         return SwitchMark;
     }(Mark));
     OhsCanvasGraphics.SwitchMark = SwitchMark;
+    var ContactSensorMark = (function (_super) {
+        __extends(ContactSensorMark, _super);
+        function ContactSensorMark(x, y, w, h) {
+            _super.call(this, x, y, w, h);
+            this.imgSensorOpen = null;
+            this.imgSensorClosed = null;
+            this.imgSensorOff = null;
+            this.border = false;
+            this.imgSensorOpen = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_open.png');
+            this.imgSensorClosed = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_close.png');
+            this.imgSensorOff = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');
+            this.size(x, y, w, h);
+        }
+        ContactSensorMark.prototype.size = function (x, y, w, h) {
+            _super.prototype.size.call(this, x, y, w, h);
+            var perc = 0.9;
+            this.imgSensorOpen.size(x, y, w, h);
+            this.imgSensorOpen.scaleSize(perc);
+            this.imgSensorClosed.size(x, y, w, h);
+            this.imgSensorClosed.scaleSize(perc);
+            this.imgSensorOff.size(x, y, w, h);
+            this.imgSensorOff.scaleSize(perc);
+        };
+        ContactSensorMark.prototype.getContactSensorThing = function () {
+            var contact = null;
+            if (this.thing) {
+                if (this.thing instanceof ContactSensor) {
+                    contact = this.thing;
+                }
+            }
+            return contact;
+        };
+        ContactSensorMark.prototype.paintByThing = function (ctx) {
+            var contact = this.getContactSensorThing();
+            if (contact != null) {
+                this.size(contact.x, contact.y, 60, 60);
+            }
+            this.paint(ctx);
+        };
+        ContactSensorMark.prototype.paint = function (ctx) {
+            var contact = this.getContactSensorThing();
+            var colorInside = '#a6a6a6';
+            var colorBorder = '#595959';
+            if (contact != null) {
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';
+            }
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();
+            //Draw sensor
+            if (contact == null) {
+                this.imgSensorOff.paint(ctx);
+            }
+            else {
+                if (!contact.isValid()) {
+                    this.imgSensorOff.paint(ctx);
+                }
+                else {
+                    //logic of switch
+                    if (contact.getState()) {
+                        this.imgSensorOpen.paint(ctx);
+                    }
+                    else {
+                        this.imgSensorClosed.paint(ctx);
+                    }
+                }
+            }
+            if (this.border) {
+                ctx.save();
+                _super.prototype.paint.call(this, ctx);
+                ctx.restore();
+            }
+        };
+        return ContactSensorMark;
+    }(Mark));
+    OhsCanvasGraphics.ContactSensorMark = ContactSensorMark;
 })(OhsCanvasGraphics || (OhsCanvasGraphics = {}));

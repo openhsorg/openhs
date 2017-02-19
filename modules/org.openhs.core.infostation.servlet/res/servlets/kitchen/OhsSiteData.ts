@@ -220,14 +220,13 @@ module OhsSiteData {
                     this.m_switchArray[id].setPath(data['switchPath_' + id]);
                 } 
                 
-                // ContactSensors       
-                /*                              
+                // ContactSensors                                                     
                 this.setNumber(parseInt(data['number_contactSensors']), this.m_contactSensorArray, ContactSensor);
-                
+                //window.alert("Num:" + parseInt(data['number_contactSensors']));
                 for (let id in this.m_contactSensorArray) {                      
-                    this.m_contactSensorArray[id].setPath(data['contactSensorPath_' + id]);
+                    this.m_contactSensorArray[id].setPath(data['contactSensorPath_' + id]);                    
                 }
-                */
+                
                 // Door                                     
                 this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
                             
@@ -384,7 +383,7 @@ module OhsSiteData {
     
     export class ContactSensor extends Thing {    
  
-        protected   stateInt:  number; //        
+        protected   state:  boolean; //        
         
         public x:   number;
         public y:   number;        
@@ -394,11 +393,11 @@ module OhsSiteData {
             this.x = 0;
             this.y = 0;
             
-            this.stateInt = 0;
+            this.state = false;
         }            
  
         public getState () {
-            return this.stateInt;
+            return this.state;
         }            
         
         public getServerData () {       
@@ -414,7 +413,7 @@ module OhsSiteData {
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid){
-                    this.stateInt = parseInt(data['state_sw']);
+                    this.state = JSON.parse(data['state']);
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                 }                                
