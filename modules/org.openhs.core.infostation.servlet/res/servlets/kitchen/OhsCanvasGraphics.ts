@@ -2,209 +2,59 @@
 /// <reference path="jquery.d.ts" />
 /// <reference path='OhsSiteData.ts'/>
 
-module OhsCanvasGraphics {
-    
-import SiteData = OhsSiteData.SiteData;
+module OhsCanvasGraphics {    
+
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
 import Switch = OhsSiteData.Switch;
+import ContactSensor = OhsSiteData.ContactSensor;
 import Thing = OhsSiteData.Thing;     
     
     export class Graphics {
         
         private canvas:              HTMLCanvasElement;
-        public ctx:                  CanvasRenderingContext2D;          
-        
-        private m_siteData: SiteData = null;
-        
-        public m_tempMarks: Array<TempMark> = null;
-        public m_switchMarks: Array<SwitchMark> = null;
-        public m_doorMarks: Array<DoorMark> = null;  
-        
-        public m_iconsetRoomBkg: Iconset = null;
-        
+        public ctx:                  CanvasRenderingContext2D;                  
         private timerUpdateGraphics;
         
-        constructor (canvas: HTMLCanvasElement, m_siteData: SiteData) {    
+        constructor (canvas: HTMLCanvasElement) {    
             this.canvas = canvas; 
             this.ctx = canvas.getContext("2d");    
             
-            //---Data---
-            this.m_siteData = m_siteData;
-            
-            //---Graphics---            
-            this.m_tempMarks = new Array<TempMark>();
-            this.m_switchMarks = new Array<SwitchMark>();
-            this.m_doorMarks = new Array<DoorMark>();   
-            
-            this.m_iconsetRoomBkg = new Iconset (this.ctx, new Rect (0, 0, this.canvas.width, this.canvas.height));
-            
-           // this.m_iconsetRoomBkg = new Iconset();
-            
-            //---Timer---
-            this.timerUpdateGraphicsEvent(10000);
-            
         }
         
-        private updateGraphics () {
-           
-            //Rooms
-            var imgPaths: Array <String> = new Array <String> ();
-            
-            for (var id in this.m_siteData.rooms) {
-                imgPaths.push(this.m_siteData.rooms[id].imageBkgPath);   
-                
-               // window.alert("updateGraphics: " + this.m_siteData.rooms[id].imageBkgPath);
-            }
-            
-            this.m_iconsetRoomBkg.setImages(imgPaths);
-            
-            // Temperature
-            if (this.m_tempMarks.length > this.m_siteData.tempSensors.length) {
-                this.m_tempMarks.length = this.m_siteData.tempSensors.length;
-                
-            } else if (this.m_tempMarks.length < this.m_siteData.tempSensors.length) {
-                for (var i = this.m_tempMarks.length; i < this.m_siteData.tempSensors.length; i++) {
-                    this.m_tempMarks.push(new TempMark (this.ctx, new Rect (0, 0, 0, 0), "/infores/servlets/kitchen/tempSymbol.png"));
+        public setNumber<T>(num:  number, arg: Array<T>, types: { new(ctx: CanvasRenderingContext2D, rect: Rect): T ;}, ctx: CanvasRenderingContext2D, rect: Rect) {
+            if (num > arg.length) {            
+                for (var i = arg.length; i < num; i++) {                    
+                    var ss = new types(ctx, rect);
+                    arg.push(ss);
                 }
-            }            
-    
-            for (let id in this.m_siteData.tempSensors) {
-                this.m_tempMarks[id].setSize(new Rect (this.m_siteData.tempSensors[id].x, this.m_siteData.tempSensors[id].y, 80, 80));
-               // this.m_tempMarks[id].setTemp(this.m_siteData.tempSensors[id].temp);    
-                this.m_tempMarks[id].setData(this.m_siteData.tempSensors[id]);                                   
-            }
-            
-            // Switches
-            if (this.m_switchMarks.length > this.m_siteData.switches.length) {
-                this.m_switchMarks.length = this.m_siteData.switches.length;
-                
-            } else if (this.m_switchMarks.length < this.m_siteData.switches.length) {
-                for (var i = this.m_switchMarks.length; i < this.m_siteData.switches.length; i++) {
-                    this.m_switchMarks.push(new SwitchMark (this.ctx, new Rect (0, 0, 80, 80), "/infores/servlets/kitchen/BulbSymbol.png"));                
+            } else if (num < arg.length) {            
+                arg.length = num;             
+            }   
+        }  
+        
+        public setNumber2<T>(num:  number, arg: Array<T>, types: { new(x: number, y: number, w: number, h: number): T ;}, x: number, y: number, w: number, h: number) {
+            if (num > arg.length) {            
+                for (var i = arg.length; i < num; i++) {                    
+                    var ss = new types(x, y, w, h);
+                    arg.push(ss);
                 }
-            }            
-    
-            for (let id in this.m_siteData.switches) {
-                this.m_switchMarks[id].thing = <Thing> this.m_siteData.switches[id];
-            }          
+            } else if (num < arg.length) {            
+                arg.length = num;             
+            }   
+        }                       
+ 
+        public getFilteredImage(array: Array<ImageRect>, src: string) {
+            for (var i = 0; i < array.length; i++) {                                              
+                if (array[i].getImageSrc() == src){                                                           
+                    return array[i];               
                     
-            // Doors
-            if (this.m_doorMarks.length > this.m_siteData.doors.length) {
-                this.m_doorMarks.length = this.m_siteData.doors.length;
-                
-            } else if (this.m_doorMarks.length < this.m_siteData.doors.length) {
-                for (var i = this.m_doorMarks.length; i < this.m_siteData.doors.length; i++) {
-                    this.m_doorMarks.push(new DoorMark (this.ctx, new Rect (0, 0, 0, 0)));
-                }
-            }            
-    
-            for (let id in this.m_siteData.doors) {
-                this.m_doorMarks[id].setSize(new Rect (this.m_siteData.doors[id].x, this.m_siteData.doors[id].y, 80, 80));
-                this.m_doorMarks[id].setState(this.m_siteData.doors[id].open, this.m_siteData.doors[id].locked);    
-                this.m_doorMarks[id].thing = <Thing> this.m_siteData.doors[id];                    
-            }                       
-        }        
-        
-        private timerUpdateGraphicsEvent(step : number) {     
-           this.updateGraphics();  
-           window.clearTimeout(this.timerUpdateGraphics);
-           this.timerUpdateGraphics = window.setTimeout(() => this.timerUpdateGraphicsEvent(step), step); 
-        }   
-        
-        public isClicked(x: number, y: number, filterPath: string) {
-            
-            var switches = this.getFilteredMarks(this.m_switchMarks, filterPath);
-            
-            for (let id in switches) {                
-                if(switches[id].isClicked(x, y)) {
-                    return <Thing> switches[id].getData();
-                }
-            }  
-            
-            var temps = this.getFilteredMarks(this.m_tempMarks, filterPath);
-            
-            for (let id in temps) {                
-                if(temps[id].isClicked(x, y)) {
-                    return <Thing> temps[id].getData();
                 }
             }
             
-            var doors = this.getFilteredMarks(this.m_doorMarks, filterPath);
-            
-            for (let id in doors) {                
-                if(doors[id].isClicked(x, y)) {
-                    return <Thing> doors[id].getData();
-                }
-            }              
-        }     
-        
-        public getFilteredMarks<T>(arg: Array<T>, filterPath: string):T[] {
-            
-            if (filterPath == null) {
-                return arg;
-                
-            } else {
-   
-                 return arg.filter(function(element){
-                     
-                     var mark: Mark = (<Mark><any>element);
-                     
-                     if (mark.thing == null) {
-                         return true;
-                         
-                     } else {
-                         
-                         return mark.thing.getPath().indexOf(filterPath) >= 0;                         
-                     }
-                 });                               
-             }
-        }            
-        /*
-        public getTempMarks(path: string) {
-            
-            if (path == null) {
-                return this.m_tempMarks;
-                
-            } else {
-            
-                 return this.m_tempMarks.filter(function(element){
-                    
-                     return element.thing.getPath().indexOf(path) >= 0;
-                 });                
-             }
-        } 
-        
-        public getSwitchMarks(path: string) {
-            
-            if (path == null) {
-                return this.m_switchMarks;
-                
-            } else {
-            
-                 return this.m_switchMarks.filter(function(element){
-
-                    return element.getData().getPath().indexOf(path) >= 0; 
-                 });                
-             }
-        } 
-        
-        public getDoorMarks(path: string) {
-            
-            if (path == null) {
-                return this.m_doorMarks;
-                
-            } else {
-            
-                 return this.m_doorMarks.filter(function(element){
-
-                    return element.getData().getPath().indexOf(path) >= 0;
-                 });                
-             }
+            return null;
         }
-        
-        */
     }
                 
     export class Rect {
@@ -231,506 +81,903 @@ import Thing = OhsSiteData.Thing;
             this.w = rectI.w;
             this.h = rectI.h;                
         }
-    }                
-         
-    /**
-     * Graphical symbol...
-     */
-    export class Mark {
         
-        protected   ctx:    CanvasRenderingContext2D;  
-        public      rect:   Rect;
-        
-        public thing: Thing = null;
-        
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect){                    
-            this.ctx = ctx;        
-            this.rect = new Rect (rect.x, rect.y, rect.w, rect.h);             
+        public size (x: number, y: number, w: number, h: number) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
         }
         
-        public equals (mark:   Mark){
-            this.ctx = mark.ctx;
-            this.rect.equals(mark.rect);
+        public move (dx: number, dy: number){
+            this.x = this.x + dx;
+            this.y = this.y + dy;
         }
         
-        public setSize (rect:   Rect){
-            this.rect.equals(rect);
-        }  
-        
-        public isClicked (clx:number, cly:number) {                
-            return this.rect.isClicked(clx, cly);        
+        public scaleSize (perc: number) {
+            
+            var old_w: number = this.w;
+            var old_h: number = this.h;
+            
+            this.w = this.w * perc;
+            this.h = this.h * perc;
+            
+            this.x = this.x + ((old_w - this.w) / 2);
+            this.y = this.y + ((old_h - this.h) / 2);
         }        
+        
+        public paint(ctx: CanvasRenderingContext2D) {
+          ctx.beginPath();
+          ctx.rect(this.x, this.y, this.w, this.h);
+          ctx.closePath();              
+        }        
+    }        
+    
+    export class RectRounded extends Rect {
+        
+        public radius: number = 0;
+        
+        constructor (x: number, y: number, w: number, h: number, radius: number){
+            super(x, y, w, h);
+            
+            this.radius = radius;
+        }
+        
+        public paint(ctx: CanvasRenderingContext2D) {
+            
+            if (this.radius == 0) {
+                super.paint(ctx);
+            } else {
+                ctx.beginPath();                        
+                ctx.moveTo(this.x + this.radius, this.y);
+                ctx.lineTo(this.x + this.w - this.radius, this.y);
+                ctx.quadraticCurveTo(this.x + this.w, this.y, this.x + this.w, this.y + this.radius);
+                ctx.lineTo(this.x + this.w, this.y + this.h - this.radius);
+                ctx.quadraticCurveTo(this.x + this.w, this.y + this.h, this.x + this.w - this.radius, this.y + this.h);
+                ctx.lineTo(this.x + this.radius, this.y + this.h);
+                ctx.quadraticCurveTo(this.x, this.y + this.h, this.x, this.y + this.h - this.radius);
+                ctx.lineTo(this.x, this.y + this.radius);
+                ctx.quadraticCurveTo(this.x, this.y, this.x + this.radius, this.y);
+                ctx.closePath();
+            }              
+        }
     }
     
-    export class Icon extends Mark {
+    export class ImageRect extends RectRounded {
         
         private img:HTMLImageElement = null;
-        protected border:    boolean = false; //debug border
+        private imgSrc: string = '---';
         
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src: string) {
-            super(ctx, rect);
+        public loaded: boolean = false;
+        
+        constructor (x: number, y: number, w: number, h: number, radius: number, imgSrc: string) {
+            super(x, y, w, h, radius);            
             
             this.img = new Image();                                
-            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";   
-        }    
+            
+            this.img.onload = (event) => {
+                  this.onImageLoad(event);
+            }
+                                               
+            this.img.src = imgSrc;
+            
+            this.imgSrc = imgSrc;
+        }
         
-        public paint () {   
+       private onImageLoad(event):void {
+        
+           this.loaded = true;            
+        }          
+        
+        public paint (ctx: CanvasRenderingContext2D){
+            ctx.save();
             
-            //Draw image...
-         //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            this.ctx.restore();        
-           // }            
+            super.paint(ctx);
+            if (this.radius != 0) {
+                
+                ctx.clip();
+            }
             
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }                 
+            ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+            ctx.restore();            
+        }
+        
+        public getImage() {
+            return this.img;            
+        }
+        
+        public getImageSrc() {
+            return this.imgSrc;
+        }
     }
     
-    export class Iconset extends Mark {
+    export class ImageRectArray extends RectRounded {
         
-        protected border:    boolean = false; //debug border        
-        protected images: Array <HTMLImageElement>;
-        protected imagesPaths: Array <String>;               
+        protected array: Array<ImageRect> = null;
         
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
-            super(ctx, rect);
+        protected border: boolean = false;
+        
+        constructor(x: number, y: number, w: number, h: number, radius: number) {
+            super(x, y, w, h, radius);
             
-            this.images = new Array <HTMLImageElement>();
-            this.imagesPaths = new Array <String>();
-
-        }    
+            this.array = new Array<ImageRect>();
+        }
         
-        public setImages (imgPaths: Array<String>){   
+        public setImages (imgPaths: Array<String>){               
         
-            //window.alert("Size:" + imgPaths.length);
-            for (var i = 0; i < imgPaths.length; i ++) {
+            for (let i = 0; i < imgPaths.length; i++) {
                 
-                var img: HTMLImageElement = new Image();
-                img.src = imgPaths[i].toString();               
+                if (this.array.length < i + 1) {                    
+                    var img: ImageRect = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                    this.array.push(img);
+                                    
+                } else {
+                    //Compare images...
+                    if (imgPaths[i].toString() == this.array[i].getImageSrc()) {
+                        // This images exists = do not load it again...
+                    } else {
+                        //Replace image on position 'i'
+                        var img: ImageRect = new ImageRect(0, 0, 0, 0, 0, imgPaths[i].toString());
+                        this.array.splice(i, 1, img);
+                    }                    
+                }                                 
+            }
+            
+            //Check lenght of array and cut            
+            if (this.array.length > imgPaths.length){
+                this.array.length = imgPaths.length;
+            }            
+        }
+        
+        public paintImage (ctx: CanvasRenderingContext2D, nImage: number){
+            if (!(nImage <= 0 || nImage > this.array.length)) {
+            
+                this.array[nImage].size(this.x, this.y, this.w, this.h);
                 
-                if (i < this.images.length) {
-                    this.images[i] = img;
-                }
-                else {
-                    this.images.push(img);    
-                }
-                
-                if (i < this.imagesPaths.length) {
-                    this.imagesPaths[i] = imgPaths[i].toString();
-                }
-                else {
-                    this.imagesPaths.push(imgPaths[i].toString());    
-                }                
-            }      
-              
+                this.array[nImage].paint(ctx);            
+            }
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);                
+                ctx.lineWidth=2;
+                ctx.strokeStyle="red";                
+                ctx.stroke();
+                ctx.restore();
+             }  
         }
         
         public getImages () {
-            return this.images;
+            return this.array;
         }
         
         public getImagesPaths () {
-            return this.imagesPaths;
+            var paths: Array<String> = new Array<String>();
+            
+            for (let id in this.array){            
+                var str: string = this.array[id].getImageSrc();
+                paths.push(str);
+            }
+            
+            return paths;
+        }         
+    }
+    /*
+    export class TextRich extends TextSimple {
+        
+        public borderWidth: number = 0; 
+        
+        constructor(x: number, y: number, w: number, h: number, rad: number){
+            super(x, y, w, h);
+            
+            this.radius = rad;
         }        
         
-        public paint (nImage: number) {               
-            //Draw image...            
-            var image: HTMLImageElement = this.images[nImage];
-            
-            if (image != null) {            
-                this.ctx.save();
-                this.ctx.drawImage(image, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.restore();                                                                        
-             }
-            
-                if (this.border){
-                    this.ctx.save();
-                    this.ctx.beginPath();
-                    this.ctx.lineWidth=2;
-                    this.ctx.strokeStyle="blue";
-                    this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                    this.ctx.stroke();
-                    this.ctx.restore();
-                 }              
-         }                 
-    }    
-    
-    export class Text extends Mark {
-    
-        public fontSize:      number = 10; 
+    }
+    */
+    export class TextSimple extends RectRounded {
+        
+        public fontSize:      number = 20; 
         public fontColor:     string = "#000000";
         public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-        public textAlign:   string = "center";
+        public textAlign:     string = "center";
         public textBaseline:   string = "middle";    
+                        
+        protected text: string = '';
         
-        protected border:    boolean = false; //debug border
-
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {
-            super(ctx, rect);
-        }          
-    
-        public paint (text: string) {        
+        protected border: boolean = false;
         
-            var x: number = this.rect.x;
-            var y: number = this.rect.y;
+        constructor(x: number, y: number, w: number, h: number){
+            super(x, y, w, h, 0);
+        }
+                
+        public paintText (ctx: CanvasRenderingContext2D, text: string){
+            
+            this.text = text;
+            
+            this.paint(ctx);
+            
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {            
+            
+            var x: number = this.x;
+            var y: number = this.y;
             var align: String = this.textAlign.toString();
             var baseline: String = this.textBaseline.toString();
                         
             if(align == "right" || align == "end") {
-                x = this.rect.x + this.rect.w;
+                x = this.x + this.w;
             } else if (align == "center"){
-                x = this.rect.x + (this.rect.w / 2);
+                x = this.x + (this.w / 2);
             }
             
             if(baseline == "bottom" || baseline == "alphabetic") {
-                y = this.rect.y + this.rect.h;
+                y = this.y + this.h;
             } else if (baseline == "middle"){
-                y = this.rect.y + (this.rect.h / 2);
+                y = this.y + (this.h / 2);
             }            
             
-            this.ctx.save();
-            this.ctx.font = this.fontSize + this.fontFamily;
-            this.ctx.textAlign = this.textAlign;
-            this.ctx.textBaseline = this.textBaseline;
-            this.ctx.fillStyle = this.fontColor;                                  
-            this.ctx.fillText(text, x, y);
-            this.ctx.restore();   
+            ctx.save();
+            ctx.font = this.fontSize + this.fontFamily;
+            ctx.textAlign = this.textAlign;
+            ctx.textBaseline = this.textBaseline;
+            ctx.fillStyle = this.fontColor;                                  
+            ctx.fillText(this.text, x, y);
+            ctx.restore();   
             
             if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="red";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }       
-        }   
-
-        public equals(tx: Text) {                    
-            this.rect.equals(tx.rect);
-            this.ctx = tx.ctx;
-            this.fontSize = tx.fontSize;
-            this.fontColor = tx.fontColor;
-            this.fontFamily = tx.fontFamily;
-            this.textAlign = tx.textAlign;
-            this.textBaseline = tx.textBaseline;
-        }
-        
-        public setSize (rect:   Rect){
-            super.setSize(rect);
-        }              
-    }    
-    
-    export class TempMark extends Mark {
-
-        public txt:  Text;
-    
-        private img:HTMLImageElement = null;
-        private imgLoaded: boolean;// = false;     
-        
-        protected border:    boolean = false; //debug border
-        
-      //  private temp:   number = -100.0;
-      //  private tempSensor: TemperatureSensor = null;
-    
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
-            super(ctx, rect);
-
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 18;
-            
-            this.img = new Image();                                
-            this.img.src = src; //"/infores/servlets/kitchen/tempSymbol.png";              
-        }      
-        
-        setSize (rect:  Rect) {                      
-            super.setSize(rect);     
-            this.txt.setSize(rect);                    
-         }
-        /*
-        setTemp (temp: number) {
-            this.temp = temp;    
-        }
-        */
-        public setData (temp: TemperatureSensor){
-            this.thing = <Thing> temp;
-        }
-        
-        public getData () {
-            return <TemperatureSensor> this.thing;
-        }
-            
-        public paint () {          
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = '#ccffe6';
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();      
-                    
-            //this.rect.x = this.rect.x + 20;
-            this.txt.rect.x = this.rect.x - 10;
-            
-            if (this.thing != null) {
-                
-                var thingSensor: TemperatureSensor = <TemperatureSensor> this.thing;
-                
-                this.txt.paint(thingSensor.temp + " \u00B0C");
-            }
-            
-            //Draw image...
-         //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x + (this.rect.w / 2) - 20, this.rect.y - 20, 40, 40);
-            this.ctx.restore();        
-           // }            
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
              }                          
-         }            
-    }          
-    
-    export class SwitchMark extends Mark {
-
-     //   public switch: Switch = null;        
-        private txt:  Text;   
-        private img:HTMLImageElement = null;
-        private imgLoaded: boolean;// = false;    
-        private colorButton: string = "#666699";    
-        protected border:    boolean = false; //debug border        
-            
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect, src) {            
-            super(ctx, rect);
-
-            this.txt = new Text (ctx, rect);
-            this.txt.textAlign = "right";
-            this.txt.textBaseline = "middle";
-            this.txt.fontSize = 20;
-            
-            this.img = new Image();                                
-            this.img.src = src;                    
-        }                              
-        
-        setSize (rect:  Rect) {        
-            super.setSize(rect);    
-            this.txt.setSize(rect);                 
-         }
-        
-        public setData (switchIn: Switch){
-            this.thing = <Switch> switchIn;
         }
         
-        public getData () {
-            return <Switch> this.thing;
-        }        
-                    
-        public paint () {      
+        public equals (txtIn: TextSimple) {
+            super.equals(txtIn);
+            this.fontSize = txtIn.fontSize;
+            this.fontColor = txtIn.fontColor;
+            this.fontFamily = txtIn.fontFamily;
+            this.textAlign = txtIn.textAlign;
+            this.textBaseline = txtIn.textBaseline;
+        }
+    }
+    
+    export class Mark extends Rect {
         
-            var switchVar: Switch = <Switch> this.thing;
-            // Update this
-            this.rect.x = switchVar.x;
-            this.rect.y = switchVar.y;        
+        protected thing: Thing = null;
+        
+        protected colorIncideReady: string = '#a6a6a6';
+        protected colorBorderReady: string = '#595959';
+        
+        protected imgError:          ImageRect = null;
+        
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
             
-            this.txt.setSize(this.rect);
-                
-            var text: string = "---";    
-
-            //logic of switch
-            if (switchVar.getState() == 0) {
-                this.colorButton = "#808080"; 
-                text = "---";
-            } else if (switchVar.getState() == 1) {
-                this.colorButton = "#3333ff";
-                text = "off";
-            } else if (switchVar.getState() == 2) {
-                this.colorButton = "#33cc33";
-                text = "->on";
-            } else if (switchVar.getState() == 3) {
-                this.colorButton = "#ffaa00";
-                text = "on";
-            } else if (switchVar.getState() == 4) {
-                this.colorButton = "#9999ff";
-                text = "->off";
-            } else {
-                this.colorButton = "#808080"; 
-                text = "---";
-            }        
+            this.imgError = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');
+        }
         
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = this.colorButton;
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = '#00cc69';
-            this.ctx.stroke();
-            this.ctx.restore();      
-                    
-            this.txt.rect.x = this.rect.x - 10;
-            this.txt.paint(text);
+        public setThing (thing: Thing) {
+            this.thing = thing;            
+        }
         
-        //Draw image...
-     //   if (this.imgLoaded) {     
-            this.ctx.save();
-            this.ctx.drawImage(this.img, this.rect.x - 5, this.rect.y + 20, 40, 40);
-            this.ctx.restore();        
-       // }                        
-            
-            if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }          
-    }    
+        public getThing() {
+            return this.thing;
+        }
+    }
     
     export class DoorMark extends Mark {
-    
-        private imgOpen:HTMLImageElement = null;
-        private imgClose:HTMLImageElement = null;
-        private imgLock:HTMLImageElement = null;
         
-                                            
-            //this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";            
+        protected imgOpen:      ImageRect = null;
+        protected imgClose:     ImageRect = null;
+        protected imgLock:      ImageRect = null;
         
-        private imgLoaded: boolean;// = false;    
-        private colorButton: string = "white";
-        private colorBorder: string = "black";     
-        
-        protected state: number = 0; // 0- unknown, 1- open, 2- closed,  3- locked 
-
-        protected border:    boolean = false; //debug border
-    
-        constructor (ctx: CanvasRenderingContext2D, rect: Rect) {            
-            super(ctx, rect);
-
-            this.imgOpen = new Image();                                
-            this.imgOpen.src = "/infores/servlets/kitchen/door_open.png";               
+        public m_switchArray: Array<Switch> = null;
+        public m_contactSensorArray: Array<ContactSensor> = null;
+         
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
             
-            this.imgClose = new Image();                                
-            this.imgClose.src = "/infores/servlets/kitchen/door_close.png"; 
+            this.imgOpen = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/door_open.png');
+            this.imgClose = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');            
+            this.imgLock = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
             
-            this.imgLock = new Image();                                
-            this.imgLock.src = "/infores/servlets/kitchen/padlock.png";     
+          //  this.m_switchArray = new Array<Switch>();
+          //  this.m_contactSensorArray = new Array<ContactSensor>();
             
+            this.size(x, y, w, h);
         }      
         
-        public setSize (rect:  Rect) {        
-            super.setSize(rect);                
-         }
-        
-        public setData (door: Door){
-            this.thing = <Door> door;
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);                        
+            
+            //Size of images
+            
+            var perc: number = 0.7;
+            
+            this.imgOpen.size(x, y, w, h);
+            this.imgOpen.scaleSize(perc);
+            
+            this.imgClose.size(x, y, w, h);
+            this.imgClose.scaleSize(perc);
+            
+            this.imgLock.size(x, y, w, h);
+            this.imgLock.scaleSize(0.5);            
+            
+            /*
+            var dx: number = 20;
+            var dy: number = 20;
+            
+            this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);  
+              */                  
         }
         
-        public getData () {
-            return <Door> this.thing;
-        }          
-        
-        public setState (open: boolean, lock: boolean) {
-            if (open) this.state = 1;
-            else {
-                if (!lock) this.state = 2;
-                else {
-                    this.state = 3;
-                }    
-            }                                              
+        public getDoorThing() {
+            var door: Door = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Door){
+                    door = <Door> this.thing;        
+                }            
+            }
+            
+            return door;
         }
-    
-        public paint () {      
         
-            var doorVar: Door = <Door> this.thing;
-            // Update this
-            this.rect.x = doorVar.x;
-            this.rect.y = doorVar.y;                 
+        public paintByThing (ctx: CanvasRenderingContext2D) {
             
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 3, 0, 2 * Math.PI, false);
-            this.ctx.fillStyle = this.colorButton;
-            this.ctx.fill();
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeStyle = this.colorBorder;
-            this.ctx.stroke();
-            this.ctx.restore();              
+            var door = this.getDoorThing();
+                        
+            if (door != null) {                                    
+                this.size(door.x, door.y, 60, 60);                                  
+            }
             
-            //logic of switch
-            if (this.state == 0) {
-                this.colorButton = "#808080";  
-                this.colorBorder = "#00cc69";
+            this.paint(ctx);
+        }
+        
+        public getState() {
+            
+            var state: number = 0; //unknown...
+            
+            if (this.m_switchArray.length > 0 && this.m_contactSensorArray.length > 0) {
                 
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x - 5, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
+                if (this.m_contactSensorArray[0].getState()){ //Open
+                    state = 1;                                    
+                    
+                } else { //close
+                    state = 2;
+                    
+                    var lockState: number = this.m_switchArray[0].getState();
+                    
+                    if (lockState == 3) {
+                        state = 3;                    
+                    }    
+
+                }
                 
-            } else if (this.state == 1) {
-                this.colorButton = "#ccffe6";
-                this.colorBorder = "#00cc69";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgOpen, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
-                
-            } else if (this.state == 2) {
-                this.colorButton = "#ccffe6";
-                this.colorBorder = "#00cc69";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                   
-                
-            } else if (this.state == 3) {
-                this.colorButton = "#ff8080";
-                this.colorBorder = "red";
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgClose, this.rect.x + 20, this.rect.y + 20, 40, 40);
-                this.ctx.restore();                  
-                
-                this.ctx.save();
-                this.ctx.drawImage(this.imgLock, this.rect.x + 20 + 10, this.rect.y + 30, 20, 20);
-                this.ctx.restore();                  
+            }
+                    
+            return state;
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var door: Door = this.getDoorThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            var state: number = -1;
+            
+            if (door != null) {     
+            
+                state = this.getState(); //door.getState();
+            
+                //logic of switch
+                if (state == 0) {
+                    colorInside = "#808080";  
+                    colorBorder = "#00cc69";
+                                                         
+                } else if (state == 1) {
+                    colorInside = "#ccffe6";
+                    colorBorder = "#00cc69";              
+                    
+                } else if (state == 2) {
+                    colorInside = "#ccffe6";
+                    colorBorder = "#00cc69";                
+                    
+                } else if (state == 3) {
+                    colorInside = "#ff8080";
+                    colorBorder = "red";                
+                    
+                } else {
+                    colorInside = "#808080"; 
+                    
+                }                             
+            }
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();   
+            
+           if (door != null) {     
+            
+                //logic of switch
+                if (state == 0) {                    
+                    this.imgClose.paint(ctx);                 
+                    
+                } else if (state == 1) {
+                    this.imgOpen.paint(ctx);                  
+                    
+                } else if (state == 2) {
+                    this.imgClose.paint(ctx);                   
+                    
+                } else if (state == 3) {
+                    this.imgClose.paint(ctx);                 
+                    this.imgLock.paint(ctx);                  
+                    
+                }                             
+            }                        
+        }
+    }
+
+    export class TempMark extends Mark {
+        
+        protected imgThermometer:   ImageRect = null;
+        protected imgFrost:         ImageRect = null;
+        protected textTemp:         TextSimple = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgThermometer = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/tempSymbol.png');
+            this.imgFrost = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/tempSymbol.png');      
+            this.textTemp = new TextSimple(x, y, w, h);                  
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);                       
+            
+            var dx: number = 8;
+            var dy: number = 8;
+            
+            this.imgThermometer.size(x - dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgFrost.size(x + dx - 3, y + dy, w - (2 * dx), h - (2 * dy));     
+            this.textTemp.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
+        
+        }
+        
+        public getTemperatureSensorThing() {
+            var tempSensor: TemperatureSensor = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof TemperatureSensor){
+                    tempSensor = <TemperatureSensor> this.thing;        
+                }            
+            }            
+            return tempSensor;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var tempSensor = this.getTemperatureSensorThing();
+                        
+            if (tempSensor != null) {                                    
+                this.size(tempSensor.x, tempSensor.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var tempSensor: TemperatureSensor = this.getTemperatureSensorThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (tempSensor != null){
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';             
+            }
+                                                
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+            
+            //Draw image...
+            this.imgThermometer.paint(ctx);
+                    
+            //Draw temperature text
+            if (tempSensor == null) {
+                this.textTemp.paintText(ctx, "---");
                 
             } else {
-                this.colorButton = "#808080"; 
-                
-            }        
-                                         
+                this.textTemp.paintText(ctx, tempSensor.temp + ' \u00B0C');
+            }                      
+            
             if (this.border){
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.lineWidth=2;
-                this.ctx.strokeStyle="blue";
-                this.ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                this.ctx.stroke();
-                this.ctx.restore();
-             }                          
-         }          
-    }     
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
+    
+    export class SwitchMark extends Mark {
+        
+        protected imgBulbOn:          ImageRect = null;
+        protected imgBulbOff:         ImageRect = null;
+        protected imgBulbOn_Off:      ImageRect = null;
+        protected imgBulbOff_On:      ImageRect = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgBulbOn = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn.png');
+            this.imgBulbOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff.png');      
+            this.imgBulbOn_Off = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOn_Off.png');
+            this.imgBulbOff_On = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/bulbOff_On.png');      
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var perc: number = 0.9;
+            
+            this.imgBulbOn.size(x, y, w, h);
+            this.imgBulbOn.scaleSize(perc);
+            
+            this.imgBulbOff.size(x, y, w, h);
+            this.imgBulbOff.scaleSize(perc);
+            
+            this.imgBulbOn_Off.size(x, y, w, h);
+            this.imgBulbOn_Off.scaleSize(perc);         
+            
+            this.imgBulbOff_On.size(x, y, w, h);
+            this.imgBulbOff_On.scaleSize(perc);                               
+        
+        }
+        
+        public getSwitchThing() {
+            var swtch: Switch = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Switch){
+                    swtch = <Switch> this.thing;        
+                }            
+            }            
+            return swtch;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var swtch = this.getSwitchThing();
+                        
+            if (swtch != null) {                                    
+                this.size(swtch.x, swtch.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var swtch: Switch = this.getSwitchThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (swtch != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw temperature text
+            if (swtch == null) {
+                //this.imgBulbOff.paint(ctx);
+                
+            } else {
+
+                //logic of switch
+                if (swtch.getState() == 0) { //off-line
+                    this.imgBulbOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 1) { //OFF
+                    this.imgBulbOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 2) {//-> ON
+                    this.imgBulbOff_On.paint(ctx);
+                    
+                } else if (swtch.getState() == 3) { //ON
+                    this.imgBulbOn.paint(ctx);
+                    
+                } else if (swtch.getState() == 4) { //->OFF";
+                    this.imgBulbOn_Off.paint(ctx);
+                    
+                } else {
+                    this.imgBulbOff.paint(ctx);
+                }                                                            
+                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }
+    
+    export class SwitchLockMark extends Mark {
+        
+        protected imgLockOn:          ImageRect = null;
+        protected imgLockOff:         ImageRect = null;
+        protected imgLockOn_Off:      ImageRect = null;
+        protected imgLockOff_On:      ImageRect = null;   
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgLockOn = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn.png');
+            this.imgLockOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff.png');      
+            this.imgLockOn_Off = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn_Off.png');
+            this.imgLockOff_On = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff_On.png');      
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var perc: number = 0.9;
+            
+            this.imgLockOn.size(x, y, w, h);
+            this.imgLockOn.scaleSize(perc);
+            
+            this.imgLockOff.size(x, y, w, h);
+            this.imgLockOff.scaleSize(perc);
+            
+            this.imgLockOn_Off.size(x, y, w, h);
+            this.imgLockOn_Off.scaleSize(perc);         
+            
+            this.imgLockOff_On.size(x, y, w, h);
+            this.imgLockOff_On.scaleSize(perc);                               
+        
+        }
+        
+        public getSwitchThing() {
+            var swtch: Switch = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Switch){
+                    swtch = <Switch> this.thing;        
+                }            
+            }            
+            return swtch;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var swtch = this.getSwitchThing();
+                        
+            if (swtch != null) {                                    
+                this.size(swtch.x, swtch.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var swtch: Switch = this.getSwitchThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (swtch != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw temperature text
+            if (swtch == null) {
+                //this.imgBulbOff.paint(ctx);
+                
+            } else {
+
+                //logic of switch
+                if (swtch.getState() == 0) { //off-line
+                    this.imgLockOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 1) { //OFF
+                    this.imgLockOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 2) {//-> ON
+                    this.imgLockOff_On.paint(ctx);
+                    
+                } else if (swtch.getState() == 3) { //ON
+                    this.imgLockOn.paint(ctx);
+                    
+                } else if (swtch.getState() == 4) { //->OFF";
+                    this.imgLockOn_Off.paint(ctx);
+                    
+                } else {
+                    this.imgLockOff.paint(ctx);
+                }                                                            
+                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
+    
+    export class ContactSensorMark extends Mark {
+        
+        protected imgSensorOpen:            ImageRect = null;
+        protected imgSensorClosed:          ImageRect = null;
+        protected imgSensorOff:             ImageRect = null;
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgSensorOpen = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_open.png');
+            this.imgSensorClosed = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_close.png');      
+            this.imgSensorOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');              
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var perc: number = 0.9;
+            
+            this.imgSensorOpen.size(x, y, w, h);
+            this.imgSensorOpen.scaleSize(perc);
+            
+            this.imgSensorClosed.size(x, y, w, h);
+            this.imgSensorClosed.scaleSize(perc);
+            
+            this.imgSensorOff.size(x, y, w, h);
+            this.imgSensorOff.scaleSize(perc);                                             
+        }
+        
+        public getContactSensorThing() {
+            var contact: ContactSensor = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof ContactSensor){
+                    contact = <ContactSensor> this.thing;        
+                }            
+            }            
+            return contact;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var contact = this.getContactSensorThing();
+                        
+            if (contact != null) {                                    
+                this.size(contact.x, contact.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public getState () {
+            var contact: ContactSensor = this.getContactSensorThing();
+            
+            if (contact != null && contact.isValid()) {
+                return contact.getState();
+            }
+            
+            return false;            
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var contact: ContactSensor = this.getContactSensorThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (contact != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw sensor
+            if (contact == null) {
+                this.imgSensorOff.paint(ctx);
+                
+            } else {
+                if (!contact.isValid()){
+                    this.imgSensorOff.paint(ctx);
+                } else {
+
+                    //logic of switch
+                    if (contact.getState()) { //open
+                        this.imgSensorOpen.paint(ctx);
+                        
+                    } else { //closed
+                        this.imgSensorClosed.paint(ctx);
+                    }                      
+                }                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
 }

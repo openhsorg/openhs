@@ -3,6 +3,10 @@
  */
 
 module OhsSiteData {
+    
+    const servletUrl = 'kitchen';
+    const switchId = 'SwitchS';
+    const contactSensorId = 'ContactSensor';
      
     export class SiteData {
 
@@ -11,22 +15,24 @@ module OhsSiteData {
         private slowTimerGetData;
         
         //---Site data---
-        public floors: Array <Floor> = null;
-        public rooms: Array <Room> = null;
-        public tempSensors: Array <TemperatureSensor> = null;
-        public switches: Array <Switch> = null;
-        public doors: Array <Door> = null;
+        public m_floorArray:            Array <Floor> = null;
+        public m_roomArray:             Array <Room> = null;
+        public m_tempSensorArray:       Array <TemperatureSensor> = null;
+        public m_switchArray:           Array <Switch> = null;
+        public m_doorArray:             Array <Door> = null;
+        public m_contactSensorArray:    Array <ContactSensor> = null;
         
         //---Other data---
         public timeString: string = "---";
         public dateString: string = "---";
         
         constructor () {            
-            this.floors = new Array<Floor>();
-            this.rooms = new Array<Room>(); 
-            this.tempSensors = new Array<TemperatureSensor>(); 
-            this.switches = new Array<Switch>();
-            this.doors = new Array<Door>();    
+            this.m_floorArray = new Array<Floor>();
+            this.m_roomArray = new Array<Room>(); 
+            this.m_tempSensorArray = new Array<TemperatureSensor>(); 
+            this.m_switchArray = new Array<Switch>();
+            this.m_doorArray = new Array<Door>();
+            this.m_contactSensorArray = new Array<ContactSensor>();    
                         
             this.slowTimerGetDataEvent(1000);            
             this.fastTimerGetDataEvent(100);
@@ -34,21 +40,26 @@ module OhsSiteData {
         
         private fastTimerGetDataEvent(step : number) {
             
-            for (let id in this.rooms) {
-                this.rooms[id].getServerData();
+            for (let id in this.m_roomArray) {
+                this.m_roomArray[id].getServerData();
             }            
             
-            for (let id in this.switches) {
-                this.switches[id].getServerData();
+            for (let id in this.m_switchArray) {
+                this.m_switchArray[id].getServerData();
             }
             
-            for (let id in this.tempSensors) {
-                this.tempSensors[id].getServerData();
+            for (let id in this.m_tempSensorArray) {
+                this.m_tempSensorArray[id].getServerData();
             }      
             
-            for (let id in this.doors) {
-                this.doors[id].getServerData();
-            }             
+            for (let id in this.m_doorArray) {
+                this.m_doorArray[id].getServerData();
+            }    
+            
+            for (let id in this.m_contactSensorArray) {
+                this.m_contactSensorArray[id].getServerData();
+            }
+                         
                       
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
@@ -72,6 +83,36 @@ module OhsSiteData {
                 arg.length = num;             
             }   
         }
+        
+        public getFilteredThings<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){                     
+                     var thing: Thing = (<Thing><any>element);
+                     
+                     return thing.getPath().indexOf(filterPath) >= 0;                                              
+                 });                               
+             }
+        }     
+        
+        public getFilteredThingsNoContains<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){                     
+                     var thing: Thing = (<Thing><any>element);
+                     
+                     return !(thing.getPath().indexOf(filterPath) >= 0);                                              
+                 });                               
+             }
+        }        
   
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
@@ -106,33 +147,39 @@ module OhsSiteData {
         
         public getThing (path: string){ 
         
-            for (let id in this.floors) {                
-                if (this.floors[id].getPath() == path) {
-                    return <Thing>this.floors[id];
+            for (let id in this.m_floorArray) {                
+                if (this.m_floorArray[id].getPath() == path) {
+                    return <Thing>this.m_floorArray[id];
                 }                    
             }
             
-            for (let id in this.rooms) {                
-                if (this.rooms[id].getPath() == path) {
-                    return <Thing>this.rooms[id];
+            for (let id in this.m_roomArray) {                
+                if (this.m_roomArray[id].getPath() == path) {
+                    return <Thing>this.m_roomArray[id];
                 }                    
             }  
             
-            for (let id in this.tempSensors) {                
-                if (this.tempSensors[id].getPath() == path) {
-                    return <Thing>this.tempSensors[id];
+            for (let id in this.m_tempSensorArray) {                
+                if (this.m_tempSensorArray[id].getPath() == path) {
+                    return <Thing>this.m_tempSensorArray[id];
                 }                    
             } 
             
-            for (let id in this.switches) {                
-                if (this.switches[id].getPath() == path) {
-                    return <Thing>this.switches[id];
+            for (let id in this.m_switchArray) {                
+                if (this.m_switchArray[id].getPath() == path) {
+                    return <Thing>this.m_switchArray[id];
                 }                    
             }   
             
-            for (let id in this.doors) {                
-                if (this.doors[id].getPath() == path) {
-                    return <Thing>this.doors[id];
+            for (let id in this.m_doorArray) {                
+                if (this.m_doorArray[id].getPath() == path) {
+                    return <Thing>this.m_doorArray[id];
+                }                    
+            }   
+            
+            for (let id in this.m_contactSensorArray) {                
+                if (this.m_contactSensorArray[id].getPath() == path) {
+                    return <Thing>this.m_contactSensorArray[id];
                 }                    
             }               
         
@@ -154,51 +201,47 @@ module OhsSiteData {
                 this.timeString = data['time'];
             
                 // Floors                  
-               // this.setNumberFloors (parseInt(data['number_floors']));
-                
-                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
-                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
-                
-                //window.alert("floors:   " + this.getNumberFloors());
+                this.setNumber(parseInt(data['number_floors']), this.m_floorArray, Floor);                                
                                         
-                for (let id in this.floors) {                    
-                    this.floors[id].setPath(data['floorPath_' + id]);
-                    
-                //     window.alert("path:   " + this.floors[id].getPath() + "  id:" + id);
+                for (let id in this.m_floorArray) {                    
+                    this.m_floorArray[id].setPath(data['floorPath_' + id]);
                 }           
                 
                 // Rooms            
-                //this.setNumberRooms (parseInt(data['number_rooms']));
-                this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
+                this.setNumber(parseInt(data['number_rooms']), this.m_roomArray, Room);
                 
-                for (var id = 0; id < this.rooms.length; id ++) {                    
-                    this.rooms[id].setPath(data['roomPath_' + id]);
+                for (var id = 0; id < this.m_roomArray.length; id ++) {                    
+                    this.m_roomArray[id].setPath(data['roomPath_' + id]);
                 }             
                 
-                // TempSensors                              
-               // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
-                this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
+                // TempSensors                                             
+                this.setNumber(parseInt(data['number_tempsensors']), this.m_tempSensorArray, TemperatureSensor);
                 
-                for (let id in this.tempSensors) {                                
-                    this.tempSensors[id].setPath(data['tempSensorPath_' + id]);                   
+                for (let id in this.m_tempSensorArray) {                                
+                    this.m_tempSensorArray[id].setPath(data['tempSensorPath_' + id]);                   
                 }     
                 
-                // Switches                     
-                //this.setNumberSwitches (parseInt(data['number_switches']));
-                this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
+                // Switches                                     
+                this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
                 
-                for (let id in this.switches) {                      
-                    this.switches[id].setPath(data['switchPath_' + id]);
-                }              
+                for (let id in this.m_switchArray) {                      
+                    this.m_switchArray[id].setPath(data['switchPath_' + id]);
+                } 
                 
-                // Door                     
-                //this.setNumberDoors (parseInt(data['number_doors']));
-                this.setNumber(parseInt(data['number_doors']), this.doors, Door);
+                // ContactSensors                                                     
+                this.setNumber(parseInt(data['number_contactSensors']), this.m_contactSensorArray, ContactSensor);
+                //window.alert("Num:" + parseInt(data['number_contactSensors']));
+                for (let id in this.m_contactSensorArray) {                      
+                    this.m_contactSensorArray[id].setPath(data['contactSensorPath_' + id]);                    
+                }
+                
+                // Door                                     
+                this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
                             
-                for (let id in this.doors) {           
-                    this.doors[id].setPath(data['doorPath_' + id]);
+                for (let id in this.m_doorArray) {           
+                    this.m_doorArray[id].setPath(data['doorPath_' + id]);
                     
-                //    window.alert("Path:" + this.doors[id].getPath());
+                //    window.alert("Path:" + this.m_doorArray[id].getPath());
                 }                   
             }      
         }                        
@@ -206,7 +249,7 @@ module OhsSiteData {
     
     export class Thing {
         
-        public valid: boolean = false; //content of the forecast is valid        
+        protected valid: boolean = false; //content of the forecast is valid        
         protected path:  string = null; //OpenHS path     
         
         constructor () {
@@ -220,6 +263,9 @@ module OhsSiteData {
             return this.path;
         }
         
+        public isValid() {
+            return this.valid;
+        } 
     }
         
     export class Floor extends Thing {
@@ -255,7 +301,6 @@ module OhsSiteData {
                     this.name = data['name'];
                     this.imageBkgPath = data['imgBkg'];
                 }  
-                
             }                                      
         }                    
     }    
@@ -308,11 +353,7 @@ module OhsSiteData {
             this.y = 0;
             
             this.stateInt = 0;
-        }        
-        
-        public isValid() {
-            return this.valid;
-        }       
+        }            
  
         public getState () {
             return this.stateInt;
@@ -320,21 +361,42 @@ module OhsSiteData {
         
         public postServerClick () {            
             var req: any = {
-                postId : "SwitchS",
-                path:   this.path                
+                postId : switchId,
+                path:   this.path,
+                command: 'click'                
             }
             
-            postAjax("kitchen", req);
-        }                
+            postAjax(servletUrl, req);
+        }   
+        
+        public postServerSetOn () {            
+            var req: any = {
+                postId : switchId,
+                path:   this.path,
+                command: 'on'                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
+        
+        public postServerSetOff () {            
+            var req: any = {
+                postId : switchId,
+                path:   this.path,
+                command: 'off'                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
         
         public getServerData () {       
              
             var req: any = {                
-                orderId : "SwitchS",
+                orderId : switchId,
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
@@ -346,11 +408,53 @@ module OhsSiteData {
                 }                                
             }                            
         }
-    }   
+    }  
+    
+    export class ContactSensor extends Thing {    
+ 
+        protected   state:  boolean; //        
+        
+        public x:   number;
+        public y:   number;        
+        
+        constructor () {     
+            super ();       
+            this.x = 0;
+            this.y = 0;
+            
+            this.state = false;
+        }            
+ 
+        public getState () {
+            return this.state;
+        }            
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : contactSensorId,
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax(servletUrl, req); 
+            
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                
+                if (this.valid){
+                    this.state = JSON.parse(data['state']);
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                }                                
+            }                            
+        }
+    }       
     
     export class Door extends Thing {
         
-        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
+        public name: string = "no name";
+        public image_open: string = "/infores/servlets/kitchen/room_default.png";
+        public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
@@ -397,11 +501,13 @@ module OhsSiteData {
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid){
+                    this.name = data['name'];
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                     this.open = JSON.parse(data['open']);
                     this.locked = JSON.parse(data['lock']);  
-                    this.imageBkgPath = data['imgBkg'];         
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];          
                 }                                
             }                                                       
         }        

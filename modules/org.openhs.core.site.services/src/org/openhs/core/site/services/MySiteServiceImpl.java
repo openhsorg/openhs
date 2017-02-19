@@ -104,7 +104,8 @@ public class MySiteServiceImpl implements ISiteService {
 			door.x = 310;
 			door.y = 0;
 			door.z = 0;
-			door.imagePath = "/infores/servlets/kitchen/door1_close.JPG";
+			door.imagePath_open = "/infores/servlets/kitchen/door1_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door1_close.JPG";
 			addThing("floors/Floor1/doors/Door1", door);			
 			
 			door = new Door();
@@ -112,7 +113,8 @@ public class MySiteServiceImpl implements ISiteService {
 			door.x = 450;
 			door.y = 50;
 			door.z = 0;
-			door.imagePath = "/infores/servlets/kitchen/door2_close.JPG";
+			door.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/doors/Door2", door);				
 			
 			
@@ -142,8 +144,36 @@ public class MySiteServiceImpl implements ISiteService {
 			sw.x = 420;
 			sw.y = 150;
 			sw.z = 0;								
-			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);			
+			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);		
+			
+			//Doors
+			sw = new Switch();
+			sw.setName("Main Door Lock");
+			sw.x = 100;
+			sw.y = 30;
+			sw.z = 0;								
+			addThing("floors/Floor1/doors/Door1/sensors/Lock", "DummyService/dummy/2/Switch", sw);				
 
+			sw = new Switch();
+			sw.setName("Side Door Lock");
+			sw.x = 150;
+			sw.y = 80;
+			sw.z = 0;								
+			addThing("floors/Floor1/doors/Door2/sensors/Lock", "DummyService/dummy/3/Switch", sw);	
+			
+			ContactSensor contact = new ContactSensor();
+			contact.setName("MainDoor Closed");
+			contact.x = 10;
+			contact.y = 30;
+			contact.z = 0;								
+			addThing("floors/Floor1/doors/Door1/sensors/Contact", "DummyService/dummy/2/ContactSensor", contact);		
+			
+			contact = new ContactSensor();
+			contact.setName("SideDoor Closed");
+			contact.x = 60;
+			contact.y = 80;
+			contact.z = 0;								
+			addThing("floors/Floor1/doors/Door2/sensors/Contact", "DummyService/dummy/3/ContactSensor", contact);				
 			
 			
 		} catch (Exception ex) {
@@ -423,7 +453,33 @@ public class MySiteServiceImpl implements ISiteService {
 					zCoord.setValue(String.format("%d", ((Switch) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
-				} else if (thing instanceof Floor) {
+				} else if (thing instanceof ContactSensor) {
+					// devicePath attribute
+					
+					Attr devicePathAttr = doc.createAttribute("devicePath");
+					devicePathAttr.setValue(this.getDevicePath(sitePath));
+					element.setAttributeNode(devicePathAttr);
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((ContactSensor) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((ContactSensor) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((ContactSensor) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
+				}else if (thing instanceof Floor) {
 					
 					Element images = doc.createElement("images");
 					element.appendChild(images);
@@ -449,9 +505,14 @@ public class MySiteServiceImpl implements ISiteService {
 					element.appendChild(images);
 					
 					// Image path
-					Attr imageBkg = doc.createAttribute("imageBkg");
-					imageBkg.setValue(((Door) thing).imagePath);
-					images.setAttributeNode(imageBkg);	
+					Attr imageOpen = doc.createAttribute("imageOpen");
+					imageOpen.setValue(((Door) thing).imagePath_open);
+					images.setAttributeNode(imageOpen);	
+					
+					// Image path
+					Attr imageClose = doc.createAttribute("imageClose");
+					imageClose.setValue(((Door) thing).imagePath_close);
+					images.setAttributeNode(imageClose);						
 					
 					//Element position
 					Element position = doc.createElement("position");
@@ -560,9 +621,26 @@ public class MySiteServiceImpl implements ISiteService {
 						else if (obj instanceof ContactSensor) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
-								//} 
-
-							//}														
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((ContactSensor) obj).x = x;
+									((ContactSensor) obj).y = y;
+									((ContactSensor) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}								
+													
 						} else if (obj instanceof Switch) {
 							String devicePath = elementSitePath.getAttribute("devicePath");
 							ss.devPaths.put(devicePath, sitePath);
@@ -604,8 +682,12 @@ public class MySiteServiceImpl implements ISiteService {
 							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
 							
 							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
-								((Door) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+								((Door) obj).imagePath_open = ((Element) imagesNode).getAttribute("imageOpen");
 							}
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Door) obj).imagePath_close = ((Element) imagesNode).getAttribute("imageClose");
+							}							
 							
 							//Element position
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);

@@ -10,6 +10,7 @@ package org.openhs.core.commons;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import org.openhs.core.commons.TimeProfile;
 
@@ -86,6 +87,27 @@ public class Switch extends Thing {
 	{
 		return timestamp;
 	}
+	
+	public int getStateInt (){
+
+	  	int stateInt = 0;
+		
+		if (this.deviceState) { //device on
+			if (this.state) {
+				stateInt = 3; //request is on
+			} else {
+				stateInt = 4; //request is off
+			}
+		} else { //device off
+			if (this.state) { //request is on
+				stateInt = 2;
+			} else { // request is off
+				stateInt = 1;
+			}	    					
+		}	
+		
+		  return stateInt;       
+	}	
 	
 }
 

@@ -8,38 +8,46 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var OhsSiteData;
 (function (OhsSiteData) {
+    var servletUrl = 'kitchen';
+    var switchId = 'SwitchS';
+    var contactSensorId = 'ContactSensor';
     var SiteData = (function () {
         function SiteData() {
             //---Site data---
-            this.floors = null;
-            this.rooms = null;
-            this.tempSensors = null;
-            this.switches = null;
-            this.doors = null;
+            this.m_floorArray = null;
+            this.m_roomArray = null;
+            this.m_tempSensorArray = null;
+            this.m_switchArray = null;
+            this.m_doorArray = null;
+            this.m_contactSensorArray = null;
             //---Other data---
             this.timeString = "---";
             this.dateString = "---";
-            this.floors = new Array();
-            this.rooms = new Array();
-            this.tempSensors = new Array();
-            this.switches = new Array();
-            this.doors = new Array();
+            this.m_floorArray = new Array();
+            this.m_roomArray = new Array();
+            this.m_tempSensorArray = new Array();
+            this.m_switchArray = new Array();
+            this.m_doorArray = new Array();
+            this.m_contactSensorArray = new Array();
             this.slowTimerGetDataEvent(1000);
             this.fastTimerGetDataEvent(100);
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
             var _this = this;
-            for (var id in this.rooms) {
-                this.rooms[id].getServerData();
+            for (var id in this.m_roomArray) {
+                this.m_roomArray[id].getServerData();
             }
-            for (var id in this.switches) {
-                this.switches[id].getServerData();
+            for (var id in this.m_switchArray) {
+                this.m_switchArray[id].getServerData();
             }
-            for (var id in this.tempSensors) {
-                this.tempSensors[id].getServerData();
+            for (var id in this.m_tempSensorArray) {
+                this.m_tempSensorArray[id].getServerData();
             }
-            for (var id in this.doors) {
-                this.doors[id].getServerData();
+            for (var id in this.m_doorArray) {
+                this.m_doorArray[id].getServerData();
+            }
+            for (var id in this.m_contactSensorArray) {
+                this.m_contactSensorArray[id].getServerData();
             }
             window.clearTimeout(this.fastTimerGetData);
             this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
@@ -59,6 +67,28 @@ var OhsSiteData;
             }
             else if (num < arg.length) {
                 arg.length = num;
+            }
+        };
+        SiteData.prototype.getFilteredThings = function (arg, filterPath) {
+            if (filterPath == null) {
+                return arg;
+            }
+            else {
+                return arg.filter(function (element) {
+                    var thing = element;
+                    return thing.getPath().indexOf(filterPath) >= 0;
+                });
+            }
+        };
+        SiteData.prototype.getFilteredThingsNoContains = function (arg, filterPath) {
+            if (filterPath == null) {
+                return arg;
+            }
+            else {
+                return arg.filter(function (element) {
+                    var thing = element;
+                    return !(thing.getPath().indexOf(filterPath) >= 0);
+                });
             }
         };
         SiteData.prototype.getParentPath = function (thing) {
@@ -83,29 +113,34 @@ var OhsSiteData;
             }
         };
         SiteData.prototype.getThing = function (path) {
-            for (var id in this.floors) {
-                if (this.floors[id].getPath() == path) {
-                    return this.floors[id];
+            for (var id in this.m_floorArray) {
+                if (this.m_floorArray[id].getPath() == path) {
+                    return this.m_floorArray[id];
                 }
             }
-            for (var id in this.rooms) {
-                if (this.rooms[id].getPath() == path) {
-                    return this.rooms[id];
+            for (var id in this.m_roomArray) {
+                if (this.m_roomArray[id].getPath() == path) {
+                    return this.m_roomArray[id];
                 }
             }
-            for (var id in this.tempSensors) {
-                if (this.tempSensors[id].getPath() == path) {
-                    return this.tempSensors[id];
+            for (var id in this.m_tempSensorArray) {
+                if (this.m_tempSensorArray[id].getPath() == path) {
+                    return this.m_tempSensorArray[id];
                 }
             }
-            for (var id in this.switches) {
-                if (this.switches[id].getPath() == path) {
-                    return this.switches[id];
+            for (var id in this.m_switchArray) {
+                if (this.m_switchArray[id].getPath() == path) {
+                    return this.m_switchArray[id];
                 }
             }
-            for (var id in this.doors) {
-                if (this.doors[id].getPath() == path) {
-                    return this.doors[id];
+            for (var id in this.m_doorArray) {
+                if (this.m_doorArray[id].getPath() == path) {
+                    return this.m_doorArray[id];
+                }
+            }
+            for (var id in this.m_contactSensorArray) {
+                if (this.m_contactSensorArray[id].getPath() == path) {
+                    return this.m_contactSensorArray[id];
                 }
             }
             return null;
@@ -119,36 +154,35 @@ var OhsSiteData;
                 this.dateString = data['date'];
                 this.timeString = data['time'];
                 // Floors                  
-                // this.setNumberFloors (parseInt(data['number_floors']));
-                //setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;})
-                this.setNumber(parseInt(data['number_floors']), this.floors, Floor);
-                //window.alert("floors:   " + this.getNumberFloors());
-                for (var id_1 in this.floors) {
-                    this.floors[id_1].setPath(data['floorPath_' + id_1]);
+                this.setNumber(parseInt(data['number_floors']), this.m_floorArray, Floor);
+                for (var id_1 in this.m_floorArray) {
+                    this.m_floorArray[id_1].setPath(data['floorPath_' + id_1]);
                 }
                 // Rooms            
-                //this.setNumberRooms (parseInt(data['number_rooms']));
-                this.setNumber(parseInt(data['number_rooms']), this.rooms, Room);
-                for (var id = 0; id < this.rooms.length; id++) {
-                    this.rooms[id].setPath(data['roomPath_' + id]);
+                this.setNumber(parseInt(data['number_rooms']), this.m_roomArray, Room);
+                for (var id = 0; id < this.m_roomArray.length; id++) {
+                    this.m_roomArray[id].setPath(data['roomPath_' + id]);
                 }
-                // TempSensors                              
-                // this.setNumberTempSensors (parseInt(data['number_tempsensors']));
-                this.setNumber(parseInt(data['number_tempsensors']), this.tempSensors, TemperatureSensor);
-                for (var id_2 in this.tempSensors) {
-                    this.tempSensors[id_2].setPath(data['tempSensorPath_' + id_2]);
+                // TempSensors                                             
+                this.setNumber(parseInt(data['number_tempsensors']), this.m_tempSensorArray, TemperatureSensor);
+                for (var id_2 in this.m_tempSensorArray) {
+                    this.m_tempSensorArray[id_2].setPath(data['tempSensorPath_' + id_2]);
                 }
-                // Switches                     
-                //this.setNumberSwitches (parseInt(data['number_switches']));
-                this.setNumber(parseInt(data['number_switches']), this.switches, Switch);
-                for (var id_3 in this.switches) {
-                    this.switches[id_3].setPath(data['switchPath_' + id_3]);
+                // Switches                                     
+                this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
+                for (var id_3 in this.m_switchArray) {
+                    this.m_switchArray[id_3].setPath(data['switchPath_' + id_3]);
                 }
-                // Door                     
-                //this.setNumberDoors (parseInt(data['number_doors']));
-                this.setNumber(parseInt(data['number_doors']), this.doors, Door);
-                for (var id_4 in this.doors) {
-                    this.doors[id_4].setPath(data['doorPath_' + id_4]);
+                // ContactSensors                                                     
+                this.setNumber(parseInt(data['number_contactSensors']), this.m_contactSensorArray, ContactSensor);
+                //window.alert("Num:" + parseInt(data['number_contactSensors']));
+                for (var id_4 in this.m_contactSensorArray) {
+                    this.m_contactSensorArray[id_4].setPath(data['contactSensorPath_' + id_4]);
+                }
+                // Door                                     
+                this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
+                for (var id_5 in this.m_doorArray) {
+                    this.m_doorArray[id_5].setPath(data['doorPath_' + id_5]);
                 }
             }
         };
@@ -165,6 +199,9 @@ var OhsSiteData;
         };
         Thing.prototype.getPath = function () {
             return this.path;
+        };
+        Thing.prototype.isValid = function () {
+            return this.valid;
         };
         return Thing;
     }());
@@ -236,25 +273,39 @@ var OhsSiteData;
             this.y = 0;
             this.stateInt = 0;
         }
-        Switch.prototype.isValid = function () {
-            return this.valid;
-        };
         Switch.prototype.getState = function () {
             return this.stateInt;
         };
         Switch.prototype.postServerClick = function () {
             var req = {
-                postId: "SwitchS",
-                path: this.path
+                postId: switchId,
+                path: this.path,
+                command: 'click'
             };
-            postAjax("kitchen", req);
+            postAjax(servletUrl, req);
+        };
+        Switch.prototype.postServerSetOn = function () {
+            var req = {
+                postId: switchId,
+                path: this.path,
+                command: 'on'
+            };
+            postAjax(servletUrl, req);
+        };
+        Switch.prototype.postServerSetOff = function () {
+            var req = {
+                postId: switchId,
+                path: this.path,
+                command: 'off'
+            };
+            postAjax(servletUrl, req);
         };
         Switch.prototype.getServerData = function () {
             var req = {
-                orderId: "SwitchS",
+                orderId: switchId,
                 path: this.path
             };
-            var data = getAjax("kitchen", req);
+            var data = getAjax(servletUrl, req);
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
@@ -267,11 +318,42 @@ var OhsSiteData;
         return Switch;
     }(Thing));
     OhsSiteData.Switch = Switch;
+    var ContactSensor = (function (_super) {
+        __extends(ContactSensor, _super);
+        function ContactSensor() {
+            _super.call(this);
+            this.x = 0;
+            this.y = 0;
+            this.state = false;
+        }
+        ContactSensor.prototype.getState = function () {
+            return this.state;
+        };
+        ContactSensor.prototype.getServerData = function () {
+            var req = {
+                orderId: contactSensorId,
+                path: this.path
+            };
+            var data = getAjax(servletUrl, req);
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                if (this.valid) {
+                    this.state = JSON.parse(data['state']);
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                }
+            }
+        };
+        return ContactSensor;
+    }(Thing));
+    OhsSiteData.ContactSensor = ContactSensor;
     var Door = (function (_super) {
         __extends(Door, _super);
         function Door() {
             _super.call(this);
-            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
+            this.name = "no name";
+            this.image_open = "/infores/servlets/kitchen/room_default.png";
+            this.image_close = "/infores/servlets/kitchen/room_default.png";
             this.open = false;
             this.locked = false;
             this.x = 0;
@@ -302,11 +384,13 @@ var OhsSiteData;
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
                 if (this.valid) {
+                    this.name = data['name'];
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                     this.open = JSON.parse(data['open']);
                     this.locked = JSON.parse(data['lock']);
-                    this.imageBkgPath = data['imgBkg'];
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];
                 }
             }
         };

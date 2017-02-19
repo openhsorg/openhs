@@ -24,7 +24,7 @@ module OhsWeatherData {
            this.timerGetData = window.setTimeout(() => this.timerGetServerDataEvent(step), step); 
         }         
         
-        public setNumberForecasts (num: number) {         
+        public setNumberForecasts (num: number) {                     
             if (num > this.forecasts.length) {            
                 for (var i = this.forecasts.length; i < num; i++) {
                     this.forecasts.push(new WeatherForecast());
