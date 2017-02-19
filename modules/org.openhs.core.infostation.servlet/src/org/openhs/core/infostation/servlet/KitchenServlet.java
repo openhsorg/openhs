@@ -204,7 +204,7 @@ public class KitchenServlet extends HttpServlet {
 						json.put("x_coordinate", String.format("%d", contact.x));
 						json.put("y_coordinate", String.format("%d", contact.y));
 												
-						//System.out.println("\n\n\n\n   Path" + path2 + " Sensor x: " + sw.x + "S y:" + sw.y);
+						//System.out.println("\n\n\n\n   Path" + path2 + " state: " + contact.getState());
 					
 		    		} else {
 		    			json.put("validity", new Boolean(false));

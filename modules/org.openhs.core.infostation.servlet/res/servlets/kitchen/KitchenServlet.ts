@@ -961,8 +961,18 @@ module KitchenInfoStation {
                 
                 this.returnVal.nextScreen = null;                         
                    
+              }               
+           }    
+            
+           for (let id in this.m_contactSensorsMarks) {
+               if (this.m_contactSensorsMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                   this.returnVal.nextScreen = null;
+                   
+                   window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getPath());
+                   
+                   //this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
               }
-           }             
+           }              
             
            return this.returnVal;
         }    

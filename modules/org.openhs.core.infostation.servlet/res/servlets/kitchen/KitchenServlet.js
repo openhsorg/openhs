@@ -722,6 +722,12 @@ var KitchenInfoStation;
                     this.returnVal.nextScreen = null;
                 }
             }
+            for (var id in this.m_contactSensorsMarks) {
+                if (this.m_contactSensorsMarks[id].isClicked(mousePos.x, mousePos.y)) {
+                    this.returnVal.nextScreen = null;
+                    window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getPath());
+                }
+            }
             return this.returnVal;
         };
         ScreenFloor.prototype.paint = function () {
