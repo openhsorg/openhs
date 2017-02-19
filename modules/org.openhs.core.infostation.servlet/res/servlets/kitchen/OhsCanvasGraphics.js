@@ -75,6 +75,10 @@ var OhsCanvasGraphics;
             this.w = w;
             this.h = h;
         };
+        Rect.prototype.move = function (dx, dy) {
+            this.x = this.x + dx;
+            this.y = this.y + dy;
+        };
         Rect.prototype.scaleSize = function (perc) {
             var old_w = this.w;
             var old_h = this.h;
@@ -290,6 +294,8 @@ var OhsCanvasGraphics;
             this.thing = null;
             this.colorIncideReady = '#a6a6a6';
             this.colorBorderReady = '#595959';
+            this.imgError = null;
+            this.imgError = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');
         }
         Mark.prototype.setThing = function (thing) {
             this.thing = thing;
@@ -307,9 +313,13 @@ var OhsCanvasGraphics;
             this.imgOpen = null;
             this.imgClose = null;
             this.imgLock = null;
+            this.m_switchArray = null;
+            this.m_contactSensorArray = null;
             this.imgOpen = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_open.png');
             this.imgClose = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');
             this.imgLock = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
+            //  this.m_switchArray = new Array<Switch>();
+            //  this.m_contactSensorArray = new Array<ContactSensor>();
             this.size(x, y, w, h);
         }
         DoorMark.prototype.size = function (x, y, w, h) {
@@ -347,13 +357,29 @@ var OhsCanvasGraphics;
             }
             this.paint(ctx);
         };
+        DoorMark.prototype.getState = function () {
+            var state = 0; //unknown...
+            if (this.m_switchArray.length > 0 && this.m_contactSensorArray.length > 0) {
+                if (this.m_contactSensorArray[0].getState()) {
+                    state = 1;
+                }
+                else {
+                    state = 2;
+                    var lockState = this.m_switchArray[0].getState();
+                    if (lockState == 3) {
+                        state = 3;
+                    }
+                }
+            }
+            return state;
+        };
         DoorMark.prototype.paint = function (ctx) {
             var door = this.getDoorThing();
             var colorInside = '#a6a6a6';
             var colorBorder = '#595959';
             var state = -1;
             if (door != null) {
-                state = door.getState();
+                state = this.getState(); //door.getState();
                 //logic of switch
                 if (state == 0) {
                     colorInside = "#808080";
@@ -571,6 +597,101 @@ var OhsCanvasGraphics;
         return SwitchMark;
     }(Mark));
     OhsCanvasGraphics.SwitchMark = SwitchMark;
+    var SwitchLockMark = (function (_super) {
+        __extends(SwitchLockMark, _super);
+        function SwitchLockMark(x, y, w, h) {
+            _super.call(this, x, y, w, h);
+            this.imgLockOn = null;
+            this.imgLockOff = null;
+            this.imgLockOn_Off = null;
+            this.imgLockOff_On = null;
+            this.border = false;
+            this.imgLockOn = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn.png');
+            this.imgLockOff = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff.png');
+            this.imgLockOn_Off = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn_Off.png');
+            this.imgLockOff_On = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff_On.png');
+            this.size(x, y, w, h);
+        }
+        SwitchLockMark.prototype.size = function (x, y, w, h) {
+            _super.prototype.size.call(this, x, y, w, h);
+            var perc = 0.9;
+            this.imgLockOn.size(x, y, w, h);
+            this.imgLockOn.scaleSize(perc);
+            this.imgLockOff.size(x, y, w, h);
+            this.imgLockOff.scaleSize(perc);
+            this.imgLockOn_Off.size(x, y, w, h);
+            this.imgLockOn_Off.scaleSize(perc);
+            this.imgLockOff_On.size(x, y, w, h);
+            this.imgLockOff_On.scaleSize(perc);
+        };
+        SwitchLockMark.prototype.getSwitchThing = function () {
+            var swtch = null;
+            if (this.thing) {
+                if (this.thing instanceof Switch) {
+                    swtch = this.thing;
+                }
+            }
+            return swtch;
+        };
+        SwitchLockMark.prototype.paintByThing = function (ctx) {
+            var swtch = this.getSwitchThing();
+            if (swtch != null) {
+                this.size(swtch.x, swtch.y, 60, 60);
+            }
+            this.paint(ctx);
+        };
+        SwitchLockMark.prototype.paint = function (ctx) {
+            var swtch = this.getSwitchThing();
+            var colorInside = '#a6a6a6';
+            var colorBorder = '#595959';
+            if (swtch != null) {
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';
+            }
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();
+            //Draw temperature text
+            if (swtch == null) {
+            }
+            else {
+                //logic of switch
+                if (swtch.getState() == 0) {
+                    this.imgLockOff.paint(ctx);
+                }
+                else if (swtch.getState() == 1) {
+                    this.imgLockOff.paint(ctx);
+                }
+                else if (swtch.getState() == 2) {
+                    this.imgLockOff_On.paint(ctx);
+                }
+                else if (swtch.getState() == 3) {
+                    this.imgLockOn.paint(ctx);
+                }
+                else if (swtch.getState() == 4) {
+                    this.imgLockOn_Off.paint(ctx);
+                }
+                else {
+                    this.imgLockOff.paint(ctx);
+                }
+            }
+            if (this.border) {
+                ctx.save();
+                _super.prototype.paint.call(this, ctx);
+                ctx.restore();
+            }
+        };
+        return SwitchLockMark;
+    }(Mark));
+    OhsCanvasGraphics.SwitchLockMark = SwitchLockMark;
     var ContactSensorMark = (function (_super) {
         __extends(ContactSensorMark, _super);
         function ContactSensorMark(x, y, w, h) {
@@ -609,6 +730,13 @@ var OhsCanvasGraphics;
                 this.size(contact.x, contact.y, 60, 60);
             }
             this.paint(ctx);
+        };
+        ContactSensorMark.prototype.getState = function () {
+            var contact = this.getContactSensorThing();
+            if (contact != null && contact.isValid()) {
+                return contact.getState();
+            }
+            return false;
         };
         ContactSensorMark.prototype.paint = function (ctx) {
             var contact = this.getContactSensorThing();

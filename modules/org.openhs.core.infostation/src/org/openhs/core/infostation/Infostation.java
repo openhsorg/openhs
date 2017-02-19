@@ -103,6 +103,23 @@ public class Infostation implements IInfostation {
     	  
     	  return false;
       }
+      
+      public boolean setSwitch (String sitePath, boolean state) {
+    	  
+    	  logger.debug(" setSwitch : " + sitePath);
+    	  try {
+    		  Switch swt = (Switch) m_siteService.getThing(sitePath);
+              swt.setState(state);
+              
+              return swt.getState();
+    		  
+    	  } catch (Exception ex) {
+   	    	logger.warn(" Caught exception: " + ex.getMessage());
+    	  }    	  	      	      	  
+    	  
+    	  return false;
+      }      
+      
       /*
       public List<Boolean> getSwitchState (String sitePath) throws SiteException {
 

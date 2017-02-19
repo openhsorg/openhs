@@ -163,6 +163,7 @@ public class KitchenServlet extends HttpServlet {
 		    			Switch sw = (Switch) thing;
 					    
 						json.put("validity", new Boolean(true));
+						json.put("name", String.format(sw.getName()));
 						json.put("state_sw", new Integer(sw.getStateInt()));
 						json.put("x_coordinate", String.format("%d", sw.x));
 						json.put("y_coordinate", String.format("%d", sw.y));
@@ -312,7 +313,7 @@ public class KitchenServlet extends HttpServlet {
 						e.printStackTrace();
 					}
 					
-					//System.out.println("\n\n\n\n    Room name: " + room.getName());
+					//System.out.println("\n\n\n\n    door name: " + door.getName());
 					
 					JSONObject json = new JSONObject();
 										
@@ -383,8 +384,18 @@ public class KitchenServlet extends HttpServlet {
 		 			}
 		 			
 		 		} else if (value.toString().equals("SwitchS")) {		 			
-		 			String path = request.getParameter("path").toString();				 			
-		 			m_infostation.setSwitch(path);		 			
+		 			String path = request.getParameter("path").toString();
+		 			String command = request.getParameter("command").toString();		
+		 			
+		 			if (command.equals("click")){
+		 				m_infostation.setSwitch(path);
+		 				
+		 			} else if (command.equals("on")){
+		 				m_infostation.setSwitch(path, true);
+		 				
+		 			} else if (command.equals("off")){
+		 				m_infostation.setSwitch(path, false);
+		 			}
 		 		}
 		 		
 		 		/*

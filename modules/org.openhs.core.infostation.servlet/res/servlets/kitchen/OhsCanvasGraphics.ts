@@ -89,6 +89,11 @@ import Thing = OhsSiteData.Thing;
             this.h = h;
         }
         
+        public move (dx: number, dy: number){
+            this.x = this.x + dx;
+            this.y = this.y + dy;
+        }
+        
         public scaleSize (perc: number) {
             
             var old_w: number = this.w;
@@ -345,8 +350,12 @@ import Thing = OhsSiteData.Thing;
         protected colorIncideReady: string = '#a6a6a6';
         protected colorBorderReady: string = '#595959';
         
+        protected imgError:          ImageRect = null;
+        
         constructor (x: number, y: number, w: number, h: number){
             super(x, y, w, h);
+            
+            this.imgError = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_error.png');
         }
         
         public setThing (thing: Thing) {
@@ -363,6 +372,9 @@ import Thing = OhsSiteData.Thing;
         protected imgOpen:      ImageRect = null;
         protected imgClose:     ImageRect = null;
         protected imgLock:      ImageRect = null;
+        
+        public m_switchArray: Array<Switch> = null;
+        public m_contactSensorArray: Array<ContactSensor> = null;
          
         constructor (x: number, y: number, w: number, h: number){
             super(x, y, w, h);
@@ -370,6 +382,9 @@ import Thing = OhsSiteData.Thing;
             this.imgOpen = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/door_open.png');
             this.imgClose = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');            
             this.imgLock = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
+            
+          //  this.m_switchArray = new Array<Switch>();
+          //  this.m_contactSensorArray = new Array<ContactSensor>();
             
             this.size(x, y, w, h);
         }      
@@ -423,6 +438,31 @@ import Thing = OhsSiteData.Thing;
             this.paint(ctx);
         }
         
+        public getState() {
+            
+            var state: number = 0; //unknown...
+            
+            if (this.m_switchArray.length > 0 && this.m_contactSensorArray.length > 0) {
+                
+                if (this.m_contactSensorArray[0].getState()){ //Open
+                    state = 1;                                    
+                    
+                } else { //close
+                    state = 2;
+                    
+                    var lockState: number = this.m_switchArray[0].getState();
+                    
+                    if (lockState == 3) {
+                        state = 3;                    
+                    }    
+
+                }
+                
+            }
+                    
+            return state;
+        }
+        
         public paint (ctx: CanvasRenderingContext2D) {
             
             var door: Door = this.getDoorThing();
@@ -434,7 +474,7 @@ import Thing = OhsSiteData.Thing;
             
             if (door != null) {     
             
-                state = door.getState();
+                state = this.getState(); //door.getState();
             
                 //logic of switch
                 if (state == 0) {
@@ -704,6 +744,127 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
+    export class SwitchLockMark extends Mark {
+        
+        protected imgLockOn:          ImageRect = null;
+        protected imgLockOff:         ImageRect = null;
+        protected imgLockOn_Off:      ImageRect = null;
+        protected imgLockOff_On:      ImageRect = null;   
+        
+        protected border: boolean = false;
+                 
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgLockOn = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn.png');
+            this.imgLockOff = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff.png');      
+            this.imgLockOn_Off = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOn_Off.png');
+            this.imgLockOff_On = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_lockOff_On.png');      
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);
+            
+            var perc: number = 0.9;
+            
+            this.imgLockOn.size(x, y, w, h);
+            this.imgLockOn.scaleSize(perc);
+            
+            this.imgLockOff.size(x, y, w, h);
+            this.imgLockOff.scaleSize(perc);
+            
+            this.imgLockOn_Off.size(x, y, w, h);
+            this.imgLockOn_Off.scaleSize(perc);         
+            
+            this.imgLockOff_On.size(x, y, w, h);
+            this.imgLockOff_On.scaleSize(perc);                               
+        
+        }
+        
+        public getSwitchThing() {
+            var swtch: Switch = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Switch){
+                    swtch = <Switch> this.thing;        
+                }            
+            }            
+            return swtch;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var swtch = this.getSwitchThing();
+                        
+            if (swtch != null) {                                    
+                this.size(swtch.x, swtch.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var swtch: Switch = this.getSwitchThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            if (swtch != null){
+                //Green status....
+                colorInside = '#ccffe6';
+                colorBorder = '#196619';                 
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();      
+                    
+            //Draw temperature text
+            if (swtch == null) {
+                //this.imgBulbOff.paint(ctx);
+                
+            } else {
+
+                //logic of switch
+                if (swtch.getState() == 0) { //off-line
+                    this.imgLockOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 1) { //OFF
+                    this.imgLockOff.paint(ctx);
+                    
+                } else if (swtch.getState() == 2) {//-> ON
+                    this.imgLockOff_On.paint(ctx);
+                    
+                } else if (swtch.getState() == 3) { //ON
+                    this.imgLockOn.paint(ctx);
+                    
+                } else if (swtch.getState() == 4) { //->OFF";
+                    this.imgLockOn_Off.paint(ctx);
+                    
+                } else {
+                    this.imgLockOff.paint(ctx);
+                }                                                            
+                
+            }                      
+            
+            if (this.border){
+                ctx.save();
+                super.paint(ctx);
+                ctx.restore();
+             }           
+        }
+    }    
+    
     export class ContactSensorMark extends Mark {
         
         protected imgSensorOpen:            ImageRect = null;
@@ -757,6 +918,16 @@ import Thing = OhsSiteData.Thing;
             }
             
             this.paint(ctx);
+        }
+        
+        public getState () {
+            var contact: ContactSensor = this.getContactSensorThing();
+            
+            if (contact != null && contact.isValid()) {
+                return contact.getState();
+            }
+            
+            return false;            
         }
         
         public paint (ctx: CanvasRenderingContext2D) {

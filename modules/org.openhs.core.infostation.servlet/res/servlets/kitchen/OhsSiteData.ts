@@ -91,20 +91,28 @@ module OhsSiteData {
                 
             } else {
    
-                 return arg.filter(function(element){
-                     
+                 return arg.filter(function(element){                     
                      var thing: Thing = (<Thing><any>element);
                      
-                     //if (mark.thing == null) {
-                       //  return true;
-                         
-                     //} else {
-                         
-                         return thing.getPath().indexOf(filterPath) >= 0;                         
-                     //}
+                     return thing.getPath().indexOf(filterPath) >= 0;                                              
                  });                               
              }
-        }          
+        }     
+        
+        public getFilteredThingsNoContains<T>(arg: Array<T>, filterPath: string):T[] {
+            
+            if (filterPath == null) {
+                return arg;
+                
+            } else {
+   
+                 return arg.filter(function(element){                     
+                     var thing: Thing = (<Thing><any>element);
+                     
+                     return !(thing.getPath().indexOf(filterPath) >= 0);                                              
+                 });                               
+             }
+        }        
   
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
@@ -354,11 +362,32 @@ module OhsSiteData {
         public postServerClick () {            
             var req: any = {
                 postId : switchId,
-                path:   this.path                
+                path:   this.path,
+                command: 'click'                
             }
             
             postAjax(servletUrl, req);
-        }                
+        }   
+        
+        public postServerSetOn () {            
+            var req: any = {
+                postId : switchId,
+                path:   this.path,
+                command: 'on'                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
+        
+        public postServerSetOff () {            
+            var req: any = {
+                postId : switchId,
+                path:   this.path,
+                command: 'off'                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
         
         public getServerData () {       
              
@@ -472,6 +501,7 @@ module OhsSiteData {
                 this.valid = JSON.parse(data['validity']);
                 
                 if (this.valid){
+                    this.name = data['name'];
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
                     this.open = JSON.parse(data['open']);
