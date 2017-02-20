@@ -1,13 +1,4 @@
 # openhs
 
 <br>Main project wiki: [https://github.com/openhsorg/openhs/wiki](https://github.com/openhsorg/openhs/wiki)
-
-## Folders content:
-* **applications:** Any applications working with OpenHS (config tools, GUIs, etc...)
-* **hardware_units:** Software for hardware units.
-* **modules:** OpenHS Java deployeable modules.
-* **tools:** Any useful tools related to OpenHS.
-
-
-
-
+<br>How to run OpenHS in eclipse: [https://github.com/openhsorg/openhs/wiki/Setup-OpenHS-in-Eclipse-environment(https://github.com/openhsorg/openhs/wiki/Setup-OpenHS-in-Eclipse-environment)]
