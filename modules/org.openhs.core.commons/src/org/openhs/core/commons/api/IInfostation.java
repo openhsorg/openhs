@@ -19,8 +19,9 @@ import org.openhs.core.commons.Floor;
 public interface IInfostation {
 
 	public boolean setSwitch (String sitePath);
-	public List<Boolean> getSwitchState (String sitePath) throws SiteException;
-	public int getSwitchIntState (String sitePath) throws SiteException;
+	public boolean setSwitch (String sitePath, boolean state);
+	//public List<Boolean> getSwitchState (String sitePath) throws SiteException;
+	//public int getSwitchIntState (String sitePath) throws SiteException;
 	public float getTempIn();
 	public float getTempOut();
 	public Weather getForecastWeather6();

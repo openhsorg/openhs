@@ -104,6 +104,23 @@ public class Infostation implements IInfostation {
     	  return false;
       }
       
+      public boolean setSwitch (String sitePath, boolean state) {
+    	  
+    	  logger.debug(" setSwitch : " + sitePath);
+    	  try {
+    		  Switch swt = (Switch) m_siteService.getThing(sitePath);
+              swt.setState(state);
+              
+              return swt.getState();
+    		  
+    	  } catch (Exception ex) {
+   	    	logger.warn(" Caught exception: " + ex.getMessage());
+    	  }    	  	      	      	  
+    	  
+    	  return false;
+      }      
+      
+      /*
       public List<Boolean> getSwitchState (String sitePath) throws SiteException {
 
     	  List<Boolean> list = new ArrayList<Boolean>();
@@ -115,7 +132,8 @@ public class Infostation implements IInfostation {
    		  
    		  return list;       
       }   
-      
+      */
+      /*
       public int getSwitchIntState (String sitePath) throws SiteException {
 
     	  	int stateInt = 0;
@@ -141,7 +159,7 @@ public class Infostation implements IInfostation {
 			
    		  return stateInt;       
       }       
-      
+      */
       public float getTempIn() {
     	  return this.m_meteo.getTempIn();
       }

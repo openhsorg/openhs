@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
+import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
@@ -41,7 +41,7 @@ public class KitchenServlet extends HttpServlet {
 	String addressPrev = "/";
 	String addressNext = "/";		
 
-	KitchenServlet(IInfostation m_infostation) {
+	KitchenServlet(IInfostation m_infostation) {		
 		this.m_infostation = m_infostation;		
 	}   	
 
@@ -151,19 +151,9 @@ public class KitchenServlet extends HttpServlet {
 					try {
 						thing = this.m_infostation.getThing(path2);
 					} catch (SiteException e) {
-						// TODO Auto-generated catch block
-						//System.out.println("\n\n\n\n   Path:" + path2);
 						e.printStackTrace();
 					}		    		
-		    			
-	    			int stateInt = 0; // 0- unknown, 1- off, 2- requested on,  3- device on, 4- requested off 
-	    			
-	    			try {
-	    				stateInt = m_infostation.getSwitchIntState(path2);	    					    					    				
-	    			} catch (Exception ex) {
-	    				
-	    			}
-	    			
+		    			    			
 	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
 	    			
 	    			JSONObject json = new JSONObject();
@@ -173,7 +163,8 @@ public class KitchenServlet extends HttpServlet {
 		    			Switch sw = (Switch) thing;
 					    
 						json.put("validity", new Boolean(true));
-						json.put("state_sw", new Integer(stateInt));
+						json.put("name", String.format(sw.getName()));
+						json.put("state_sw", new Integer(sw.getStateInt()));
 						json.put("x_coordinate", String.format("%d", sw.x));
 						json.put("y_coordinate", String.format("%d", sw.y));
 												
@@ -189,7 +180,43 @@ public class KitchenServlet extends HttpServlet {
 	    			PrintWriter out = response.getWriter();	    			
 				 
 	    			out.println(json.toString());
-		    	        
+	    			out.flush();
+	    			out.close();	
+	    			
+		    	}else if (value.toString().equals("ContactSensor")) {
+	    			
+		    		String path2 = request.getParameter("path").toString();
+		    		
+		    		Thing thing = null;
+					try {
+						thing = this.m_infostation.getThing(path2);
+					} catch (SiteException e) {
+						e.printStackTrace();
+					}		    		
+
+	    			JSONObject json = new JSONObject();
+	    			
+		    		if (thing != null && thing instanceof ContactSensor) {
+			    		
+		    			ContactSensor contact = (ContactSensor) thing;
+					    
+						json.put("validity", new Boolean(true));
+						json.put("state", new Boolean(contact.getState()));
+						json.put("x_coordinate", String.format("%d", contact.x));
+						json.put("y_coordinate", String.format("%d", contact.y));
+												
+						//System.out.println("\n\n\n\n   Path" + path2 + " state: " + contact.getState());
+					
+		    		} else {
+		    			json.put("validity", new Boolean(false));
+		    		}	    				    				    				    			
+	    				    			
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(json.toString());
 	    			out.flush();
 	    			out.close();	
 	    			
@@ -270,8 +297,7 @@ public class KitchenServlet extends HttpServlet {
 					    
 					out.flush();
 					out.close();	
-					
-					
+																				
 		        } else if (value.toString().equals("DoorD")) {
 		    		
 	    			String path = request.getParameter("path").toString();
@@ -287,14 +313,15 @@ public class KitchenServlet extends HttpServlet {
 						e.printStackTrace();
 					}
 					
-					//System.out.println("\n\n\n\n    Room name: " + room.getName());
+					//System.out.println("\n\n\n\n    door name: " + door.getName());
 					
 					JSONObject json = new JSONObject();
 										
 					if (door != null){
 						json.put("validity", new Boolean(true));
 						json.put("name", String.format(door.getName()));
-						json.put("imgBkg", String.format(door.imagePath));
+						json.put("image_open", String.format(door.imagePath_open));
+						json.put("image_close", String.format(door.imagePath_close));
 						json.put("x_coordinate", String.format("%d", door.x));
 						json.put("y_coordinate", String.format("%d", door.y));
 						json.put("open", new Boolean(door.open));
@@ -357,8 +384,18 @@ public class KitchenServlet extends HttpServlet {
 		 			}
 		 			
 		 		} else if (value.toString().equals("SwitchS")) {		 			
-		 			String path = request.getParameter("path").toString();				 			
-		 			m_infostation.setSwitch(path);		 			
+		 			String path = request.getParameter("path").toString();
+		 			String command = request.getParameter("command").toString();		
+		 			
+		 			if (command.equals("click")){
+		 				m_infostation.setSwitch(path);
+		 				
+		 			} else if (command.equals("on")){
+		 				m_infostation.setSwitch(path, true);
+		 				
+		 			} else if (command.equals("off")){
+		 				m_infostation.setSwitch(path, false);
+		 			}
 		 		}
 		 		
 		 		/*
@@ -546,7 +583,27 @@ public class KitchenServlet extends HttpServlet {
 			} catch (SiteException e) {
 				json.put("number_switches", String.format("0"));								
 				e.printStackTrace();
-			}			
+			}
+			
+			// ContactSensor			
+			try {
+				Set<String> contactSensorPaths = this.m_infostation.getThingPaths(ContactSensor.class);						
+				json.put("number_contactSensors", String.format("%d", contactSensorPaths.size()));				
+								
+				int i = 0;
+				for (String item: contactSensorPaths) {
+													
+					json.put("contactSensorPath_" + i, item);
+
+					i ++;
+					//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
+					
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_contactSensors", String.format("0"));								
+				e.printStackTrace();
+			}
 		
 			// Doors			
 			try {
