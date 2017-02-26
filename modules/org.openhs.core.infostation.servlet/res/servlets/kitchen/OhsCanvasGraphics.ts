@@ -149,6 +149,7 @@ import Thing = OhsSiteData.Thing;
         private imgSrc: string = '---';
         
         public loaded: boolean = false;
+        protected border: boolean = false;
         
         constructor (x: number, y: number, w: number, h: number, radius: number, imgSrc: string) {
             super(x, y, w, h, radius);            
@@ -173,13 +174,24 @@ import Thing = OhsSiteData.Thing;
             ctx.save();
             
             super.paint(ctx);
-            if (this.radius != 0) {
-                
+            if (this.radius != 0) {                
                 ctx.clip();
             }
             
             ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
-            ctx.restore();            
+            ctx.restore();         
+            
+            if (this.border){
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue'; 
+                ctx.stroke();           
+                ctx.closePath();
+                ctx.restore();  
+            }
+            
         }
         
         public getImage() {
@@ -268,7 +280,7 @@ import Thing = OhsSiteData.Thing;
         public fontSize:      number = 20; 
         public fontColor:     string = "#000000";
         public fontFamily:     string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-        public textAlign:     string = "center";
+        public textAlign:     string = "left";
         public textBaseline:   string = "middle";    
                         
         protected text: string = '';
@@ -317,6 +329,9 @@ import Thing = OhsSiteData.Thing;
             if (this.border){
                 ctx.save();
                 super.paint(ctx);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue'; 
+                ctx.stroke();                   
                 ctx.restore();
              }                          
         }
@@ -361,8 +376,8 @@ import Thing = OhsSiteData.Thing;
         protected imgClose:     ImageRect = null;
         protected imgLock:      ImageRect = null;
         
-        public m_switchArray: Array<Switch> = null;
-        public m_contactSensorArray: Array<ContactSensor> = null;
+       // public m_switchArray: Array<Switch> = null;
+      //  public m_contactSensorArray: Array<ContactSensor> = null;
          
         constructor (x: number, y: number, w: number, h: number){
             super(x, y, w, h);

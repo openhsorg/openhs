@@ -37,5 +37,6 @@ public interface IInfostation {
 	public Set<String> getThingPaths (Class<?> t) throws SiteException;
 	public boolean isClosed (Thing m_thing) throws SiteException;
 	public boolean isLocked (Thing m_thing) throws SiteException;
+	public void setAllDoorsSwitch (boolean state) throws SiteException; 
 
 }

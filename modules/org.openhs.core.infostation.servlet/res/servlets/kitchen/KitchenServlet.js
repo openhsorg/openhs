@@ -55,7 +55,7 @@ var KitchenInfoStation;
     var secPtrColor = "#CC0000";
     var textColor = "#000000";
     var circleColor = "#c0c0c0";
-    var fontSizeTempIn = 54;
+    //  let fontSizeTempIn:     number = 140;
     var fontSizeTempOut = 50;
     var fontSizeWind = 24;
     var fontSizeHum = 27;
@@ -105,23 +105,36 @@ var KitchenInfoStation;
             this.m_screenDoor = new ScreenDoor(this.canvas, this.m_siteData, this.m_graphics);
             //---Mouse Handler---
             var self = this;
-            this.canvas.addEventListener('click', function (event) { self.MouseClickHandler(event); }, false);
+            this.canvas.addEventListener('mousedown', function (event) { self.MouseDownHandler(event); }, false);
+            this.canvas.addEventListener('mouseup', function (event) { self.MouseClickHandler(event); }, false);
             //---Timer Setup---
             //    this.timerGetServerDataEvent(this.refreshRateMain);  
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
         }
+        ApplicationKitchen.prototype.MouseDownHandler = function (event) {
+            var mousePos = getMousePos(this.canvas, event);
+            /*
+            * handling in current page...
+            */
+            if (this.currPage != null) {
+                var retVal = this.currPage.MouseDownHandler(event);
+            }
+        };
         ApplicationKitchen.prototype.MouseClickHandler = function (event) {
             var mousePos = getMousePos(this.canvas, event);
             /*
             * handling in current page...
             */
             var retVal = this.currPage.MouseClickHandler(event);
+            if (retVal == null) {
+                return null;
+            }
             var refresh = this.refreshRateMain;
             var screen = null;
-            //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
+            // window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
             if (retVal.nextScreen == SwitchScreen.Floor) {
-                refresh = 2000;
+                refresh = 1000;
                 screen = this.m_floor;
                 this.m_floor.setThing(this.m_siteData.m_floorArray[1]);
             }
@@ -137,7 +150,7 @@ var KitchenInfoStation;
                 this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
             }
             else if (retVal.nextScreen == SwitchScreen.DoorList) {
-                refresh = 100;
+                refresh = 2000;
                 screen = this.m_screenDoorList;
             }
             else if (retVal.nextScreen == SwitchScreen.DoorScreen) {
@@ -152,6 +165,7 @@ var KitchenInfoStation;
             if (next != null) {
                 next.prevPage = SwitchScreen.Main;
                 if (this.currPage != null) {
+                    //window.alert("curr page close");
                     this.currPage.close();
                     if (this.currPage instanceof ScreenFloor) {
                         next.prevPage = SwitchScreen.Floor;
@@ -160,7 +174,6 @@ var KitchenInfoStation;
                         next.prevPage = SwitchScreen.DoorList;
                     }
                 }
-                //next.prevPage = this.currPage;
                 this.currPage = next.open(refreshRate);
             }
         };
@@ -182,6 +195,9 @@ var KitchenInfoStation;
         function Screen(canvas) {
             this.prevPage = SwitchScreen.Main;
             this.thing = null;
+            this.timerPaint = null;
+            this.timerPaintQuick = null;
+            this.wait = false;
             this.returnVal = {
                 nextScreen: null,
                 nextThingPath: null
@@ -191,6 +207,16 @@ var KitchenInfoStation;
             this.width = canvas.width;
             this.height = canvas.height;
         }
+        Screen.prototype.CommandSchedule = function (cmd) {
+            var _this = this;
+            this.timerPaintQuick = window.setTimeout(function () { return _this.CommandExecute(cmd); }, 250);
+        };
+        Screen.prototype.CommandExecute = function (cmd) {
+            return null;
+        };
+        Screen.prototype.MouseDownHandler = function (event) {
+            return null;
+        };
         Screen.prototype.MouseClickHandler = function (event) {
             return null;
         };
@@ -202,26 +228,53 @@ var KitchenInfoStation;
         };
         Screen.prototype.paintQuick = function () {
         };
-        Screen.prototype.timerPaintEvent = function (step) {
-            var _this = this;
-            this.paint();
-            window.clearTimeout(this.timerPaint);
-            this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
+        Screen.prototype.paintWait = function () {
+            var rect = new RectRounded(0, 0, 0, 0, 10);
+            var text = new TextSimple(0, 0, 0, 0);
+            this.ctx.save();
+            rect.size((this.width / 2) - 100, (this.height / 2) - 25, 200, 60);
+            rect.paint(this.ctx);
+            this.ctx.fillStyle = "#b8b894";
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = "gray";
+            this.ctx.fill();
+            this.ctx.stroke();
+            text.size(rect.x + 5, rect.y + 5, 60, 30);
+            text.fontColor = "#1a75ff";
+            text.fontSize = 40;
+            text.paintText(this.ctx, 'Wait...');
+            this.ctx.restore();
         };
-        Screen.prototype.timerPaintEventQuick = function (step) {
-            var _this = this;
-            this.paintQuick();
-            window.clearTimeout(this.timerPaintQuick);
-            this.timerPaintQuick = window.setTimeout(function () { return _this.timerPaintEventQuick(step); }, step);
-        };
+        /*
+            protected timerPaintEvent(step : number) {
+               this.paint();
+               //window.clearTimeout(this.timerPaint);
+              // this.timerPaint = window.setTimeout(() => this.timerPaintEvent(step), step);
+               window.clearInterval(this.timerPaint);
+               this.timerPaint = window.setInterval(() => this.paint(), step);
+            }
+            
+            protected timerPaintEventQuick(step : number) {
+               this.paintQuick();
+               window.clearTimeout(this.timerPaintQuick);
+               this.timerPaintQuick = window.setTimeout(() => this.timerPaintEventQuick(step), step);
+               //this.timerPaintQuick = window.setInterval(() => this.timerPaintEventQuick(step), step);
+            }
+    */
         Screen.prototype.open = function (refresh) {
-            this.timerPaintEvent(refresh);
-            this.timerPaintEventQuick(80);
+            var _this = this;
+            this.close();
+            this.paint();
+            this.timerPaint = setInterval(function () { return _this.paint(); }, refresh);
+            this.timerPaintQuick = setInterval(function () { return _this.paintQuick(); }, 200);
+            //   this.timerPaintEvent(refresh);
+            //    this.timerPaintEventQuick(80);
+            //setInterval(function(){ alert("Hello"); }, 3000);
             return this;
         };
         Screen.prototype.close = function () {
-            window.clearTimeout(this.timerPaint);
-            window.clearTimeout(this.timerPaintQuick);
+            clearInterval(this.timerPaint);
+            clearInterval(this.timerPaintQuick);
         };
         Screen.prototype.getServerData = function (url) {
         };
@@ -254,12 +307,12 @@ var KitchenInfoStation;
             this.iconStopWatch = new ImageRect((this.width / 2) + 180, (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/stopwatch.png');
             this.iconVoiceMessage = new ImageRect((this.width / 2) - 220, (this.height / 2) + 20, 60, 60, 0, '/infores/servlets/kitchen/voicemessage.png');
             this.iconDoor = new ImageRect((this.width / 2) + 150, (this.height / 2) + 120, 60, 60, 0, '/infores/servlets/kitchen/door_icon.png');
-            this.iconWeather = new ImageRectArray(0, 0, 150, 150, 0);
+            this.iconWeather = new ImageRectArray(0, 0, 0, 0, 0);
             this.iconWeather.setImages(imagePaths);
-            this.iconWind = new ImageRect(140, 70, 50, 50, 0, '/infores/servlets/kitchen/wind.png');
+            this.iconWind = new ImageRect(0, 0, 0, 0, 0, '/infores/servlets/kitchen/wind.png');
             this.iconHum = new ImageRect((this.width / 2) + 10, (this.height / 2) + 70, 60, 60, 0, '/infores/servlets/kitchen/drop.png');
-            this.tmpInText = new TextSimple((this.width / 2) - 120, (this.height / 2) - 10, 220, 60);
-            this.tmpOutText = new TextSimple((this.width / 2), (this.height / 2) + 50, 150, 60);
+            this.tmpInText = new TextSimple(0, 0, 0, 0);
+            this.tmpOutText = new TextSimple(0, 0, 0, 0);
             this.timeText = new TextSimple((this.width) - 150, 5, 150, 60);
             this.dateText = new TextSimple((this.width) / 2 + 70, 80, 230, 40);
             this.windText = new TextSimple(160, 80, 140, 40);
@@ -269,10 +322,6 @@ var KitchenInfoStation;
             this.stopWatch.arcRadius = 120;
         }
         ScreenMain.prototype.MouseClickHandler = function (event) {
-            var returnVal = {
-                nextScreen: SwitchScreen.Main,
-                nextThingPath: null
-            };
             var mousePos = getMousePos(this.canvas, event);
             if (this.appWatch) {
                 if (this.stopWatch.getStatus()) {
@@ -285,6 +334,7 @@ var KitchenInfoStation;
                     this.appWatch = false;
                     this.open(5000);
                 }
+                return null;
             }
             else {
                 if (this.iconStopWatch.isClicked(mousePos.x, mousePos.y)) {
@@ -292,98 +342,113 @@ var KitchenInfoStation;
                     this.stopWatch.start();
                     this.appWatch = true;
                     this.open(30);
+                    return null;
                 }
                 else if (this.iconDoor.isClicked(mousePos.x, mousePos.y)) {
-                    returnVal.nextScreen = SwitchScreen.DoorList;
-                    return returnVal;
+                    this.returnVal.nextScreen = SwitchScreen.DoorList;
+                    return this.returnVal;
                 }
                 else if (this.tmpInText.isClicked(mousePos.x, mousePos.y)) {
-                    // return SwitchScreen.Floor;  
-                    //window.clearTimeout(this.timerPaint);
-                    returnVal.nextScreen = SwitchScreen.Floor;
-                    return returnVal;
+                    this.returnVal.nextScreen = SwitchScreen.Floor;
+                    return this.returnVal;
                 }
                 else if (this.iconWeather.isClicked(mousePos.x, mousePos.y)) {
-                    // return SwitchScreen.WeatherForecast;  
-                    returnVal.nextScreen = SwitchScreen.WeatherForecast;
-                    return returnVal;
+                    this.returnVal.nextScreen = SwitchScreen.WeatherForecast;
+                    return this.returnVal;
                 }
             }
-            //return null;
+            return null;
         };
         ScreenMain.prototype.paint = function () {
             // window.alert("sss");
             this.paintStaticImage();
             var ctx = this.ctx;
             //Weather outside...
+            this.iconWeather.size(0, 0, 200, 200);
             this.iconWeather.paintImage(this.ctx, this.m_weatherData.getCurrent().weatherSymbol);
             //Wind
+            this.iconWind.size(180, 90, 60, 60);
             this.iconWind.paint(this.ctx);
             //Hum
-            this.iconHum.paint(this.ctx);
+            //this.iconHum.paint(this.ctx);
             //Face icons
             this.iconStopWatch.paint(this.ctx);
             this.iconVoiceMessage.paint(this.ctx);
             this.iconDoor.paint(this.ctx);
             //Wind outside
-            this.windText.fontSize = fontSizeWind;
+            this.windText.fontSize = 40;
             this.windText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.windText.fontColor = textColor;
             this.windText.textAlign = "right";
             this.windText.textBaseline = "middle";
-            this.windText.paintText(this.ctx, this.m_weatherData.getCurrent().windSpeed + " m/s");
+            this.windText.size(240, 90, 100, 65);
+            this.windText.paintText(this.ctx, this.m_weatherData.getCurrent().windSpeed.toPrecision(2) + "");
             //Time          
-            this.timeText.fontSize = fontSizeTime;
+            this.timeText.fontSize = 80;
             this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.timeText.fontColor = textColor;
             this.timeText.textAlign = "right";
             this.timeText.textBaseline = "middle";
+            this.timeText.size(this.width - 250, 20, 250, 65);
             this.timeText.paintText(this.ctx, this.m_siteData.timeString);
             //Date
-            this.dateText.fontSize = fontSizeDate;
+            this.dateText.fontSize = 40;
             this.dateText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.dateText.fontColor = textColor;
             this.dateText.textAlign = "right";
             this.dateText.textBaseline = "middle";
+            this.dateText.size(this.width - 350, 90, 350, 65);
             this.dateText.paintText(this.ctx, this.m_siteData.dateString);
             //Inside temperature
-            this.tmpInText.y = 220;
-            this.tmpInText.fontSize = fontSizeTempIn;
+            this.tmpInText.fontSize = 140;
             this.tmpInText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.tmpInText.fontColor = textColor;
             this.tmpInText.textAlign = "right";
             this.tmpInText.textBaseline = "middle";
+            this.tmpInText.size((this.width / 2) - 100, (this.height / 2) - 10, 200, 120);
             //Temperature from sensor 1...            
-            this.tmpInText.paintText(this.ctx, this.m_weatherData.getCurrent().tempIn.toPrecision(2) + " \u00B0C");
+            this.tmpInText.paintText(this.ctx, this.m_weatherData.getCurrent().tempIn.toPrecision(2) + "\u00B0");
             //Outside temperature    
-            this.tmpOutText.equals(this.tmpInText);
-            this.tmpOutText.x = 80;
-            this.tmpOutText.y = 5;
+            this.tmpOutText.fontSize = 80;
+            this.tmpOutText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.tmpOutText.fontColor = textColor;
             this.tmpOutText.textAlign = "right";
+            this.tmpOutText.textBaseline = "middle";
+            this.tmpOutText.size(150, 20, 250, 65);
             this.tmpOutText.paintText(this.ctx, this.m_weatherData.getCurrent().tempOut.toPrecision(2) + " \u00B0C");
             //Humidity
+            /*
             ctx.save();
             ctx.font = fontSizeHum + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.textAlign = "right";
             ctx.textBaseline = "middle";
             ctx.fillStyle = textColor;
-            ctx.fillText("44", (this.width / 2), (this.height / 2) + 105);
+            ctx.fillText("44", (this.width / 2) , (this.height / 2) + 105);
             ctx.restore();
+            */
             //Draw arc...
             var r = Math.min(this.width, this.height) * 7 / 16;
             var arcCenterX = this.width / 2;
-            var arcCenterY = this.height / 2 + 50;
-            var arcRadius = 120;
+            var arcCenterY = this.height / 2 + 60;
+            var arcRadius = this.height * 0.32;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(arcCenterX, arcCenterY, arcRadius, 0, 2 * Math.PI, false);
-            ctx.lineWidth = 1;
+            ctx.arc(arcCenterX, arcCenterY, arcRadius, 0, 2 * Math.PI, true);
+            ctx.lineWidth = 2;
             ctx.strokeStyle = circleColor;
             ctx.stroke();
             ctx.restore();
             if (this.appWatch) {
                 this.stopWatch.paint();
             }
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, this.width, this.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
         };
         ScreenMain.prototype.paintStaticImage = function () {
             var ctx = this.ctx;
@@ -691,8 +756,6 @@ var KitchenInfoStation;
                     this.m_graphics.setNumber2(m_doorArray.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     for (var id in this.m_doorMarks) {
                         this.m_doorMarks[id].setThing(m_doorArray[id]);
-                        this.m_doorMarks[id].m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, m_doorArray[id].getPath());
-                        this.m_doorMarks[id].m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, m_doorArray[id].getPath());
                     }
                     //Windows
                     var m_windowArray = this.siteData.getFilteredThings(this.siteData.m_windowArray, thing.getPath());
@@ -1080,6 +1143,7 @@ var KitchenInfoStation;
             this.m_iconBkgImage = null;
             this.imgLock = null;
             this.imgUnLock = null;
+            this.cmd = 0;
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
             this.m_arrayViewDoor = new Array();
@@ -1121,21 +1185,144 @@ var KitchenInfoStation;
             this.imgLock.paint(this.ctx);
             this.imgUnLock.paint(this.ctx);
             ctx.restore();
+            if (this.wait) {
+                _super.prototype.paintWait.call(this);
+            }
+        };
+        ScreenDoorList.prototype.CommandExecute = function (cmd) {
+            if (cmd == 6) {
+                this.m_siteData.postServerAllDoors('on');
+                this.m_siteData.getFastData();
+                this.wait = false;
+            }
+            if (cmd == 7) {
+                this.m_siteData.postServerAllDoors('off');
+                this.m_siteData.getFastData();
+                this.wait = false;
+            }
+            return null;
+        };
+        ScreenDoorList.prototype.MouseDownHandler = function (event) {
+            var mousePos = getMousePos(this.canvas, event);
+            /*
+                if(this.imgLock.isClicked(mousePos.x, mousePos.y)){
+                   // window.alert("All m_doorArray locked!");
+                    this.cmd = 6;
+                    this.wait = true;
+                    this.paint();
+                    
+                    this.CommandSchedule(6);
+                         
+                    
+                    return;
+                }
+                
+                if(this.imgUnLock.isClicked(mousePos.x, mousePos.y)){
+                    
+                    this.cmd = 7;
+                    
+                    this.wait = true;
+                    this.paint();
+                    
+                    this.CommandSchedule(7);
+                    
+                    return;
+                }
+                
+                */
+            if (this.imgLock.isClicked(mousePos.x, mousePos.y)) {
+                // window.alert("All m_doorArray locked!");
+                this.wait = true;
+                this.paintWait();
+                this.CommandSchedule(6);
+                //   this.m_siteData.postServerAllDoors('on');                
+                //  this.m_siteData.getFastData();
+                //this.paint();
+                //  this.wait = false;
+                //   this.returnVal.nextScreen = null;
+                //    return this.returnVal;
+                this.cmd = 1;
+            }
+            if (this.imgUnLock.isClicked(mousePos.x, mousePos.y)) {
+                this.wait = true;
+                this.paintWait();
+                this.CommandSchedule(7);
+                //this.m_siteData.postServerAllDoors('off');
+                //this.m_siteData.getFastData();
+                //this.paint();
+                //this.wait = false;
+                //    this.returnVal.nextScreen = null;
+                //    return this.returnVal;
+                this.cmd = 1;
+            }
         };
         ScreenDoorList.prototype.MouseClickHandler = function (event) {
             var mousePos = getMousePos(this.canvas, event);
             this.returnVal.nextScreen = SwitchScreen.Main;
             var viewDoorClicked = null;
+            if (this.cmd == 1) {
+                this.cmd = 0;
+                return null;
+            }
+            /*
+            if (this.cmd == 6) {
+                
+               this.m_siteData.postServerAllDoors('on');
+                this.m_siteData.getFastData();
+                //this.paint();
+                this.wait = false;
+         
+                this.returnVal.nextScreen = null;
+                
+                this.cmd = 0;
+                return this.returnVal;
+                
+            } else if (this.cmd == 7) {
+                
+                this.m_siteData.postServerAllDoors('off');
+                this.m_siteData.getFastData();
+                //this.paint();
+                this.wait = false;
+                
+                this.cmd = 0;
+                
+                this.returnVal.nextScreen = null;
+                return this.returnVal;
+                
+            }
+            */
+            /*
+            
+            if(this.imgLock.isClicked(mousePos.x, mousePos.y)){
+               // window.alert("All m_doorArray locked!");
+                this.wait = true;
+                this.paintWait();
+                this.CommandSchedule(6);
+             //   this.m_siteData.postServerAllDoors('on');
+              //  this.m_siteData.getFastData();
+                //this.paint();
+              //  this.wait = false;
+         
+                this.returnVal.nextScreen = null;
+                
+                return this.returnVal;
+            }
+            
+            if(this.imgUnLock.isClicked(mousePos.x, mousePos.y)){
+                
+                this.wait = true;
+                this.paintWait();
+                this.CommandSchedule(7);
+                //this.m_siteData.postServerAllDoors('off');
+                //this.m_siteData.getFastData();
+                //this.paint();
+                //this.wait = false;
+  
+                this.returnVal.nextScreen = null;
+                return this.returnVal;
+            }
+            */
             for (var i in this.m_arrayViewDoor) {
-                /*
-                if (this.m_arrayViewDoor[i].m_doorMark2.isClicked(mousePos.x, mousePos.y)){
-                    
-                    var door: Door = <Door> this.m_arrayViewDoor[i].m_doorMark2.getThing();
-                    
-                    window.alert('Door clicked: ' + door.getPath());
-                    returnVal.nextScreen = null;
-                } else {
-                */
                 if (this.m_arrayViewDoor[i].isClicked(mousePos.x, mousePos.y)) {
                     viewDoorClicked = this.m_arrayViewDoor[i];
                     break;
@@ -1144,24 +1331,6 @@ var KitchenInfoStation;
             if (viewDoorClicked != null) {
                 this.returnVal.nextScreen = SwitchScreen.DoorScreen;
                 this.returnVal.nextThingPath = viewDoorClicked.getThing().getPath();
-            }
-            /*
-            if (this.panelBottom.isClicked(mousePos.x, mousePos.y) == true) {
-                returnVal = null;
-            }
-            */
-            if (this.imgLock.isClicked(mousePos.x, mousePos.y)) {
-                // window.alert("All m_doorArray locked!");
-                for (var id in this.m_arrayViewDoor) {
-                    this.m_arrayViewDoor[id].m_doorMark2.m_switchArray[0].postServerSetOn();
-                }
-                this.returnVal.nextScreen = null;
-            }
-            if (this.imgUnLock.isClicked(mousePos.x, mousePos.y)) {
-                for (var id in this.m_arrayViewDoor) {
-                    this.m_arrayViewDoor[id].m_doorMark2.m_switchArray[0].postServerSetOff();
-                }
-                this.returnVal.nextScreen = null;
             }
             return this.returnVal;
         };
@@ -1212,8 +1381,6 @@ var KitchenInfoStation;
                 this.m_imgDoorOpen = new ImageRect(this.x, this.y, this.w, this.h, 10, door.image_close);
                 this.m_doorMark2 = new DoorMark(0, 0, 0, 0);
                 this.m_doorMark2.setThing(this.thing);
-                this.m_doorMark2.m_switchArray = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, door.getPath());
-                this.m_doorMark2.m_contactSensorArray = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, door.getPath());
             }
         };
         ViewDoor.prototype.size = function (x, y, w, h) {

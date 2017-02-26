@@ -8,6 +8,7 @@ import java.util.Set;
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Thing;
@@ -245,5 +246,23 @@ public class Infostation implements IInfostation {
       
       public boolean isLocked (Thing m_thing) throws SiteException {
     	  return this.m_siteService.isLocked (m_thing);
-      }      
+      } 
+      
+      public void setAllDoorsSwitch (boolean state) throws SiteException {
+    	  
+    	  Set<String> doorPaths = getThingPaths (Door.class);
+    	  
+    	  if (doorPaths != null) {
+	    	  for (String path : doorPaths) {	    		  
+	    		  Set <String> switchPaths = this.m_siteService.getThingChildrenPathSet(path, Switch.class);
+	    		  
+	    		  for (String swPath: switchPaths) {
+	    			  
+	    			  Switch sw = (Switch) this.m_siteService.getThing(swPath);
+	    			  
+	    			  sw.setState(state);	    			  
+	    		  }	    		  	    		  
+	    	  }    	  
+    	  }    	      	  
+      }
 }

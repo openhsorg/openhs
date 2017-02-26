@@ -7,6 +7,7 @@ module OhsSiteData {
     const servletUrl = 'kitchen';
     const switchId = 'SwitchS';
     const contactSensorId = 'ContactSensor';
+    const allDoorsId = 'AllDoors';
      
     export class SiteData {
 
@@ -42,6 +43,13 @@ module OhsSiteData {
         
         private fastTimerGetDataEvent(step : number) {
             
+            this.getFastData();
+                                               
+           window.clearTimeout(this.fastTimerGetData);
+           this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
+        }           
+        
+        public getFastData () {
             for (let id in this.m_roomArray) {
                 this.m_roomArray[id].getServerData();
             }            
@@ -65,10 +73,7 @@ module OhsSiteData {
             for (let id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
             }
-                                               
-           window.clearTimeout(this.fastTimerGetData);
-           this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
-        }           
+        }
         
         private slowTimerGetDataEvent(step : number) {
                                   
@@ -266,7 +271,17 @@ module OhsSiteData {
                 } 
                                
             }      
-        }                        
+        }   
+        
+        public postServerAllDoors (cmd: string) {            
+            var req: any = {
+                postId : allDoorsId,
+              //  path:   this.path,
+                command: cmd                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
     }
     
     export class Thing {

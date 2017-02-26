@@ -449,6 +449,30 @@ public class KitchenServlet extends HttpServlet {
 		 			} else if (command.equals("off")){
 		 				m_infostation.setSwitch(path, false);
 		 			}
+		 			
+		 		} else if (value.toString().equals("AllDoors")) {	
+		 			
+		 		//	String path = request.getParameter("path").toString();
+		 			String command = request.getParameter("command").toString();		
+		 			
+		 	//		System.out.println("\n\n\n\n****POST value:=" + command);
+		 			
+		 			if (command.equals("on")){
+		 				try {
+							m_infostation.setAllDoorsSwitch(true);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		 				
+		 			} else if (command.equals("off")){
+		 				try {
+							m_infostation.setAllDoorsSwitch(false);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}		 				
+		 			}
 		 		}
 		 		
 		 		/*
@@ -497,7 +521,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='600' height='400' style='margin-top: -200px; margin-left: -300px'>");
+	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='800' height='468' style='margin-top: -234px; margin-left: -400px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 	    	
@@ -550,7 +574,7 @@ public class KitchenServlet extends HttpServlet {
 		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		    String time = format.format(curDate); 	 		  
 		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
+		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
 		    String date = format2.format(curDate); 	  	    	  		    		    	
 	    	
 			JSONObject json = new JSONObject();	

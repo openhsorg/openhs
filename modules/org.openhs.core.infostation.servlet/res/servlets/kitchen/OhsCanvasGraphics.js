@@ -133,6 +133,7 @@ var OhsCanvasGraphics;
             this.img = null;
             this.imgSrc = '---';
             this.loaded = false;
+            this.border = false;
             this.img = new Image();
             this.img.onload = function (event) {
                 _this.onImageLoad(event);
@@ -151,6 +152,16 @@ var OhsCanvasGraphics;
             }
             ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
             ctx.restore();
+            if (this.border) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
         };
         ImageRect.prototype.getImage = function () {
             return this.img;
@@ -226,7 +237,7 @@ var OhsCanvasGraphics;
             this.fontSize = 20;
             this.fontColor = "#000000";
             this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.textAlign = "center";
+            this.textAlign = "left";
             this.textBaseline = "middle";
             this.text = '';
             this.border = false;
@@ -262,6 +273,9 @@ var OhsCanvasGraphics;
             if (this.border) {
                 ctx.save();
                 _super.prototype.paint.call(this, ctx);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
                 ctx.restore();
             }
         };
@@ -297,13 +311,13 @@ var OhsCanvasGraphics;
     OhsCanvasGraphics.Mark = Mark;
     var DoorMark = (function (_super) {
         __extends(DoorMark, _super);
+        // public m_switchArray: Array<Switch> = null;
+        //  public m_contactSensorArray: Array<ContactSensor> = null;
         function DoorMark(x, y, w, h) {
             _super.call(this, x, y, w, h);
             this.imgOpen = null;
             this.imgClose = null;
             this.imgLock = null;
-            this.m_switchArray = null;
-            this.m_contactSensorArray = null;
             this.imgOpen = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_open.png');
             this.imgClose = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');
             this.imgLock = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');

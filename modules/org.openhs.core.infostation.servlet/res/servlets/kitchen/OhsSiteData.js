@@ -11,6 +11,7 @@ var OhsSiteData;
     var servletUrl = 'kitchen';
     var switchId = 'SwitchS';
     var contactSensorId = 'ContactSensor';
+    var allDoorsId = 'AllDoors';
     var SiteData = (function () {
         function SiteData() {
             //---Site data---
@@ -36,6 +37,11 @@ var OhsSiteData;
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
             var _this = this;
+            this.getFastData();
+            window.clearTimeout(this.fastTimerGetData);
+            this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
+        };
+        SiteData.prototype.getFastData = function () {
             for (var id in this.m_roomArray) {
                 this.m_roomArray[id].getServerData();
             }
@@ -54,8 +60,6 @@ var OhsSiteData;
             for (var id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
             }
-            window.clearTimeout(this.fastTimerGetData);
-            this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
         };
         SiteData.prototype.slowTimerGetDataEvent = function (step) {
             var _this = this;
@@ -200,6 +204,14 @@ var OhsSiteData;
                     this.m_windowArray[id_6].setPath(data['windowPath_' + id_6]);
                 }
             }
+        };
+        SiteData.prototype.postServerAllDoors = function (cmd) {
+            var req = {
+                postId: allDoorsId,
+                //  path:   this.path,
+                command: cmd
+            };
+            postAjax(servletUrl, req);
         };
         return SiteData;
     }());
