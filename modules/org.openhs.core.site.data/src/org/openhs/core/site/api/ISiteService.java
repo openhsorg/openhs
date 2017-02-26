@@ -44,6 +44,12 @@ public interface ISiteService {
 	
 	void SaveXML (String path);
 	
-	public Set<String> getAllThingsPath (Class<?>  t) throws SiteException;
+	public Set<String> getThingPathSet (Class<?>  t) throws SiteException;
+	
+	public Set<String> getThingChildrenPathSet (String parentPath, Class<?>  t) throws SiteException;
+	
+	public boolean isClosed (Thing m_thing) throws SiteException;
+	
+	public boolean isLocked (Thing m_thing) throws SiteException;
 
 }

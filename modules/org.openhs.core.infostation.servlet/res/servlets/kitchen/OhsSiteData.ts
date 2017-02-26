@@ -20,6 +20,7 @@ module OhsSiteData {
         public m_tempSensorArray:       Array <TemperatureSensor> = null;
         public m_switchArray:           Array <Switch> = null;
         public m_doorArray:             Array <Door> = null;
+        public m_windowArray:           Array <Window> = null;
         public m_contactSensorArray:    Array <ContactSensor> = null;
         
         //---Other data---
@@ -32,6 +33,7 @@ module OhsSiteData {
             this.m_tempSensorArray = new Array<TemperatureSensor>(); 
             this.m_switchArray = new Array<Switch>();
             this.m_doorArray = new Array<Door>();
+            this.m_windowArray = new Array<Door>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
                         
             this.slowTimerGetDataEvent(1000);            
@@ -56,11 +58,14 @@ module OhsSiteData {
                 this.m_doorArray[id].getServerData();
             }    
             
+            for (let id in this.m_windowArray) {
+                this.m_windowArray[id].getServerData();
+            }             
+            
             for (let id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
             }
-                         
-                      
+                                               
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
         }           
@@ -175,7 +180,13 @@ module OhsSiteData {
                 if (this.m_doorArray[id].getPath() == path) {
                     return <Thing>this.m_doorArray[id];
                 }                    
-            }   
+            } 
+            
+            for (let id in this.m_windowArray) {                
+                if (this.m_windowArray[id].getPath() == path) {
+                    return <Thing>this.m_windowArray[id];
+                }                    
+            }             
             
             for (let id in this.m_contactSensorArray) {                
                 if (this.m_contactSensorArray[id].getPath() == path) {
@@ -242,7 +253,18 @@ module OhsSiteData {
                     this.m_doorArray[id].setPath(data['doorPath_' + id]);
                     
                 //    window.alert("Path:" + this.m_doorArray[id].getPath());
-                }                   
+                }     
+                
+                // Window          
+                                           
+                this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
+                            
+                for (let id in this.m_windowArray) {           
+                    this.m_windowArray[id].setPath(data['windowPath_' + id]);
+                    
+                //    window.alert("Path:" + this.m_doorArray[id].getPath());
+                } 
+                               
             }      
         }                        
     }
@@ -485,7 +507,7 @@ module OhsSiteData {
                 path:   this.path                
             }
             
-            postAjax("kitchen", req);
+            postAjax(servletUrl, req);
         }                
         
         public getServerData () {       
@@ -513,16 +535,67 @@ module OhsSiteData {
         }        
     }    
     
-    export class Window {
+    export class Window extends Thing {
     
-        public valid: boolean = false; //content is valid       
+        public name: string = "no name";
+        public image_open: string = "/infores/servlets/kitchen/room_default.png";
+        public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
-        public path:        string; //OpenHS path        
-        public open:        boolean; //Open
+        public open:       boolean; //Open
+        public locked:     boolean; //Door lock
         
-        public setPath (path: string) {
-            this.path = path;
+        public x:   number;
+        public y:   number;
+        
+        constructor () {
+            super();
+            this.open = false;
+            this.locked = false;
+            
+            this.x = 0;
+            this.y = 0;
+        } 
+        
+        public getState () {                                   
+            if (!this.valid) return 0;
+            if (this.open) return 1;                        
+            if (this.locked) return 3;
+            
+            return 2;                                    
+        }
+        
+        public postServerClick () {            
+            var req: any = {
+                postId : "Window",
+                path:   this.path                
+            }
+            
+            postAjax(servletUrl, req);
         }                
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "Window",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                
+                if (this.valid){
+                    this.name = data['name'];
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);  
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];          
+                }                                
+            }                                                       
+        }              
     }    
     
     

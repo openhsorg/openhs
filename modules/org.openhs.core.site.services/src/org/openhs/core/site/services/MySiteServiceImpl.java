@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.Window;
 import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
@@ -99,9 +100,12 @@ public class MySiteServiceImpl implements ISiteService {
 			room.imagePath = "/infores/servlets/kitchen/room3.png";				
 			addThing("floors/Floor2/rooms/Room1", room);
 			
+			/*
+			 * Doors
+			 */
 			Door door = new Door();
-			door.setName("Outside");
-			door.x = 310;
+			door.setName("Main Entrance");
+			door.x = 320;
 			door.y = 0;
 			door.z = 0;
 			door.imagePath_open = "/infores/servlets/kitchen/door1_open.JPG";
@@ -109,13 +113,44 @@ public class MySiteServiceImpl implements ISiteService {
 			addThing("floors/Floor1/doors/Door1", door);			
 			
 			door = new Door();
-			door.setName("Inside");
-			door.x = 450;
-			door.y = 50;
+			door.setName("Back Entrance");
+			door.x = 150;
+			door.y = 220;
 			door.z = 0;
 			door.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
-			addThing("floors/Floor1/doors/Door2", door);				
+			addThing("floors/Floor1/doors/Door2", door);	
+			
+			door = new Door();
+			door.setName("Back Garage");
+			door.x = 100;
+			door.y = 330;
+			door.z = 0;
+			door.imagePath_open = "/infores/servlets/kitchen/door3_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door3_close.JPG";
+			addThing("floors/Floor1/doors/Door3", door);	
+			
+			door = new Door();
+			door.setName("Cellar");
+			door.x = 100;
+			door.y = 250;
+			door.z = 0;
+			door.imagePath_open = "/infores/servlets/kitchen/door4_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door4_close.JPG";
+			addThing("floors/Floor1/doors/Door4", door);	
+			
+			door = new Door();
+			door.setName("To Garage");
+			door.x = 100;
+			door.y = 150;
+			door.z = 0;
+			door.imagePath_open = "/infores/servlets/kitchen/door5_open.JPG";
+			door.imagePath_close = "/infores/servlets/kitchen/door5_close.JPG";
+			addThing("floors/Floor1/doors/Door5", door);			
+			
+			/*
+			 * *****************************************************************
+			 */
 			
 			
 			TemperatureSensor sensor = new TemperatureSensor();
@@ -146,7 +181,14 @@ public class MySiteServiceImpl implements ISiteService {
 			sw.z = 0;								
 			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);		
 			
-			//Doors
+			sw = new Switch();
+			sw.setName("WC Switch");
+			sw.x = 500;
+			sw.y = 150;
+			sw.z = 0;								
+			addThing("floors/Floor1/rooms/Room2/sensors/Kid2_Switch", "DummyService/dummy/4/Switch", sw);		
+						
+			//Doors sensors
 			sw = new Switch();
 			sw.setName("Main Door Lock");
 			sw.x = 100;
@@ -174,6 +216,93 @@ public class MySiteServiceImpl implements ISiteService {
 			contact.y = 80;
 			contact.z = 0;								
 			addThing("floors/Floor1/doors/Door2/sensors/Contact", "DummyService/dummy/3/ContactSensor", contact);				
+			
+			/*
+			 * Windows
+			 */
+			Window window = new Window();
+			window.setName("Main1");
+			window.x = 250;
+			window.y = 220;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/South Window1", window);
+			
+			window = new Window();
+			window.setName("Main2");
+			window.x = 330;
+			window.y = 220;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/South Window2", window);			
+			
+			window = new Window();
+			window.setName("Kid1");
+			window.x = 420;
+			window.y = 220;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Kid1", window);			
+			
+			window = new Window();
+			window.setName("Kid2");
+			window.x = 520;
+			window.y = 220;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Kid2", window);				
+			
+			window = new Window();
+			window.setName("Work");
+			window.x = 200;
+			window.y = 30;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Work1", window);				
+			
+			window = new Window();
+			window.setName("Bathroom");
+			window.x = 440;
+			window.y = 0;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Bathroom", window);				
+						
+			window = new Window();
+			window.setName("Sleeping room");
+			window.x = 550;
+			window.y = 20;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Sleeping_room", window);				
+			
+			window = new Window();
+			window.setName("Garden room");
+			window.x = 20;
+			window.y = 350;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Garden_room", window);				
+						
+			
+			contact = new ContactSensor();
+			contact.setName("South Window Closed");
+			contact.x = 60;
+			contact.y = 80;
+			contact.z = 0;								
+			addThing("floors/Floor1/rooms/Room1/windows/South Window/sensors/Contact", "DummyService/dummy/4/ContactSensor", contact);
+			
+			/*
+			 * **********************
+			 */
 			
 			
 		} catch (Exception ex) {
@@ -333,7 +462,12 @@ public class MySiteServiceImpl implements ISiteService {
 		return new String(); 
 	}
 	
-	public Set<String> getAllThingsPath (Class<?>  t) throws SiteException {		
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getAllThingsPath(java.lang.Class)
+	 * Return: Set of all things og given type.
+	 */
+	public Set<String> getThingPathSet (Class<?>  t) throws SiteException {		
 		Set<String> keySet = new HashSet <String> ();
 		
 		Set<String> keySetAll = ss.things.keySet();
@@ -345,13 +479,36 @@ public class MySiteServiceImpl implements ISiteService {
 			if (t.isInstance(thing)) {
 			
 				keySet.add(item);
-			}										
-		
+			}												
 		}
 
 		return keySet;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getChildThingsPaths(java.lang.String, java.lang.Class)
+	 * Returns: All children of given type of given object.
+	 */
+	public Set<String> getThingChildrenPathSet (String parentPath, Class<?>  t) throws SiteException {	
+		Set<String> keySet = new HashSet <String> ();				
+		
+		Set<String> keySetAll = ss.things.keySet();
+		
+		for (String item : keySetAll) {
+			
+			if (item.contains(parentPath) && !item.equals(parentPath)){
+			
+				Thing thing = (Thing) getThing(item);													
+				
+				if (t.isInstance(thing)) {
+				
+					keySet.add(item);
+				}			
+			}			
+		}		
+						
+		return keySet;
+	}
 
 	public Site getSite() {
 		return ss;
@@ -362,6 +519,68 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return true;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#isClosed(org.openhs.core.commons.Thing)
+	 * Return: True if closed, all sensors signal 1.0
+	 */
+	public boolean isClosed (Thing m_thing) throws SiteException {	
+		
+		if (m_thing instanceof Door) {
+			
+			Set<String> contactSensorsPath = getThingChildrenPathSet (m_thing.getSitePath(), ContactSensor.class); 
+			
+			boolean state = false;
+			
+			// All state must be true...
+			for (String item : contactSensorsPath){
+				ContactSensor contact = (ContactSensor) getThing(item);
+				
+				if (contact.getState()) {
+					state = true;					
+				} else {
+					state = false;
+					break;
+				}
+			}		
+			
+			return state;			
+		}
+		
+		return false;
+	}	
+	
+	public boolean isLocked (Thing m_thing) throws SiteException {	
+		
+		if (m_thing instanceof Door) {
+			
+			Set<String> switchPath = getThingChildrenPathSet (m_thing.getSitePath(), Switch.class); 
+			
+			boolean state = false;
+			
+			// All state must be true...
+			for (String item : switchPath){
+				Switch sw = (Switch) getThing(item);
+				
+				if (sw.getState()) {
+					state = true;					
+				} else {
+					state = false;
+					break;
+				}
+			}		
+			
+			return state;
+			
+		} else if (m_thing instanceof Window) {
+			
+			
+		}
+		
+		return false;
+	}	
+	
 		
 	public void SaveXML(String path) {
 
@@ -531,6 +750,40 @@ public class MySiteServiceImpl implements ISiteService {
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
 					zCoord.setValue(String.format("%d", ((Door) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
+				} else if (thing instanceof Window) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageOpen = doc.createAttribute("imageOpen");
+					imageOpen.setValue(((Window) thing).imagePath_open);
+					images.setAttributeNode(imageOpen);	
+					
+					// Image path
+					Attr imageClose = doc.createAttribute("imageClose");
+					imageClose.setValue(((Window) thing).imagePath_close);
+					images.setAttributeNode(imageClose);						
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((Window) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((Window) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((Window) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
 				}
@@ -707,6 +960,35 @@ public class MySiteServiceImpl implements ISiteService {
 								
 								} 
 							}							
+						} else if (obj instanceof Window) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Window) obj).imagePath_open = ((Element) imagesNode).getAttribute("imageOpen");
+							}
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Window) obj).imagePath_close = ((Element) imagesNode).getAttribute("imageClose");
+							}							
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((Window) obj).x = x;
+									((Window) obj).y = y;
+									((Window) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}							
 						}
 					}
 				}
@@ -738,6 +1020,7 @@ public class MySiteServiceImpl implements ISiteService {
 					//System.out.println("\n++> LOADING XML...");
 
 					LoadXML(xmlFileNamePath);
+					//buildHouse();
 				} catch (Exception ex) {
 
 				}

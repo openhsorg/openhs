@@ -25,6 +25,7 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Window;
 import org.openhs.core.commons.api.IInfostation;
 
 public class KitchenServlet extends HttpServlet {
@@ -277,8 +278,7 @@ public class KitchenServlet extends HttpServlet {
 					//System.out.println("\n\n\n\n    Room name: " + room.getName());
 					
 					JSONObject json = new JSONObject();
-					
-					
+										
 					if (room != null){
 
 						json.put("validity", new Boolean(true));
@@ -305,11 +305,14 @@ public class KitchenServlet extends HttpServlet {
 					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
 	    			
 	    			Door door = null;
+	    			boolean closed = false;
+	    			boolean locked = false;
 					
 					try {
 						door = (Door) this.m_infostation.getThing(path);
+						closed = this.m_infostation.isClosed(door);
+						locked = this.m_infostation.isLocked(door);
 					} catch (SiteException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
@@ -324,8 +327,58 @@ public class KitchenServlet extends HttpServlet {
 						json.put("image_close", String.format(door.imagePath_close));
 						json.put("x_coordinate", String.format("%d", door.x));
 						json.put("y_coordinate", String.format("%d", door.y));
-						json.put("open", new Boolean(door.open));
-						json.put("lock", new Boolean(door.lock));
+						json.put("open", new Boolean(closed));
+						json.put("lock", new Boolean(locked));
+						
+						//System.out.println("\n\n\n\n    Door: " + door.getName() + " open path:" + door.imagePath_open);
+						
+					} else {
+						json.put("validity", new Boolean(false));	
+					}						    				   			
+
+						    			
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					
+					PrintWriter out = response.getWriter();	    			
+					
+					out.println(json.toString());
+					    
+					out.flush();
+					out.close();
+					
+				} else if (value.toString().equals("Window")) {
+		    		
+	    			String path = request.getParameter("path").toString();
+					
+					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			
+	    			Window wnd = null;
+	    			boolean closed = false;
+	    			boolean locked = false;
+					
+					try {
+						wnd = (Window) this.m_infostation.getThing(path);
+						closed = this.m_infostation.isClosed(wnd);
+						locked = this.m_infostation.isLocked(wnd);
+					} catch (SiteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//System.out.println("\n\n\n\n    door name: " + door.getName());
+					
+					JSONObject json = new JSONObject();
+										
+					if (wnd != null){
+						json.put("validity", new Boolean(true));
+						json.put("name", String.format(wnd.getName()));
+						json.put("image_open", String.format(wnd.imagePath_open));
+						json.put("image_close", String.format(wnd.imagePath_close));
+						json.put("x_coordinate", String.format("%d", wnd.x));
+						json.put("y_coordinate", String.format("%d", wnd.y));
+						json.put("open", new Boolean(closed));
+						json.put("lock", new Boolean(locked));
 						
 					//	System.out.println("\n\n\n\n    Door x: " + door.x + " Door y:" + door.y);
 						
@@ -620,6 +673,24 @@ public class KitchenServlet extends HttpServlet {
 				
 			} catch (SiteException e) {
 				json.put("number_doors", String.format("0"));								
+				e.printStackTrace();
+			}	
+			
+			// Windows			
+			try {
+				Set<String> windowsPaths = this.m_infostation.getThingPaths(Window.class);						
+				json.put("number_windows", String.format("%d", windowsPaths.size()));
+				
+				int i = 0;
+				for (String item: windowsPaths) {	
+					String id = "windowPath_" + i;					
+					json.put(id, item);
+					
+					i++;
+				}
+				
+			} catch (SiteException e) {
+				json.put("number_windows", String.format("0"));								
 				e.printStackTrace();
 			}				
 			

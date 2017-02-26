@@ -22,6 +22,7 @@ var KitchenInfoStation;
     var SwitchLockMark = OhsCanvasGraphics.SwitchLockMark;
     var ContactSensorMark = OhsCanvasGraphics.ContactSensorMark;
     var DoorMark = OhsCanvasGraphics.DoorMark;
+    var WindowMark = OhsCanvasGraphics.WindowMark;
     var ImageRectArray = OhsCanvasGraphics.ImageRectArray;
     var Graphics = OhsCanvasGraphics.Graphics;
     var Mark = OhsCanvasGraphics.Mark;
@@ -120,7 +121,7 @@ var KitchenInfoStation;
             var screen = null;
             //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
             if (retVal.nextScreen == SwitchScreen.Floor) {
-                refresh = 100;
+                refresh = 2000;
                 screen = this.m_floor;
                 this.m_floor.setThing(this.m_siteData.m_floorArray[1]);
             }
@@ -199,18 +200,28 @@ var KitchenInfoStation;
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.restore();
         };
+        Screen.prototype.paintQuick = function () {
+        };
         Screen.prototype.timerPaintEvent = function (step) {
             var _this = this;
             this.paint();
             window.clearTimeout(this.timerPaint);
             this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
         };
+        Screen.prototype.timerPaintEventQuick = function (step) {
+            var _this = this;
+            this.paintQuick();
+            window.clearTimeout(this.timerPaintQuick);
+            this.timerPaintQuick = window.setTimeout(function () { return _this.timerPaintEventQuick(step); }, step);
+        };
         Screen.prototype.open = function (refresh) {
             this.timerPaintEvent(refresh);
+            this.timerPaintEventQuick(80);
             return this;
         };
         Screen.prototype.close = function () {
             window.clearTimeout(this.timerPaint);
+            window.clearTimeout(this.timerPaintQuick);
         };
         Screen.prototype.getServerData = function (url) {
         };
@@ -651,6 +662,7 @@ var KitchenInfoStation;
             this.imgFloorLoaded = false;
             //**********
             this.m_doorMarks = null; // Doors marks
+            this.m_windowMarks = null; // Window marks
             this.m_tempMarks = null; // Temp marks
             this.m_switchMarks = null; // Switch marks
             this.m_contactSensorsMarks = null; // Switch marks
@@ -663,6 +675,7 @@ var KitchenInfoStation;
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
             this.m_doorMarks = new Array();
+            this.m_windowMarks = new Array();
             this.m_tempMarks = new Array();
             this.m_switchMarks = new Array();
             this.m_contactSensorsMarks = new Array();
@@ -681,6 +694,12 @@ var KitchenInfoStation;
                         this.m_doorMarks[id].m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, m_doorArray[id].getPath());
                         this.m_doorMarks[id].m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, m_doorArray[id].getPath());
                     }
+                    //Windows
+                    var m_windowArray = this.siteData.getFilteredThings(this.siteData.m_windowArray, thing.getPath());
+                    this.m_graphics.setNumber2(m_windowArray.length, this.m_windowMarks, WindowMark, 0, 0, 0, 0);
+                    for (var id in this.m_windowMarks) {
+                        this.m_windowMarks[id].setThing(m_windowArray[id]);
+                    }
                     //Temperature Sensors
                     var temps = this.siteData.getFilteredThings(this.siteData.m_tempSensorArray, thing.getPath());
                     this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
@@ -690,13 +709,15 @@ var KitchenInfoStation;
                     //Switch
                     var m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, thing.getPath());
                     var m_switchArray2 = this.siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
-                    this.m_graphics.setNumber2(m_switchArray2.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
+                    var m_switchArray3 = this.siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
+                    this.m_graphics.setNumber2(m_switchArray3.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     for (var id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(m_switchArray2[id]);
+                        this.m_switchMarks[id].setThing(m_switchArray3[id]);
                     }
                     //Contact Sensor
                     var m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, thing.getPath());
                     var m_contactSensorArray2 = this.siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
+                    m_contactSensorArray2 = this.siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
                     this.m_graphics.setNumber2(m_contactSensorArray2.length, this.m_contactSensorsMarks, ContactSensorMark, 0, 0, 0, 0);
                     for (var id in this.m_contactSensorsMarks) {
                         this.m_contactSensorsMarks[id].setThing(m_contactSensorArray2[id]);
@@ -747,9 +768,27 @@ var KitchenInfoStation;
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();
+            this.paintQuick();
+            //Number m_roomArray
+            /*
+            this.txtNumRooms.x = this.width - 10;
+            this.txtNumRooms.y = this.height - 10;
+            this.txtNumRooms.w = this.width * 0.4;
+            this.txtNumRooms.textAlign = "right";
+            this.txtNumRooms.fontSize = 26;
+            this.txtNumRooms.textBaseline = "bottom";
+            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);
+            */
+        };
+        ScreenFloor.prototype.paintQuick = function () {
+            var ctx = this.ctx;
             //Doors...            
             for (var id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            //Windows...            
+            for (var id in this.m_windowMarks) {
+                this.m_windowMarks[id].paintByThing(this.ctx);
             }
             //Temperature sensors
             for (var id in this.m_tempMarks) {
@@ -763,16 +802,6 @@ var KitchenInfoStation;
             for (var id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(this.ctx);
             }
-            //Number m_roomArray
-            /*
-            this.txtNumRooms.x = this.width - 10;
-            this.txtNumRooms.y = this.height - 10;
-            this.txtNumRooms.w = this.width * 0.4;
-            this.txtNumRooms.textAlign = "right";
-            this.txtNumRooms.fontSize = 26;
-            this.txtNumRooms.textBaseline = "bottom";
-            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);
-            */
         };
         return ScreenFloor;
     }(Screen));
@@ -925,15 +954,13 @@ var KitchenInfoStation;
             this.m_contactSensorsMarks = new Array();
             this.m_rectData = new RectRounded(0, 0, 0, 0, 40);
             this.m_textDoorName = new TextSimple(0, 0, 0, 0);
-            for (var id in this.m_siteData.m_doorArray) {
-                var img = new ImageRect(0, 0, this.width, this.height, 0, this.m_siteData.m_doorArray[id].image_open);
-                this.m_imgOpenArray.push(img);
-            }
         }
         ScreenDoor.prototype.paint = function () {
             _super.prototype.paint.call(this);
+            this.m_imgDoors = null;
             var state = false;
             var door = this.getThing();
+            // window.alert("paint: " + door.image_open);
             if (this.m_contactSensorsMarks.length > 0) {
                 state = this.m_contactSensorsMarks[0].getState();
                 if (state) {
@@ -942,6 +969,9 @@ var KitchenInfoStation;
                 else {
                     this.m_imgDoors = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
                 }
+            }
+            else {
+                this.m_imgDoors = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
             }
             if (this.m_imgDoors != null) {
                 this.m_imgDoors.size(0, 0, this.width, this.height);
@@ -981,12 +1011,15 @@ var KitchenInfoStation;
         ScreenDoor.prototype.setThing = function (thing) {
             var oldThing = _super.prototype.getThing.call(this);
             _super.prototype.setThing.call(this, thing);
+            var door1 = this.getThing();
+            //window.alert("A: " + door1.image_close);
             //update other data
             if (thing != oldThing) {
                 if (thing instanceof Door) {
                     //Reload pictures etc...?
                     var door = this.getThing();
-                    this.m_imgOpenArray.length = 2;
+                    //this.m_imgOpenArray.length = 2;
+                    //  window.alert("A: " + door.image_open);
                     var imgOpen = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_open);
                     if (imgOpen == null) {
                         imgOpen = new ImageRect(0, 0, this.width, this.height, 0, door.image_open);
@@ -994,7 +1027,9 @@ var KitchenInfoStation;
                     }
                     var imgClose = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
                     if (imgClose == null) {
+                        //    window.alert("B: " + door.image_close);
                         imgClose = new ImageRect(0, 0, this.width, this.height, 0, door.image_close);
+                        //  window.alert("B: " + door.image_close + "Ptr: " + imgClose);
                         this.m_imgOpenArray.push(imgClose);
                     }
                     //   this.m_doorMark2 = new DoorMark(0, 0, 0, 0);

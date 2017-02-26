@@ -20,8 +20,6 @@ public interface IInfostation {
 
 	public boolean setSwitch (String sitePath);
 	public boolean setSwitch (String sitePath, boolean state);
-	//public List<Boolean> getSwitchState (String sitePath) throws SiteException;
-	//public int getSwitchIntState (String sitePath) throws SiteException;
 	public float getTempIn();
 	public float getTempOut();
 	public Weather getForecastWeather6();
@@ -37,5 +35,7 @@ public interface IInfostation {
 	public Set<String> getSwitchPaths () throws SiteException;
 	public Thing getThing (String thingPath) throws SiteException;
 	public Set<String> getThingPaths (Class<?> t) throws SiteException;
+	public boolean isClosed (Thing m_thing) throws SiteException;
+	public boolean isLocked (Thing m_thing) throws SiteException;
 
 }

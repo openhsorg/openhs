@@ -19,6 +19,7 @@ var OhsSiteData;
             this.m_tempSensorArray = null;
             this.m_switchArray = null;
             this.m_doorArray = null;
+            this.m_windowArray = null;
             this.m_contactSensorArray = null;
             //---Other data---
             this.timeString = "---";
@@ -28,6 +29,7 @@ var OhsSiteData;
             this.m_tempSensorArray = new Array();
             this.m_switchArray = new Array();
             this.m_doorArray = new Array();
+            this.m_windowArray = new Array();
             this.m_contactSensorArray = new Array();
             this.slowTimerGetDataEvent(1000);
             this.fastTimerGetDataEvent(100);
@@ -45,6 +47,9 @@ var OhsSiteData;
             }
             for (var id in this.m_doorArray) {
                 this.m_doorArray[id].getServerData();
+            }
+            for (var id in this.m_windowArray) {
+                this.m_windowArray[id].getServerData();
             }
             for (var id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
@@ -138,6 +143,11 @@ var OhsSiteData;
                     return this.m_doorArray[id];
                 }
             }
+            for (var id in this.m_windowArray) {
+                if (this.m_windowArray[id].getPath() == path) {
+                    return this.m_windowArray[id];
+                }
+            }
             for (var id in this.m_contactSensorArray) {
                 if (this.m_contactSensorArray[id].getPath() == path) {
                     return this.m_contactSensorArray[id];
@@ -183,6 +193,11 @@ var OhsSiteData;
                 this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
                 for (var id_5 in this.m_doorArray) {
                     this.m_doorArray[id_5].setPath(data['doorPath_' + id_5]);
+                }
+                // Window          
+                this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
+                for (var id_6 in this.m_windowArray) {
+                    this.m_windowArray[id_6].setPath(data['windowPath_' + id_6]);
                 }
             }
         };
@@ -373,7 +388,7 @@ var OhsSiteData;
                 postId: "DoorD",
                 path: this.path
             };
-            postAjax("kitchen", req);
+            postAjax(servletUrl, req);
         };
         Door.prototype.getServerData = function () {
             var req = {
@@ -397,15 +412,55 @@ var OhsSiteData;
         return Door;
     }(Thing));
     OhsSiteData.Door = Door;
-    var Window = (function () {
+    var Window = (function (_super) {
+        __extends(Window, _super);
         function Window() {
-            this.valid = false; //content is valid       
+            _super.call(this);
+            this.name = "no name";
+            this.image_open = "/infores/servlets/kitchen/room_default.png";
+            this.image_close = "/infores/servlets/kitchen/room_default.png";
+            this.open = false;
+            this.locked = false;
+            this.x = 0;
+            this.y = 0;
         }
-        Window.prototype.setPath = function (path) {
-            this.path = path;
+        Window.prototype.getState = function () {
+            if (!this.valid)
+                return 0;
+            if (this.open)
+                return 1;
+            if (this.locked)
+                return 3;
+            return 2;
+        };
+        Window.prototype.postServerClick = function () {
+            var req = {
+                postId: "Window",
+                path: this.path
+            };
+            postAjax(servletUrl, req);
+        };
+        Window.prototype.getServerData = function () {
+            var req = {
+                orderId: "Window",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                if (this.valid) {
+                    this.name = data['name'];
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];
+                }
+            }
         };
         return Window;
-    }());
+    }(Thing));
     OhsSiteData.Window = Window;
     function getAjax(urlAdr, dataIn) {
         var result = null;

@@ -10,9 +10,7 @@ public class Door extends Thing {
 	public int y = 0;
 	public int z = 0;
 	
-	public boolean open = false;
+	//public boolean open = false;
 	public boolean lock = false;
 	
-	
-
 }
