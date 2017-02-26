@@ -53,7 +53,8 @@ public class JsonMessageParser implements IMessageParser {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 		m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
 		m_updaterFactory.registerClass("LedR", SwitchUpdater.class);
-		m_updaterFactory.registerClass("IO", ContactSensorUpdater.class);
+		//m_updaterFactory.registerClass("IO", ContactSensorUpdater.class);
+		m_updaterFactory.registerClass("IO", IoUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {

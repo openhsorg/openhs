@@ -21,6 +21,7 @@
 <images imageBkg="/infores/servlets/kitchen/room1.png"/>
 </thing>
 <thing devicePath="Mqtt/Iqrf/DpaResponse/0/LedR" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<!--thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/SET/PORTC/2" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch"-->
 <position xCoord="220" yCoord="150" zCoord="0"/>
 </thing>
 <thing devicePath="Mqtt/Iqrf/DpaResponse/1/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
@@ -39,9 +40,9 @@
 <images imageBkg="/infores/servlets/kitchen/room3.png"/>
 </thing>
 
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/PORTA/Out/0" name="MainDoor" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoor" type="Switch"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/PORTA/Inp/1" name="MainDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoorClosed" type="ContactSensor"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/PORTA/Out/2" name="SideDoor" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoor" type="Switch"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/PORTA/Inp/3" name="SideDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoorClosed" type="ContactSensor"/>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/SET/PORTC/2" name="MainDoor" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoor" type="Switch"/>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/GET/PORTB/4" name="MainDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoorClosed" type="ContactSensor"/>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/SET/PORTC/2" name="SideDoor" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoor" type="Switch"/>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/GET/PORTB/4" name="SideDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoorClosed" type="ContactSensor"/>
 
 </site>
