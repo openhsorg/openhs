@@ -9,6 +9,7 @@ var OhsCanvasGraphics;
 (function (OhsCanvasGraphics) {
     var TemperatureSensor = OhsSiteData.TemperatureSensor;
     var Door = OhsSiteData.Door;
+    var Window = OhsSiteData.Window;
     var Switch = OhsSiteData.Switch;
     var ContactSensor = OhsSiteData.ContactSensor;
     var Graphics = (function () {
@@ -305,8 +306,6 @@ var OhsCanvasGraphics;
             this.imgOpen = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_open.png');
             this.imgClose = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');
             this.imgLock = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
-            //  this.m_switchArray = new Array<Switch>();
-            //  this.m_contactSensorArray = new Array<ContactSensor>();
             this.size(x, y, w, h);
         }
         DoorMark.prototype.size = function (x, y, w, h) {
@@ -377,6 +376,88 @@ var OhsCanvasGraphics;
         return DoorMark;
     }(Mark));
     OhsCanvasGraphics.DoorMark = DoorMark;
+    var WindowMark = (function (_super) {
+        __extends(WindowMark, _super);
+        function WindowMark(x, y, w, h) {
+            _super.call(this, x, y, w, h);
+            this.imgOpen = null;
+            this.imgClose = null;
+            this.imgLock = null;
+            this.m_switchArray = null;
+            this.m_contactSensorArray = null;
+            this.imgOpen = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_windowOpen.png');
+            this.imgClose = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/symbol_windowClosed.png');
+            this.imgLock = new ImageRect(x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
+            this.size(x, y, w, h);
+        }
+        WindowMark.prototype.size = function (x, y, w, h) {
+            _super.prototype.size.call(this, x, y, w, h);
+            //Size of images
+            var perc = 0.7;
+            this.imgOpen.size(x, y, w, h);
+            this.imgOpen.scaleSize(perc);
+            this.imgClose.size(x, y, w, h);
+            this.imgClose.scaleSize(perc);
+            this.imgLock.size(x, y, w, h);
+            this.imgLock.scaleSize(0.5);
+            /*
+            var dx: number = 20;
+            var dy: number = 20;
+            
+            this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);
+              */
+        };
+        WindowMark.prototype.getWindowThing = function () {
+            var wnd = null;
+            if (this.thing) {
+                if (this.thing instanceof Window) {
+                    wnd = this.thing;
+                }
+            }
+            return wnd;
+        };
+        WindowMark.prototype.paintByThing = function (ctx) {
+            var wnd = this.getWindowThing();
+            if (wnd != null) {
+                this.size(wnd.x, wnd.y, 60, 60);
+            }
+            this.paint(ctx);
+        };
+        WindowMark.prototype.paint = function (ctx) {
+            var wnd = this.getWindowThing();
+            var colorInside = '#a6a6a6';
+            var colorBorder = '#595959';
+            var state = -1;
+            if (wnd != null) {
+                colorInside = "#ccffe6";
+                colorBorder = "#00cc69";
+            }
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();
+            if (wnd != null) {
+                if (wnd.open) {
+                    this.imgOpen.paint(ctx);
+                }
+                else {
+                    this.imgClose.paint(ctx);
+                    if (wnd.locked) {
+                        this.imgLock.paint(ctx);
+                    }
+                }
+            }
+        };
+        return WindowMark;
+    }(Mark));
+    OhsCanvasGraphics.WindowMark = WindowMark;
     var TempMark = (function (_super) {
         __extends(TempMark, _super);
         function TempMark(x, y, w, h) {

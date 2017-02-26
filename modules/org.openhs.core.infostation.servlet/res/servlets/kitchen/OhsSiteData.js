@@ -19,6 +19,7 @@ var OhsSiteData;
             this.m_tempSensorArray = null;
             this.m_switchArray = null;
             this.m_doorArray = null;
+            this.m_windowArray = null;
             this.m_contactSensorArray = null;
             //---Other data---
             this.timeString = "---";
@@ -28,6 +29,7 @@ var OhsSiteData;
             this.m_tempSensorArray = new Array();
             this.m_switchArray = new Array();
             this.m_doorArray = new Array();
+            this.m_windowArray = new Array();
             this.m_contactSensorArray = new Array();
             this.slowTimerGetDataEvent(1000);
             this.fastTimerGetDataEvent(100);
@@ -45,6 +47,9 @@ var OhsSiteData;
             }
             for (var id in this.m_doorArray) {
                 this.m_doorArray[id].getServerData();
+            }
+            for (var id in this.m_windowArray) {
+                this.m_windowArray[id].getServerData();
             }
             for (var id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
@@ -138,6 +143,11 @@ var OhsSiteData;
                     return this.m_doorArray[id];
                 }
             }
+            for (var id in this.m_windowArray) {
+                if (this.m_windowArray[id].getPath() == path) {
+                    return this.m_windowArray[id];
+                }
+            }
             for (var id in this.m_contactSensorArray) {
                 if (this.m_contactSensorArray[id].getPath() == path) {
                     return this.m_contactSensorArray[id];
@@ -183,6 +193,11 @@ var OhsSiteData;
                 this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
                 for (var id_5 in this.m_doorArray) {
                     this.m_doorArray[id_5].setPath(data['doorPath_' + id_5]);
+                }
+                // Window          
+                this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
+                for (var id_6 in this.m_windowArray) {
+                    this.m_windowArray[id_6].setPath(data['windowPath_' + id_6]);
                 }
             }
         };
@@ -427,7 +442,7 @@ var OhsSiteData;
         };
         Window.prototype.getServerData = function () {
             var req = {
-                orderId: "DoorD",
+                orderId: "Window",
                 path: this.path
             };
             var data = getAjax("kitchen", req);

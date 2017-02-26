@@ -186,12 +186,20 @@ public class MySiteServiceImpl implements ISiteService {
 			//Doors
 			Window window = new Window();
 			window.setName("Inside");
-			window.x = 450;
-			window.y = 50;
+			window.x = 300;
+			window.y = 220;
 			window.z = 0;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/South Window", window);		
+			
+			contact = new ContactSensor();
+			contact.setName("South Window Closed");
+			contact.x = 60;
+			contact.y = 80;
+			contact.z = 0;								
+			addThing("floors/Floor1/rooms/Room1/windows/South Window/sensors/Contact", "DummyService/dummy/4/ContactSensor", contact);				
+			
 			
 		} catch (Exception ex) {
 			System.out.println("\n\n EXception***:" + ex);
@@ -415,7 +423,7 @@ public class MySiteServiceImpl implements ISiteService {
 	 */
 	public boolean isClosed (Thing m_thing) throws SiteException {	
 		
-		if (m_thing instanceof Door) {
+		if (m_thing instanceof Door || m_thing instanceof Window) {
 			
 			Set<String> contactSensorsPath = getThingChildrenPathSet (m_thing.getSitePath(), ContactSensor.class); 
 			
@@ -433,11 +441,7 @@ public class MySiteServiceImpl implements ISiteService {
 				}
 			}		
 			
-			return state;
-			
-		} else if (m_thing instanceof Window) {
-			
-			
+			return state;			
 		}
 		
 		return false;
@@ -445,7 +449,7 @@ public class MySiteServiceImpl implements ISiteService {
 	
 	public boolean isLocked (Thing m_thing) throws SiteException {	
 		
-		if (m_thing instanceof Door) {
+		if (m_thing instanceof Door || m_thing instanceof Window) {
 			
 			Set<String> switchPath = getThingChildrenPathSet (m_thing.getSitePath(), Switch.class); 
 			

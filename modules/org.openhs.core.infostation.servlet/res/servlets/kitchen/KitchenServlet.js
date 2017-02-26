@@ -22,6 +22,7 @@ var KitchenInfoStation;
     var SwitchLockMark = OhsCanvasGraphics.SwitchLockMark;
     var ContactSensorMark = OhsCanvasGraphics.ContactSensorMark;
     var DoorMark = OhsCanvasGraphics.DoorMark;
+    var WindowMark = OhsCanvasGraphics.WindowMark;
     var ImageRectArray = OhsCanvasGraphics.ImageRectArray;
     var Graphics = OhsCanvasGraphics.Graphics;
     var Mark = OhsCanvasGraphics.Mark;
@@ -651,6 +652,7 @@ var KitchenInfoStation;
             this.imgFloorLoaded = false;
             //**********
             this.m_doorMarks = null; // Doors marks
+            this.m_windowMarks = null; // Window marks
             this.m_tempMarks = null; // Temp marks
             this.m_switchMarks = null; // Switch marks
             this.m_contactSensorsMarks = null; // Switch marks
@@ -663,6 +665,7 @@ var KitchenInfoStation;
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
             this.m_doorMarks = new Array();
+            this.m_windowMarks = new Array();
             this.m_tempMarks = new Array();
             this.m_switchMarks = new Array();
             this.m_contactSensorsMarks = new Array();
@@ -681,6 +684,12 @@ var KitchenInfoStation;
                         this.m_doorMarks[id].m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, m_doorArray[id].getPath());
                         this.m_doorMarks[id].m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, m_doorArray[id].getPath());
                     }
+                    //Windows
+                    var m_windowArray = this.siteData.getFilteredThings(this.siteData.m_windowArray, thing.getPath());
+                    this.m_graphics.setNumber2(m_windowArray.length, this.m_windowMarks, WindowMark, 0, 0, 0, 0);
+                    for (var id in this.m_windowMarks) {
+                        this.m_windowMarks[id].setThing(m_windowArray[id]);
+                    }
                     //Temperature Sensors
                     var temps = this.siteData.getFilteredThings(this.siteData.m_tempSensorArray, thing.getPath());
                     this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
@@ -690,13 +699,15 @@ var KitchenInfoStation;
                     //Switch
                     var m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, thing.getPath());
                     var m_switchArray2 = this.siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
-                    this.m_graphics.setNumber2(m_switchArray2.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
+                    var m_switchArray3 = this.siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
+                    this.m_graphics.setNumber2(m_switchArray3.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     for (var id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(m_switchArray2[id]);
+                        this.m_switchMarks[id].setThing(m_switchArray3[id]);
                     }
                     //Contact Sensor
                     var m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, thing.getPath());
                     var m_contactSensorArray2 = this.siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
+                    m_contactSensorArray2 = this.siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
                     this.m_graphics.setNumber2(m_contactSensorArray2.length, this.m_contactSensorsMarks, ContactSensorMark, 0, 0, 0, 0);
                     for (var id in this.m_contactSensorsMarks) {
                         this.m_contactSensorsMarks[id].setThing(m_contactSensorArray2[id]);
@@ -750,6 +761,10 @@ var KitchenInfoStation;
             //Doors...            
             for (var id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
+            }
+            //Windows...            
+            for (var id in this.m_windowMarks) {
+                this.m_windowMarks[id].paintByThing(this.ctx);
             }
             //Temperature sensors
             for (var id in this.m_tempMarks) {

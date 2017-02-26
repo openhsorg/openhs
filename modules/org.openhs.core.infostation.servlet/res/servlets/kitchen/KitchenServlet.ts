@@ -19,6 +19,7 @@ module KitchenInfoStation {
     import SwitchLockMark =     OhsCanvasGraphics.SwitchLockMark;        
     import ContactSensorMark =  OhsCanvasGraphics.ContactSensorMark;
     import DoorMark =           OhsCanvasGraphics.DoorMark;
+    import WindowMark =         OhsCanvasGraphics.WindowMark;
     import ImageRectArray =     OhsCanvasGraphics.ImageRectArray;
     import Graphics =           OhsCanvasGraphics.Graphics;
     import Mark =               OhsCanvasGraphics.Mark;
@@ -31,6 +32,7 @@ module KitchenInfoStation {
     import Room =               OhsSiteData.Room;
     import TemperatureSensor =  OhsSiteData.TemperatureSensor;    
     import Door =               OhsSiteData.Door;
+    import Window =             OhsSiteData.Window;
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
     import Thing =              OhsSiteData.Thing;                   
@@ -856,6 +858,7 @@ module KitchenInfoStation {
         
         //**********
         public m_doorMarks:                 Array<DoorMark> = null;       // Doors marks
+        public m_windowMarks:               Array<WindowMark> = null;       // Window marks
         public m_tempMarks:                 Array<TempMark> = null;       // Temp marks
         public m_switchMarks:               Array<SwitchMark> = null;       // Switch marks
         public m_contactSensorsMarks:       Array<ContactSensorMark> = null;       // Switch marks
@@ -875,6 +878,7 @@ module KitchenInfoStation {
             this.txtNumRooms.fontSize = 40;       
             
             this.m_doorMarks = new Array<DoorMark>();
+            this.m_windowMarks = new Array<WindowMark>();
             this.m_tempMarks = new Array<TempMark>();
             this.m_switchMarks = new Array<SwitchMark>();
             this.m_contactSensorsMarks = new Array<ContactSensorMark>();
@@ -903,6 +907,18 @@ module KitchenInfoStation {
                         this.m_doorMarks[id].m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, m_doorArray[id].getPath());
                     }
                     
+                    //Windows
+                    var m_windowArray: Array<Window> = this.siteData.getFilteredThings(this.siteData.m_windowArray, thing.getPath());
+                    
+                    this.m_graphics.setNumber2(m_windowArray.length, this.m_windowMarks, WindowMark, 0, 0, 0, 0);
+                    
+                    for (let id in this.m_windowMarks) {
+                        this.m_windowMarks[id].setThing(<Thing>m_windowArray[id]);     
+                        
+                        //this.m_doorMarks[id].m_switchArray = this.siteData.getFilteredThings(this.siteData.m_switchArray, m_doorArray[id].getPath());
+                       // this.m_doorMarks[id].m_contactSensorArray = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, m_doorArray[id].getPath());
+                    }                    
+                    
                     //Temperature Sensors
                     var temps: Array<TemperatureSensor> = this.siteData.getFilteredThings(this.siteData.m_tempSensorArray, thing.getPath());
                     
@@ -915,16 +931,18 @@ module KitchenInfoStation {
                     //Switch
                     var m_switchArray: Array<Switch> = this.siteData.getFilteredThings(this.siteData.m_switchArray, thing.getPath());
                     var m_switchArray2: Array<Switch> = this.siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
+                    var m_switchArray3: Array<Switch> = this.siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
                     
-                    this.m_graphics.setNumber2(m_switchArray2.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
+                    this.m_graphics.setNumber2(m_switchArray3.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
                     for (let id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(<Thing>m_switchArray2[id]);                        
+                        this.m_switchMarks[id].setThing(<Thing>m_switchArray3[id]);                        
                     }   
                     
                     //Contact Sensor
                     var m_contactSensorArray: Array<ContactSensor> = this.siteData.getFilteredThings(this.siteData.m_contactSensorArray, thing.getPath());
                     var m_contactSensorArray2: Array<ContactSensor> = this.siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
+                    m_contactSensorArray2= this.siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
                     
                     this.m_graphics.setNumber2(m_contactSensorArray2.length, this.m_contactSensorsMarks, ContactSensorMark, 0, 0, 0, 0);
                     
@@ -1004,6 +1022,11 @@ module KitchenInfoStation {
             for (let id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
             }
+            
+            //Windows...            
+            for (let id in this.m_windowMarks) {
+                this.m_windowMarks[id].paintByThing(this.ctx);
+            }            
             
             //Temperature sensors
             for (let id in this.m_tempMarks) {

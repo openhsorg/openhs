@@ -20,6 +20,7 @@ module OhsSiteData {
         public m_tempSensorArray:       Array <TemperatureSensor> = null;
         public m_switchArray:           Array <Switch> = null;
         public m_doorArray:             Array <Door> = null;
+        public m_windowArray:           Array <Window> = null;
         public m_contactSensorArray:    Array <ContactSensor> = null;
         
         //---Other data---
@@ -32,6 +33,7 @@ module OhsSiteData {
             this.m_tempSensorArray = new Array<TemperatureSensor>(); 
             this.m_switchArray = new Array<Switch>();
             this.m_doorArray = new Array<Door>();
+            this.m_windowArray = new Array<Door>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
                         
             this.slowTimerGetDataEvent(1000);            
@@ -56,11 +58,14 @@ module OhsSiteData {
                 this.m_doorArray[id].getServerData();
             }    
             
+            for (let id in this.m_windowArray) {
+                this.m_windowArray[id].getServerData();
+            }             
+            
             for (let id in this.m_contactSensorArray) {
                 this.m_contactSensorArray[id].getServerData();
             }
-                         
-                      
+                                               
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
         }           
@@ -175,7 +180,13 @@ module OhsSiteData {
                 if (this.m_doorArray[id].getPath() == path) {
                     return <Thing>this.m_doorArray[id];
                 }                    
-            }   
+            } 
+            
+            for (let id in this.m_windowArray) {                
+                if (this.m_windowArray[id].getPath() == path) {
+                    return <Thing>this.m_windowArray[id];
+                }                    
+            }             
             
             for (let id in this.m_contactSensorArray) {                
                 if (this.m_contactSensorArray[id].getPath() == path) {
@@ -242,7 +253,18 @@ module OhsSiteData {
                     this.m_doorArray[id].setPath(data['doorPath_' + id]);
                     
                 //    window.alert("Path:" + this.m_doorArray[id].getPath());
-                }                   
+                }     
+                
+                // Window          
+                                           
+                this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
+                            
+                for (let id in this.m_windowArray) {           
+                    this.m_windowArray[id].setPath(data['windowPath_' + id]);
+                    
+                //    window.alert("Path:" + this.m_doorArray[id].getPath());
+                } 
+                               
             }      
         }                        
     }
@@ -554,7 +576,7 @@ module OhsSiteData {
         public getServerData () {       
              
             var req: any = {                
-                orderId : "DoorD",
+                orderId : "Window",
                 path:   this.path                
             } 
             

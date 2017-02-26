@@ -38,11 +38,21 @@
 <thing devicePath="DummyService/dummy/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
 <position xCoord="300" yCoord="150" zCoord="0"/>
 </thing>
+<thing name="Inside" sitePath="floors/Floor1/rooms/Room1/windows/South Window" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="300" yCoord="220" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/4/ContactSensor" name="South Window Closed" sitePath="floors/Floor1/rooms/Room1/windows/South Window/sensors/Contact" type="ContactSensor">
+<position xCoord="60" yCoord="80" zCoord="0"/>
+</thing>
 <thing name="Kid1" sitePath="floors/Floor1/rooms/Room2" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room2.png"/>
 </thing>
 <thing devicePath="DummyService/dummy/1/Switch" name="Bathroom Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid1_Switch" type="Switch">
 <position xCoord="420" yCoord="150" zCoord="0"/>
+</thing>
+<thing devicePath="DummyService/dummy/4/Switch" name="WC Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid2_Switch" type="Switch">
+<position xCoord="500" yCoord="150" zCoord="0"/>
 </thing>
 <thing name="My second floor" sitePath="floors/Floor2" type="Floor">
 <images imageBkg="no path"/>

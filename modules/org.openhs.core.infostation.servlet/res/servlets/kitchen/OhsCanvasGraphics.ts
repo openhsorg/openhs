@@ -7,6 +7,7 @@ module OhsCanvasGraphics {
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
+import Window = OhsSiteData.Window;
 import Switch = OhsSiteData.Switch;
 import ContactSensor = OhsSiteData.ContactSensor;
 import Thing = OhsSiteData.Thing;     
@@ -371,9 +372,6 @@ import Thing = OhsSiteData.Thing;
             this.imgClose = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/door_close.png');            
             this.imgLock = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
             
-          //  this.m_switchArray = new Array<Switch>();
-          //  this.m_contactSensorArray = new Array<ContactSensor>();
-            
             this.size(x, y, w, h);
         }      
         
@@ -465,6 +463,114 @@ import Thing = OhsSiteData.Thing;
             }                        
         }
     }
+    
+    export class WindowMark extends Mark {
+        
+        protected imgOpen:      ImageRect = null;
+        protected imgClose:     ImageRect = null;
+        protected imgLock:      ImageRect = null;
+        
+        public m_switchArray: Array<Switch> = null;
+        public m_contactSensorArray: Array<ContactSensor> = null;
+         
+        constructor (x: number, y: number, w: number, h: number){
+            super(x, y, w, h);
+            
+            this.imgOpen = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_windowOpen.png');
+            this.imgClose = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/symbol_windowClosed.png');            
+            this.imgLock = new ImageRect (x, y, w, h, 0, '/infores/servlets/kitchen/padlock.png');
+            
+            this.size(x, y, w, h);
+        }      
+        
+        public size (x: number, y: number, w: number, h: number) {
+            super.size(x, y, w, h);                        
+            
+            //Size of images
+            
+            var perc: number = 0.7;
+            
+            this.imgOpen.size(x, y, w, h);
+            this.imgOpen.scaleSize(perc);
+            
+            this.imgClose.size(x, y, w, h);
+            this.imgClose.scaleSize(perc);
+            
+            this.imgLock.size(x, y, w, h);
+            this.imgLock.scaleSize(0.5);            
+            
+            /*
+            var dx: number = 20;
+            var dy: number = 20;
+            
+            this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);  
+              */                  
+        }
+        
+        public getWindowThing() {
+            var wnd: Window = null;
+            
+            if(this.thing) {
+                if (this.thing instanceof Window){
+                    wnd = <Window> this.thing;        
+                }            
+            }
+            
+            return wnd;
+        }
+        
+        public paintByThing (ctx: CanvasRenderingContext2D) {
+            
+            var wnd = this.getWindowThing();
+                        
+            if (wnd != null) {                                    
+                this.size(wnd.x, wnd.y, 60, 60);                                  
+            }
+            
+            this.paint(ctx);
+        }
+                      
+        public paint (ctx: CanvasRenderingContext2D) {
+            
+            var wnd: Window = this.getWindowThing();
+            
+            var colorInside: string = '#a6a6a6';
+            var colorBorder: string = '#595959';
+            
+            var state: number = -1;
+            
+            if (wnd != null) {     
+            
+                colorInside = "#ccffe6";
+                colorBorder = "#00cc69";                                                            
+            }
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colorBorder;
+            ctx.stroke();
+            ctx.restore();   
+            
+           if (wnd != null) {     
+            
+               if (wnd.open) {
+                   this.imgOpen.paint(ctx);                   
+               } else {
+                   this.imgClose.paint(ctx); 
+                   
+                   if (wnd.locked){
+                       this.imgLock.paint(ctx); 
+                   }                    
+               }                                    
+            }                        
+        }
+    }    
 
     export class TempMark extends Mark {
         
