@@ -159,7 +159,7 @@ module KitchenInfoStation {
             //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
                     
             if (retVal.nextScreen == SwitchScreen.Floor) {               
-                refresh = 100;
+                refresh = 2000;
                 screen = this.m_floor;
                 this.m_floor.setThing(<Thing>this.m_siteData.m_floorArray[1]);
                 
@@ -236,7 +236,8 @@ module KitchenInfoStation {
         
         private thing: Thing = null;
         
-        protected timerPaint;       
+        protected timerPaint;
+        protected timerPaintQuick;       
         
         protected returnVal = {
                 nextScreen: null,
@@ -261,21 +262,33 @@ module KitchenInfoStation {
            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
            this.ctx.restore();   
         }
+        
+        protected paintQuick () {
+
+        }        
     
         protected timerPaintEvent(step : number) {     
            this.paint();  
            window.clearTimeout(this.timerPaint);
            this.timerPaint = window.setTimeout(() => this.timerPaintEvent(step), step); 
-        }  
+        } 
+        
+        protected timerPaintEventQuick(step : number) {     
+           this.paintQuick();  
+           window.clearTimeout(this.timerPaintQuick);
+           this.timerPaintQuick = window.setTimeout(() => this.timerPaintEventQuick(step), step); 
+        }         
 
         public open (refresh: number) {
             this.timerPaintEvent(refresh);
+            this.timerPaintEventQuick(80);
             
             return this;
         }     
         
         public close () {
             window.clearTimeout(this.timerPaint);
+            window.clearTimeout(this.timerPaintQuick);
         }
         
         public getServerData (url: string) {
@@ -1018,7 +1031,25 @@ module KitchenInfoStation {
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();        
   
-            //Doors...            
+  
+            this.paintQuick();          
+            
+             //Number m_roomArray
+            /*
+            this.txtNumRooms.x = this.width - 10;
+            this.txtNumRooms.y = this.height - 10;
+            this.txtNumRooms.w = this.width * 0.4;
+            this.txtNumRooms.textAlign = "right";
+            this.txtNumRooms.fontSize = 26;
+            this.txtNumRooms.textBaseline = "bottom";
+            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);  
+            */                       
+        }
+        
+        protected paintQuick () {            
+            const ctx = this.ctx;
+            
+          //Doors...            
             for (let id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
             }
@@ -1041,20 +1072,11 @@ module KitchenInfoStation {
             //Contact sensors
             for (let id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(this.ctx);
-            }             
-            
-             //Number m_roomArray
-            /*
-            this.txtNumRooms.x = this.width - 10;
-            this.txtNumRooms.y = this.height - 10;
-            this.txtNumRooms.w = this.width * 0.4;
-            this.txtNumRooms.textAlign = "right";
-            this.txtNumRooms.fontSize = 26;
-            this.txtNumRooms.textBaseline = "bottom";
-            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);  
-            */                       
-        }       
-    }
+            }               
+        
+        }
+                
+    }    
         
     class ScreenRoom extends Screen {
                   

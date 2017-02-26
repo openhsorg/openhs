@@ -121,7 +121,7 @@ var KitchenInfoStation;
             var screen = null;
             //window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
             if (retVal.nextScreen == SwitchScreen.Floor) {
-                refresh = 100;
+                refresh = 2000;
                 screen = this.m_floor;
                 this.m_floor.setThing(this.m_siteData.m_floorArray[1]);
             }
@@ -200,18 +200,28 @@ var KitchenInfoStation;
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.restore();
         };
+        Screen.prototype.paintQuick = function () {
+        };
         Screen.prototype.timerPaintEvent = function (step) {
             var _this = this;
             this.paint();
             window.clearTimeout(this.timerPaint);
             this.timerPaint = window.setTimeout(function () { return _this.timerPaintEvent(step); }, step);
         };
+        Screen.prototype.timerPaintEventQuick = function (step) {
+            var _this = this;
+            this.paintQuick();
+            window.clearTimeout(this.timerPaintQuick);
+            this.timerPaintQuick = window.setTimeout(function () { return _this.timerPaintEventQuick(step); }, step);
+        };
         Screen.prototype.open = function (refresh) {
             this.timerPaintEvent(refresh);
+            this.timerPaintEventQuick(80);
             return this;
         };
         Screen.prototype.close = function () {
             window.clearTimeout(this.timerPaint);
+            window.clearTimeout(this.timerPaintQuick);
         };
         Screen.prototype.getServerData = function (url) {
         };
@@ -758,6 +768,20 @@ var KitchenInfoStation;
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, this.width, this.height);
             ctx.restore();
+            this.paintQuick();
+            //Number m_roomArray
+            /*
+            this.txtNumRooms.x = this.width - 10;
+            this.txtNumRooms.y = this.height - 10;
+            this.txtNumRooms.w = this.width * 0.4;
+            this.txtNumRooms.textAlign = "right";
+            this.txtNumRooms.fontSize = 26;
+            this.txtNumRooms.textBaseline = "bottom";
+            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);
+            */
+        };
+        ScreenFloor.prototype.paintQuick = function () {
+            var ctx = this.ctx;
             //Doors...            
             for (var id in this.m_doorMarks) {
                 this.m_doorMarks[id].paintByThing(this.ctx);
@@ -778,16 +802,6 @@ var KitchenInfoStation;
             for (var id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(this.ctx);
             }
-            //Number m_roomArray
-            /*
-            this.txtNumRooms.x = this.width - 10;
-            this.txtNumRooms.y = this.height - 10;
-            this.txtNumRooms.w = this.width * 0.4;
-            this.txtNumRooms.textAlign = "right";
-            this.txtNumRooms.fontSize = 26;
-            this.txtNumRooms.textBaseline = "bottom";
-            this.txtNumRooms.paintText(this.ctx, "Number Rooms:" + this.numRooms);
-            */
         };
         return ScreenFloor;
     }(Screen));
