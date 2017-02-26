@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.Window;
 import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
@@ -146,6 +147,13 @@ public class MySiteServiceImpl implements ISiteService {
 			sw.z = 0;								
 			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);		
 			
+			sw = new Switch();
+			sw.setName("WC Switch");
+			sw.x = 500;
+			sw.y = 150;
+			sw.z = 0;								
+			addThing("floors/Floor1/rooms/Room2/sensors/Kid2_Switch", "DummyService/dummy/4/Switch", sw);		
+						
 			//Doors
 			sw = new Switch();
 			sw.setName("Main Door Lock");
@@ -175,6 +183,15 @@ public class MySiteServiceImpl implements ISiteService {
 			contact.z = 0;								
 			addThing("floors/Floor1/doors/Door2/sensors/Contact", "DummyService/dummy/3/ContactSensor", contact);				
 			
+			//Doors
+			Window window = new Window();
+			window.setName("Inside");
+			window.x = 450;
+			window.y = 50;
+			window.z = 0;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/South Window", window);		
 			
 		} catch (Exception ex) {
 			System.out.println("\n\n EXception***:" + ex);
@@ -333,7 +350,12 @@ public class MySiteServiceImpl implements ISiteService {
 		return new String(); 
 	}
 	
-	public Set<String> getAllThingsPath (Class<?>  t) throws SiteException {		
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getAllThingsPath(java.lang.Class)
+	 * Return: Set of all things og given type.
+	 */
+	public Set<String> getThingPathSet (Class<?>  t) throws SiteException {		
 		Set<String> keySet = new HashSet <String> ();
 		
 		Set<String> keySetAll = ss.things.keySet();
@@ -345,13 +367,36 @@ public class MySiteServiceImpl implements ISiteService {
 			if (t.isInstance(thing)) {
 			
 				keySet.add(item);
-			}										
-		
+			}												
 		}
 
 		return keySet;
 	}
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getChildThingsPaths(java.lang.String, java.lang.Class)
+	 * Returns: All children of given type of given object.
+	 */
+	public Set<String> getThingChildrenPathSet (String parentPath, Class<?>  t) throws SiteException {	
+		Set<String> keySet = new HashSet <String> ();				
+		
+		Set<String> keySetAll = ss.things.keySet();
+		
+		for (String item : keySetAll) {
+			
+			if (item.contains(parentPath) && !item.equals(parentPath)){
+			
+				Thing thing = (Thing) getThing(item);													
+				
+				if (t.isInstance(thing)) {
+				
+					keySet.add(item);
+				}			
+			}			
+		}		
+						
+		return keySet;
+	}
 
 	public Site getSite() {
 		return ss;
@@ -362,6 +407,72 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return true;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#isClosed(org.openhs.core.commons.Thing)
+	 * Return: True if closed, all sensors signal 1.0
+	 */
+	public boolean isClosed (Thing m_thing) throws SiteException {	
+		
+		if (m_thing instanceof Door) {
+			
+			Set<String> contactSensorsPath = getThingChildrenPathSet (m_thing.getSitePath(), ContactSensor.class); 
+			
+			boolean state = false;
+			
+			// All state must be true...
+			for (String item : contactSensorsPath){
+				ContactSensor contact = (ContactSensor) getThing(item);
+				
+				if (contact.getState()) {
+					state = true;					
+				} else {
+					state = false;
+					break;
+				}
+			}		
+			
+			return state;
+			
+		} else if (m_thing instanceof Window) {
+			
+			
+		}
+		
+		return false;
+	}	
+	
+	public boolean isLocked (Thing m_thing) throws SiteException {	
+		
+		if (m_thing instanceof Door) {
+			
+			Set<String> switchPath = getThingChildrenPathSet (m_thing.getSitePath(), Switch.class); 
+			
+			boolean state = false;
+			
+			// All state must be true...
+			for (String item : switchPath){
+				Switch sw = (Switch) getThing(item);
+				
+				if (sw.getState()) {
+					state = true;					
+				} else {
+					state = false;
+					break;
+				}
+			}		
+			
+			return state;
+			
+		} else if (m_thing instanceof Window) {
+			
+			
+		}
+		
+		return false;
+	}	
+	
 		
 	public void SaveXML(String path) {
 
@@ -533,6 +644,40 @@ public class MySiteServiceImpl implements ISiteService {
 					zCoord.setValue(String.format("%d", ((Door) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
+				} else if (thing instanceof Window) {
+					
+					Element images = doc.createElement("images");
+					element.appendChild(images);
+					
+					// Image path
+					Attr imageOpen = doc.createAttribute("imageOpen");
+					imageOpen.setValue(((Window) thing).imagePath_open);
+					images.setAttributeNode(imageOpen);	
+					
+					// Image path
+					Attr imageClose = doc.createAttribute("imageClose");
+					imageClose.setValue(((Window) thing).imagePath_close);
+					images.setAttributeNode(imageClose);						
+					
+					//Element position
+					Element position = doc.createElement("position");
+					element.appendChild(position);
+
+					// X-coord
+					Attr xCoord = doc.createAttribute("xCoord");
+					xCoord.setValue(String.format("%d", ((Window) thing).x));					
+					position.setAttributeNode(xCoord);	
+					
+					// Y-coord
+					Attr yCoord = doc.createAttribute("yCoord");
+					yCoord.setValue(String.format("%d", ((Window) thing).y));					
+					position.setAttributeNode(yCoord);	
+					
+					// Z-coord
+					Attr zCoord = doc.createAttribute("zCoord");
+					zCoord.setValue(String.format("%d", ((Window) thing).z));					
+					position.setAttributeNode(zCoord);					
+					
 				}
 				
 				
@@ -702,6 +847,35 @@ public class MySiteServiceImpl implements ISiteService {
 									((Door) obj).x = x;
 									((Door) obj).y = y;
 									((Door) obj).z = z;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}							
+						} else if (obj instanceof Window) {
+							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Window) obj).imagePath_open = ((Element) imagesNode).getAttribute("imageOpen");
+							}
+							
+							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
+								((Window) obj).imagePath_close = ((Element) imagesNode).getAttribute("imageClose");
+							}							
+							
+							//Element position
+							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
+							
+							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
+								int x = 0, y = 0, z = 0;
+								try {
+									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
+									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
+									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									
+									((Window) obj).x = x;
+									((Window) obj).y = y;
+									((Window) obj).z = z;
 									
 								} catch (Exception ex) {
 								

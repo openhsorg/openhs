@@ -373,7 +373,7 @@ var OhsSiteData;
                 postId: "DoorD",
                 path: this.path
             };
-            postAjax("kitchen", req);
+            postAjax(servletUrl, req);
         };
         Door.prototype.getServerData = function () {
             var req = {
@@ -397,15 +397,55 @@ var OhsSiteData;
         return Door;
     }(Thing));
     OhsSiteData.Door = Door;
-    var Window = (function () {
+    var Window = (function (_super) {
+        __extends(Window, _super);
         function Window() {
-            this.valid = false; //content is valid       
+            _super.call(this);
+            this.name = "no name";
+            this.image_open = "/infores/servlets/kitchen/room_default.png";
+            this.image_close = "/infores/servlets/kitchen/room_default.png";
+            this.open = false;
+            this.locked = false;
+            this.x = 0;
+            this.y = 0;
         }
-        Window.prototype.setPath = function (path) {
-            this.path = path;
+        Window.prototype.getState = function () {
+            if (!this.valid)
+                return 0;
+            if (this.open)
+                return 1;
+            if (this.locked)
+                return 3;
+            return 2;
+        };
+        Window.prototype.postServerClick = function () {
+            var req = {
+                postId: "Window",
+                path: this.path
+            };
+            postAjax(servletUrl, req);
+        };
+        Window.prototype.getServerData = function () {
+            var req = {
+                orderId: "DoorD",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                if (this.valid) {
+                    this.name = data['name'];
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];
+                }
+            }
         };
         return Window;
-    }());
+    }(Thing));
     OhsSiteData.Window = Window;
     function getAjax(urlAdr, dataIn) {
         var result = null;

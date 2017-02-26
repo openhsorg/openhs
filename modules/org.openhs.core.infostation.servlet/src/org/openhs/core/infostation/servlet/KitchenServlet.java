@@ -305,9 +305,13 @@ public class KitchenServlet extends HttpServlet {
 					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
 	    			
 	    			Door door = null;
+	    			boolean closed = false;
+	    			boolean locked = false;
 					
 					try {
 						door = (Door) this.m_infostation.getThing(path);
+						closed = this.m_infostation.isClosed(door);
+						locked = this.m_infostation.isLocked(door);
 					} catch (SiteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -324,8 +328,8 @@ public class KitchenServlet extends HttpServlet {
 						json.put("image_close", String.format(door.imagePath_close));
 						json.put("x_coordinate", String.format("%d", door.x));
 						json.put("y_coordinate", String.format("%d", door.y));
-						json.put("open", new Boolean(door.open));
-						json.put("lock", new Boolean(door.lock));
+						json.put("open", new Boolean(closed));
+						json.put("lock", new Boolean(locked));
 						
 					//	System.out.println("\n\n\n\n    Door x: " + door.x + " Door y:" + door.y);
 						

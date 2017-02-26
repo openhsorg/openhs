@@ -485,7 +485,7 @@ module OhsSiteData {
                 path:   this.path                
             }
             
-            postAjax("kitchen", req);
+            postAjax(servletUrl, req);
         }                
         
         public getServerData () {       
@@ -513,16 +513,67 @@ module OhsSiteData {
         }        
     }    
     
-    export class Window {
+    export class Window extends Thing {
     
-        public valid: boolean = false; //content is valid       
+        public name: string = "no name";
+        public image_open: string = "/infores/servlets/kitchen/room_default.png";
+        public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
-        public path:        string; //OpenHS path        
-        public open:        boolean; //Open
+        public open:       boolean; //Open
+        public locked:     boolean; //Door lock
         
-        public setPath (path: string) {
-            this.path = path;
+        public x:   number;
+        public y:   number;
+        
+        constructor () {
+            super();
+            this.open = false;
+            this.locked = false;
+            
+            this.x = 0;
+            this.y = 0;
+        } 
+        
+        public getState () {                                   
+            if (!this.valid) return 0;
+            if (this.open) return 1;                        
+            if (this.locked) return 3;
+            
+            return 2;                                    
+        }
+        
+        public postServerClick () {            
+            var req: any = {
+                postId : "Window",
+                path:   this.path                
+            }
+            
+            postAjax(servletUrl, req);
         }                
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "DoorD",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {
+                this.valid = JSON.parse(data['validity']);
+                
+                if (this.valid){
+                    this.name = data['name'];
+                    this.x = parseInt(data['x_coordinate']);
+                    this.y = parseInt(data['y_coordinate']);
+                    this.open = JSON.parse(data['open']);
+                    this.locked = JSON.parse(data['lock']);  
+                    this.image_open = data['image_open'];
+                    this.image_close = data['image_close'];          
+                }                                
+            }                                                       
+        }              
     }    
     
     

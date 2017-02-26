@@ -262,19 +262,7 @@ import Thing = OhsSiteData.Thing;
             return paths;
         }         
     }
-    /*
-    export class TextRich extends TextSimple {
-        
-        public borderWidth: number = 0; 
-        
-        constructor(x: number, y: number, w: number, h: number, rad: number){
-            super(x, y, w, h);
-            
-            this.radius = rad;
-        }        
-        
-    }
-    */
+
     export class TextSimple extends RectRounded {
         
         public fontSize:      number = 20; 
@@ -437,32 +425,7 @@ import Thing = OhsSiteData.Thing;
             
             this.paint(ctx);
         }
-        
-        public getState() {
-            
-            var state: number = 0; //unknown...
-            
-            if (this.m_switchArray.length > 0 && this.m_contactSensorArray.length > 0) {
-                
-                if (this.m_contactSensorArray[0].getState()){ //Open
-                    state = 1;                                    
-                    
-                } else { //close
-                    state = 2;
-                    
-                    var lockState: number = this.m_switchArray[0].getState();
-                    
-                    if (lockState == 3) {
-                        state = 3;                    
-                    }    
-
-                }
-                
-            }
-                    
-            return state;
-        }
-        
+                      
         public paint (ctx: CanvasRenderingContext2D) {
             
             var door: Door = this.getDoorThing();
@@ -474,29 +437,8 @@ import Thing = OhsSiteData.Thing;
             
             if (door != null) {     
             
-                state = this.getState(); //door.getState();
-            
-                //logic of switch
-                if (state == 0) {
-                    colorInside = "#808080";  
-                    colorBorder = "#00cc69";
-                                                         
-                } else if (state == 1) {
-                    colorInside = "#ccffe6";
-                    colorBorder = "#00cc69";              
-                    
-                } else if (state == 2) {
-                    colorInside = "#ccffe6";
-                    colorBorder = "#00cc69";                
-                    
-                } else if (state == 3) {
-                    colorInside = "#ff8080";
-                    colorBorder = "red";                
-                    
-                } else {
-                    colorInside = "#808080"; 
-                    
-                }                             
+                colorInside = "#ccffe6";
+                colorBorder = "#00cc69";                                                            
             }
             
             ctx.save();
@@ -511,21 +453,15 @@ import Thing = OhsSiteData.Thing;
             
            if (door != null) {     
             
-                //logic of switch
-                if (state == 0) {                    
-                    this.imgClose.paint(ctx);                 
-                    
-                } else if (state == 1) {
-                    this.imgOpen.paint(ctx);                  
-                    
-                } else if (state == 2) {
-                    this.imgClose.paint(ctx);                   
-                    
-                } else if (state == 3) {
-                    this.imgClose.paint(ctx);                 
-                    this.imgLock.paint(ctx);                  
-                    
-                }                             
+               if (door.open) {
+                   this.imgOpen.paint(ctx);                   
+               } else {
+                   this.imgClose.paint(ctx); 
+                   
+                   if (door.locked){
+                       this.imgLock.paint(ctx); 
+                   }                    
+               }                                    
             }                        
         }
     }

@@ -220,15 +220,15 @@ public class Infostation implements IInfostation {
       }     
       
       public Set<String> getRoomsPaths () throws SiteException {    	      	  
-    	  return this.m_siteService.getAllThingsPath(Room.class);   		      		    	  
+    	  return this.m_siteService.getThingPathSet(Room.class);   		      		    	  
       }     
       
       public Set<String> getTempSensorsPaths () throws SiteException {    	      	  
-    	  return this.m_siteService.getAllThingsPath(TemperatureSensor.class);   		      		    	  
+    	  return this.m_siteService.getThingPathSet(TemperatureSensor.class);   		      		    	  
       }  
       
       public Set<String> getSwitchPaths () throws SiteException {    	      	  
-    	  return this.m_siteService.getAllThingsPath(Switch.class);   		      		    	  
+    	  return this.m_siteService.getThingPathSet(Switch.class);   		      		    	  
       }  
       
       public Thing getThing (String thingPath) throws SiteException {    	      	  
@@ -236,6 +236,14 @@ public class Infostation implements IInfostation {
       }        
       
       public Set<String> getThingPaths (Class<?> t) throws SiteException {    	      	  
-    	  return this.m_siteService.getAllThingsPath(t);   		      		    	  
-      }       
+    	  return this.m_siteService.getThingPathSet(t);   		      		    	  
+      }  
+      
+      public boolean isClosed (Thing m_thing) throws SiteException {
+    	  return this.m_siteService.isClosed (m_thing);
+      }
+      
+      public boolean isLocked (Thing m_thing) throws SiteException {
+    	  return this.m_siteService.isLocked (m_thing);
+      }      
 }

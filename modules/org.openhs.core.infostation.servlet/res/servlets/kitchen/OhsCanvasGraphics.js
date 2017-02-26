@@ -217,19 +217,6 @@ var OhsCanvasGraphics;
         return ImageRectArray;
     }(RectRounded));
     OhsCanvasGraphics.ImageRectArray = ImageRectArray;
-    /*
-    export class TextRich extends TextSimple {
-        
-        public borderWidth: number = 0;
-        
-        constructor(x: number, y: number, w: number, h: number, rad: number){
-            super(x, y, w, h);
-            
-            this.radius = rad;
-        }
-        
-    }
-    */
     var TextSimple = (function (_super) {
         __extends(TextSimple, _super);
         function TextSimple(x, y, w, h) {
@@ -357,49 +344,14 @@ var OhsCanvasGraphics;
             }
             this.paint(ctx);
         };
-        DoorMark.prototype.getState = function () {
-            var state = 0; //unknown...
-            if (this.m_switchArray.length > 0 && this.m_contactSensorArray.length > 0) {
-                if (this.m_contactSensorArray[0].getState()) {
-                    state = 1;
-                }
-                else {
-                    state = 2;
-                    var lockState = this.m_switchArray[0].getState();
-                    if (lockState == 3) {
-                        state = 3;
-                    }
-                }
-            }
-            return state;
-        };
         DoorMark.prototype.paint = function (ctx) {
             var door = this.getDoorThing();
             var colorInside = '#a6a6a6';
             var colorBorder = '#595959';
             var state = -1;
             if (door != null) {
-                state = this.getState(); //door.getState();
-                //logic of switch
-                if (state == 0) {
-                    colorInside = "#808080";
-                    colorBorder = "#00cc69";
-                }
-                else if (state == 1) {
-                    colorInside = "#ccffe6";
-                    colorBorder = "#00cc69";
-                }
-                else if (state == 2) {
-                    colorInside = "#ccffe6";
-                    colorBorder = "#00cc69";
-                }
-                else if (state == 3) {
-                    colorInside = "#ff8080";
-                    colorBorder = "red";
-                }
-                else {
-                    colorInside = "#808080";
-                }
+                colorInside = "#ccffe6";
+                colorBorder = "#00cc69";
             }
             ctx.save();
             ctx.beginPath();
@@ -411,19 +363,14 @@ var OhsCanvasGraphics;
             ctx.stroke();
             ctx.restore();
             if (door != null) {
-                //logic of switch
-                if (state == 0) {
-                    this.imgClose.paint(ctx);
-                }
-                else if (state == 1) {
+                if (door.open) {
                     this.imgOpen.paint(ctx);
                 }
-                else if (state == 2) {
+                else {
                     this.imgClose.paint(ctx);
-                }
-                else if (state == 3) {
-                    this.imgClose.paint(ctx);
-                    this.imgLock.paint(ctx);
+                    if (door.locked) {
+                        this.imgLock.paint(ctx);
+                    }
                 }
             }
         };
