@@ -42,6 +42,7 @@ var OhsCanvasGraphics;
         Graphics.prototype.getFilteredImage = function (array, src) {
             for (var i = 0; i < array.length; i++) {
                 if (array[i].getImageSrc() == src) {
+                    //window.alert("A: " + array[i].getImageSrc() + "  B: " + src);                                                      
                     return array[i];
                 }
             }

@@ -330,7 +330,7 @@ public class KitchenServlet extends HttpServlet {
 						json.put("open", new Boolean(closed));
 						json.put("lock", new Boolean(locked));
 						
-					//	System.out.println("\n\n\n\n    Door x: " + door.x + " Door y:" + door.y);
+						//System.out.println("\n\n\n\n    Door: " + door.getName() + " open path:" + door.imagePath_open);
 						
 					} else {
 						json.put("validity", new Boolean(false));	

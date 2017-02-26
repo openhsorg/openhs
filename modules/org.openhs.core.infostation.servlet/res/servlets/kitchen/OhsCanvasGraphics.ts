@@ -47,13 +47,12 @@ import Thing = OhsSiteData.Thing;
         }                       
  
         public getFilteredImage(array: Array<ImageRect>, src: string) {
-            for (var i = 0; i < array.length; i++) {                                              
-                if (array[i].getImageSrc() == src){                                                           
-                    return array[i];               
-                    
+            for (var i = 0; i < array.length; i++) {                                         
+                if (array[i].getImageSrc() == src){     
+                //window.alert("A: " + array[i].getImageSrc() + "  B: " + src);                                                      
+                    return array[i];                                   
                 }
-            }
-            
+            }            
             return null;
         }
     }

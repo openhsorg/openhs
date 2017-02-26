@@ -1239,10 +1239,10 @@ module KitchenInfoStation {
         public m_switchMarks:               Array<SwitchLockMark> = null;              // Switch marks
         public m_contactSensorsMarks:       Array<ContactSensorMark> = null;       // Switch marks        
                 
-        protected m_imgOpenArray:   Array<ImageRect> = null;    //Array of images
-        protected m_imgDoors:        ImageRect = null;           //Selected image        
-        protected m_rectData:         RectRounded = null;
-        public    m_textDoorName:        TextSimple;  
+        protected m_imgOpenArray:           Array<ImageRect> = null;    //Array of images
+        protected m_imgDoors:               ImageRect = null;           //Selected image        
+        protected m_rectData:               RectRounded = null;
+        public    m_textDoorName:           TextSimple;  
         
         constructor (canvas: HTMLCanvasElement, m_siteData:  SiteData, m_graphics: Graphics) {            
             super(canvas);
@@ -1254,20 +1254,19 @@ module KitchenInfoStation {
             this.m_switchMarks = new Array<SwitchLockMark>();
             this.m_contactSensorsMarks = new Array<ContactSensorMark>();  
             this.m_rectData = new RectRounded(0,0,0,0,40);   
-            this.m_textDoorName = new TextSimple (0,0,0,0);       
-            
-            for (let id in this.m_siteData.m_doorArray){                
-                var img: ImageRect = new ImageRect (0, 0, this.width, this.height, 0, this.m_siteData.m_doorArray[id].image_open);
-                this.m_imgOpenArray.push(img); 
-            }
+            this.m_textDoorName = new TextSimple (0,0,0,0);                   
         }
       
         public paint() {
             super.paint();
             
+            this.m_imgDoors = null;
+            
             var state: boolean = false;
             
             var door: Door = <Door> this.getThing();
+            
+           // window.alert("paint: " + door.image_open);
             
             if (this.m_contactSensorsMarks.length > 0) {
                 state = this.m_contactSensorsMarks[0].getState();                                   
@@ -1277,6 +1276,9 @@ module KitchenInfoStation {
                 } else {
                     this.m_imgDoors = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
                 }
+                
+            } else {
+                this.m_imgDoors = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
             }
             
    
@@ -1327,6 +1329,9 @@ module KitchenInfoStation {
             
             super.setThing(thing);
             
+            var door1: Door = <Door> this.getThing(); 
+            //window.alert("A: " + door1.image_close);
+            
             //update other data
             if (thing != oldThing) {
                 if (thing instanceof Door) {
@@ -1334,20 +1339,24 @@ module KitchenInfoStation {
                     //Reload pictures etc...?
                     var door: Door = <Door> this.getThing();           
                     
-                    this.m_imgOpenArray.length = 2;
+                    //this.m_imgOpenArray.length = 2;
+                    
+                  //  window.alert("A: " + door.image_open);
                     
                     var imgOpen = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_open);
                     
                     if (imgOpen == null) {
+                        
                         imgOpen = new ImageRect (0, 0, this.width, this.height, 0, door.image_open);
                         this.m_imgOpenArray.push(imgOpen);
-
                     }
                     
                     var imgClose = this.m_graphics.getFilteredImage(this.m_imgOpenArray, door.image_close);
                     
                     if (imgClose == null) {
+                    //    window.alert("B: " + door.image_close);
                         imgClose = new ImageRect (0, 0, this.width, this.height, 0, door.image_close);
+                      //  window.alert("B: " + door.image_close + "Ptr: " + imgClose);
                         this.m_imgOpenArray.push(imgClose);
 
                     }                 
