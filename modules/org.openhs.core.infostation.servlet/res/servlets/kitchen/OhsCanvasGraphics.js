@@ -179,6 +179,12 @@ var OhsCanvasGraphics;
         ImageRect.prototype.onImageLoad = function (event) {
             this.loaded = true;
         };
+        ImageRect.prototype.setImage = function (path) {
+            if (path != this.imgSrc) {
+                this.img.src = path;
+                this.imgSrc = path;
+            }
+        };
         ImageRect.prototype.paint = function (ctx) {
             ctx.save();
             _super.prototype.paint.call(this, ctx);
@@ -235,6 +241,82 @@ var OhsCanvasGraphics;
         return ImageRect;
     }(RectRounded));
     OhsCanvasGraphics.ImageRect = ImageRect;
+    var ImageRect2 = (function (_super) {
+        __extends(ImageRect2, _super);
+        function ImageRect2() {
+            _super.call(this);
+            this.img = null;
+            this.imgSrc = '';
+            this.loaded = false;
+            this.border = false;
+            this.rectClicked = null;
+            this.img = new Image();
+        }
+        ImageRect2.prototype.onImageLoad = function (event) {
+            this.loaded = true;
+        };
+        ImageRect2.prototype.setImage = function (path) {
+            if (path != this.imgSrc) {
+                this.img.src = path;
+                this.imgSrc = path;
+            }
+        };
+        ImageRect2.prototype.paint = function (ctx) {
+            ctx.save();
+            _super.prototype.paint.call(this, ctx);
+            if (this.radius != 0) {
+                ctx.clip();
+            }
+            ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+            ctx.restore();
+            if (this.border) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
+        };
+        ImageRect2.prototype.paintPush = function (ctx) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), 10, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'blue';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        };
+        ImageRect2.prototype.getImage = function () {
+            return this.img;
+        };
+        ImageRect2.prototype.getImageSrc = function () {
+            return this.imgSrc;
+        };
+        ImageRect2.prototype.MouseDownHandler = function (event, ctx) {
+            var _this = this;
+            this.paint(ctx);
+            this.paintPush(ctx);
+            this.rectClicked = this.getSize();
+            window.setTimeout(function () { return _this.paint(ctx); }, 200);
+            // this.size(this.rectClicked.x * 0.2, this.rectClicked.y * 0.2, this.rectClicked.w * 0.2, this.rectClicked.h * 0.2);
+            //this.paint(this.ctx);
+        };
+        ImageRect2.prototype.MouseUpHandler = function (event, ctx) {
+            if (this.rectClicked != null) {
+                //  this.sizeRect(this.rectClicked);
+                //   this.paint(ctx);
+                this.rectClicked = null;
+            }
+        };
+        return ImageRect2;
+    }(RectRounded));
+    OhsCanvasGraphics.ImageRect2 = ImageRect2;
     var ImageButton = (function (_super) {
         __extends(ImageButton, _super);
         function ImageButton(imgSrc, imgPush) {
@@ -250,7 +332,6 @@ var OhsCanvasGraphics;
         }
         ImageButton.prototype.paint = function (ctx) {
             ctx.save();
-            // ctx.clearRect(this.x, this.y, this.w, this.h);
             if (this.push) {
                 ctx.drawImage(this.imgPush, this.x, this.y, this.w, this.h);
             }
@@ -269,12 +350,6 @@ var OhsCanvasGraphics;
                 ctx.restore();
             }
         };
-        /*
-              private closeEvent(ctx: CanvasRenderingContext2D) {
-                  this.push = false;
-              //    this.paint(ctx);
-              }
-      */
         ImageButton.prototype.PushEvent = function (x, y) {
             if (this.isClicked(x, y)) {
                 this.push = true;

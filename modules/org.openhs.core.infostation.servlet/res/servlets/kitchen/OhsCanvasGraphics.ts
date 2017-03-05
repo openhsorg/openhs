@@ -178,6 +178,8 @@ import Thing = OhsSiteData.Thing;
     
     export class ImageRect extends RectRounded {
         
+        
+        
         private img:            HTMLImageElement    = null;
         private imgSrc:         string              = '---';
         
@@ -199,11 +201,18 @@ import Thing = OhsSiteData.Thing;
             this.imgSrc = imgSrc;
         }
         
-       private onImageLoad(event):void {
-        
+        private onImageLoad(event):void {        
            this.loaded = true;            
-        }          
+        }
         
+        public setImage (path: string) {
+            if (path != this.imgSrc) {
+                
+                this.img.src = path;            
+                this.imgSrc = path;                                     
+            }        
+        }
+                        
         public paint (ctx: CanvasRenderingContext2D){
 
             ctx.save();
@@ -275,6 +284,108 @@ import Thing = OhsSiteData.Thing;
         
     }
     
+    export class ImageRect2 extends RectRounded {
+        
+        
+        
+        private img:            HTMLImageElement    = null;
+        private imgSrc:         string              = '';
+        
+        public loaded:          boolean             = false;
+        protected border:       boolean             = false;
+        
+        protected rectClicked:  Rect = null;
+        
+        constructor () {
+            super();            
+            
+            this.img = new Image();                                   
+        }
+        
+        private onImageLoad(event):void {        
+           this.loaded = true;            
+        }
+        
+        public setImage (path: string) {
+            if (path != this.imgSrc) {
+                
+                this.img.src = path;            
+                this.imgSrc = path;                                     
+            }        
+        }
+                        
+        public paint (ctx: CanvasRenderingContext2D){
+
+            ctx.save();
+            
+            super.paint(ctx);
+            if (this.radius != 0) {                
+                ctx.clip();
+            }
+            
+            ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+            ctx.restore();         
+            
+            if (this.border){
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue'; 
+                ctx.stroke();           
+                ctx.closePath();
+                ctx.restore();  
+            }            
+        }
+        
+        protected paintPush (ctx: CanvasRenderingContext2D) {
+        
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), 10, 0, 2 * Math.PI, false);
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue'; 
+                ctx.stroke();           
+                ctx.closePath();
+                ctx.restore();  
+            
+        }
+        
+        public getImage() {
+            return this.img;            
+        }
+        
+        public getImageSrc() {
+            return this.imgSrc;
+        }
+        
+        public MouseDownHandler(event, ctx: CanvasRenderingContext2D) {
+        
+            this.paint(ctx);
+            this.paintPush (ctx);
+            this.rectClicked = this.getSize();        
+            
+            window.setTimeout(() => this.paint(ctx), 200);
+           // this.size(this.rectClicked.x * 0.2, this.rectClicked.y * 0.2, this.rectClicked.w * 0.2, this.rectClicked.h * 0.2);
+            //this.paint(this.ctx);
+        }   
+
+        public MouseUpHandler(event, ctx: CanvasRenderingContext2D) {
+            
+            if (this.rectClicked != null) {                
+              //  this.sizeRect(this.rectClicked);
+                
+             //   this.paint(ctx);
+                this.rectClicked = null;
+            }
+        
+        }        
+        
+    }    
+    
+    
     export class ImageButton extends RectRounded {
         
         private img:                HTMLImageElement    = new Image();
@@ -298,8 +409,6 @@ import Thing = OhsSiteData.Thing;
         public paint (ctx: CanvasRenderingContext2D){
 
             ctx.save();
-            
-           // ctx.clearRect(this.x, this.y, this.w, this.h);
 
             if (this.push) {
                 ctx.drawImage(this.imgPush, this.x, this.y, this.w, this.h);
@@ -320,12 +429,7 @@ import Thing = OhsSiteData.Thing;
                 ctx.restore();  
             }            
         }
-  /*      
-        private closeEvent(ctx: CanvasRenderingContext2D) {
-            this.push = false;
-        //    this.paint(ctx);
-        }
-*/
+
         public PushEvent (x: number, y: number) {
         
             if (this.isClicked(x, y)) {
