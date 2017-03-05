@@ -46,7 +46,7 @@ module OhsSiteData {
                         
             //this.slowTimerGetDataEvent(1000);
             this.getServerData();            
-            this.fastTimerGetDataEvent(500);
+            this.fastTimerGetDataEvent(250);
         }
         
         private fastTimerGetDataEvent(step : number) {
@@ -476,6 +476,14 @@ module OhsSiteData {
         public isValid() {
             return this.valid;
         } 
+        
+        public getServerData () {
+        }          
+        
+        public getServerDataDelayed (wait: number) {                    
+            window.setTimeout(() => this.getServerData(), wait);         
+                                      
+        }          
     }
         
     export class Floor extends Thing {
@@ -646,13 +654,7 @@ module OhsSiteData {
             
             this.parseServerData(data);           
                                       
-        }
-        
-        public getServerDataDelayed (wait: number) {       
-             
-            window.setTimeout(() => this.getServerData(), wait);         
-                                      
-        }        
+        }              
         
         public parseServerData (data: any) {                   
             if (data != null) {
@@ -795,7 +797,7 @@ module OhsSiteData {
                     this.y = parseInt(data[this.path + '__y']);
                     //this.z = parseInt(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
-                    this.locked = JSON.parse(data[this.path + '__open']);  
+                    this.locked = JSON.parse(data[this.path + '__lock']);  
                     this.image_open = data[this.path + '__imagePath_open'];
                     this.image_close = data[this.path + '__imagePath_close'];    
                 }

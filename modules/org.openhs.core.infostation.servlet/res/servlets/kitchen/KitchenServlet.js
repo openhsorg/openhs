@@ -513,19 +513,12 @@ var KitchenInfoStation;
     var StopWatch = (function () {
         function StopWatch() {
             //   this.stopwatchRect = new Rect ((this.width / 2) - (300 / 2) + 0, (this.height / 2) - (150 / 2) + 70, 300, 120);
-            //   private ctx:                 CanvasRenderingContext2D;
-            //     private width:               number;
-            //    private height:              number;    
             this.stopwatchRect = new Rect();
             this.sec = 0;
             this.min = 0;
             this.hrs = 0;
             this.dotCounter = 0;
             this.angle = 0;
-            /*
-            public arcCenterX:          number;
-            public arcCenterY:          number;
-            */
             this.arcRadius = 120;
             this.sec.toExponential(2);
             this.min.toFixed(2);
@@ -541,7 +534,7 @@ var KitchenInfoStation;
             var width = canvas.width;
             var height = canvas.height;
             if (this.getStatus()) {
-                this.paintEffect(ctx, width / 2, height / 2);
+                this.paintEffect(ctx, width / 2, (height / 2) + 50);
             }
             ctx.save();
             ctx.beginPath();
@@ -858,6 +851,7 @@ var KitchenInfoStation;
             var ctx = canvas.getContext('2d');
             var width = canvas.width;
             var height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
             //Draw image...       
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, width, height);
@@ -1041,6 +1035,7 @@ var KitchenInfoStation;
             var ctx = canvas.getContext('2d');
             var width = canvas.width;
             var height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
             this.m_imgDoors = null;
             var state = false;
             var door = this.getThing();
@@ -1138,9 +1133,8 @@ var KitchenInfoStation;
                 if (this.m_switchMarks[id].isClicked(mx, my)) {
                     var switchSensor = this.m_switchMarks[id].getSwitchThing();
                     switchSensor.postServerClick();
-                    //  this.paint();
                     switchSensor.getServerData();
-                    //  this.paint();
+                    switchSensor.getServerDataDelayed(100);
                     this.returnVal.nextScreen = null;
                 }
             }
@@ -1201,7 +1195,9 @@ var KitchenInfoStation;
             for (var id in this.m_arrayViewDoor) {
                 this.m_arrayViewDoor[id].paint(ctx);
             }
+            this.btnLock.size((width) * 0.48, height - 120, 60, 60);
             this.btnLock.paint(ctx);
+            this.btnUnLock.size((width) * 0.56, height - 75, 60, 60);
             this.btnUnLock.paint(ctx);
             if (this.wait) {
                 _super.prototype.paintWait.call(this, canvas);
@@ -1260,7 +1256,7 @@ var KitchenInfoStation;
                 //  this.CommandSchedule(6);
                 //      this.paintQuick();
                 this.m_siteData.postServerAllDoors('on');
-                this.m_siteData.getFastData();
+                this.m_siteData.getFastData_DoorArray();
                 //   this.wait = false;                      
                 return null;
             }
@@ -1270,7 +1266,7 @@ var KitchenInfoStation;
                 //         this.CommandSchedule(7);
                 //  this.paintQuick();
                 this.m_siteData.postServerAllDoors('off');
-                this.m_siteData.getFastData();
+                this.m_siteData.getFastData_DoorArray();
                 //  this.wait = false;                      
                 //  this.paint();
                 return null;
@@ -1363,7 +1359,6 @@ var KitchenInfoStation;
                 this.thing = m_door;
                 //Reload pictures etc...?
                 var door = this.thing;
-                //  this.rectName = new RectRounded (0, 0, 0, 0, 0);
                 this.m_imgDoorOpen = new ImageRect(door.image_close);
                 this.m_doorMark2 = new DoorMark();
                 this.m_doorMark2.setThing(this.thing);

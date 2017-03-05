@@ -659,9 +659,6 @@ module KitchenInfoStation {
      
     class StopWatch {
         
-     //   private ctx:                 CanvasRenderingContext2D;
-   //     private width:               number;
-    //    private height:              number;    
         public stopwatchRect:        Rect = new Rect();
         
         private timer;
@@ -672,10 +669,7 @@ module KitchenInfoStation {
         
         private dotCounter: number = 0;
         private angle: number = 0;
-        /*
-        public arcCenterX:          number;
-        public arcCenterY:          number;
-        */
+
         public arcRadius:           number = 120;    
         
         constructor () {
@@ -701,7 +695,7 @@ module KitchenInfoStation {
             var height: number = canvas.height;
             
            if (this.getStatus()) { 
-            this.paintEffect (ctx, width / 2, height / 2);           
+            this.paintEffect (ctx, width / 2, (height / 2) + 50);           
            } 
                                     
            ctx.save();
@@ -1121,6 +1115,8 @@ module KitchenInfoStation {
             var width: number = canvas.width;
             var height: number = canvas.height;
             
+            ctx.clearRect(0, 0, width, height);
+            
             //Draw image...       
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, width, height);
@@ -1355,10 +1351,12 @@ module KitchenInfoStation {
       
         public paint(canvas: HTMLCanvasElement) {
             super.paint(canvas);
-            
+                                    
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
-            var height: number = canvas.height;            
+            var height: number = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
             
             this.m_imgDoors = null;
             
@@ -1496,10 +1494,9 @@ module KitchenInfoStation {
                       
                     var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
                     
-                    switchSensor.postServerClick();
-                  //  this.paint();
+                    switchSensor.postServerClick();                  
                     switchSensor.getServerData();
-                  //  this.paint();
+                    switchSensor.getServerDataDelayed(100);                  
                     
                     this.returnVal.nextScreen = null;                         
                        
@@ -1585,7 +1582,10 @@ module KitchenInfoStation {
                 this.m_arrayViewDoor[id].paint(ctx);                
             }            
             
+            this.btnLock.size((width) * 0.48, height - 120, 60, 60);
             this.btnLock.paint(ctx);
+            
+            this.btnUnLock.size((width) * 0.56, height - 75, 60, 60);
             this.btnUnLock.paint(ctx);            
             
             if (this.wait) {
@@ -1664,7 +1664,7 @@ module KitchenInfoStation {
           //      this.paintQuick();
                 
                 this.m_siteData.postServerAllDoors('on');  
-                this.m_siteData.getFastData();   
+                this.m_siteData.getFastData_DoorArray();   
              //   this.wait = false;                      
                 
                 return null; 
@@ -1677,7 +1677,7 @@ module KitchenInfoStation {
               //  this.paintQuick();
                 
                 this.m_siteData.postServerAllDoors('off');  
-                this.m_siteData.getFastData();   
+                this.m_siteData.getFastData_DoorArray();   
               //  this.wait = false;                      
                 
               //  this.paint();
@@ -1793,7 +1793,6 @@ module KitchenInfoStation {
                 //Reload pictures etc...?
                 var door: Door = <Door> this.thing;       
                          
-              //  this.rectName = new RectRounded (0, 0, 0, 0, 0);
                 this.m_imgDoorOpen = new ImageRect (door.image_close);        
                 
                 this.m_doorMark2 = new DoorMark();

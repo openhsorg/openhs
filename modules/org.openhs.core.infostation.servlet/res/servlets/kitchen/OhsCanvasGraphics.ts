@@ -299,7 +299,7 @@ import Thing = OhsSiteData.Thing;
 
             ctx.save();
             
-            ctx.clearRect(this.x, this.y, this.w, this.h);
+           // ctx.clearRect(this.x, this.y, this.w, this.h);
 
             if (this.push) {
                 ctx.drawImage(this.imgPush, this.x, this.y, this.w, this.h);

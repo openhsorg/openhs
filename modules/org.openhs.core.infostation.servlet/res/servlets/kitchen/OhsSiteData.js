@@ -39,7 +39,7 @@ var OhsSiteData;
             this.m_contactSensorArray = new Array();
             //this.slowTimerGetDataEvent(1000);
             this.getServerData();
-            this.fastTimerGetDataEvent(500);
+            this.fastTimerGetDataEvent(250);
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
             var _this = this;
@@ -360,6 +360,12 @@ var OhsSiteData;
         Thing.prototype.isValid = function () {
             return this.valid;
         };
+        Thing.prototype.getServerData = function () {
+        };
+        Thing.prototype.getServerDataDelayed = function (wait) {
+            var _this = this;
+            window.setTimeout(function () { return _this.getServerData(); }, wait);
+        };
         return Thing;
     }());
     OhsSiteData.Thing = Thing;
@@ -497,10 +503,6 @@ var OhsSiteData;
             var data = getAjax(servletUrl, req);
             this.parseServerData(data);
         };
-        Switch.prototype.getServerDataDelayed = function (wait) {
-            var _this = this;
-            window.setTimeout(function () { return _this.getServerData(); }, wait);
-        };
         Switch.prototype.parseServerData = function (data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
@@ -610,7 +612,7 @@ var OhsSiteData;
                     this.y = parseInt(data[this.path + '__y']);
                     //this.z = parseInt(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
-                    this.locked = JSON.parse(data[this.path + '__open']);
+                    this.locked = JSON.parse(data[this.path + '__lock']);
                     this.image_open = data[this.path + '__imagePath_open'];
                     this.image_close = data[this.path + '__imagePath_close'];
                 }

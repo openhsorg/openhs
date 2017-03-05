@@ -473,7 +473,7 @@ public class KitchenServlet extends HttpServlet {
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='800' height='600' style='margin-top: -400px; margin-left: -500px'>");
+	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='800' height='550' style='margin-top: -275px; margin-left: -400px'>");
 	    	//out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='1000' height='600' style='margin-top: -325px; margin-left: -500px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
