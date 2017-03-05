@@ -5,15 +5,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
 import org.openhs.core.cfg.OpenhsProps;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.commons.Weather;
+import org.openhs.core.commons.Window;
+import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
@@ -264,5 +270,140 @@ public class Infostation implements IInfostation {
 	    		  }	    		  	    		  
 	    	  }    	  
     	  }    	      	  
+      }
+      
+      
+      public JSONObject JSON_Thing (String path) {
+    	  
+    	  JSONObject json = new JSONObject();
+    	  
+    	  Thing thing;
+		  
+		  try {
+			  thing = this.getThing(path);
+			  			  
+			  
+			  if (thing instanceof Floor) {
+				  Floor floor = (Floor) thing;		
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", floor.getName());
+				  json.put(path + "__imagePath", floor.imagePath);
+				  
+			  } else if (thing instanceof Room) {
+				  Room room = (Room) thing;		
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", room.getName());
+				  json.put(path + "__imagePath", room.imagePath);
+				  
+			  } else if (thing instanceof Door) {
+				  Door door = (Door) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", door.getName());
+				  json.put(path + "__imagePath_open", door.imagePath_open);
+				  json.put(path + "__imagePath_close", door.imagePath_close);
+				  json.put(path + "__x", new Integer(door.x));
+				  json.put(path + "__y", new Integer(door.y));
+				  json.put(path + "__z", new Integer(door.z));	
+				  json.put(path + "__open", new Boolean(this.isClosed(door)));
+				  json.put(path + "__lock", new Boolean(this.isLocked(door)));				  
+				  
+			  } else if (thing instanceof Window) {
+				  Window window = (Window) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", window.getName());
+				  json.put(path + "__imagePath_open", window.imagePath_open);
+				  json.put(path + "__imagePath_close", window.imagePath_close);
+				  json.put(path + "__x", new Integer(window.x));
+				  json.put(path + "__y", new Integer(window.y));
+				  json.put(path + "__z", new Integer(window.z));	
+				  json.put(path + "__open", new Boolean(this.isClosed(window)));
+				  json.put(path + "__lock", new Boolean(this.isLocked(window)));					  
+				  
+			  } else if (thing instanceof TemperatureSensor) {
+				  TemperatureSensor sensor = (TemperatureSensor) thing;
+				  Temperature temp = sensor.getTemperature();
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", sensor.getName());
+				  json.put(path + "__temperature", String.format("%.2f",  temp.getCelsius()));
+				  json.put(path + "__x", new Integer(sensor.x));
+				  json.put(path + "__y", new Integer(sensor.y));
+				  json.put(path + "__z", new Integer(sensor.z));				  
+				  
+			  } else if (thing instanceof ContactSensor) {
+				  ContactSensor contact = (ContactSensor) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", contact.getName());
+				  json.put(path + "__state_int", new Boolean(contact.getState()));
+				  json.put(path + "__x", new Integer(contact.x));
+				  json.put(path + "__y", new Integer(contact.y));
+				  json.put(path + "__z", new Integer(contact.z));				  
+				  
+			  } else if (thing instanceof Switch) {
+				  Switch swt = (Switch) thing;
+				  				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", swt.getName());
+				  json.put(path + "__state_int", new Integer(swt.getStateInt()));
+				  json.put(path + "__x", new Integer(swt.x));
+				  json.put(path + "__y", new Integer(swt.y));
+				  json.put(path + "__z", new Integer(swt.z));
+				  
+				//  System.out.println("\n\npath:" + path);
+				  
+			  } else {
+				  json.put(path + "__validity", new Boolean(false));
+			  }
+
+
+			  
+		  } catch (SiteException e) {
+			  e.printStackTrace();
+			  json.put(path + "__validity", new Boolean(false));
+		  }    	  
+    	  
+		  return json;
+      }  
+      
+      public String JSON_ThingToString (String path) {
+    	  return this.JSON_Thing(path).toString();
+      }
+      
+      public JSONObject JSON_ThingArray (Class<?> t) {
+    	  
+    	  JSONObject json = new JSONObject();	
+    	  
+    	  Set<String> paths;
+    	  try {
+    		  paths = this.getThingPaths(t);
+    		  json.put("Array_validity", new Boolean(true));
+    		  
+    	  } catch (SiteException e) {    		  
+    		  json.put("Array_validity", new Boolean(false));
+    		  e.printStackTrace();    		  
+    		  return json;
+    	  }				
+    	  
+    	  for (String path: paths) {
+    		  JSONObject jsonItem = JSON_Thing (path);
+    		  
+    		  if (jsonItem.length() > 0){    			  
+			      for(String key : JSONObject.getNames(jsonItem))
+			      {
+			    	  json.put(key, jsonItem.get(key));
+			      }
+    		 }	      		  
+    	  }
+    	  
+    	  return json; 
+      }           
+         
+      public String JSON_ThingArrayToString (Class<?> t) {
+    	  return this.JSON_ThingArray(t).toString();
       }
 }

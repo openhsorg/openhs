@@ -152,7 +152,45 @@ module KitchenInfoStation {
                           
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
+            
+            requestAnimationFrame(()=>this.paint());      
 
+        }
+        
+        public paint () {
+        
+            var benchmark: boolean = false;
+            
+            if (!benchmark) {   
+                if (this.currPage != null) {
+                    var retVal = this.currPage.paint();
+                }
+                
+            } else {
+                
+                 
+                /////**** Benchmark*****  
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Move registration point to the center of the canvas
+                this.ctx.translate(this.canvas.width/2, this.canvas.width/2);
+                
+                // Rotate 1 degree
+                this.ctx.rotate(Math.PI / 180);
+                
+                // Move registration point back to the top left corner of canvas
+                this.ctx.translate(-this.canvas.width/2, -this.canvas.width/2);
+                
+                this.ctx.fillStyle = "red";
+                this.ctx.fillRect(this.canvas.width/4, this.canvas.width/4, this.canvas.width/2, this.canvas.height/4);
+                this.ctx.fillStyle = "blue";
+                this.ctx.fillRect(this.canvas.width/4, this.canvas.width/2, this.canvas.width/2, this.canvas.height/4);
+                /////****************
+           }            
+      
+
+          requestAnimationFrame(()=>this.paint());            
+            
         }
         
         private MouseMoveHandler (event){
@@ -315,7 +353,7 @@ module KitchenInfoStation {
             return null;
         }        
         
-        protected paint () {
+        public paint () {
            this.ctx.save();
            this.ctx.fillStyle = whiteColor;
            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -366,9 +404,9 @@ module KitchenInfoStation {
 */
         public open (refresh: number) {
             this.close();
-            this.paint();            
-            this.timerPaint = setInterval(() => this.paint(), refresh);
-            this.timerPaintQuick = setInterval(() => this.paintQuick(), 10);
+        //    this.paint();            
+          //  this.timerPaint = setInterval(() => this.paint(), refresh);
+          //  this.timerPaintQuick = setInterval(() => this.paintQuick(), 10);
             
          //   this.timerPaintEvent(refresh);
         //    this.timerPaintEventQuick(80);
@@ -377,8 +415,8 @@ module KitchenInfoStation {
         }     
         
         public close () {           
-            clearInterval(this.timerPaint);
-            clearInterval(this.timerPaintQuick);
+        //    clearInterval(this.timerPaint);
+          //  clearInterval(this.timerPaintQuick);
         }
         
         public getServerData (url: string) {
@@ -511,11 +549,13 @@ module KitchenInfoStation {
             
         }
         
-        protected paint () {
+        public paint () {
             
            // window.alert("sss");
+            
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                                    
-            this.paintStaticImage();
+            //this.paintStaticImage();
             
             const ctx = this.ctx;
             
@@ -1155,7 +1195,7 @@ module KitchenInfoStation {
            return this.returnVal;
         }    
         
-        protected paint() {
+        public paint() {
             const ctx = this.ctx;
             
             //Draw image...       
@@ -1314,7 +1354,7 @@ module KitchenInfoStation {
                         img.size(0, 0, this.width, this.height);
                         this.m_imgRoom2Array.push(img);                        
                         this.m_imgRoom2 = img;
-                        window.alert('nnnnn');
+                      //  window.alert('nnnnn');
                     } else {
                         this.m_imgRoom2 = img;
                     }                                        
@@ -1578,7 +1618,7 @@ module KitchenInfoStation {
         
         protected m_graphics:               Graphics = null;       
         protected m_siteData:               SiteData = null;
-        protected m_arrayViewDoor:          Array<ViewDoor>; //View of m_doorArray
+        protected m_arrayViewDoor:          Array<ViewDoor> = new Array<ViewDoor>(); 
         protected m_iconBkgImage:           ImageRect = new ImageRect(imageBkg1);  ;        
         protected btnLock:                  ImageButton = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
         protected btnUnLock:                ImageButton = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);
@@ -1594,7 +1634,7 @@ module KitchenInfoStation {
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
             
-            this.m_arrayViewDoor = new Array<ViewDoor>();
+        //    this.m_arrayViewDoor = new Array<ViewDoor>();
             
             this.setup();                                  
             
@@ -1621,8 +1661,10 @@ module KitchenInfoStation {
                   
         }
         
-        protected paint() {
+        public paint() {
             const ctx = this.ctx;
+            
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             
             this.setup();
             

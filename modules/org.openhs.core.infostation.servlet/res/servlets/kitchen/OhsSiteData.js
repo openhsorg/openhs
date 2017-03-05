@@ -12,6 +12,10 @@ var OhsSiteData;
     var switchId = 'SwitchS';
     var contactSensorId = 'ContactSensor';
     var allDoorsId = 'AllDoors';
+    function sleep(ms) {
+        var unixtime_ms = new Date().getTime();
+        while (new Date().getTime() < unixtime_ms + ms) { }
+    }
     var SiteData = (function () {
         function SiteData() {
             //---Site data---
@@ -22,6 +26,7 @@ var OhsSiteData;
             this.m_doorArray = null;
             this.m_windowArray = null;
             this.m_contactSensorArray = null;
+            this.getCount = 0;
             //---Other data---
             this.timeString = "---";
             this.dateString = "---";
@@ -32,8 +37,9 @@ var OhsSiteData;
             this.m_doorArray = new Array();
             this.m_windowArray = new Array();
             this.m_contactSensorArray = new Array();
-            this.slowTimerGetDataEvent(1000);
-            this.fastTimerGetDataEvent(100);
+            //this.slowTimerGetDataEvent(1000);
+            this.getServerData();
+            this.fastTimerGetDataEvent(500);
         }
         SiteData.prototype.fastTimerGetDataEvent = function (step) {
             var _this = this;
@@ -42,31 +48,154 @@ var OhsSiteData;
             this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
         };
         SiteData.prototype.getFastData = function () {
-            for (var id in this.m_roomArray) {
-                this.m_roomArray[id].getServerData();
+            if (this.getCount == 0) {
+                this.getFastData_TemperatureSensorArray();
             }
-            for (var id in this.m_switchArray) {
-                this.m_switchArray[id].getServerData();
+            else if (this.getCount == 1) {
+                this.getFastData_ContactArray();
             }
-            for (var id in this.m_tempSensorArray) {
-                this.m_tempSensorArray[id].getServerData();
+            else if (this.getCount == 2) {
+                this.getFastData_SwitchArray();
             }
-            for (var id in this.m_doorArray) {
-                this.m_doorArray[id].getServerData();
+            else if (this.getCount == 3) {
+                this.getFastData_DoorArray();
             }
-            for (var id in this.m_windowArray) {
-                this.m_windowArray[id].getServerData();
+            else if (this.getCount == 4) {
+                this.getFastData_WindowArray();
             }
-            for (var id in this.m_contactSensorArray) {
-                this.m_contactSensorArray[id].getServerData();
+            else if (this.getCount == 5) {
+                this.getFastData_RoomArray();
+            }
+            if (this.getCount == 5) {
+                this.getCount = 0;
+            }
+            else {
+                this.getCount++;
             }
         };
-        SiteData.prototype.slowTimerGetDataEvent = function (step) {
-            var _this = this;
-            this.getServerData();
-            window.clearTimeout(this.slowTimerGetData);
-            this.slowTimerGetData = window.setTimeout(function () { return _this.slowTimerGetDataEvent(step); }, step);
+        SiteData.prototype.getFastData_TemperatureSensorArray = function () {
+            var req = {
+                orderId: "TempSensors"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_tempSensorArray) {
+                        this.m_tempSensorArray[id].parseServerData(data);
+                    }
+                }
+            }
         };
+        SiteData.prototype.getFastData_ContactArray = function () {
+            var req = {
+                orderId: "ContactSensors"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_contactSensorArray) {
+                        this.m_contactSensorArray[id].parseServerData(data);
+                    }
+                }
+            }
+        };
+        SiteData.prototype.getFastData_SwitchArray = function () {
+            var req = {
+                orderId: "SwitchSensors"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                var valid = JSON.parse(data['Array_validity']);
+                //   window.alert("SwitchSensors");
+                if (valid) {
+                    for (var id in this.m_switchArray) {
+                        this.m_switchArray[id].parseServerData(data);
+                    }
+                }
+            }
+        };
+        SiteData.prototype.getFastData_DoorArray = function () {
+            var req = {
+                orderId: "DoorArray"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_doorArray) {
+                        this.m_doorArray[id].parseServerData(data);
+                    }
+                }
+            }
+        };
+        SiteData.prototype.getFastData_WindowArray = function () {
+            var req = {
+                orderId: "WindowArray"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_windowArray) {
+                        this.m_windowArray[id].parseServerData(data);
+                    }
+                }
+            }
+        };
+        SiteData.prototype.getFastData_RoomArray = function () {
+            var req = {
+                orderId: "RoomArray"
+            };
+            var data = getAjax("kitchen", req);
+            //    window.alert("room....");  
+            if (data != null) {
+                //  window.alert("room....");
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_roomArray) {
+                        this.m_roomArray[id].parseServerData(data);
+                    }
+                }
+            }
+        };
+        /*
+        public getFastData2 () {
+            
+                var req: any = {
+                orderId : "FastData"
+//                path:   this.path
+            }
+            
+            var data: string = getAjax("kitchen", req);
+            
+            if (data != null) {
+                
+                // TempSensors
+                for (let id in this.m_tempSensorArray) {
+                    var path: string = this.m_tempSensorArray[id].getPath();
+                                                  
+                    this.m_tempSensorArray[id].temp = data[path + '_temperature'];
+                }
+                
+                // Switches
+                for (let id in this.m_switchArray) {
+                    var path: string = this.m_switchArray[id].getPath();
+                    
+                    this.m_switchArray[id].setState(parseInt(data[path + '_state']));
+                }
+                
+                // Contact Sensors
+                for (let id in this.m_contactSensorArray) {
+                    var path: string = this.m_contactSensorArray[id].getPath();
+                    
+                    this.m_contactSensorArray[id].setState(JSON.parse(data[path + '_state']));
+                }
+                                
+            }
+        }
+*/
         SiteData.prototype.setNumber = function (num, arg, types) {
             if (num > arg.length) {
                 for (var i = arg.length; i < num; i++) {
@@ -184,6 +313,7 @@ var OhsSiteData;
                 }
                 // Switches                                     
                 this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
+                // window.alert("ns: " + this.m_switchArray.length);
                 for (var id_3 in this.m_switchArray) {
                     this.m_switchArray[id_3].setPath(data['switchPath_' + id_3]);
                 }
@@ -255,11 +385,24 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+            /*
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
+                
                 if (this.valid) {
                     this.name = data['name'];
                     this.imageBkgPath = data['imgBkg'];
+                }
+            }
+            */
+        };
+        Room.prototype.parseServerData = function (data) {
+            if (data != null) {
+                this.valid = JSON.parse(data[this.path + '__validity']);
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.imageBkgPath = data[this.path + '__imagePath'];
                 }
             }
         };
@@ -280,12 +423,28 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+            /*
+              
+              if (data != null) {
+                  this.valid = JSON.parse(data['validity']);
+  
+                  if (this.valid) {
+                      this.x = parseInt(data['x_coordinate']);
+                      this.y = parseInt(data['y_coordinate']);
+                      this.temp = parseFloat(data['temp']);
+                  }
+              }
+              */
+        };
+        TemperatureSensor.prototype.parseServerData = function (data) {
             if (data != null) {
-                this.valid = JSON.parse(data['validity']);
+                this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.temp = parseFloat(data['temp']);
+                    this.x = parseInt(data[this.path + '__x']);
+                    this.y = parseInt(data[this.path + '__y']);
+                    //this.z = parseInt(data[this.path + '__z']);
+                    this.temp = parseFloat(data[this.path + '__temperature']);
                 }
             }
         };
@@ -300,6 +459,9 @@ var OhsSiteData;
             this.y = 0;
             this.stateInt = 0;
         }
+        Switch.prototype.setState = function (state) {
+            this.stateInt = state;
+        };
         Switch.prototype.getState = function () {
             return this.stateInt;
         };
@@ -333,12 +495,16 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax(servletUrl, req);
+            this.parseServerData(data);
+        };
+        Switch.prototype.parseServerData = function (data) {
             if (data != null) {
-                this.valid = JSON.parse(data['validity']);
+                this.valid = JSON.parse(data[this.path + '__validity']);
+                //window.alert("valid: " + this.path);
                 if (this.valid) {
-                    this.stateInt = parseInt(data['state_sw']);
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
+                    this.stateInt = parseInt(data[this.path + '__state_int']);
+                    this.x = parseInt(data[this.path + '__x']);
+                    this.y = parseInt(data[this.path + '__y']);
                 }
             }
         };
@@ -353,6 +519,9 @@ var OhsSiteData;
             this.y = 0;
             this.state = false;
         }
+        ContactSensor.prototype.setState = function (st) {
+            this.state = st;
+        };
         ContactSensor.prototype.getState = function () {
             return this.state;
         };
@@ -362,12 +531,15 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax(servletUrl, req);
+            this.parseServerData(data);
+        };
+        ContactSensor.prototype.parseServerData = function (data) {
             if (data != null) {
-                this.valid = JSON.parse(data['validity']);
+                this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
-                    this.state = JSON.parse(data['state']);
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
+                    this.state = JSON.parse(data[this.path + '__state_int']);
+                    this.x = parseInt(data[this.path + '__x']);
+                    this.y = parseInt(data[this.path + '__y']);
                 }
             }
         };
@@ -408,9 +580,12 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+            /*
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
-                if (this.valid) {
+                
+                if (this.valid){
                     this.name = data['name'];
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
@@ -418,6 +593,22 @@ var OhsSiteData;
                     this.locked = JSON.parse(data['lock']);
                     this.image_open = data['image_open'];
                     this.image_close = data['image_close'];
+                }
+            }
+            */
+        };
+        Door.prototype.parseServerData = function (data) {
+            if (data != null) {
+                this.valid = JSON.parse(data[this.path + '__validity']);
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.x = parseInt(data[this.path + '__x']);
+                    this.y = parseInt(data[this.path + '__y']);
+                    //this.z = parseInt(data[this.path + '__z']);
+                    this.open = JSON.parse(data[this.path + '__open']);
+                    this.locked = JSON.parse(data[this.path + '__open']);
+                    this.image_open = data[this.path + '__imagePath_open'];
+                    this.image_close = data[this.path + '__imagePath_close'];
                 }
             }
         };
@@ -458,9 +649,12 @@ var OhsSiteData;
                 path: this.path
             };
             var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+            /*
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
-                if (this.valid) {
+                
+                if (this.valid){
                     this.name = data['name'];
                     this.x = parseInt(data['x_coordinate']);
                     this.y = parseInt(data['y_coordinate']);
@@ -468,6 +662,22 @@ var OhsSiteData;
                     this.locked = JSON.parse(data['lock']);
                     this.image_open = data['image_open'];
                     this.image_close = data['image_close'];
+                }
+            }
+            */
+        };
+        Window.prototype.parseServerData = function (data) {
+            if (data != null) {
+                this.valid = JSON.parse(data[this.path + '__validity']);
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.x = parseInt(data[this.path + '__x']);
+                    this.y = parseInt(data[this.path + '__y']);
+                    //this.z = parseInt(data[this.path + '__z']);
+                    this.open = JSON.parse(data[this.path + '__open']);
+                    this.locked = JSON.parse(data[this.path + '__lock']);
+                    this.image_open = data[this.path + '__imagePath_open'];
+                    this.image_close = data[this.path + '__imagePath_close'];
                 }
             }
         };

@@ -83,6 +83,7 @@ var KitchenInfoStation;
     };
     var ApplicationKitchen = (function () {
         function ApplicationKitchen(canvas) {
+            var _this = this;
             this.url = "kitchen";
             // Data
             this.m_weatherData = new WeatherDataForecast(); // General weather
@@ -120,7 +121,32 @@ var KitchenInfoStation;
             this.canvas.addEventListener('mousemove', function (event) { self.MouseMoveHandler(event); }, false);
             //---Set current displayed page---
             this.openPage(this.m_screenMain, this.refreshRateMain);
+            requestAnimationFrame(function () { return _this.paint(); });
         }
+        ApplicationKitchen.prototype.paint = function () {
+            var _this = this;
+            var benchmark = false;
+            if (!benchmark) {
+                if (this.currPage != null) {
+                    var retVal = this.currPage.paint();
+                }
+            }
+            else {
+                /////**** Benchmark*****  
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                // Move registration point to the center of the canvas
+                this.ctx.translate(this.canvas.width / 2, this.canvas.width / 2);
+                // Rotate 1 degree
+                this.ctx.rotate(Math.PI / 180);
+                // Move registration point back to the top left corner of canvas
+                this.ctx.translate(-this.canvas.width / 2, -this.canvas.width / 2);
+                this.ctx.fillStyle = "red";
+                this.ctx.fillRect(this.canvas.width / 4, this.canvas.width / 4, this.canvas.width / 2, this.canvas.height / 4);
+                this.ctx.fillStyle = "blue";
+                this.ctx.fillRect(this.canvas.width / 4, this.canvas.width / 2, this.canvas.width / 2, this.canvas.height / 4);
+            }
+            requestAnimationFrame(function () { return _this.paint(); });
+        };
         ApplicationKitchen.prototype.MouseMoveHandler = function (event) {
             // var mousePos = getMousePos(this.canvas, event);                           
             /*
@@ -284,19 +310,18 @@ var KitchenInfoStation;
             }
     */
         Screen.prototype.open = function (refresh) {
-            var _this = this;
             this.close();
-            this.paint();
-            this.timerPaint = setInterval(function () { return _this.paint(); }, refresh);
-            this.timerPaintQuick = setInterval(function () { return _this.paintQuick(); }, 10);
+            //    this.paint();            
+            //  this.timerPaint = setInterval(() => this.paint(), refresh);
+            //  this.timerPaintQuick = setInterval(() => this.paintQuick(), 10);
             //   this.timerPaintEvent(refresh);
             //    this.timerPaintEventQuick(80);
             //setInterval(function(){ alert("Hello"); }, 3000);
             return this;
         };
         Screen.prototype.close = function () {
-            clearInterval(this.timerPaint);
-            clearInterval(this.timerPaintQuick);
+            //    clearInterval(this.timerPaint);
+            //  clearInterval(this.timerPaintQuick);
         };
         Screen.prototype.getServerData = function (url) {
         };
@@ -404,7 +429,8 @@ var KitchenInfoStation;
         };
         ScreenMain.prototype.paint = function () {
             // window.alert("sss");
-            this.paintStaticImage();
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            //this.paintStaticImage();
             var ctx = this.ctx;
             var arcCenterX = this.width / 2;
             var arcCenterY = this.height / 2 + (this.height * 0.1);
@@ -1002,7 +1028,6 @@ var KitchenInfoStation;
                         img.size(0, 0, this.width, this.height);
                         this.m_imgRoom2Array.push(img);
                         this.m_imgRoom2 = img;
-                        window.alert('nnnnn');
                     }
                     else {
                         this.m_imgRoom2 = img;
@@ -1200,6 +1225,7 @@ var KitchenInfoStation;
             _super.call(this, canvas);
             this.m_graphics = null;
             this.m_siteData = null;
+            this.m_arrayViewDoor = new Array();
             this.m_iconBkgImage = new ImageRect(imageBkg1);
             this.btnLock = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
             this.btnUnLock = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);
@@ -1208,7 +1234,7 @@ var KitchenInfoStation;
             this.clickedImage = null;
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
-            this.m_arrayViewDoor = new Array();
+            //    this.m_arrayViewDoor = new Array<ViewDoor>();
             this.setup();
             this.btnLock.size((this.width) * 0.48, this.height - 120, 60, 60);
             this.btnUnLock.size((this.width) * 0.56, this.height - 75, 60, 60);
@@ -1230,6 +1256,7 @@ var KitchenInfoStation;
         };
         ScreenDoorList.prototype.paint = function () {
             var ctx = this.ctx;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.setup();
             this.setGrid(3, 2);
             // Repaint background
