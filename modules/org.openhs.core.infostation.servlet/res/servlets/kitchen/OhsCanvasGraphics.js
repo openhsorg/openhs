@@ -269,21 +269,23 @@ var OhsCanvasGraphics;
                 ctx.restore();
             }
         };
-        ImageButton.prototype.closeEvent = function (ctx) {
-            this.push = false;
-            //    this.paint(ctx);
-        };
-        ImageButton.prototype.PushEvent = function (x, y, ctx) {
+        /*
+              private closeEvent(ctx: CanvasRenderingContext2D) {
+                  this.push = false;
+              //    this.paint(ctx);
+              }
+      */
+        ImageButton.prototype.PushEvent = function (x, y) {
             if (this.isClicked(x, y)) {
                 this.push = true;
                 return true;
             }
             return false;
         };
-        ImageButton.prototype.UpEvent = function (x, y, ctx) {
-            var _this = this;
+        ImageButton.prototype.UpEvent = function (x, y) {
             if (this.push) {
-                window.setTimeout(function () { return _this.closeEvent(ctx); }, 50);
+                //   window.setTimeout(() => this.closeEvent(ctx), 50);
+                this.push = false;
                 return true;
             }
             return false;

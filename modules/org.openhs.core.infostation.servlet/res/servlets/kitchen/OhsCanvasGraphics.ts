@@ -320,13 +320,13 @@ import Thing = OhsSiteData.Thing;
                 ctx.restore();  
             }            
         }
-        
+  /*      
         private closeEvent(ctx: CanvasRenderingContext2D) {
             this.push = false;
         //    this.paint(ctx);
         }
-
-        public PushEvent (x: number, y: number, ctx: CanvasRenderingContext2D) {
+*/
+        public PushEvent (x: number, y: number) {
         
             if (this.isClicked(x, y)) {
                 this.push = true;
@@ -337,12 +337,12 @@ import Thing = OhsSiteData.Thing;
             return false;
         }   
 
-        public UpEvent(x: number, y: number, ctx: CanvasRenderingContext2D) {
+        public UpEvent(x: number, y: number) {
             
             if (this.push) {          
             
-                window.setTimeout(() => this.closeEvent(ctx), 50);
-                
+             //   window.setTimeout(() => this.closeEvent(ctx), 50);
+                 this.push = false;
                 return true;
             }
             

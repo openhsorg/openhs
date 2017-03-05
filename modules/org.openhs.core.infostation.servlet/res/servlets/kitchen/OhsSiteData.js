@@ -497,6 +497,10 @@ var OhsSiteData;
             var data = getAjax(servletUrl, req);
             this.parseServerData(data);
         };
+        Switch.prototype.getServerDataDelayed = function (wait) {
+            var _this = this;
+            window.setTimeout(function () { return _this.getServerData(); }, wait);
+        };
         Switch.prototype.parseServerData = function (data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);

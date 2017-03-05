@@ -648,6 +648,12 @@ module OhsSiteData {
                                       
         }
         
+        public getServerDataDelayed (wait: number) {       
+             
+            window.setTimeout(() => this.getServerData(), wait);         
+                                      
+        }        
+        
         public parseServerData (data: any) {                   
             if (data != null) {
                  this.valid = JSON.parse(data[this.path + '__validity']);
