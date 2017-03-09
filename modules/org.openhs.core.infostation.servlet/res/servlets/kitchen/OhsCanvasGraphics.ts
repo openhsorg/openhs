@@ -587,12 +587,10 @@ import Thing = OhsSiteData.Thing;
     
     export class Mark extends Rect {
         
-        protected thing:                Thing = null;
-        
-        protected colorIncideReady:     string = '#a6a6a6';
-        protected colorBorderReady:     string = '#595959';
-        
-        protected imgError:             ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_error.png');
+        protected thing                 :Thing              = null;        
+        protected colorIncideReady      :string             = '#a6a6a6';
+        protected colorBorderReady      :string             = '#595959';        
+        protected imgError              :ImageRect          = new ImageRect ('/infores/servlets/kitchen/symbol_error.png');
 
         public size (x: number, y: number, w: number, h: number) {
             super.size(x, y, w, h);
@@ -653,12 +651,12 @@ import Thing = OhsSiteData.Thing;
             return door;
         }
         
-        public paintByThing (ctx: CanvasRenderingContext2D) {
+        public paintByThing (ctx: CanvasRenderingContext2D, dx: number, dy: number, xScale: number, yScale: number) {
             
             var door = this.getDoorThing();
                         
             if (door != null) {                                    
-                this.size(door.x, door.y, 60, 60);                                  
+                this.size((door.x * xScale) + dx - 30, (door.y * yScale) + dy - 30, 60, 60);                                       
             }
             
             this.paint(ctx);
@@ -742,12 +740,12 @@ import Thing = OhsSiteData.Thing;
             return wnd;
         }
         
-        public paintByThing (ctx: CanvasRenderingContext2D) {
+        public paintByThing (ctx: CanvasRenderingContext2D, dx: number, dy: number, xScale: number, yScale: number) {
             
             var wnd = this.getWindowThing();
                         
             if (wnd != null) {                                    
-                this.size(wnd.x, wnd.y, 60, 60);                                  
+                this.size((wnd.x * xScale) + dx - 30, (wnd.y * yScale) + dy - 30, 60, 60);                                   
             }
             
             this.paint(ctx);
@@ -824,12 +822,12 @@ import Thing = OhsSiteData.Thing;
             return tempSensor;
         }
         
-        public paintByThing (ctx: CanvasRenderingContext2D) {
+        public paintByThing (ctx: CanvasRenderingContext2D, dx: number, dy: number, xScale: number, yScale: number) {
             
             var tempSensor = this.getTemperatureSensorThing();
                         
-            if (tempSensor != null) {                                    
-                this.size(tempSensor.x, tempSensor.y, 60, 60);                                  
+            if (tempSensor != null) {                                                    
+                this.size((tempSensor.x * xScale) + dx - 30, (tempSensor.y * yScale) + dy - 30, 60, 60);                             
             }
             
             this.paint(ctx);
@@ -915,12 +913,12 @@ import Thing = OhsSiteData.Thing;
             return swtch;
         }
         
-        public paintByThing (ctx: CanvasRenderingContext2D) {
+        public paintByThing (ctx: CanvasRenderingContext2D, dx: number, dy: number, xScale: number, yScale: number) {
             
             var swtch = this.getSwitchThing();
                         
-            if (swtch != null) {                                    
-                this.size(swtch.x, swtch.y, 60, 60);                                  
+            if (swtch != null) {                                                    
+                this.size((swtch.x * xScale) + dx - 30, (swtch.y * yScale) + dy - 30, 60, 60);                                 
             }
             
             this.paint(ctx);
@@ -1130,12 +1128,12 @@ import Thing = OhsSiteData.Thing;
             return contact;
         }
         
-        public paintByThing (ctx: CanvasRenderingContext2D) {
+        public paintByThing (ctx: CanvasRenderingContext2D, dx: number, dy: number, xScale: number, yScale: number) {
             
             var contact = this.getContactSensorThing();
                         
-            if (contact != null) {                                    
-                this.size(contact.x, contact.y, 60, 60);                                  
+            if (contact != null) {                                                    
+                this.size((contact.x * xScale) + dx - 30, (contact.y * yScale) + dy - 30, 60, 60);                                               
             }
             
             this.paint(ctx);

@@ -1,14 +1,21 @@
+/**
+* @name		ContactSensor.java 03/01/2017
+* @author	Michal Valny
+* @version	1.0
+* @description 	Contact Sensor Data
+* 
+*/
+
 package org.openhs.core.commons;
 
 public class ContactSensor extends Thing {
 	
 	private Value m_state = new Value();
-	/*
-	 *Coordinates in house  
-	 */
-	public int x = 0;
-	public int y = 0;
-	public int z = 0;	
+	
+	//Coordinates in house 
+	public float x = 0.0f;
+	public float y = 0.0f;
+	public float z = 0.0f;
 	
 	public boolean getState ()
 	{

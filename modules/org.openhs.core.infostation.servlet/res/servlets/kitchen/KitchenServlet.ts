@@ -242,7 +242,7 @@ module KitchenInfoStation {
                 
               //  window.alert("floor");
                 
-                 // window.alert("path:   " + this.m_siteData.m_floorArray[0].getPath());
+                // window.alert("path:   " + this.m_siteData.m_floorArray[0].getPath() + " dx: " + this.m_siteData.m_floorArray[0].dim_x + " dy: " + this.m_siteData.m_floorArray[0].dim_y);
                 
             } else if (retVal.nextScreen == SwitchScreen.Main) {
                 screen = this.m_screenMain;     
@@ -609,8 +609,7 @@ module KitchenInfoStation {
             this.ButtonDoor.paint(ctx);    
             
             this.ButtonStopWatch.size((canvas.width / 2) + arcRadius + 20, arcCenterY - 40, 80, 80); 
-            this.ButtonStopWatch.paint(ctx);           
-            
+            this.ButtonStopWatch.paint(ctx);                       
         }
     }
        
@@ -687,61 +686,61 @@ module KitchenInfoStation {
         }    
         
         public paint(canvas: HTMLCanvasElement) {
-            
+                        
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
             var height: number = canvas.height;
             
-          if (this.getStatus()) { 
-            this.paintEffect (ctx, width / 2, (height / 2) + 50);           
-           }                                   
+            if (this.getStatus()) { 
+                this.paintEffect (ctx, width / 2, (height / 2) + 50);           
+            }                                   
                                     
-           ctx.save();
-           ctx.beginPath();
-           this.stopwatchRect.size((width / 2) - (300 / 2) + 0, (height / 2) - (150 / 2) + 70, 300, 120);
-           this.roundRect(ctx, this.stopwatchRect.x,this.stopwatchRect.y,this.stopwatchRect.w,this.stopwatchRect.h, 40); 
+            ctx.save();
+            ctx.beginPath();
+            this.stopwatchRect.size((width / 2) - (300 / 2) + 0, (height / 2) - (150 / 2) + 70, 300, 120);
+            this.roundRect(ctx, this.stopwatchRect.x,this.stopwatchRect.y,this.stopwatchRect.w,this.stopwatchRect.h, 40); 
         
-           ctx.fillStyle = "white";
-           ctx.fill();   
-           ctx.lineWidth = 1;
+            ctx.fillStyle = "white";
+            ctx.fill();   
+            ctx.lineWidth = 1;
             
-           if (this.getStatus()) { 
-            ctx.strokeStyle = "green";           
-           } else {
-            ctx.strokeStyle = "grey";            
-           }        
+            if (this.getStatus()) { 
+                ctx.strokeStyle = "green";           
+            } else {
+                ctx.strokeStyle = "grey";            
+            }        
             
-           ctx.stroke();
+            ctx.stroke();
     
-           ctx.font = 32 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-           ctx.textAlign = "left";
-           ctx.textBaseline = "middle";
+            ctx.font = 32 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
            
             
-           if (this.getStatus()) {
-            ctx.fillStyle = "green";            
-            ctx.fillText("running", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                     
-           } else {           
-            ctx.fillStyle = "grey";            
-            ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
-           }
+            if (this.getStatus()) {
+                ctx.fillStyle = "green";            
+                ctx.fillText("running", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                     
+            } else {           
+                ctx.fillStyle = "grey";            
+                ctx.fillText("stopped", this.stopwatchRect.x + 55, this.stopwatchRect.y + 30);                    
+            }
         
-           let dots: string = "..........................."; 
-           let str: string = dots.substring(0, this.dotCounter);        
+            let dots: string = "..........................."; 
+            let str: string = dots.substring(0, this.dotCounter);        
             
-           ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
+            ctx.fillText(str, this.stopwatchRect.x + 55, this.stopwatchRect.y + 43);
             
-           let text: string = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);                                        
+            let text: string = this.zeroPad(this.hrs, 2) + ":" + this.zeroPad(this.min, 2) + ":" + this.zeroPad(this.sec, 2);                                        
         
-           ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-           ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
+            ctx.font = 42 + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            ctx.fillText(text, this.stopwatchRect.x + 50, this.stopwatchRect.y + 80);
             
-           if (imgFingerprintLoaded) { 
-            ctx.save();
-            ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.w - 60, this.stopwatchRect.y + 10, 50, 50);
-            ctx.restore();        
-           }         
-                        
+            if (imgFingerprintLoaded) { 
+                ctx.save();
+                ctx.drawImage(imgFingerprint, this.stopwatchRect.x + this.stopwatchRect.w - 60, this.stopwatchRect.y + 10, 50, 50);
+                ctx.restore();        
+             }         
+                       
         }    
         
         private paintEffect (ctxi: CanvasRenderingContext2D, arcCenterX: number, arcCenterY: number) {
@@ -940,41 +939,30 @@ module KitchenInfoStation {
         
     class ScreenFloor extends Screen {
         
-        protected thingPath: string = "";
-        
-        //Graphics
- 
-        private imgFloor:HTMLImageElement = null;        
-        private imgFloorLoaded: boolean = false;
-        
-        //private numRooms: number = 0;
-        
-        private txtNumRooms:  TextSimple = new TextSimple ();
-        private timerData;
-        
-        //**********
-        public m_doorMarks:                 Array<DoorMark> = null;       // Doors marks
-        public m_windowMarks:               Array<WindowMark> = null;       // Window marks
-        public m_tempMarks:                 Array<TempMark> = null;       // Temp marks
-        public m_switchMarks:               Array<SwitchMark> = null;       // Switch marks
-        public m_contactSensorsMarks:       Array<ContactSensorMark> = null;       // Switch marks
+        protected thingPath:            string                      = "";
+        protected imgFloor2:           ImageRect2                   = new ImageRect2();
+        private imgFloor:               HTMLImageElement            = null;        
+        private imgFloorLoaded:         boolean                     = false;        
+        private txtNumRooms:            TextSimple                  = new TextSimple ();
+        public m_doorMarks:             Array<DoorMark>             = new Array<DoorMark>();                // Doors marks
+        public m_windowMarks:           Array<WindowMark>           = new Array<WindowMark>();              // Window marks
+        public m_tempMarks:             Array<TempMark>             = new Array<TempMark>();                // Temp marks
+        public m_switchMarks:           Array<SwitchMark>           = new Array<SwitchMark>();              // Switch marks
+        public m_contactSensorsMarks:   Array<ContactSensorMark>    = new Array<ContactSensorMark>();       // Switch marks
+        private perc:                   number                      = 0.8;                
         
         constructor (siteData:  SiteData, m_graphics: Graphics) {                
             super (siteData, m_graphics);
 
             this.imgFloor = new Image();
-            this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";            
+            this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";         
+            
+            this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
          
             this.txtNumRooms.size (0, 0, 250, 100);
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;       
-            
-            this.m_doorMarks = new Array<DoorMark>();
-            this.m_windowMarks = new Array<WindowMark>();
-            this.m_tempMarks = new Array<TempMark>();
-            this.m_switchMarks = new Array<SwitchMark>();
-            this.m_contactSensorsMarks = new Array<ContactSensorMark>();
         }  
         
         public setThing(thing: Thing){
@@ -986,7 +974,7 @@ module KitchenInfoStation {
             //update other data
             if (thing != oldThing) {
                 
-                if (thing instanceof Floor) {
+                if (thing instanceof Floor) {                    
                     
                     //Doors
                     var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getPath());
@@ -1094,40 +1082,71 @@ module KitchenInfoStation {
         }    
         
         public paint(canvas: HTMLCanvasElement) {
+            
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
             var height: number = canvas.height;
             
+            //Picture percentage
+            this.imgFloor2.size(0, 0, canvas.width, canvas.height);
+            this.imgFloor2.scaleSize(0.8);
+            
+            var scaleX: number = 0.0;
+            var scaleY: number = 0.0;
+            
+            var thing: Thing = this.getThing();
+                        
+            if ((thing != null)) {
+                
+                if (thing instanceof Floor) {
+                    
+                    var floor: Floor = <Floor> thing;
+                                    
+                    if (floor.dim_x != 0) {
+                        scaleX = this.imgFloor2.w / (floor.dim_x); 
+                    }
+                    
+                    if (floor.dim_y != 0) {
+                        scaleY = this.imgFloor2.h / (floor.dim_y); 
+                    }                               
+                }
+            }                    
+            
             ctx.clearRect(0, 0, width, height);
             
-            //Draw image...       
-            ctx.save();
+            //Draw image...
+            this.imgFloor2.paint(ctx);
+            /*       
+            ctx.save();            
             ctx.drawImage(this.imgFloor, 0, 0, width, height);
             ctx.restore();        
-  
+  */
+           //    window.alert("" + scaleX + "" + scaleY + " marks:" +  this.m_doorMarks.length);
+            
             //Doors...            
             for (let id in this.m_doorMarks) {
-                this.m_doorMarks[id].paintByThing(ctx);
+                 //  window.alert("" + scaleX + " " + scaleY);
+                this.m_doorMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             
             //Windows...            
             for (let id in this.m_windowMarks) {
-                this.m_windowMarks[id].paintByThing(ctx);
+                this.m_windowMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }            
             
             //Temperature sensors
             for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx);
+                this.m_tempMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             
             //m_switchArray
             for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx);
+                this.m_switchMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }   
             
             //Contact sensors
             for (let id in this.m_contactSensorsMarks) {
-                this.m_contactSensorsMarks[id].paintByThing(ctx);
+                this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }                                 
         }                             
     }    
@@ -1269,17 +1288,17 @@ module KitchenInfoStation {
             */
             //New door marks....
             for (let id in this.m_doorMarks) {
-                this.m_doorMarks[id].paintByThing(ctx);
+                this.m_doorMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }
             
             //New temp marks....
             for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx);
+                this.m_tempMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }      
             
             //New switch marks....
             for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx);
+                this.m_switchMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }               
         }             
     } 

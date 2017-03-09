@@ -66,7 +66,10 @@ var OhsSiteData;
             else if (this.getCount == 5) {
                 this.getFastData_RoomArray();
             }
-            if (this.getCount == 5) {
+            else if (this.getCount == 6) {
+                this.getFastData_FloorArray();
+            }
+            if (this.getCount == 6) {
                 this.getCount = 0;
             }
             else {
@@ -149,9 +152,7 @@ var OhsSiteData;
                 orderId: "RoomArray"
             };
             var data = getAjax("kitchen", req);
-            //    window.alert("room....");  
             if (data != null) {
-                //  window.alert("room....");
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
                     for (var id in this.m_roomArray) {
@@ -160,42 +161,20 @@ var OhsSiteData;
                 }
             }
         };
-        /*
-        public getFastData2 () {
-            
-                var req: any = {
-                orderId : "FastData"
-//                path:   this.path
-            }
-            
-            var data: string = getAjax("kitchen", req);
-            
+        SiteData.prototype.getFastData_FloorArray = function () {
+            var req = {
+                orderId: "FloorArray"
+            };
+            var data = getAjax("kitchen", req);
             if (data != null) {
-                
-                // TempSensors
-                for (let id in this.m_tempSensorArray) {
-                    var path: string = this.m_tempSensorArray[id].getPath();
-                                                  
-                    this.m_tempSensorArray[id].temp = data[path + '_temperature'];
+                var valid = JSON.parse(data['Array_validity']);
+                if (valid) {
+                    for (var id in this.m_floorArray) {
+                        this.m_floorArray[id].parseServerData(data);
+                    }
                 }
-                
-                // Switches
-                for (let id in this.m_switchArray) {
-                    var path: string = this.m_switchArray[id].getPath();
-                    
-                    this.m_switchArray[id].setState(parseInt(data[path + '_state']));
-                }
-                
-                // Contact Sensors
-                for (let id in this.m_contactSensorArray) {
-                    var path: string = this.m_contactSensorArray[id].getPath();
-                    
-                    this.m_contactSensorArray[id].setState(JSON.parse(data[path + '_state']));
-                }
-                                
             }
-        }
-*/
+        };
         SiteData.prototype.setNumber = function (num, arg, types) {
             if (num > arg.length) {
                 for (var i = arg.length; i < num; i++) {
@@ -373,8 +352,30 @@ var OhsSiteData;
         __extends(Floor, _super);
         function Floor() {
             _super.apply(this, arguments);
-            this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
+            this.imagePath = "/infores/servlets/kitchen/room_default.png";
+            this.name = 'no name';
+            this.dim_x = 0;
+            this.dim_y = 0;
         }
+        Floor.prototype.getServerData = function () {
+            var req = {
+                orderId: "TempSensor",
+                path: this.path
+            };
+            var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+        };
+        Floor.prototype.parseServerData = function (data) {
+            if (data != null) {
+                this.valid = JSON.parse(data[this.path + '__validity']);
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.imagePath = data[this.path + '__imagePath'];
+                    this.dim_x = parseFloat(data[this.path + '__dim_x']);
+                    this.dim_y = parseFloat(data[this.path + '__dim_y']);
+                }
+            }
+        };
         return Floor;
     }(Thing));
     OhsSiteData.Floor = Floor;
@@ -392,16 +393,6 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-            /*
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid) {
-                    this.name = data['name'];
-                    this.imageBkgPath = data['imgBkg'];
-                }
-            }
-            */
         };
         Room.prototype.parseServerData = function (data) {
             if (data != null) {
@@ -430,25 +421,13 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-            /*
-              
-              if (data != null) {
-                  this.valid = JSON.parse(data['validity']);
-  
-                  if (this.valid) {
-                      this.x = parseInt(data['x_coordinate']);
-                      this.y = parseInt(data['y_coordinate']);
-                      this.temp = parseFloat(data['temp']);
-                  }
-              }
-              */
         };
         TemperatureSensor.prototype.parseServerData = function (data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                     //this.z = parseInt(data[this.path + '__z']);
                     this.temp = parseFloat(data[this.path + '__temperature']);
                 }
@@ -509,8 +488,8 @@ var OhsSiteData;
                 //window.alert("valid: " + this.path);
                 if (this.valid) {
                     this.stateInt = parseInt(data[this.path + '__state_int']);
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                 }
             }
         };
@@ -544,8 +523,8 @@ var OhsSiteData;
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
                     this.state = JSON.parse(data[this.path + '__state_int']);
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                 }
             }
         };
@@ -608,9 +587,9 @@ var OhsSiteData;
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
                     this.name = data[this.path + '__name'];
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
-                    //this.z = parseInt(data[this.path + '__z']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
                     this.locked = JSON.parse(data[this.path + '__lock']);
                     this.image_open = data[this.path + '__imagePath_open'];
@@ -677,9 +656,9 @@ var OhsSiteData;
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
                     this.name = data[this.path + '__name'];
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
-                    //this.z = parseInt(data[this.path + '__z']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
                     this.locked = JSON.parse(data[this.path + '__lock']);
                     this.image_open = data[this.path + '__imagePath_open'];

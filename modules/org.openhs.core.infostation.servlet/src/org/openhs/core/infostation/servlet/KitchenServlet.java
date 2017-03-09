@@ -78,8 +78,10 @@ public class KitchenServlet extends HttpServlet {
 	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Window.class);	    				    			
 	    		
 	    		} else if (value.toString().contains("RoomArray")){ 	
-	    		//	System.out.println("\n\nROOM.....");	
 	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Room.class);	    				    			
+	    		
+	    		} else if (value.toString().contains("FloorArray")){ 	
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Floor.class);	    				    			
 	    		
 	    		}  else if (value.toString().contains("WeatherCurrent")) {	
 	    			JSONObject json = getCurWeatherToJSON();

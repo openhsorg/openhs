@@ -538,10 +538,10 @@ var OhsCanvasGraphics;
             }
             return door;
         };
-        DoorMark.prototype.paintByThing = function (ctx) {
+        DoorMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var door = this.getDoorThing();
             if (door != null) {
-                this.size(door.x, door.y, 60, 60);
+                this.size((door.x * xScale) + dx - 30, (door.y * yScale) + dy - 30, 60, 60);
             }
             this.paint(ctx);
         };
@@ -608,10 +608,10 @@ var OhsCanvasGraphics;
             }
             return wnd;
         };
-        WindowMark.prototype.paintByThing = function (ctx) {
+        WindowMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var wnd = this.getWindowThing();
             if (wnd != null) {
-                this.size(wnd.x, wnd.y, 60, 60);
+                this.size((wnd.x * xScale) + dx - 30, (wnd.y * yScale) + dy - 30, 60, 60);
             }
             this.paint(ctx);
         };
@@ -674,10 +674,10 @@ var OhsCanvasGraphics;
             }
             return tempSensor;
         };
-        TempMark.prototype.paintByThing = function (ctx) {
+        TempMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var tempSensor = this.getTemperatureSensorThing();
             if (tempSensor != null) {
-                this.size(tempSensor.x, tempSensor.y, 60, 60);
+                this.size((tempSensor.x * xScale) + dx - 30, (tempSensor.y * yScale) + dy - 30, 60, 60);
             }
             this.paint(ctx);
         };
@@ -747,10 +747,10 @@ var OhsCanvasGraphics;
             }
             return swtch;
         };
-        SwitchMark.prototype.paintByThing = function (ctx) {
+        SwitchMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var swtch = this.getSwitchThing();
             if (swtch != null) {
-                this.size(swtch.x, swtch.y, 60, 60);
+                this.size((swtch.x * xScale) + dx - 30, (swtch.y * yScale) + dy - 30, 60, 60);
             }
             this.paint(ctx);
         };
@@ -924,10 +924,10 @@ var OhsCanvasGraphics;
             }
             return contact;
         };
-        ContactSensorMark.prototype.paintByThing = function (ctx) {
+        ContactSensorMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var contact = this.getContactSensorThing();
             if (contact != null) {
-                this.size(contact.x, contact.y, 60, 60);
+                this.size((contact.x * xScale) + dx - 30, (contact.y * yScale) + dy - 30, 60, 60);
             }
             this.paint(ctx);
         };

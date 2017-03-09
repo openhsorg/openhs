@@ -74,10 +74,12 @@ public class MySiteServiceImpl implements ISiteService {
 		try {
 			Floor floor = new Floor();
 			floor.setName("My first floor");
+			floor.setDimensions(22.450f, 13.700f);
 			addThing("floors/Floor1", floor);
 			
 			floor = new Floor();
 			floor.setName("My second floor");
+			floor.setDimensions(22.450f, 13.700f);
 			addThing("floors/Floor2", floor);
 
 			Room room = new Room();
@@ -105,193 +107,200 @@ public class MySiteServiceImpl implements ISiteService {
 			 */
 			Door door = new Door();
 			door.setName("Main Entrance");
-			door.x = 320;
-			door.y = 0;
-			door.z = 0;
+			door.x = 11.00f;
+			door.y = 0.0f;
+			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door1_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door1_close.JPG";
 			addThing("floors/Floor1/doors/Door1", door);			
 			
 			door = new Door();
 			door.setName("Back Entrance");
-			door.x = 150;
-			door.y = 220;
-			door.z = 0;
+			door.x = 5.00f;
+			door.y = 9.0f;
+			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/doors/Door2", door);	
 			
 			door = new Door();
 			door.setName("Back Garage");
-			door.x = 100;
-			door.y = 330;
-			door.z = 0;
+			door.x = 3.50f;
+			door.y = 12.50f;
+			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door3_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door3_close.JPG";
 			addThing("floors/Floor1/doors/Door3", door);	
 			
 			door = new Door();
 			door.setName("Cellar");
-			door.x = 100;
-			door.y = 250;
-			door.z = 0;
+			door.x = 3.50f;
+			door.y = 10.00f;
+			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door4_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door4_close.JPG";
 			addThing("floors/Floor1/doors/Door4", door);	
 			
 			door = new Door();
 			door.setName("To Garage");
-			door.x = 100;
-			door.y = 150;
-			door.z = 0;
+			door.x = 3.50f;
+			door.y = 6.50f;
+			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door5_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door5_close.JPG";
 			addThing("floors/Floor1/doors/Door5", door);			
 			
 			/*
 			 * *****************************************************************
-			 */
-			
+			 */			
 			
 			TemperatureSensor sensor = new TemperatureSensor();
 			sensor.setName("LivingTemp");
-			sensor.x = 300;
-			sensor.y = 150;
-			sensor.z = 0;				
+			sensor.x = 7.00f;
+			sensor.y = 5.0f;
+			sensor.z = 0.0f;			
 			addThing("floors/Floor1/rooms/Room1/sensors/Livin_Room", "DummyService/dummy/0/Thermometer", sensor);
 						
 			sensor = new TemperatureSensor();
 			sensor.setName("Outside");
-			sensor.x = 300;
-			sensor.y = 300;
-			sensor.z = 0;				
+			sensor.x = 7.00f;
+			sensor.y = 13.0f;
+			sensor.z = 0.0f;			
 			addThing("floors/Floor1/rooms/Room0/sensors/SensorOut", "DummyService/dummy/1/Thermometer", sensor);
 			
 			Switch sw = new Switch();
 			sw.setName("Kitchen_Switch");
-			sw.x = 220;
-			sw.y = 150;
-			sw.z = 0;								
+			sw.x = 10.00f;
+			sw.y = 8.0f;
+			sw.z = 0.0f;							
 			addThing("floors/Floor1/rooms/Room1/sensors/Kitchen_Switch", "DummyService/dummy/0/Switch", sw);
 			
 			sw = new Switch();
 			sw.setName("Bathroom Switch");
-			sw.x = 420;
-			sw.y = 150;
-			sw.z = 0;								
+			sw.x = 15.00f;
+			sw.y = 8.0f;
+			sw.z = 0.0f;							
 			addThing("floors/Floor1/rooms/Room2/sensors/Kid1_Switch", "DummyService/dummy/1/Switch", sw);		
 			
 			sw = new Switch();
 			sw.setName("WC Switch");
-			sw.x = 500;
-			sw.y = 150;
-			sw.z = 0;								
+			sw.x = 20.00f;
+			sw.y = 8.0f;
+			sw.z = 0.0f;							
 			addThing("floors/Floor1/rooms/Room2/sensors/Kid2_Switch", "DummyService/dummy/4/Switch", sw);		
 						
 			//Doors sensors
 			sw = new Switch();
 			sw.setName("Main Door Lock");
-			sw.x = 100;
-			sw.y = 30;
-			sw.z = 0;								
+			sw.x = 25.00f;
+			sw.y = 8.0f;
+			sw.z = 0.0f;							
 			addThing("floors/Floor1/doors/Door1/sensors/Lock", "DummyService/dummy/2/Switch", sw);				
 
 			sw = new Switch();
 			sw.setName("Side Door Lock");
-			sw.x = 150;
-			sw.y = 80;
-			sw.z = 0;								
+			sw.x = 10.00f;
+			sw.y = 12.0f;
+			sw.z = 0.0f;							
 			addThing("floors/Floor1/doors/Door2/sensors/Lock", "DummyService/dummy/3/Switch", sw);	
 			
 			ContactSensor contact = new ContactSensor();
 			contact.setName("MainDoor Closed");
-			contact.x = 10;
-			contact.y = 30;
-			contact.z = 0;								
+			contact.x = 15.00f;
+			contact.y = 5.0f;
+			contact.z = 0.0f;							
 			addThing("floors/Floor1/doors/Door1/sensors/Contact", "DummyService/dummy/2/ContactSensor", contact);		
 			
 			contact = new ContactSensor();
 			contact.setName("SideDoor Closed");
-			contact.x = 60;
-			contact.y = 80;
-			contact.z = 0;								
+			contact.x = 15.00f;
+			contact.y = 10.0f;
+			contact.z = 0.0f;								
 			addThing("floors/Floor1/doors/Door2/sensors/Contact", "DummyService/dummy/3/ContactSensor", contact);				
 			
 			/*
 			 * Windows
 			 */
 			Window window = new Window();
-			window.setName("Main1");
-			window.x = 250;
-			window.y = 220;
-			window.z = 0;
+			window.setName("Kitchen");
+			window.x = 8.50f;
+			window.y = 10.00f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/South Window1", window);
 			
 			window = new Window();
-			window.setName("Main2");
-			window.x = 330;
-			window.y = 220;
-			window.z = 0;
+			window.setName("Living room");
+			window.x = 12.50f;
+			window.y = 10.00f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/South Window2", window);			
 			
 			window = new Window();
 			window.setName("Kid1");
-			window.x = 420;
-			window.y = 220;
-			window.z = 0;
+			window.x = 16.00f;
+			window.y = 10.00f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/Kid1", window);			
 			
 			window = new Window();
 			window.setName("Kid2");
-			window.x = 520;
-			window.y = 220;
-			window.z = 0;
+			window.x = 20.00f;
+			window.y = 10.00f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/Kid2", window);				
 			
 			window = new Window();
-			window.setName("Work");
-			window.x = 200;
-			window.y = 30;
-			window.z = 0;
+			window.setName("Sleeping Room");
+			window.x = 22.450f;
+			window.y = 2.50f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
-			addThing("floors/Floor1/rooms/Room1/windows/Work1", window);				
+			addThing("floors/Floor1/rooms/Room1/windows/Sleeping_Room", window);				
 			
 			window = new Window();
 			window.setName("Bathroom");
-			window.x = 440;
-			window.y = 0;
-			window.z = 0;
+			window.x = 17.00f;
+			window.y = 0.00f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
 			addThing("floors/Floor1/rooms/Room1/windows/Bathroom", window);				
 						
 			window = new Window();
-			window.setName("Sleeping room");
-			window.x = 550;
-			window.y = 20;
-			window.z = 0;
+			window.setName("Work room");
+			window.x = 6.50f;
+			window.y = 1.50f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
-			addThing("floors/Floor1/rooms/Room1/windows/Sleeping_room", window);				
+			addThing("floors/Floor1/rooms/Room1/windows/Work_room", window);				
 			
 			window = new Window();
-			window.setName("Garden room");
-			window.x = 20;
-			window.y = 350;
-			window.z = 0;
+			window.setName("Garden room1");
+			window.x = 1.00f;
+			window.y = 13.70f;
+			window.z = 0.0f;
 			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
 			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
-			addThing("floors/Floor1/rooms/Room1/windows/Garden_room", window);				
-						
+			addThing("floors/Floor1/rooms/Room1/windows/Garden_room1", window);				
+			
+			window = new Window();
+			window.setName("Garden room2");
+			window.x = 2.50f;
+			window.y = 13.70f;
+			window.z = 0.0f;
+			window.imagePath_open = "/infores/servlets/kitchen/door2_open.JPG";
+			window.imagePath_close = "/infores/servlets/kitchen/door2_close.JPG";
+			addThing("floors/Floor1/rooms/Room1/windows/Garden_room2", window);							
 			
 			contact = new ContactSensor();
 			contact.setName("South Window Closed");
@@ -325,8 +334,9 @@ public class MySiteServiceImpl implements ISiteService {
 	public boolean addThing (String sitePath, Thing thing){
 		
 		if (ss.things.get(sitePath) == null) {
+			thing.setSitePath(sitePath);
 			ss.things.put(sitePath,  thing);
-
+						
 			return true;
 		}
 
@@ -495,9 +505,9 @@ public class MySiteServiceImpl implements ISiteService {
 		Set<String> keySetAll = ss.things.keySet();
 		
 		for (String item : keySetAll) {
-			
+			//System.out.println("Parent path:" + parentPath + " ;Item: " + item);
 			if (item.contains(parentPath) && !item.equals(parentPath)){
-			
+				  //System.out.println("Parent path:" + parentPath + " ;Item: " + item);
 				Thing thing = (Thing) getThing(item);													
 				
 				if (t.isInstance(thing)) {
@@ -561,6 +571,7 @@ public class MySiteServiceImpl implements ISiteService {
 			
 			// All state must be true...
 			for (String item : switchPath){
+				  System.out.println("path: " + item);
 				Switch sw = (Switch) getThing(item);
 				
 				if (sw.getState()) {
@@ -632,17 +643,17 @@ public class MySiteServiceImpl implements ISiteService {
 
 					// X-coord
 					Attr xCoord = doc.createAttribute("xCoord");
-					xCoord.setValue(String.format("%d", ((TemperatureSensor) thing).x));					
+					xCoord.setValue(String.format("%.3f", ((TemperatureSensor) thing).x));					
 					position.setAttributeNode(xCoord);	
 					
 					// Y-coord
 					Attr yCoord = doc.createAttribute("yCoord");
-					yCoord.setValue(String.format("%d", ((TemperatureSensor) thing).y));					
+					yCoord.setValue(String.format("%.3f", ((TemperatureSensor) thing).y));					
 					position.setAttributeNode(yCoord);	
 					
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
-					zCoord.setValue(String.format("%d", ((TemperatureSensor) thing).z));					
+					zCoord.setValue(String.format("%.3f", ((TemperatureSensor) thing).z));					
 					position.setAttributeNode(zCoord);
 					
 					
@@ -659,17 +670,17 @@ public class MySiteServiceImpl implements ISiteService {
 
 					// X-coord
 					Attr xCoord = doc.createAttribute("xCoord");
-					xCoord.setValue(String.format("%d", ((Switch) thing).x));					
+					xCoord.setValue(String.format("%.3f", ((Switch) thing).x));					
 					position.setAttributeNode(xCoord);	
 					
 					// Y-coord
 					Attr yCoord = doc.createAttribute("yCoord");
-					yCoord.setValue(String.format("%d", ((Switch) thing).y));					
+					yCoord.setValue(String.format("%.3f", ((Switch) thing).y));					
 					position.setAttributeNode(yCoord);	
 					
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
-					zCoord.setValue(String.format("%d", ((Switch) thing).z));					
+					zCoord.setValue(String.format("%.3f", ((Switch) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
 				} else if (thing instanceof ContactSensor) {
@@ -685,17 +696,17 @@ public class MySiteServiceImpl implements ISiteService {
 
 					// X-coord
 					Attr xCoord = doc.createAttribute("xCoord");
-					xCoord.setValue(String.format("%d", ((ContactSensor) thing).x));					
+					xCoord.setValue(String.format("%.3f", ((ContactSensor) thing).x));					
 					position.setAttributeNode(xCoord);	
 					
 					// Y-coord
 					Attr yCoord = doc.createAttribute("yCoord");
-					yCoord.setValue(String.format("%d", ((ContactSensor) thing).y));					
+					yCoord.setValue(String.format("%.3f", ((ContactSensor) thing).y));					
 					position.setAttributeNode(yCoord);	
 					
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
-					zCoord.setValue(String.format("%d", ((ContactSensor) thing).z));					
+					zCoord.setValue(String.format("%.3f", ((ContactSensor) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
 				}else if (thing instanceof Floor) {
@@ -707,6 +718,20 @@ public class MySiteServiceImpl implements ISiteService {
 					Attr imageBkg = doc.createAttribute("imageBkg");
 					imageBkg.setValue(((Floor) thing).imagePath);
 					images.setAttributeNode(imageBkg);	
+					
+					//Dimensions
+					Element dimensions = doc.createElement("dimensions");
+					element.appendChild(dimensions);
+
+					// dim X
+					Attr dim_x = doc.createAttribute("dim_x");
+					dim_x.setValue(String.format("%.3f", ((Floor) thing).dim_x));					
+					dimensions.setAttributeNode(dim_x);	
+					
+					// dim Y
+					Attr dim_y = doc.createAttribute("dim_y");
+					dim_y.setValue(String.format("%.3f", ((Floor) thing).dim_y));					
+					dimensions.setAttributeNode(dim_y);						
 					
 				} else if (thing instanceof Room) {
 					
@@ -739,17 +764,17 @@ public class MySiteServiceImpl implements ISiteService {
 
 					// X-coord
 					Attr xCoord = doc.createAttribute("xCoord");
-					xCoord.setValue(String.format("%d", ((Door) thing).x));					
+					xCoord.setValue(String.format("%.3f", ((Door) thing).x));					
 					position.setAttributeNode(xCoord);	
 					
 					// Y-coord
 					Attr yCoord = doc.createAttribute("yCoord");
-					yCoord.setValue(String.format("%d", ((Door) thing).y));					
+					yCoord.setValue(String.format("%.3f", ((Door) thing).y));					
 					position.setAttributeNode(yCoord);	
 					
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
-					zCoord.setValue(String.format("%d", ((Door) thing).z));					
+					zCoord.setValue(String.format("%.3f", ((Door) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
 				} else if (thing instanceof Window) {
@@ -773,17 +798,17 @@ public class MySiteServiceImpl implements ISiteService {
 
 					// X-coord
 					Attr xCoord = doc.createAttribute("xCoord");
-					xCoord.setValue(String.format("%d", ((Window) thing).x));					
+					xCoord.setValue(String.format("%.3f", ((Window) thing).x));					
 					position.setAttributeNode(xCoord);	
 					
 					// Y-coord
 					Attr yCoord = doc.createAttribute("yCoord");
-					yCoord.setValue(String.format("%d", ((Window) thing).y));					
+					yCoord.setValue(String.format("%.3f", ((Window) thing).y));					
 					position.setAttributeNode(yCoord);	
 					
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
-					zCoord.setValue(String.format("%d", ((Window) thing).z));					
+					zCoord.setValue(String.format("%.3f", ((Window) thing).z));					
 					position.setAttributeNode(zCoord);					
 					
 				}
@@ -855,11 +880,11 @@ public class MySiteServiceImpl implements ISiteService {
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
 							
 							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
-								int x = 0, y = 0, z = 0;
+								float x = 0.0f, y = 0.0f, z = 0.0f;
 								try {
-									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
-									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
-									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									x = Float.parseFloat(((Element) positionNode).getAttribute("xCoord"));
+									y = Float.parseFloat(((Element) positionNode).getAttribute("yCoord"));
+									z = Float.parseFloat(((Element) positionNode).getAttribute("zCoord"));
 									
 									((TemperatureSensor) obj).x = x;
 									((TemperatureSensor) obj).y = y;
@@ -879,11 +904,11 @@ public class MySiteServiceImpl implements ISiteService {
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
 							
 							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
-								int x = 0, y = 0, z = 0;
+								float x = 0.0f, y = 0.0f, z = 0.0f;
 								try {
-									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
-									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
-									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									x = Float.parseFloat(((Element) positionNode).getAttribute("xCoord"));
+									y = Float.parseFloat(((Element) positionNode).getAttribute("yCoord"));
+									z = Float.parseFloat(((Element) positionNode).getAttribute("zCoord"));
 									
 									((ContactSensor) obj).x = x;
 									((ContactSensor) obj).y = y;
@@ -902,11 +927,11 @@ public class MySiteServiceImpl implements ISiteService {
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
 							
 							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
-								int x = 0, y = 0, z = 0;
+								float x = 0.0f, y = 0.0f, z = 0.0f;
 								try {
-									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
-									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
-									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									x = Float.parseFloat(((Element) positionNode).getAttribute("xCoord"));
+									y = Float.parseFloat(((Element) positionNode).getAttribute("yCoord"));
+									z = Float.parseFloat(((Element) positionNode).getAttribute("zCoord"));
 									
 									((Switch) obj).x = x;
 									((Switch) obj).y = y;
@@ -921,8 +946,25 @@ public class MySiteServiceImpl implements ISiteService {
 							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
 							
 							if(imagesNode != null && imagesNode.getNodeType() == Node.ELEMENT_NODE) {								
-								((Floor) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");
+								((Floor) obj).imagePath = ((Element) imagesNode).getAttribute("imageBkg");															
 							}
+							
+							//Element position
+							Node dimensionsNode = elementSitePath.getElementsByTagName("dimensions").item(0);
+							
+							if(dimensionsNode != null && dimensionsNode.getNodeType() == Node.ELEMENT_NODE) {
+								float dim_x = 0, dim_y = 0;
+								try {
+									dim_x = Float.parseFloat(((Element) dimensionsNode).getAttribute("dim_x"));
+									dim_y = Float.parseFloat(((Element) dimensionsNode).getAttribute("dim_y"));
+									
+									((Floor) obj).dim_x = dim_x;
+									((Floor) obj).dim_y = dim_y;
+									
+								} catch (Exception ex) {
+								
+								} 
+							}								
 							
 						} else if (obj instanceof Room) {
 							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
@@ -946,11 +988,11 @@ public class MySiteServiceImpl implements ISiteService {
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
 							
 							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
-								int x = 0, y = 0, z = 0;
+								float x = 0.0f, y = 0.0f, z = 0.0f;
 								try {
-									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
-									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
-									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									x = Float.parseFloat(((Element) positionNode).getAttribute("xCoord"));
+									y = Float.parseFloat(((Element) positionNode).getAttribute("yCoord"));
+									z = Float.parseFloat(((Element) positionNode).getAttribute("zCoord"));
 									
 									((Door) obj).x = x;
 									((Door) obj).y = y;
@@ -975,11 +1017,11 @@ public class MySiteServiceImpl implements ISiteService {
 							Node positionNode = elementSitePath.getElementsByTagName("position").item(0);
 							
 							if(positionNode != null && positionNode.getNodeType() == Node.ELEMENT_NODE) {
-								int x = 0, y = 0, z = 0;
+								float x = 0.0f, y = 0.0f, z = 0.0f;
 								try {
-									x = Integer.parseInt(((Element) positionNode).getAttribute("xCoord"));
-									y = Integer.parseInt(((Element) positionNode).getAttribute("yCoord"));
-									z = Integer.parseInt(((Element) positionNode).getAttribute("zCoord"));
+									x = Float.parseFloat(((Element) positionNode).getAttribute("xCoord"));
+									y = Float.parseFloat(((Element) positionNode).getAttribute("yCoord"));
+									z = Float.parseFloat(((Element) positionNode).getAttribute("zCoord"));
 									
 									((Window) obj).x = x;
 									((Window) obj).y = y;

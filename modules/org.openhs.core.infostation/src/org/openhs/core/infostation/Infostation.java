@@ -289,6 +289,8 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__validity", new Boolean(true));
 				  json.put(path + "__name", floor.getName());
 				  json.put(path + "__imagePath", floor.imagePath);
+				  json.put(path + "__dim_x", String.format("%.3f",  floor.dim_x));
+				  json.put(path + "__dim_y", String.format("%.3f",  floor.dim_y));				  				
 				  
 			  } else if (thing instanceof Room) {
 				  Room room = (Room) thing;		
@@ -304,11 +306,13 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__name", door.getName());
 				  json.put(path + "__imagePath_open", door.imagePath_open);
 				  json.put(path + "__imagePath_close", door.imagePath_close);
-				  json.put(path + "__x", new Integer(door.x));
-				  json.put(path + "__y", new Integer(door.y));
-				  json.put(path + "__z", new Integer(door.z));	
+				  json.put(path + "__x", String.format("%.3f", door.x));
+				  json.put(path + "__y", String.format("%.3f", door.y));
+				  json.put(path + "__z", String.format("%.3f", door.z));	
 				  json.put(path + "__open", new Boolean(this.isClosed(door)));
-				  json.put(path + "__lock", new Boolean(this.isLocked(door)));				  
+				  json.put(path + "__lock", new Boolean(this.isLocked(door)));	
+				  
+				  System.out.println("Door path:" + door.getSitePath());
 				  
 			  } else if (thing instanceof Window) {
 				  Window window = (Window) thing;
@@ -317,9 +321,9 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__name", window.getName());
 				  json.put(path + "__imagePath_open", window.imagePath_open);
 				  json.put(path + "__imagePath_close", window.imagePath_close);
-				  json.put(path + "__x", new Integer(window.x));
-				  json.put(path + "__y", new Integer(window.y));
-				  json.put(path + "__z", new Integer(window.z));	
+				  json.put(path + "__x", String.format("%.3f", window.x));
+				  json.put(path + "__y", String.format("%.3f", window.y));
+				  json.put(path + "__z", String.format("%.3f", window.z));	
 				  json.put(path + "__open", new Boolean(this.isClosed(window)));
 				  json.put(path + "__lock", new Boolean(this.isLocked(window)));					  
 				  
@@ -330,9 +334,9 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__validity", new Boolean(true));
 				  json.put(path + "__name", sensor.getName());
 				  json.put(path + "__temperature", String.format("%.2f",  temp.getCelsius()));
-				  json.put(path + "__x", new Integer(sensor.x));
-				  json.put(path + "__y", new Integer(sensor.y));
-				  json.put(path + "__z", new Integer(sensor.z));				  
+				  json.put(path + "__x", String.format("%.3f", sensor.x));
+				  json.put(path + "__y", String.format("%.3f", sensor.y));
+				  json.put(path + "__z", String.format("%.3f", sensor.z));				  
 				  
 			  } else if (thing instanceof ContactSensor) {
 				  ContactSensor contact = (ContactSensor) thing;
@@ -340,9 +344,9 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__validity", new Boolean(true));
 				  json.put(path + "__name", contact.getName());
 				  json.put(path + "__state_int", new Boolean(contact.getState()));
-				  json.put(path + "__x", new Integer(contact.x));
-				  json.put(path + "__y", new Integer(contact.y));
-				  json.put(path + "__z", new Integer(contact.z));				  
+				  json.put(path + "__x", String.format("%.3f", contact.x));
+				  json.put(path + "__y", String.format("%.3f", contact.y));
+				  json.put(path + "__z", String.format("%.3f", contact.z));				  
 				  
 			  } else if (thing instanceof Switch) {
 				  Switch swt = (Switch) thing;
@@ -350,11 +354,9 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__validity", new Boolean(true));
 				  json.put(path + "__name", swt.getName());
 				  json.put(path + "__state_int", new Integer(swt.getStateInt()));
-				  json.put(path + "__x", new Integer(swt.x));
-				  json.put(path + "__y", new Integer(swt.y));
-				  json.put(path + "__z", new Integer(swt.z));
-				  
-				//  System.out.println("\n\npath:" + path);
+				  json.put(path + "__x", String.format("%.3f", swt.x));
+				  json.put(path + "__y", String.format("%.3f", swt.y));
+				  json.put(path + "__z", String.format("%.3f", swt.z));
 				  
 			  } else {
 				  json.put(path + "__validity", new Boolean(false));

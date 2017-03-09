@@ -731,28 +731,23 @@ var KitchenInfoStation;
         function ScreenFloor(siteData, m_graphics) {
             _super.call(this, siteData, m_graphics);
             this.thingPath = "";
-            //Graphics
+            this.imgFloor2 = new ImageRect2();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
-            //private numRooms: number = 0;
             this.txtNumRooms = new TextSimple();
-            //**********
-            this.m_doorMarks = null; // Doors marks
-            this.m_windowMarks = null; // Window marks
-            this.m_tempMarks = null; // Temp marks
-            this.m_switchMarks = null; // Switch marks
-            this.m_contactSensorsMarks = null; // Switch marks
+            this.m_doorMarks = new Array(); // Doors marks
+            this.m_windowMarks = new Array(); // Window marks
+            this.m_tempMarks = new Array(); // Temp marks
+            this.m_switchMarks = new Array(); // Switch marks
+            this.m_contactSensorsMarks = new Array(); // Switch marks
+            this.perc = 0.8;
             this.imgFloor = new Image();
             this.imgFloor.src = "/infores/servlets/kitchen/floor1.jpg";
+            this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
             this.txtNumRooms.size(0, 0, 250, 100);
             this.txtNumRooms.textAlign = "left";
             this.txtNumRooms.textBaseline = "middle";
             this.txtNumRooms.fontSize = 40;
-            this.m_doorMarks = new Array();
-            this.m_windowMarks = new Array();
-            this.m_tempMarks = new Array();
-            this.m_switchMarks = new Array();
-            this.m_contactSensorsMarks = new Array();
         }
         ScreenFloor.prototype.setThing = function (thing) {
             var oldThing = _super.prototype.getThing.call(this);
@@ -838,30 +833,52 @@ var KitchenInfoStation;
             var ctx = canvas.getContext('2d');
             var width = canvas.width;
             var height = canvas.height;
+            //Picture percentage
+            this.imgFloor2.size(0, 0, canvas.width, canvas.height);
+            this.imgFloor2.scaleSize(0.8);
+            var scaleX = 0.0;
+            var scaleY = 0.0;
+            var thing = this.getThing();
+            if ((thing != null)) {
+                if (thing instanceof Floor) {
+                    var floor = thing;
+                    if (floor.dim_x != 0) {
+                        scaleX = this.imgFloor2.w / (floor.dim_x);
+                    }
+                    if (floor.dim_y != 0) {
+                        scaleY = this.imgFloor2.h / (floor.dim_y);
+                    }
+                }
+            }
             ctx.clearRect(0, 0, width, height);
-            //Draw image...       
+            //Draw image...
+            this.imgFloor2.paint(ctx);
+            /*
             ctx.save();
             ctx.drawImage(this.imgFloor, 0, 0, width, height);
             ctx.restore();
+  */
+            //    window.alert("" + scaleX + "" + scaleY + " marks:" +  this.m_doorMarks.length);
             //Doors...            
             for (var id in this.m_doorMarks) {
-                this.m_doorMarks[id].paintByThing(ctx);
+                //  window.alert("" + scaleX + " " + scaleY);
+                this.m_doorMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             //Windows...            
             for (var id in this.m_windowMarks) {
-                this.m_windowMarks[id].paintByThing(ctx);
+                this.m_windowMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             //Temperature sensors
             for (var id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx);
+                this.m_tempMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             //m_switchArray
             for (var id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx);
+                this.m_switchMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
             //Contact sensors
             for (var id in this.m_contactSensorsMarks) {
-                this.m_contactSensorsMarks[id].paintByThing(ctx);
+                this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
         };
         return ScreenFloor;
@@ -971,15 +988,15 @@ var KitchenInfoStation;
             */
             //New door marks....
             for (var id in this.m_doorMarks) {
-                this.m_doorMarks[id].paintByThing(ctx);
+                this.m_doorMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }
             //New temp marks....
             for (var id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx);
+                this.m_tempMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }
             //New switch marks....
             for (var id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx);
+                this.m_switchMarks[id].paintByThing(ctx, 0, 0, 0, 0);
             }
         };
         return ScreenRoom;

@@ -77,9 +77,12 @@ module OhsSiteData {
             } else if (this.getCount == 5) {
                 this.getFastData_RoomArray();
                 
+            } else if (this.getCount == 6) {
+                this.getFastData_FloorArray();
+                
             }
                         
-            if (this.getCount == 5) {
+            if (this.getCount == 6) {
                 this.getCount = 0;
                 
             } else {
@@ -199,60 +202,39 @@ module OhsSiteData {
             } 
             
             var data: string = getAjax("kitchen", req); 
-         //    window.alert("room....");  
+
             if (data != null) {         
-                   //  window.alert("room....");
                 var valid: boolean = JSON.parse(data['Array_validity']);
                 
                 if (valid) {                
-                    for (let id in this.m_roomArray) {    
-                             
+                    for (let id in this.m_roomArray) {                                 
                         this.m_roomArray[id].parseServerData(data);       
-                     //   window.alert("path:" + this.m_roomArray[id].imageBkgPath);                   
+                   
                     } 
                 }
             }            
-        }        
+        }  
         
-        /*
-        public getFastData2 () {
-            
-                var req: any = {                
-                orderId : "FastData"
-//                path:   this.path                
+        public getFastData_FloorArray (){
+                        
+            var req: any = {                                
+                orderId : "FloorArray"         
             } 
             
             var data: string = getAjax("kitchen", req); 
-            
-            if (data != null) {
-                
-                // TempSensors                                             
-                for (let id in this.m_tempSensorArray) {  
-                    var path: string = this.m_tempSensorArray[id].getPath();
-                                                  
-                    this.m_tempSensorArray[id].temp = data[path + '_temperature'];            
-                }     
-                
-                // Switches                                                     
-                for (let id in this.m_switchArray) {                      
-                    var path: string = this.m_switchArray[id].getPath();
-                    
-                    this.m_switchArray[id].setState(parseInt(data[path + '_state']));
-                }          
-                
-                // Contact Sensors                                                     
-                for (let id in this.m_contactSensorArray) {                      
-                    var path: string = this.m_contactSensorArray[id].getPath();
-                    
-                    this.m_contactSensorArray[id].setState(JSON.parse(data[path + '_state']));
-                }                  
-                                
-            }
-        }        
-*/
-        
 
+            if (data != null) {         
+                var valid: boolean = JSON.parse(data['Array_validity']);
                 
+                if (valid) {                
+                    for (let id in this.m_floorArray) {                                 
+                        this.m_floorArray[id].parseServerData(data);       
+                   
+                    } 
+                }
+            }            
+        }         
+        
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;}) {
             if (num > arg.length) {            
                 for (var i = arg.length; i < num; i++) {                    
@@ -488,8 +470,38 @@ module OhsSiteData {
         
     export class Floor extends Thing {
         
-        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
-                   
+        public imagePath: string = "/infores/servlets/kitchen/room_default.png";
+        
+        public name:    string = 'no name';
+        public dim_x:   number = 0;
+        public dim_y:   number = 0;
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "TempSensor",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            this.parseServerData(data);                    
+        }        
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
+
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.imagePath = data[this.path + '__imagePath'];                    
+                    this.dim_x = parseFloat(data[this.path + '__dim_x']);
+                    this.dim_y = parseFloat(data[this.path + '__dim_y']);     
+                    
+                 //   window.alert("x: " + this.dim_x + " ; y: " + this.dim_y);
+                }
+            }                            
+        }                        
     }
     
     export class Room extends Thing{
@@ -512,17 +524,7 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            this.parseServerData(data);
-            /*
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid) {
-                    this.name = data['name'];
-                    this.imageBkgPath = data['imgBkg'];
-                }  
-            }    
-            */                                  
+            this.parseServerData(data);                                 
         }              
         
         public parseServerData (data: any) {                   
@@ -537,7 +539,7 @@ module OhsSiteData {
         }         
     }    
     
-    export class TemperatureSensor extends Thing{
+    export class TemperatureSensor extends Thing {
         
         public temp:  number;        
         public x:   number;
@@ -559,20 +561,7 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            this.parseServerData(data);
-          /*  
-            
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-
-                if (this.valid) {
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.temp = parseFloat(data['temp']);  
-                }
-            }
-            */
-                                    
+            this.parseServerData(data);                    
         }        
         
         public parseServerData (data: any) {                   
@@ -580,8 +569,8 @@ module OhsSiteData {
                 this.valid = JSON.parse(data[this.path + '__validity']);
 
                 if (this.valid) {
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                     //this.z = parseInt(data[this.path + '__z']);
                     this.temp = parseFloat(data[this.path + '__temperature']);  
                 }
@@ -663,8 +652,8 @@ module OhsSiteData {
                 if (this.valid){                    
                  
                     this.stateInt = parseInt(data[this.path + '__state_int']);
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                     //this.z = parseInt(data[this.path + '__z']);
                 }                                
             }                            
@@ -713,8 +702,8 @@ module OhsSiteData {
                 
                 if (this.valid){
                     this.state = JSON.parse(data[this.path + '__state_int']);
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
                   //  this.z = parseInt(data[this.path + '__z']);
                 }                                
             }                            
@@ -793,9 +782,9 @@ module OhsSiteData {
 
                 if (this.valid) {
                     this.name = data[this.path + '__name'];
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
-                    //this.z = parseInt(data[this.path + '__z']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
                     this.locked = JSON.parse(data[this.path + '__lock']);  
                     this.image_open = data[this.path + '__imagePath_open'];
@@ -876,9 +865,9 @@ module OhsSiteData {
 
                 if (this.valid) {
                     this.name = data[this.path + '__name'];
-                    this.x = parseInt(data[this.path + '__x']);
-                    this.y = parseInt(data[this.path + '__y']);
-                    //this.z = parseInt(data[this.path + '__z']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
                     this.open = JSON.parse(data[this.path + '__open']);
                     this.locked = JSON.parse(data[this.path + '__lock']);  
                     this.image_open = data[this.path + '__imagePath_open'];
