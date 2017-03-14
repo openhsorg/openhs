@@ -1288,17 +1288,20 @@ module KitchenInfoStation {
             */
             //New door marks....
             for (let id in this.m_doorMarks) {
-                this.m_doorMarks[id].paintByThing(ctx, 0, 0, 0, 0);
+                this.m_doorMarks[id].size(10, 10, 50, 50);
+                this.m_doorMarks[id].paint(ctx);
             }
             
             //New temp marks....
             for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx, 0, 0, 0, 0);
+                this.m_tempMarks[id].size(10, 70, 50, 50);
+                this.m_tempMarks[id].paint(ctx);
             }      
             
             //New switch marks....
             for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx, 0, 0, 0, 0);
+                this.m_switchMarks[id].size(10, 130, 50, 50);
+                this.m_switchMarks[id].paint(ctx);
             }               
         }             
     } 

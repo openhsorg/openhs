@@ -404,7 +404,7 @@ public class MySiteServiceImpl implements ISiteService {
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getChildren(java.lang.String)
-	 * Returns list of sitePaths, childrens of included sitePath item.  Only first level of children.
+	 * Returns list of sitePaths, children of included sitePath item.  Only first level of children.
 	 */
 	
 	public Set<String> getChildren (String sitePath) throws SiteException {

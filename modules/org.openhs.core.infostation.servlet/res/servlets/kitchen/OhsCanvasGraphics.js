@@ -541,7 +541,7 @@ var OhsCanvasGraphics;
         DoorMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var door = this.getDoorThing();
             if (door != null) {
-                this.size((door.x * xScale) + dx - 30, (door.y * yScale) + dy - 30, 60, 60);
+                this.size((door.x * xScale) + dx - 30, (door.y * yScale) + dy - 30, 50, 50);
             }
             this.paint(ctx);
         };
@@ -611,7 +611,7 @@ var OhsCanvasGraphics;
         WindowMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var wnd = this.getWindowThing();
             if (wnd != null) {
-                this.size((wnd.x * xScale) + dx - 30, (wnd.y * yScale) + dy - 30, 60, 60);
+                this.size((wnd.x * xScale) + dx - 30, (wnd.y * yScale) + dy - 30, 50, 50);
             }
             this.paint(ctx);
         };
@@ -677,7 +677,7 @@ var OhsCanvasGraphics;
         TempMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var tempSensor = this.getTemperatureSensorThing();
             if (tempSensor != null) {
-                this.size((tempSensor.x * xScale) + dx - 30, (tempSensor.y * yScale) + dy - 30, 60, 60);
+                this.size((tempSensor.x * xScale) + dx - 30, (tempSensor.y * yScale) + dy - 30, 50, 50);
             }
             this.paint(ctx);
         };
@@ -750,7 +750,7 @@ var OhsCanvasGraphics;
         SwitchMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var swtch = this.getSwitchThing();
             if (swtch != null) {
-                this.size((swtch.x * xScale) + dx - 30, (swtch.y * yScale) + dy - 30, 60, 60);
+                this.size((swtch.x * xScale) + dx - 30, (swtch.y * yScale) + dy - 30, 50, 50);
             }
             this.paint(ctx);
         };
@@ -840,7 +840,7 @@ var OhsCanvasGraphics;
         SwitchLockMark.prototype.paintByThing = function (ctx) {
             var swtch = this.getSwitchThing();
             if (swtch != null) {
-                this.size(swtch.x, swtch.y, 60, 60);
+                this.size(swtch.x, swtch.y, 50, 50);
             }
             this.paint(ctx);
         };
@@ -927,7 +927,7 @@ var OhsCanvasGraphics;
         ContactSensorMark.prototype.paintByThing = function (ctx, dx, dy, xScale, yScale) {
             var contact = this.getContactSensorThing();
             if (contact != null) {
-                this.size((contact.x * xScale) + dx - 30, (contact.y * yScale) + dy - 30, 60, 60);
+                this.size((contact.x * xScale) + dx - 30, (contact.y * yScale) + dy - 30, 50, 50);
             }
             this.paint(ctx);
         };
