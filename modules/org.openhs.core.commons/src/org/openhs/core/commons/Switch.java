@@ -38,12 +38,10 @@ public class Switch extends Thing {
 	 */
 	Timestamp timestamp = new Timestamp(0);
 	
-	/*
-	 *Coordinates in house  
-	 */
-	public int x = 0;
-	public int y = 0;
-	public int z = 0;	
+	//Coordinates in house 
+	public float x = 0.0f;
+	public float y = 0.0f;
+	public float z = 0.0f;
 	
 		
 	public void setState(boolean state) throws SiteException

@@ -7,6 +7,12 @@ module OhsSiteData {
     const servletUrl = 'kitchen';
     const switchId = 'SwitchS';
     const contactSensorId = 'ContactSensor';
+    const allDoorsId = 'AllDoors';
+    
+    function sleep(ms) {
+        var unixtime_ms = new Date().getTime();
+        while(new Date().getTime() < unixtime_ms + ms) {}
+    }      
      
     export class SiteData {
 
@@ -23,6 +29,8 @@ module OhsSiteData {
         public m_windowArray:           Array <Window> = null;
         public m_contactSensorArray:    Array <ContactSensor> = null;
         
+        protected getCount:  number = 0;
+        
         //---Other data---
         public timeString: string = "---";
         public dateString: string = "---";
@@ -36,48 +44,197 @@ module OhsSiteData {
             this.m_windowArray = new Array<Door>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
                         
-            this.slowTimerGetDataEvent(1000);            
-            this.fastTimerGetDataEvent(100);
+            //this.slowTimerGetDataEvent(1000);
+            this.getServerData();            
+            this.fastTimerGetDataEvent(250);
         }
         
         private fastTimerGetDataEvent(step : number) {
             
-            for (let id in this.m_roomArray) {
-                this.m_roomArray[id].getServerData();
-            }            
-            
-            for (let id in this.m_switchArray) {
-                this.m_switchArray[id].getServerData();
-            }
-            
-            for (let id in this.m_tempSensorArray) {
-                this.m_tempSensorArray[id].getServerData();
-            }      
-            
-            for (let id in this.m_doorArray) {
-                this.m_doorArray[id].getServerData();
-            }    
-            
-            for (let id in this.m_windowArray) {
-                this.m_windowArray[id].getServerData();
-            }             
-            
-            for (let id in this.m_contactSensorArray) {
-                this.m_contactSensorArray[id].getServerData();
-            }
+           this.getFastData();
                                                
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
         }           
         
-        private slowTimerGetDataEvent(step : number) {
-                                  
-           this.getServerData();
-             
-           window.clearTimeout(this.slowTimerGetData);
-           this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
-        }         
+        public getFastData () {
+            
+            if (this.getCount == 0) {            
+                this.getFastData_TemperatureSensorArray();
+                                         
+            } else if (this.getCount == 1) {
+                this.getFastData_ContactArray();
+                
+            } else if (this.getCount == 2) {
+                this.getFastData_SwitchArray();
+                
+            } else if (this.getCount == 3) {
+                this.getFastData_DoorArray();
+                
+            } else if (this.getCount == 4) {
+                this.getFastData_WindowArray();
+                
+            } else if (this.getCount == 5) {
+                this.getFastData_RoomArray();
+                
+            } else if (this.getCount == 6) {
+                this.getFastData_FloorArray();
+                
+            }
+                        
+            if (this.getCount == 6) {
+                this.getCount = 0;
+                
+            } else {
+                 this.getCount ++;    
+                
+            }
+         
+        }
+        
+        public getFastData_TemperatureSensorArray (){
+                        
+            var req: any = {                                
+                orderId : "TempSensors"
+//                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+                
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_tempSensorArray) {                    
+                        this.m_tempSensorArray[id].parseServerData(data);                    
+                    } 
+                }
+            }            
+        }
+        
+        public getFastData_ContactArray (){
+                        
+            var req: any = {                                
+                orderId : "ContactSensors"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+                
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_contactSensorArray) {                    
+                        this.m_contactSensorArray[id].parseServerData(data);                    
+                    } 
+                }
+            }            
+        }        
+        
+        public getFastData_SwitchArray (){
+                        
+            var req: any = {                                
+                orderId : "SwitchSensors"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+                            
+                var valid: boolean = JSON.parse(data['Array_validity']);
+            
+             //   window.alert("SwitchSensors");
+                
+                if (valid) {                
+                    for (let id in this.m_switchArray) {                    
+                        this.m_switchArray[id].parseServerData(data);                    
+                    } 
+                }
+            }            
+        } 
+        
+        public getFastData_DoorArray (){
+                        
+            var req: any = {                                
+                orderId : "DoorArray"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+                
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_doorArray) {                    
+                        this.m_doorArray[id].parseServerData(data);                    
+                    } 
+                }
+            }            
+        } 
+        
+        public getFastData_WindowArray (){
+                        
+            var req: any = {                                
+                orderId : "WindowArray"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+                
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_windowArray) {                    
+                        this.m_windowArray[id].parseServerData(data);                    
+                    } 
+                }
+            }            
+        } 
+        
+        public getFastData_RoomArray (){
+                        
+            var req: any = {                                
+                orderId : "RoomArray"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
 
+            if (data != null) {         
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_roomArray) {                                 
+                        this.m_roomArray[id].parseServerData(data);       
+                   
+                    } 
+                }
+            }            
+        }  
+        
+        public getFastData_FloorArray (){
+                        
+            var req: any = {                                
+                orderId : "FloorArray"         
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+
+            if (data != null) {         
+                var valid: boolean = JSON.parse(data['Array_validity']);
+                
+                if (valid) {                
+                    for (let id in this.m_floorArray) {                                 
+                        this.m_floorArray[id].parseServerData(data);       
+                   
+                    } 
+                }
+            }            
+        }         
+        
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(): T ;}) {
             if (num > arg.length) {            
                 for (var i = arg.length; i < num; i++) {                    
@@ -229,11 +386,14 @@ module OhsSiteData {
                 this.setNumber(parseInt(data['number_tempsensors']), this.m_tempSensorArray, TemperatureSensor);
                 
                 for (let id in this.m_tempSensorArray) {                                
-                    this.m_tempSensorArray[id].setPath(data['tempSensorPath_' + id]);                   
+                    this.m_tempSensorArray[id].setPath(data['tempSensorPath_' + id]);  
+                   // this.m_tempSensorArray[id].x = 6;                 
                 }     
                 
                 // Switches                                     
                 this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
+                
+               // window.alert("ns: " + this.m_switchArray.length);
                 
                 for (let id in this.m_switchArray) {                      
                     this.m_switchArray[id].setPath(data['switchPath_' + id]);
@@ -266,7 +426,17 @@ module OhsSiteData {
                 } 
                                
             }      
-        }                        
+        }   
+        
+        public postServerAllDoors (cmd: string) {            
+            var req: any = {
+                postId : allDoorsId,
+              //  path:   this.path,
+                command: cmd                
+            }
+            
+            postAjax(servletUrl, req);
+        }           
     }
     
     export class Thing {
@@ -288,12 +458,50 @@ module OhsSiteData {
         public isValid() {
             return this.valid;
         } 
+        
+        public getServerData () {
+        }          
+        
+        public getServerDataDelayed (wait: number) {                    
+            window.setTimeout(() => this.getServerData(), wait);         
+                                      
+        }          
     }
         
     export class Floor extends Thing {
         
-        public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
-                   
+        public imagePath: string = "/infores/servlets/kitchen/room_default.png";
+        
+        public name:    string = 'no name';
+        public dim_x:   number = 0;
+        public dim_y:   number = 0;
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "TempSensor",
+                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            this.parseServerData(data);                    
+        }        
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
+
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.imagePath = data[this.path + '__imagePath'];                    
+                    this.dim_x = parseFloat(data[this.path + '__dim_x']);
+                    this.dim_y = parseFloat(data[this.path + '__dim_y']);     
+                    
+                 //   window.alert("x: " + this.dim_x + " ; y: " + this.dim_y);
+                }
+            }                            
+        }                        
     }
     
     export class Room extends Thing{
@@ -316,18 +524,22 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
+            this.parseServerData(data);                                 
+        }              
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
+
                 if (this.valid) {
-                    this.name = data['name'];
-                    this.imageBkgPath = data['imgBkg'];
-                }  
-            }                                      
-        }                    
+                    this.name = data[this.path + '__name'];
+                    this.imageBkgPath = data[this.path + '__imagePath'];
+                }
+            }                            
+        }         
     }    
     
-    export class TemperatureSensor extends Thing{
+    export class TemperatureSensor extends Thing {
         
         public temp:  number;        
         public x:   number;
@@ -349,16 +561,21 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
+            this.parseServerData(data);                    
+        }        
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
 
                 if (this.valid) {
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.temp = parseFloat(data['temp']);  
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseInt(data[this.path + '__z']);
+                    this.temp = parseFloat(data[this.path + '__temperature']);  
                 }
             }                            
-        }        
+        }          
     } 
     
     export class Switch extends Thing{
@@ -375,6 +592,10 @@ module OhsSiteData {
             this.y = 0;
             
             this.stateInt = 0;
+        }    
+        
+        public setState(state: number) {
+            this.stateInt = state;
         }            
  
         public getState () {
@@ -420,16 +641,23 @@ module OhsSiteData {
             
             var data: string = getAjax(servletUrl, req); 
             
+            this.parseServerData(data);           
+                                      
+        }              
+        
+        public parseServerData (data: any) {                   
             if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid){
-                    this.stateInt = parseInt(data['state_sw']);
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
+                 this.valid = JSON.parse(data[this.path + '__validity']);
+                //window.alert("valid: " + this.path);
+                if (this.valid){                    
+                 
+                    this.stateInt = parseInt(data[this.path + '__state_int']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseInt(data[this.path + '__z']);
                 }                                
             }                            
-        }
+        }        
     }  
     
     export class ContactSensor extends Thing {    
@@ -445,7 +673,11 @@ module OhsSiteData {
             this.y = 0;
             
             this.state = false;
-        }            
+        }          
+        
+        public setState(st: boolean){
+            this.state = st;
+        }
  
         public getState () {
             return this.state;
@@ -460,16 +692,22 @@ module OhsSiteData {
             
             var data: string = getAjax(servletUrl, req); 
             
+            this.parseServerData (data); 
+                    
+        }
+        
+        public parseServerData (data: any) {                   
             if (data != null) {
-                this.valid = JSON.parse(data['validity']);
+                this.valid = JSON.parse(data[this.path + '__validity']);
                 
                 if (this.valid){
-                    this.state = JSON.parse(data['state']);
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
+                    this.state = JSON.parse(data[this.path + '__state_int']);
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                  //  this.z = parseInt(data[this.path + '__z']);
                 }                                
             }                            
-        }
+        }        
     }       
     
     export class Door extends Thing {
@@ -519,6 +757,9 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
+            this.parseServerData(data);
+            
+            /*
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
                 
@@ -531,8 +772,26 @@ module OhsSiteData {
                     this.image_open = data['image_open'];
                     this.image_close = data['image_close'];          
                 }                                
-            }                                                       
-        }        
+            }          
+            */                                             
+        }       
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
+
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
+                    this.open = JSON.parse(data[this.path + '__open']);
+                    this.locked = JSON.parse(data[this.path + '__lock']);  
+                    this.image_open = data[this.path + '__imagePath_open'];
+                    this.image_close = data[this.path + '__imagePath_close'];    
+                }
+            }                            
+        }         
     }    
     
     export class Window extends Thing {
@@ -582,6 +841,8 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
+            this.parseServerData(data);
+            /*
             if (data != null) {
                 this.valid = JSON.parse(data['validity']);
                 
@@ -594,8 +855,27 @@ module OhsSiteData {
                     this.image_open = data['image_open'];
                     this.image_close = data['image_close'];          
                 }                                
-            }                                                       
-        }              
+            }      
+            */                                                 
+        }      
+        
+        public parseServerData (data: any) {                   
+            if (data != null) {                
+                this.valid = JSON.parse(data[this.path + '__validity']);
+
+                if (this.valid) {
+                    this.name = data[this.path + '__name'];
+                    this.x = parseFloat(data[this.path + '__x']);
+                    this.y = parseFloat(data[this.path + '__y']);
+                    //this.z = parseFloat(data[this.path + '__z']);
+                    this.open = JSON.parse(data[this.path + '__open']);
+                    this.locked = JSON.parse(data[this.path + '__lock']);  
+                    this.image_open = data[this.path + '__imagePath_open'];
+                    this.image_close = data[this.path + '__imagePath_close'];    
+                }
+            }                            
+        }          
+        
     }    
     
     

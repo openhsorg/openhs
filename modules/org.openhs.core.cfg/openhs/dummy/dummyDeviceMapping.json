@@ -24,6 +24,10 @@
       "Addr": 3,
       "Type": "Switch"
     },
+	{
+      "Addr": 4,
+      "Type": "Switch"
+    },	
     {
       "Addr": 2,
       "Type": "ContactSensor"

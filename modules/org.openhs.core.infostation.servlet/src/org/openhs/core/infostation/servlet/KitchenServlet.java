@@ -55,61 +55,40 @@ public class KitchenServlet extends HttpServlet {
 	        
 	    	if (value != null) {
 	    	//	System.out.println("Value:=" + value.toString());
-	    		/*
-	    		if (value.toString().equals("InfoData")) {	    		
-	    	
-	    			JSONObject json = getDataToJSON();
+	    		
+	    		String jsonString = null;
 
-	    			//System.out.println("\nJSON:" + json.toString());
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();
-	    			
-	    		} else
-	    			*/
 	    	    if (value.toString().equals("SiteData")) {	    		
-	    			/*
-	    			 * Get site data.
-	    			 */
+	    			JSONObject json = getSiteDataToJSON();	
+	    			jsonString = json.toString();
 	    			
-	    			//System.out.println("\n\n\n\n ------> SiteData  <-----------------: ");
-	    			
-	    			JSONObject json = getSiteDataToJSON();
-	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();
-	    			
-	    		} else if (value.toString().contains("WeatherCurrent")) {	
-	    			/*
-	    			 * Get data from meteo module.
-	    			 */
+	    		} else if (value.toString().contains("TempSensors")){ 	    			
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(TemperatureSensor.class);
+		    				    		
+	    		} else if (value.toString().contains("ContactSensors")){ 	    			
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(ContactSensor.class);	    			
+	    		
+	    		} else if (value.toString().contains("SwitchSensors")){ 	    			
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Switch.class);	    				    			
+	    		
+	    		}  else if (value.toString().contains("DoorArray")){ 	    			
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Door.class);	    				    			
+	    		
+	    		} else if (value.toString().contains("WindowArray")){ 	    			
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Window.class);	    				    			
+	    		
+	    		} else if (value.toString().contains("RoomArray")){ 	
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Room.class);	    				    			
+	    		
+	    		} else if (value.toString().contains("FloorArray")){ 	
+	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Floor.class);	    				    			
+	    		
+	    		}  else if (value.toString().contains("WeatherCurrent")) {	
 	    			JSONObject json = getCurWeatherToJSON();
-
-	    			//System.out.println("\nWeatherCurrent JSON:" + json.toString());
 	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
+	    			jsonString = json.toString();
 
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();	    			
+	    			//System.out.println("\nWeatherCurrent JSON:" + json.toString());	    		    			
 	    			
 	    		} else if (value.toString().contains("WeatherForecast_")) {	
 	    			
@@ -131,272 +110,75 @@ public class KitchenServlet extends HttpServlet {
 	    			 * Get data from meteo module.
 	    			 */
 	    			JSONObject json = getDataToJSON_Forecast(numForecast);
+	    			
+	    			jsonString = json.toString();
 
 	    			//System.out.println("\nJSON:" + json.toString());
 	    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();		    			
 	    			
 	    		} else if (value.toString().equals("SwitchS")) {
 	    			
-		    		String path2 = request.getParameter("path").toString();
-		    		
-		    		Thing thing = null;
-					try {
-						thing = this.m_infostation.getThing(path2);
-					} catch (SiteException e) {
-						e.printStackTrace();
-					}		    		
-		    			    			
-	    			//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			String path = request.getParameter("path");
 	    			
-	    			JSONObject json = new JSONObject();
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}
 	    			
-		    		if (thing != null && thing instanceof Switch) {
-			    		
-		    			Switch sw = (Switch) thing;
-					    
-						json.put("validity", new Boolean(true));
-						json.put("name", String.format(sw.getName()));
-						json.put("state_sw", new Integer(sw.getStateInt()));
-						json.put("x_coordinate", String.format("%d", sw.x));
-						json.put("y_coordinate", String.format("%d", sw.y));
-												
-						//System.out.println("\n\n\n\n   Path" + path2 + " Sensor x: " + sw.x + "S y:" + sw.y);
-					
-		    		} else {
-		    			json.put("validity", new Boolean(false));
-		    		}	    				    				    				    			
-	    				    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-	    			out.flush();
-	    			out.close();	
 	    			
 		    	}else if (value.toString().equals("ContactSensor")) {
-	    			
-		    		String path2 = request.getParameter("path").toString();
 		    		
-		    		Thing thing = null;
-					try {
-						thing = this.m_infostation.getThing(path2);
-					} catch (SiteException e) {
-						e.printStackTrace();
-					}		    		
-
-	    			JSONObject json = new JSONObject();
+	    			String path = request.getParameter("path");
 	    			
-		    		if (thing != null && thing instanceof ContactSensor) {
-			    		
-		    			ContactSensor contact = (ContactSensor) thing;
-					    
-						json.put("validity", new Boolean(true));
-						json.put("state", new Boolean(contact.getState()));
-						json.put("x_coordinate", String.format("%d", contact.x));
-						json.put("y_coordinate", String.format("%d", contact.y));
-												
-						//System.out.println("\n\n\n\n   Path" + path2 + " state: " + contact.getState());
-					
-		    		} else {
-		    			json.put("validity", new Boolean(false));
-		    		}	    				    				    				    			
-	    				    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-	    			out.flush();
-	    			out.close();	
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}		    		
 	    			
 		    	} else if (value.toString().equals("TempSensor")) {
-		    			    			
-		    		String path = request.getParameter("path").toString();
 		    		
-		    		Thing thing = null;
-					try {
-						thing = this.m_infostation.getThing(path);
-					} catch (SiteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    		
-		    		JSONObject json = new JSONObject();
-		    		
-		    		if (thing != null && thing instanceof TemperatureSensor) {
-		    		
-			    		TemperatureSensor tempSensor = (TemperatureSensor) thing;
-						
-						Temperature temp = tempSensor.getTemperature();
-					    
-						json.put("validity", new Boolean(true));
-						json.put("temp", String.format("%.2f",  temp.getCelsius()));
-						json.put("x_coordinate", String.format("%d", tempSensor.x));
-						json.put("y_coordinate", String.format("%d", tempSensor.y));
-						
-						//System.out.println("\n\n\n\n   Path" + path + " Sensor x: " + tempSensor.x + "S y:" + tempSensor.y);
-					
-		    		} else {
-		    			json.put("validity", new Boolean(false));
-		    		}
-	    				    			
-	    			response.setContentType("application/json");
-	    			response.setCharacterEncoding("UTF-8");
-
-	    			PrintWriter out = response.getWriter();	    			
-				 
-	    			out.println(json.toString());
-		    	        
-	    			out.flush();
-	    			out.close();		
+	    			String path = request.getParameter("path");
+	    			
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}
 	    			
 		    	} else if (value.toString().equals("Room")) {
 	    			
-					String path = request.getParameter("path").toString();
-					
-					Room room = null;
-					
-					try {
-						room = (Room) this.m_infostation.getThing(path);
-					} catch (SiteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					//System.out.println("\n\n\n\n    Room name: " + room.getName());
-					
-					JSONObject json = new JSONObject();
-										
-					if (room != null){
-
-						json.put("validity", new Boolean(true));
-						json.put("name", String.format(room.getName()));
-						json.put("imgBkg", String.format(room.imagePath));
-					} else {
-						json.put("validity", new Boolean(false));
-					}
-						    			
-					response.setContentType("application/json");
-					response.setCharacterEncoding("UTF-8");
-					
-					PrintWriter out = response.getWriter();	    			
-					
-					out.println(json.toString());
-					    
-					out.flush();
-					out.close();	
+	    			String path = request.getParameter("path");
+	    			
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}
 																				
 		        } else if (value.toString().equals("DoorD")) {
 		    		
-	    			String path = request.getParameter("path").toString();
-					
-					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			String path = request.getParameter("path");
 	    			
-	    			Door door = null;
-	    			boolean closed = false;
-	    			boolean locked = false;
-					
-					try {
-						door = (Door) this.m_infostation.getThing(path);
-						closed = this.m_infostation.isClosed(door);
-						locked = this.m_infostation.isLocked(door);
-					} catch (SiteException e) {
-						e.printStackTrace();
-					}
-					
-					//System.out.println("\n\n\n\n    door name: " + door.getName());
-					
-					JSONObject json = new JSONObject();
-										
-					if (door != null){
-						json.put("validity", new Boolean(true));
-						json.put("name", String.format(door.getName()));
-						json.put("image_open", String.format(door.imagePath_open));
-						json.put("image_close", String.format(door.imagePath_close));
-						json.put("x_coordinate", String.format("%d", door.x));
-						json.put("y_coordinate", String.format("%d", door.y));
-						json.put("open", new Boolean(closed));
-						json.put("lock", new Boolean(locked));
-						
-						//System.out.println("\n\n\n\n    Door: " + door.getName() + " open path:" + door.imagePath_open);
-						
-					} else {
-						json.put("validity", new Boolean(false));	
-					}						    				   			
-
-						    			
-					response.setContentType("application/json");
-					response.setCharacterEncoding("UTF-8");
-					
-					PrintWriter out = response.getWriter();	    			
-					
-					out.println(json.toString());
-					    
-					out.flush();
-					out.close();
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}		        		
 					
 				} else if (value.toString().equals("Window")) {
-		    		
-	    			String path = request.getParameter("path").toString();
 					
-					//System.out.println("\n\n\n\n    SwitchS  JSON: " + path2 + " State: " + stateInt);
+	    			String path = request.getParameter("path");
 	    			
-	    			Window wnd = null;
-	    			boolean closed = false;
-	    			boolean locked = false;
-					
-					try {
-						wnd = (Window) this.m_infostation.getThing(path);
-						closed = this.m_infostation.isClosed(wnd);
-						locked = this.m_infostation.isLocked(wnd);
-					} catch (SiteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					//System.out.println("\n\n\n\n    door name: " + door.getName());
-					
-					JSONObject json = new JSONObject();
-										
-					if (wnd != null){
-						json.put("validity", new Boolean(true));
-						json.put("name", String.format(wnd.getName()));
-						json.put("image_open", String.format(wnd.imagePath_open));
-						json.put("image_close", String.format(wnd.imagePath_close));
-						json.put("x_coordinate", String.format("%d", wnd.x));
-						json.put("y_coordinate", String.format("%d", wnd.y));
-						json.put("open", new Boolean(closed));
-						json.put("lock", new Boolean(locked));
-						
-					//	System.out.println("\n\n\n\n    Door x: " + door.x + " Door y:" + door.y);
-						
-					} else {
-						json.put("validity", new Boolean(false));	
-					}						    				   			
-
-						    			
-					response.setContentType("application/json");
-					response.setCharacterEncoding("UTF-8");
-					
-					PrintWriter out = response.getWriter();	    			
-					
-					out.println(json.toString());
-					    
-					out.flush();
-					out.close();			    				    		
+	    			if (path != null) {	    			
+	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    			}						
+		    			    		
 				}
+	    	    
+	    	    if (jsonString != null) {
+	    			response.setContentType("application/json");
+	    			response.setCharacterEncoding("UTF-8");
+	
+	    			PrintWriter out = response.getWriter();	    			
+				 
+	    			out.println(jsonString);
+		    	        
+	    			out.flush();
+	    			out.close();	    	
+	    	    }
+	    	    
 	    		
 	    	} else {
     		
@@ -449,26 +231,32 @@ public class KitchenServlet extends HttpServlet {
 		 			} else if (command.equals("off")){
 		 				m_infostation.setSwitch(path, false);
 		 			}
+		 			
+		 		} else if (value.toString().equals("AllDoors")) {	
+		 			
+		 		//	String path = request.getParameter("path").toString();
+		 			String command = request.getParameter("command").toString();		
+		 			
+		 	//		System.out.println("\n\n\n\n****POST value:=" + command);
+		 			
+		 			if (command.equals("on")){
+		 				try {
+							m_infostation.setAllDoorsSwitch(true);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		 				
+		 			} else if (command.equals("off")){
+		 				try {
+							m_infostation.setAllDoorsSwitch(false);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}		 				
+		 			}
 		 		}
-		 		
-		 		/*
-		 		JSONObject json = new JSONObject(value);
-		 		
-		 		String foo = json.get("ahoj").toString();
-		 		
-		 		System.out.println("POST value:=" + foo);
-		 		*/
 		 	}
-		 	
-		 	/*
-	    	if (value != null) {
-	    		System.out.println("Value:=" + value.toString());
-	    		
-	    		if (value.toString().equals("next")) {
-	    				    				    			
-	    		}	    		
-	    	}
-	    	*/
 	    	
 	    	value = request.getParameter("Kitchen");
 	    	
@@ -497,7 +285,8 @@ public class KitchenServlet extends HttpServlet {
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
 
-	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='600' height='400' style='margin-top: -200px; margin-left: -300px'>");
+	    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='850' height='550' style='margin-top: -275px; margin-left: -425px'>");
+	    	//out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='1000' height='600' style='margin-top: -325px; margin-left: -500px'>");
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 	    	
@@ -513,44 +302,15 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	   /*
-	    protected JSONObject getDataToJSON() {
-	    	
-	    	Weather wth = m_infostation.getForecastWeather6();
-	    	
-		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-		    String time = format.format(curDate); 	 		  
-		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
-		    String date = format2.format(curDate); 	  		    
-		    		    
-			JSONObject json = new JSONObject();
-			json.put("city", "Mumbai");
-			json.put("country", "India");				 				 				 
-			json.put("order", 44);
-			json.put("tempOut", String.format("%.2f", m_infostation.getTempOut()));
-			json.put("tempIn", String.format("%.2f", m_infostation.getTempIn()));
-			json.put("cloudPerc", m_infostation.getCloudsForecast());
-			json.put("tempForecast", m_infostation.getTempForecast());
-			json.put("time", time);
-			json.put("date", date);
-			json.put("frostOutside", new Boolean(m_infostation.isFrost()));
-			json.put("weatherSymbol", String.format("%d", wth.getWeatherSymbol()));
-			json.put("windSpeed", String.format("%.2f", wth.getWindSpeed()));
-		//	json.put("number_floors", String.format("%d", m_infostation.getNumberFloors()));
-			
-			//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
-			
-			return json;
-	    }	    	    
-	    */
+	  
 	    protected JSONObject getSiteDataToJSON() {
+	    	
+	    	
 		    Date curDate = new Date();
 		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		    String time = format.format(curDate); 	 		  
 		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("EEE MMM dd yyyy");
+		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
 		    String date = format2.format(curDate); 	  	    	  		    		    	
 	    	
 			JSONObject json = new JSONObject();	
@@ -599,7 +359,7 @@ public class KitchenServlet extends HttpServlet {
 				e.printStackTrace();
 			}		
 			
-			// temperatureSensors			
+			// TemperatureSensors			
 			try {
 
 				Set<String> tempSensorsPaths = this.m_infostation.getThingPaths(TemperatureSensor.class);						
@@ -749,27 +509,5 @@ public class KitchenServlet extends HttpServlet {
 			
 			return json;
 	    }	    
-	    /*
-	    protected JSONObject getDataToJSON_Data() {
-	    	
-			JSONObject json = new JSONObject();
-														
-			int n = -1;
-			
-			
-			
-			try {
-				n = this.m_infostation.m_siteService.getNumberThings("floors/Floor1/rooms");
-				
-				//System.out.print("\n\n--->: " + floorPath + "/rooms" + ": " + n);
-				
-			} catch (Exception ex) {	
-				//System.out.print("\nEXCPT: " + ex);
-			}
-	            						
-		    json.put("nRooms", String.format("%d",n));
-						
-			return json;
-	    }	
-	    */
+
 }
