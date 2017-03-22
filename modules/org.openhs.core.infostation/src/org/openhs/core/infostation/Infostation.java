@@ -264,9 +264,12 @@ public class Infostation implements IInfostation {
 	    		  
 	    		  for (String swPath: switchPaths) {
 	    			  
+	    	      //   logger.info(swPath);
+	    			  
 	    			  Switch sw = (Switch) this.m_siteService.getThing(swPath);
 	    			  
-	    			  sw.setState(state);	    			  
+	    			  sw.setState(state);	  
+	    			  
 	    		  }	    		  	    		  
 	    	  }    	  
     	  }    	      	  
@@ -312,7 +315,7 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__open", new Boolean(this.isClosed(door)));
 				  json.put(path + "__lock", new Boolean(this.isLocked(door)));	
 				  
-				  System.out.println("Door path:" + door.getSitePath());
+				//  System.out.println("Door path:" + door.getSitePath());
 				  
 			  } else if (thing instanceof Window) {
 				  Window window = (Window) thing;

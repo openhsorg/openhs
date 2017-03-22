@@ -204,6 +204,27 @@ public class MySiteServiceImpl implements ISiteService {
 			sw.z = 0.0f;							
 			addThing("floors/Floor1/doors/Door2/sensors/Lock", "DummyService/dummy/3/Switch", sw);	
 			
+			sw = new Switch();
+			sw.setName("Back Garage Lock");
+			sw.x = 15.00f;
+			sw.y = 12.0f;
+			sw.z = 0.0f;							
+			addThing("floors/Floor1/doors/Door3/sensors/Lock", "DummyService/dummy/5/Switch", sw);
+			
+			sw = new Switch();
+			sw.setName("Cellar Lock");
+			sw.x = 20.00f;
+			sw.y = 12.0f;
+			sw.z = 0.0f;							
+			addThing("floors/Floor1/doors/Door4/sensors/Lock", "DummyService/dummy/6/Switch", sw);			
+			
+			sw = new Switch();
+			sw.setName("To Garage Lock");
+			sw.x = 25.00f;
+			sw.y = 12.0f;
+			sw.z = 0.0f;							
+			addThing("floors/Floor1/doors/Door5/sensors/Lock", "DummyService/dummy/7/Switch", sw);			
+									
 			ContactSensor contact = new ContactSensor();
 			contact.setName("MainDoor Closed");
 			contact.x = 15.00f;
@@ -217,6 +238,28 @@ public class MySiteServiceImpl implements ISiteService {
 			contact.y = 10.0f;
 			contact.z = 0.0f;								
 			addThing("floors/Floor1/doors/Door2/sensors/Contact", "DummyService/dummy/3/ContactSensor", contact);				
+			
+			contact = new ContactSensor();
+			contact.setName("Back Garage Closed");
+			contact.x = 15.00f;
+			contact.y = 15.0f;
+			contact.z = 0.0f;								
+			addThing("floors/Floor1/doors/Door3/sensors/Contact", "DummyService/dummy/4/ContactSensor", contact);				
+				
+			contact = new ContactSensor();
+			contact.setName("Cellar Closed");
+			contact.x = 15.00f;
+			contact.y = 20.0f;
+			contact.z = 0.0f;								
+			addThing("floors/Floor1/doors/Door4/sensors/Contact", "DummyService/dummy/5/ContactSensor", contact);				
+			
+			contact = new ContactSensor();
+			contact.setName("To Garage Closed");
+			contact.x = 15.00f;
+			contact.y = 20.0f;
+			contact.z = 0.0f;								
+			addThing("floors/Floor1/doors/Door5/sensors/Contact", "DummyService/dummy/6/ContactSensor", contact);				
+						
 			
 			/*
 			 * Windows
@@ -345,7 +388,7 @@ public class MySiteServiceImpl implements ISiteService {
 	
 	public boolean addThing (String sitePath, String devicePath, Thing thing){
 		
-		if (addThing(sitePath, thing)) {
+		if (addThing(sitePath, thing)) {			
 			ss.devPaths.put(devicePath, sitePath);
 
 			return true;
@@ -571,7 +614,7 @@ public class MySiteServiceImpl implements ISiteService {
 			
 			// All state must be true...
 			for (String item : switchPath){
-				  System.out.println("path: " + item);
+				//  System.out.println("path: " + item);
 				Switch sw = (Switch) getThing(item);
 				
 				if (sw.getState()) {

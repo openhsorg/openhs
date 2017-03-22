@@ -75,7 +75,6 @@ var OhsCanvasGraphics;
             if (!(cly < this.y + this.h && cly > this.y))
                 return false;
             return true;
-            //return (clx > this.x && clx < this.x+this.w && cly < this.y+this.h && cly > this.y);
         };
         Rect.prototype.equals = function (rectI) {
             this.x = rectI.x;
@@ -228,13 +227,9 @@ var OhsCanvasGraphics;
             this.paintPush(ctx);
             this.rectClicked = this.getSize();
             window.setTimeout(function () { return _this.paint(ctx); }, 200);
-            // this.size(this.rectClicked.x * 0.2, this.rectClicked.y * 0.2, this.rectClicked.w * 0.2, this.rectClicked.h * 0.2);
-            //this.paint(this.ctx);
         };
         ImageRect.prototype.MouseUpHandler = function (event, ctx) {
             if (this.rectClicked != null) {
-                //  this.sizeRect(this.rectClicked);
-                //   this.paint(ctx);
                 this.rectClicked = null;
             }
         };
@@ -304,13 +299,9 @@ var OhsCanvasGraphics;
             this.paintPush(ctx);
             this.rectClicked = this.getSize();
             window.setTimeout(function () { return _this.paint(ctx); }, 200);
-            // this.size(this.rectClicked.x * 0.2, this.rectClicked.y * 0.2, this.rectClicked.w * 0.2, this.rectClicked.h * 0.2);
-            //this.paint(this.ctx);
         };
         ImageRect2.prototype.MouseUpHandler = function (event, ctx) {
             if (this.rectClicked != null) {
-                //  this.sizeRect(this.rectClicked);
-                //   this.paint(ctx);
                 this.rectClicked = null;
             }
         };
@@ -512,7 +503,6 @@ var OhsCanvasGraphics;
         }
         DoorMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
-            //Size of images
             var perc = 0.7;
             this.imgOpen.size(x, y, w, h);
             this.imgOpen.scaleSize(perc);
@@ -520,14 +510,6 @@ var OhsCanvasGraphics;
             this.imgClose.scaleSize(perc);
             this.imgLock.size(x, y, w, h);
             this.imgLock.scaleSize(0.5);
-            /*
-            var dx: number = 20;
-            var dy: number = 20;
-            
-            this.imgOpen.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgClose.size(x + dx, y + dy, w - (2 * dx), h - (2 * dy));
-            this.imgLock.size(x + dx, y + dy, w - dx, h - dy);
-              */
         };
         DoorMark.prototype.getDoorThing = function () {
             var door = null;
@@ -586,8 +568,6 @@ var OhsCanvasGraphics;
             this.imgClose = new ImageRect('/infores/servlets/kitchen/symbol_windowClosed.png');
             this.imgLock = new ImageRect('/infores/servlets/kitchen/padlock.png');
         }
-        //   public m_switchArray:           Array<Switch> = null;
-        //   public m_contactSensorArray:    Array<ContactSensor> = null;    
         WindowMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             //Size of images            

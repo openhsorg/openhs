@@ -328,12 +328,6 @@ var KitchenInfoStation;
             this.m_weatherData = m_weatherData;
             //---Data---
             this.iconWeather.setImages(imagePaths);
-            /*
-                        this.stopWatch = new StopWatch ();
-                        this.stopWatch.arcCenterX = this.width / 2;
-                        this.stopWatch.arcCenterY = this.height / 2 + 50;
-                        this.stopWatch.arcRadius = 120;
-                        */
         }
         ScreenMain.prototype.MouseDownHandler = function (mx, my) {
             if (!this.appWatch) {
@@ -741,6 +735,8 @@ var KitchenInfoStation;
             this.m_switchMarks = new Array(); // Switch marks
             this.m_contactSensorsMarks = new Array(); // Switch marks
             this.perc = 0.8;
+            this.btnLock = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
+            this.btnUnLock = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);
             this.imgFloor = new Image();
             this.imgFloor.src = "/infores/servlets/kitchen/floor1.jpg";
             this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
@@ -792,7 +788,23 @@ var KitchenInfoStation;
                 }
             }
         };
+        ScreenFloor.prototype.MouseDownHandler = function (mx, my) {
+            if (this.btnLock.PushEvent(mx, my)) {
+            }
+            else if (this.btnUnLock.PushEvent(mx, my)) {
+            }
+        };
         ScreenFloor.prototype.MouseUpHandler = function (mx, my) {
+            if (this.btnLock.UpEvent(mx, my)) {
+                this.m_siteData.postServerAllDoors('on');
+                this.m_siteData.getFastData_DoorArray();
+                return null;
+            }
+            else if (this.btnUnLock.UpEvent(mx, my)) {
+                this.m_siteData.postServerAllDoors('off');
+                this.m_siteData.getFastData_DoorArray();
+                return null;
+            }
             var returnVal = {
                 nextScreen: SwitchScreen.Main,
                 nextThingPath: null
@@ -880,6 +892,11 @@ var KitchenInfoStation;
             for (var id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
+            //Lock-Unlock buttons 
+            this.btnLock.size((width) * 0.77, height - 75, 60, 60);
+            this.btnLock.paint(ctx);
+            this.btnUnLock.size((width) * 0.85, height - 75, 60, 60);
+            this.btnUnLock.paint(ctx);
         };
         return ScreenFloor;
     }(Screen));

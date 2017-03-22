@@ -28,13 +28,31 @@
 <images imageClose="/infores/servlets/kitchen/door3_close.JPG" imageOpen="/infores/servlets/kitchen/door3_open.JPG"/>
 <position xCoord="3.500" yCoord="12.500" zCoord="0.000"/>
 </thing>
+<thing devicePath="" name="Back Garage Closed" sitePath="floors/Floor1/doors/Door3/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="15.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/5/Switch" name="Back Garage Lock" sitePath="floors/Floor1/doors/Door3/sensors/Lock" type="Switch">
+<position xCoord="15.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
 <thing name="Cellar" sitePath="floors/Floor1/doors/Door4" type="Door">
 <images imageClose="/infores/servlets/kitchen/door4_close.JPG" imageOpen="/infores/servlets/kitchen/door4_open.JPG"/>
 <position xCoord="3.500" yCoord="10.000" zCoord="0.000"/>
 </thing>
+<thing devicePath="DummyService/dummy/5/ContactSensor" name="Cellar Closed" sitePath="floors/Floor1/doors/Door4/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/6/Switch" name="Cellar Lock" sitePath="floors/Floor1/doors/Door4/sensors/Lock" type="Switch">
+<position xCoord="20.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
 <thing name="To Garage" sitePath="floors/Floor1/doors/Door5" type="Door">
 <images imageClose="/infores/servlets/kitchen/door5_close.JPG" imageOpen="/infores/servlets/kitchen/door5_open.JPG"/>
 <position xCoord="3.500" yCoord="6.500" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/6/ContactSensor" name="To Garage Closed" sitePath="floors/Floor1/doors/Door5/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/7/Switch" name="To Garage Lock" sitePath="floors/Floor1/doors/Door5/sensors/Lock" type="Switch">
+<position xCoord="25.000" yCoord="12.000" zCoord="0.000"/>
 </thing>
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>

@@ -422,14 +422,8 @@ module KitchenInfoStation {
             this.m_weatherData = m_weatherData;
             
             //---Data---
-
             this.iconWeather.setImages(imagePaths);
-/*
-            this.stopWatch = new StopWatch ();
-            this.stopWatch.arcCenterX = this.width / 2;
-            this.stopWatch.arcCenterY = this.height / 2 + 50;
-            this.stopWatch.arcRadius = 120;   
-            */            
+           
         }
         
         MouseDownHandler(mx: number, my: number) {   
@@ -940,7 +934,7 @@ module KitchenInfoStation {
     class ScreenFloor extends Screen {
         
         protected thingPath:            string                      = "";
-        protected imgFloor2:           ImageRect2                   = new ImageRect2();
+        protected imgFloor2:            ImageRect2                   = new ImageRect2();
         private imgFloor:               HTMLImageElement            = null;        
         private imgFloorLoaded:         boolean                     = false;        
         private txtNumRooms:            TextSimple                  = new TextSimple ();
@@ -949,7 +943,10 @@ module KitchenInfoStation {
         public m_tempMarks:             Array<TempMark>             = new Array<TempMark>();                // Temp marks
         public m_switchMarks:           Array<SwitchMark>           = new Array<SwitchMark>();              // Switch marks
         public m_contactSensorsMarks:   Array<ContactSensorMark>    = new Array<ContactSensorMark>();       // Switch marks
-        private perc:                   number                      = 0.8;                
+        private perc:                   number                      = 0.8;
+        protected btnLock:              ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
+        protected btnUnLock:            ImageButton                  = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);        
+                        
         
         constructor (siteData:  SiteData, m_graphics: Graphics) {                
             super (siteData, m_graphics);
@@ -1026,14 +1023,37 @@ module KitchenInfoStation {
                     }                     
                 }                               
             }            
-        }              
+        }   
+        
+        MouseDownHandler(mx: number, my: number) { 
+            
+            if (this.btnLock.PushEvent(mx, my)){
+            
+            } else if (this.btnUnLock.PushEvent(mx, my)){
+            
+            }                        
+        }        
     
         MouseUpHandler(mx: number, my: number) { 
-        
+         
+            
+            if (this.btnLock.UpEvent(mx, my)){                
+                this.m_siteData.postServerAllDoors('on');  
+                this.m_siteData.getFastData_DoorArray();                 
+                
+                return null; 
+                
+            }else if (this.btnUnLock.UpEvent(mx, my)){                
+                this.m_siteData.postServerAllDoors('off');  
+                this.m_siteData.getFastData_DoorArray();   
+                
+                return null;
+            }             
+            
             var returnVal = {
                 nextScreen: SwitchScreen.Main,
                 nextThingPath: null                                        
-            };    
+            };               
 
            this.returnVal.nextScreen = SwitchScreen.Main;
         
@@ -1147,7 +1167,14 @@ module KitchenInfoStation {
             //Contact sensors
             for (let id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }                                 
+            }    
+            
+            //Lock-Unlock buttons 
+            this.btnLock.size((width) * 0.77, height - 75, 60, 60);
+            this.btnLock.paint(ctx);
+            
+            this.btnUnLock.size((width) * 0.85, height - 75, 60, 60);
+            this.btnUnLock.paint(ctx);             
         }                             
     }    
         

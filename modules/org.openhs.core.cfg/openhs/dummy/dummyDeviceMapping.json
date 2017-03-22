@@ -28,6 +28,18 @@
       "Addr": 4,
       "Type": "Switch"
     },	
+	{
+      "Addr": 5,
+      "Type": "Switch"
+    },		
+	{
+      "Addr": 6,
+      "Type": "Switch"
+    },		
+	{
+      "Addr": 7,
+      "Type": "Switch"
+    },	
     {
       "Addr": 2,
       "Type": "ContactSensor"
@@ -35,6 +47,18 @@
     {
       "Addr": 3,
       "Type": "ContactSensor"
-    }
+    },
+    {
+      "Addr": 4,
+      "Type": "ContactSensor"
+    },
+    {
+      "Addr": 5,
+      "Type": "ContactSensor"
+    },
+   {
+      "Addr": 6,
+      "Type": "ContactSensor"
+    }	
   ]
 }
