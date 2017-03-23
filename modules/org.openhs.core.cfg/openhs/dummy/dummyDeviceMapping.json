@@ -2,11 +2,21 @@
   "thingsMapping": [
     {
       "Addr": 0,
-      "Type": "Thermometer"
+      "Type": "Thermometer",
+      "Period": 10000,
+      "Max": 30.0,
+      "Min": 15.0,
+      "Step": 1.0,
+	  "Init": 22.0
     },
     {
       "Addr": 1,
-      "Type": "Thermometer"
+      "Type": "Thermometer",
+      "Period": 9000,
+      "Max": 30.0,
+      "Min": -30.0,
+      "Step": 1.0,
+	  "Init": 15.0
     },
     {
       "Addr": 0,
@@ -24,41 +34,35 @@
       "Addr": 3,
       "Type": "Switch"
     },
-	{
-      "Addr": 4,
-      "Type": "Switch"
-    },	
-	{
-      "Addr": 5,
-      "Type": "Switch"
-    },		
-	{
-      "Addr": 6,
-      "Type": "Switch"
-    },		
-	{
-      "Addr": 7,
-      "Type": "Switch"
-    },	
+    {
+      "Addr": 0,
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": true
+    },
+    {
+      "Addr": 1,
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": true
+    },
     {
       "Addr": 2,
-      "Type": "ContactSensor"
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": true
     },
     {
       "Addr": 3,
-      "Type": "ContactSensor"
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": true
     },
     {
       "Addr": 4,
-      "Type": "ContactSensor"
-    },
-    {
-      "Addr": 5,
-      "Type": "ContactSensor"
-    },
-   {
-      "Addr": 6,
-      "Type": "ContactSensor"
-    }	
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": false
+    }
   ]
 }

@@ -188,7 +188,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		boolean bcon3 = false;
 		
 		while (running) {
-									
+/*									
 			if (m_messageHandler != null) {			
 				//msg 0
 				{
@@ -241,7 +241,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 						m_messageHandler.handleIncomingMessage(mes);
 					}
 				}
-			}
+			}*/
           	try {
 				Thread.sleep (2000);
 			} catch (InterruptedException e) {
