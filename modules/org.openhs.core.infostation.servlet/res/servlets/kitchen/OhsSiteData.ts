@@ -427,11 +427,10 @@ module OhsSiteData {
                                
             }      
         }   
-        
-        public postServerAllDoors (cmd: string) {            
+
+        public postServerCommand (cmd: string) {            
             var req: any = {
-                postId : allDoorsId,
-              //  path:   this.path,
+                postId : 'GeneralCommand',
                 command: cmd                
             }
             

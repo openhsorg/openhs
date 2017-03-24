@@ -174,14 +174,14 @@ import Thing = OhsSiteData.Thing;
             }              
         }
     }
-    
+    /*
     export class ImageRect extends RectRounded {
                         
-        private img:            HTMLImageElement    = null;
-        private imgSrc:         string              = '---';
+        private img            :HTMLImageElement    = null;
+        private imgSrc         :string              = '---';
         
-        public loaded:          boolean             = false;
-        protected border:       boolean             = false;
+        public loaded          :boolean             = false;
+        protected border       :boolean             = false;
         
         protected rectClicked:  Rect = null;
         
@@ -271,21 +271,18 @@ import Thing = OhsSiteData.Thing;
             if (this.rectClicked != null) {                
 
                 this.rectClicked = null;
-            }
-        
-        }        
-        
+            }        
+        }                
     }
+    */
     
-    export class ImageRect2 extends RectRounded {                
+    export class ImageRect extends RectRounded {                
         
-        private img:            HTMLImageElement    = null;
-        private imgSrc:         string              = '';
-        
-        public loaded:          boolean             = false;
-        protected border:       boolean             = false;
-        
-        protected rectClicked:  Rect = null;
+        private img            :HTMLImageElement    = null;
+        private imgSrc         :string              = '---';        
+        public loaded          :boolean             = false;
+        protected border       :boolean             = false;
+        protected rectClicked  :Rect                = null;
         
         constructor () {
             super();            
@@ -368,8 +365,7 @@ import Thing = OhsSiteData.Thing;
             }        
         }        
         
-    }    
-    
+    }        
     
     export class ImageButton extends RectRounded {
         
@@ -457,7 +453,8 @@ import Thing = OhsSiteData.Thing;
             for (let i = 0; i < imgPaths.length; i++) {
                 
                 if (this.array.length < i + 1) {                    
-                    var img: ImageRect = new ImageRect(imgPaths[i].toString());
+                    var img: ImageRect = new ImageRect();
+                    img.setImage(imgPaths[i].toString());
                     this.array.push(img);
                                     
                 } else {
@@ -466,7 +463,8 @@ import Thing = OhsSiteData.Thing;
                         // This images exists = do not load it again...
                     } else {
                         //Replace image on position 'i'
-                        var img: ImageRect = new ImageRect(imgPaths[i].toString());
+                        var img: ImageRect = new ImageRect();
+                        img.setImage(imgPaths[i].toString());
                         this.array.splice(i, 1, img);
                     }                    
                 }                                 
@@ -518,7 +516,8 @@ import Thing = OhsSiteData.Thing;
         public fontColor:       string = "#000000";
         public fontFamily:      string = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
         public textAlign:       string = "left";
-        public textBaseline:    string = "middle";    
+        public textBaseline:    string = "middle"; 
+        public bold:            boolean = false;   
                         
         protected text:         string = '';
         
@@ -550,8 +549,14 @@ import Thing = OhsSiteData.Thing;
                 y = this.y + (this.h / 2);
             }            
             
+            var boldString = '';
+            
+            if (this.bold) {
+                boldString = 'bold ';
+           }
+            
             ctx.save();
-            ctx.font = this.fontSize + this.fontFamily;
+            ctx.font = boldString + this.fontSize + this.fontFamily;
             ctx.textAlign = this.textAlign;
             ctx.textBaseline = this.textBaseline;
             ctx.fillStyle = this.fontColor;                                  
@@ -575,11 +580,12 @@ import Thing = OhsSiteData.Thing;
         protected thing                 :Thing              = null;        
         protected colorIncideReady      :string             = '#a6a6a6';
         protected colorBorderReady      :string             = '#595959';        
-        protected imgError              :ImageRect          = new ImageRect ('/infores/servlets/kitchen/symbol_error.png');
+        protected imgError              :ImageRect         = new ImageRect ();
 
         public size (x: number, y: number, w: number, h: number) {
             super.size(x, y, w, h);
             
+            this.imgError.setImage('/infores/servlets/kitchen/symbol_error.png');
             this.imgError.size(x, y, w, h);
         }        
         
@@ -594,21 +600,24 @@ import Thing = OhsSiteData.Thing;
     
     export class DoorMark extends Mark {
         
-        protected imgOpen:      ImageRect = new ImageRect ('/infores/servlets/kitchen/door_open.png');
-        protected imgClose:     ImageRect = new ImageRect ('/infores/servlets/kitchen/door_close.png');  
-        protected imgLock:      ImageRect = new ImageRect ('/infores/servlets/kitchen/padlock.png');
+        protected imgOpen:      ImageRect = new ImageRect ();
+        protected imgClose:     ImageRect = new ImageRect ();  
+        protected imgLock:      ImageRect = new ImageRect ();
  
         public size (x: number, y: number, w: number, h: number) {
             super.size(x, y, w, h);                        
             
             var perc: number = 0.7;
             
+            this.imgOpen.setImage('/infores/servlets/kitchen/door_open.png');
             this.imgOpen.size(x, y, w, h);
             this.imgOpen.scaleSize(perc);
             
+            this.imgClose.setImage('/infores/servlets/kitchen/door_close.png');
             this.imgClose.size(x, y, w, h);
             this.imgClose.scaleSize(perc);
             
+            this.imgLock.setImage('/infores/servlets/kitchen/padlock.png');
             this.imgLock.size(x, y, w, h);
             this.imgLock.scaleSize(0.5);            
                   
@@ -679,9 +688,9 @@ import Thing = OhsSiteData.Thing;
     
     export class WindowMark extends Mark {
         
-        protected imgOpen:      ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_windowOpen.png');
-        protected imgClose:     ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_windowClosed.png');  
-        protected imgLock:      ImageRect = new ImageRect ('/infores/servlets/kitchen/padlock.png');  
+        protected imgOpen:      ImageRect = new ImageRect ();
+        protected imgClose:     ImageRect = new ImageRect ();  
+        protected imgLock:      ImageRect = new ImageRect ();  
         
         public size (x: number, y: number, w: number, h: number) {
             super.size(x, y, w, h);                        
@@ -689,12 +698,15 @@ import Thing = OhsSiteData.Thing;
             //Size of images            
             var perc: number = 0.7;
             
+            this.imgOpen.setImage('/infores/servlets/kitchen/symbol_windowOpen.png');
             this.imgOpen.size(x, y, w, h);
             this.imgOpen.scaleSize(perc);
             
+            this.imgClose.setImage('/infores/servlets/kitchen/symbol_windowClosed.png');
             this.imgClose.size(x, y, w, h);
             this.imgClose.scaleSize(perc);
             
+            this.imgLock.setImage('/infores/servlets/kitchen/padlock.png');
             this.imgLock.size(x, y, w, h);
             this.imgLock.scaleSize(0.5);            
              
@@ -765,8 +777,8 @@ import Thing = OhsSiteData.Thing;
 
     export class TempMark extends Mark {
         
-        protected imgThermometer:   ImageRect   = new ImageRect ('/infores/servlets/kitchen/tempSymbol.png');
-        protected imgFrost:         ImageRect   = new ImageRect ('/infores/servlets/kitchen/tempSymbol.png');   
+        protected imgThermometer:   ImageRect   = new ImageRect ();
+        protected imgFrost:         ImageRect   = new ImageRect ();   
         protected textTemp:         TextSimple  = new TextSimple();
         
         protected border:           boolean     = false;
@@ -777,7 +789,10 @@ import Thing = OhsSiteData.Thing;
             var dx: number = 8;
             var dy: number = 8;
             
+            this.imgThermometer.setImage('/infores/servlets/kitchen/tempSymbol.png');
             this.imgThermometer.size(x - dx, y + dy, w - (2 * dx), h - (2 * dy));
+            
+            this.imgFrost.setImage('/infores/servlets/kitchen/tempSymbol.png');
             this.imgFrost.size(x + dx - 3, y + dy, w - (2 * dx), h - (2 * dy));     
             this.textTemp.size(x + 3 * dx, y + 2.5 * dy, 60, 30);                 
         
@@ -848,10 +863,10 @@ import Thing = OhsSiteData.Thing;
     
     export class SwitchMark extends Mark {
         
-        protected imgBulbOn:          ImageRect = new ImageRect ('/infores/servlets/kitchen/bulbOn.png');
-        protected imgBulbOff:         ImageRect = new ImageRect ('/infores/servlets/kitchen/bulbOff.png'); 
-        protected imgBulbOn_Off:      ImageRect = new ImageRect ('/infores/servlets/kitchen/bulbOn_Off.png');
-        protected imgBulbOff_On:      ImageRect = new ImageRect ('/infores/servlets/kitchen/bulbOff_On.png');  
+        protected imgBulbOn:          ImageRect = new ImageRect ();
+        protected imgBulbOff:         ImageRect = new ImageRect (); 
+        protected imgBulbOn_Off:      ImageRect = new ImageRect ();
+        protected imgBulbOff_On:      ImageRect = new ImageRect ();  
         
         protected border:             boolean   = false;
   
@@ -860,15 +875,19 @@ import Thing = OhsSiteData.Thing;
             
             var perc: number = 0.9;
             
+            this.imgBulbOn.setImage('/infores/servlets/kitchen/bulbOn.png');
             this.imgBulbOn.size(x, y, w, h);
             this.imgBulbOn.scaleSize(perc);
             
+            this.imgBulbOff.setImage('/infores/servlets/kitchen/bulbOff.png');
             this.imgBulbOff.size(x, y, w, h);
             this.imgBulbOff.scaleSize(perc);
             
+            this.imgBulbOn_Off.setImage('/infores/servlets/kitchen/bulbOn_Off.png');
             this.imgBulbOn_Off.size(x, y, w, h);
             this.imgBulbOn_Off.scaleSize(perc);         
             
+            this.imgBulbOff_On.setImage('/infores/servlets/kitchen/bulbOff_On.png');
             this.imgBulbOff_On.size(x, y, w, h);
             this.imgBulbOff_On.scaleSize(perc);                               
         
@@ -958,10 +977,10 @@ import Thing = OhsSiteData.Thing;
     
     export class SwitchLockMark extends Mark {
         
-        protected imgLockOn:          ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_lockOn.png');
-        protected imgLockOff:         ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_lockOff.png'); 
-        protected imgLockOn_Off:      ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_lockOn_Off.png');
-        protected imgLockOff_On:      ImageRect = new ImageRect ('/infores/servlets/kitchen/symbol_lockOff_On.png');   
+        protected imgLockOn:          ImageRect = new ImageRect ();
+        protected imgLockOff:         ImageRect = new ImageRect (); 
+        protected imgLockOn_Off:      ImageRect = new ImageRect ();
+        protected imgLockOff_On:      ImageRect = new ImageRect ();   
         
         protected border:             boolean   = false;
    
@@ -970,15 +989,19 @@ import Thing = OhsSiteData.Thing;
             
             var perc: number = 0.9;
             
+            this.imgLockOn.setImage('/infores/servlets/kitchen/symbol_lockOn.png');
             this.imgLockOn.size(x, y, w, h);
             this.imgLockOn.scaleSize(perc);
             
+            this.imgLockOff.setImage('/infores/servlets/kitchen/symbol_lockOff.png');
             this.imgLockOff.size(x, y, w, h);
             this.imgLockOff.scaleSize(perc);
             
+            this.imgLockOn_Off.setImage('/infores/servlets/kitchen/symbol_lockOn_Off.png');
             this.imgLockOn_Off.size(x, y, w, h);
             this.imgLockOn_Off.scaleSize(perc);         
             
+            this.imgLockOff_On.setImage('/infores/servlets/kitchen/symbol_lockOff_On.png');
             this.imgLockOff_On.size(x, y, w, h);
             this.imgLockOff_On.scaleSize(perc);                               
         
@@ -1068,9 +1091,9 @@ import Thing = OhsSiteData.Thing;
     
     export class ContactSensorMark extends Mark {
         
-        protected imgSensorOpen:            ImageRect   = new ImageRect ('/infores/servlets/kitchen/symbol_open.png');
-        protected imgSensorClosed:          ImageRect   = new ImageRect ('/infores/servlets/kitchen/symbol_close.png');  
-        protected imgSensorOff:             ImageRect   = new ImageRect ('/infores/servlets/kitchen/symbol_error.png'); 
+        protected imgSensorOpen:            ImageRect   = new ImageRect ();
+        protected imgSensorClosed:          ImageRect   = new ImageRect ();  
+        protected imgSensorOff:             ImageRect   = new ImageRect (); 
         
         protected border:                   boolean     = false;
 
@@ -1079,12 +1102,15 @@ import Thing = OhsSiteData.Thing;
             
             var perc: number = 0.9;
             
+            this.imgSensorOpen.setImage('/infores/servlets/kitchen/symbol_open.png');
             this.imgSensorOpen.size(x, y, w, h);
             this.imgSensorOpen.scaleSize(perc);
             
+            this.imgSensorClosed.setImage('/infores/servlets/kitchen/symbol_close.png');
             this.imgSensorClosed.size(x, y, w, h);
             this.imgSensorClosed.scaleSize(perc);
             
+            this.imgSensorOff.setImage('/infores/servlets/kitchen/symbol_error.png');
             this.imgSensorOff.size(x, y, w, h);
             this.imgSensorOff.scaleSize(perc);                                             
         }

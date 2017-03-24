@@ -25,6 +25,7 @@ import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.commons.api.IInfostation;
 import org.openhs.core.commons.api.IMeteostation;
+import org.openhs.core.email.*;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class Infostation implements IInfostation {
 	private IMeteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
 	public OpenhsProps m_openhsProps = null;
+	private Email m_email = null;
         
     public void activate() {
 		logger.info("**** activate()");
@@ -74,6 +76,18 @@ public class Infostation implements IInfostation {
               m_meteo = null;
           }
       }	    
+      
+      public void setService(Email ser) {
+    	  logger.info("**** setService(): Email");
+          m_email = ser;          
+      }
+
+      public void unsetService(Email ser) {
+    	  logger.info("**** unsetService(): Email");
+          if (m_email == ser) {
+        	  m_email = null;
+          }
+      }	         
 
       public void setService(ISiteService ser) {
     	  logger.info("**** setService(): ISiteService");
@@ -254,6 +268,12 @@ public class Infostation implements IInfostation {
     	  return this.m_siteService.isLocked (m_thing);
       } 
       
+      public void sendMail () {
+    	  logger.info("\nE-MAIL !!!!");
+    	  this.m_email.sendMessage2("AAAAAAA");
+      } 
+            
+      
       public void setAllDoorsSwitch (boolean state) throws SiteException {
     	  
     	  Set<String> doorPaths = getThingPaths (Door.class);
@@ -268,12 +288,32 @@ public class Infostation implements IInfostation {
 	    			  
 	    			  Switch sw = (Switch) this.m_siteService.getThing(swPath);
 	    			  
+	    			  sw.setState(state);	  	    			  
+	    		  }	    		  	    		  
+	    	  }    	  
+    	  }    	      	  
+      }
+      
+      public void setAllRoomSwitches (boolean state) throws SiteException {
+    	  
+    	  Set<String> roomPaths = getThingPaths (Room.class);
+    	  
+    	  if (roomPaths != null) {
+	    	  for (String path : roomPaths) {	    		  
+	    		  Set <String> switchPaths = this.m_siteService.getThingChildrenPathSet(path, Switch.class);
+	    		  
+	    		  for (String swPath: switchPaths) {
+	    			  
+	    	      //   logger.info(swPath);
+	    			  
+	    			  Switch sw = (Switch) this.m_siteService.getThing(swPath);
+	    			  
 	    			  sw.setState(state);	  
 	    			  
 	    		  }	    		  	    		  
 	    	  }    	  
     	  }    	      	  
-      }
+      }      
       
       
       public JSONObject JSON_Thing (String path) {

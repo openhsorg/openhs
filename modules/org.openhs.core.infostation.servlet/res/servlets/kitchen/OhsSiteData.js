@@ -314,10 +314,9 @@ var OhsSiteData;
                 }
             }
         };
-        SiteData.prototype.postServerAllDoors = function (cmd) {
+        SiteData.prototype.postServerCommand = function (cmd) {
             var req = {
-                postId: allDoorsId,
-                //  path:   this.path,
+                postId: 'GeneralCommand',
                 command: cmd
             };
             postAjax(servletUrl, req);

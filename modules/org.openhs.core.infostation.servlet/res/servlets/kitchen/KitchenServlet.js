@@ -16,7 +16,6 @@ var KitchenInfoStation;
     var Rect = OhsCanvasGraphics.Rect;
     var RectRounded = OhsCanvasGraphics.RectRounded;
     var ImageRect = OhsCanvasGraphics.ImageRect;
-    var ImageRect2 = OhsCanvasGraphics.ImageRect2;
     var TextSimple = OhsCanvasGraphics.TextSimple;
     var TempMark = OhsCanvasGraphics.TempMark;
     var SwitchMark = OhsCanvasGraphics.SwitchMark;
@@ -42,6 +41,14 @@ var KitchenInfoStation;
     var imageStopwatchPushed = '/infores/servlets/kitchen/symbol_stopwatch_pushed.png';
     var imageDoor = '/infores/servlets/kitchen/symbol_door.png';
     var imageDoorPushed = '/infores/servlets/kitchen/symbol_door_pushed.png';
+    var imageBulbOn = '/infores/servlets/kitchen/symbol_bulb_on.png';
+    var imageBulbOnPushed = '/infores/servlets/kitchen/symbol_bulb_on_pushed.png';
+    var imageBulbOff = '/infores/servlets/kitchen/symbol_bulb_off.png';
+    var imageBulbOffPushed = '/infores/servlets/kitchen/symbol_bulb_off_pushed.png';
+    var symbol_settings = '/infores/servlets/kitchen/symbol_settings.png';
+    var logo_htdvere = '/infores/servlets/kitchen/logo_htdvere.png';
+    var symbol_callBack = '/infores/servlets/kitchen/symbol_callBack.png';
+    var symbol_web = '/infores/servlets/kitchen/symbol_web.png';
     var SwitchScreen;
     (function (SwitchScreen) {
         SwitchScreen[SwitchScreen["Main"] = 0] = "Main";
@@ -315,8 +322,8 @@ var KitchenInfoStation;
             this.stopWatch = new StopWatch();
             this.ButtonStopWatch = new ImageButton(imageStopwatch, imageStopwatchPushed);
             this.ButtonDoor = new ImageButton(imageDoor, imageDoorPushed);
-            this.iconVoiceMessage = new ImageRect('/infores/servlets/kitchen/voicemessage.png');
-            this.iconWind = new ImageRect('/infores/servlets/kitchen/wind.png');
+            this.iconVoiceMessage = new ImageRect();
+            this.iconWind = new ImageRect();
             this.iconWeather = new ImageRectArray();
             this.tmpInText = new TextSimple();
             this.tmpOutText = new TextSimple();
@@ -328,6 +335,8 @@ var KitchenInfoStation;
             this.m_weatherData = m_weatherData;
             //---Data---
             this.iconWeather.setImages(imagePaths);
+            this.iconVoiceMessage.setImage('/infores/servlets/kitchen/voicemessage.png');
+            this.iconWind.setImage('/infores/servlets/kitchen/wind.png');
         }
         ScreenMain.prototype.MouseDownHandler = function (mx, my) {
             if (!this.appWatch) {
@@ -648,7 +657,7 @@ var KitchenInfoStation;
             this.txtWind = new TextSimple();
             this.imgWind = null;
             this.iconWeather = new ImageRectArray();
-            this.iconWind = new ImageRect('/infores/servlets/kitchen/wind.png');
+            this.iconWind = new ImageRect();
             // this.txtValid = new TextSimple (10, 10, 60, 10);   
             this.txtValid.size(10, 10, 60, 10);
             this.txtValid.textAlign = "left";
@@ -664,6 +673,7 @@ var KitchenInfoStation;
             this.numForecast = numForecast;
             // this.iconWeather = new ImageRectArray (0, 0, 10, 10, 0);     
             this.iconWeather.setImages(imagePaths);
+            this.iconWind.setImage('/infores/servlets/kitchen/wind.png');
         }
         WeatherForecastPanel.prototype.setSize = function (x, y, width, height) {
             this.x = x;
@@ -725,7 +735,7 @@ var KitchenInfoStation;
         function ScreenFloor(siteData, m_graphics) {
             _super.call(this, siteData, m_graphics);
             this.thingPath = "";
-            this.imgFloor2 = new ImageRect2();
+            this.imgFloor2 = new ImageRect();
             this.imgFloor = null;
             this.imgFloorLoaded = false;
             this.txtNumRooms = new TextSimple();
@@ -737,6 +747,8 @@ var KitchenInfoStation;
             this.perc = 0.8;
             this.btnLock = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
             this.btnUnLock = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);
+            this.btnSwitchOff = new ImageButton(imageBulbOff, imageBulbOffPushed);
+            this.btnSwitchOn = new ImageButton(imageBulbOn, imageBulbOnPushed);
             this.imgFloor = new Image();
             this.imgFloor.src = "/infores/servlets/kitchen/floor1.jpg";
             this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
@@ -793,16 +805,30 @@ var KitchenInfoStation;
             }
             else if (this.btnUnLock.PushEvent(mx, my)) {
             }
+            else if (this.btnSwitchOn.PushEvent(mx, my)) {
+            }
+            else if (this.btnSwitchOff.PushEvent(mx, my)) {
+            }
         };
         ScreenFloor.prototype.MouseUpHandler = function (mx, my) {
             if (this.btnLock.UpEvent(mx, my)) {
-                this.m_siteData.postServerAllDoors('on');
+                this.m_siteData.postServerCommand('AllDoorSwitchesOn');
                 this.m_siteData.getFastData_DoorArray();
                 return null;
             }
             else if (this.btnUnLock.UpEvent(mx, my)) {
-                this.m_siteData.postServerAllDoors('off');
+                this.m_siteData.postServerCommand('AllDoorSwitchesOff');
                 this.m_siteData.getFastData_DoorArray();
+                return null;
+            }
+            else if (this.btnSwitchOn.UpEvent(mx, my)) {
+                this.m_siteData.postServerCommand('AllRoomSwitchesOn');
+                this.m_siteData.getFastData_SwitchArray();
+                return null;
+            }
+            else if (this.btnSwitchOff.UpEvent(mx, my)) {
+                this.m_siteData.postServerCommand('AllRoomSwitchesOff');
+                this.m_siteData.getFastData_SwitchArray();
                 return null;
             }
             var returnVal = {
@@ -892,7 +918,11 @@ var KitchenInfoStation;
             for (var id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }
-            //Lock-Unlock buttons 
+            //Buttons            
+            this.btnSwitchOn.size((width) * 0.61, height - 75, 60, 60);
+            this.btnSwitchOn.paint(ctx);
+            this.btnSwitchOff.size((width) * 0.69, height - 75, 60, 60);
+            this.btnSwitchOff.paint(ctx);
             this.btnLock.size((width) * 0.77, height - 75, 60, 60);
             this.btnLock.paint(ctx);
             this.btnUnLock.size((width) * 0.85, height - 75, 60, 60);
@@ -907,8 +937,9 @@ var KitchenInfoStation;
             this.m_doorMarks = new Array(); // Doors marks
             this.m_tempMarks = new Array(); // Temps marks
             this.m_switchMarks = new Array(); // Switch marks
-            this.m_imgRoomDefault = new ImageRect('/infores/servlets/kitchen/room_default.png');
-            this.m_imgRoom = new ImageRect2();
+            this.m_imgRoomDefault = new ImageRect();
+            this.m_imgRoom = new ImageRect();
+            this.m_imgRoomDefault.setImage('/infores/servlets/kitchen/room_default.png');
         }
         ;
         ScreenRoom.prototype.MouseUpHandler = function (mx, my) {
@@ -1029,18 +1060,23 @@ var KitchenInfoStation;
             this.m_contactSensorsMarks = new Array(); // Switch marks        
             this.m_rectData = new RectRounded();
             this.m_textDoorName = new TextSimple();
-            this.m_imgDoorsOpen = new ImageRect2();
-            this.m_imgDoorsClose = new ImageRect2();
+            this.m_imgDoorsOpen = new ImageRect();
+            this.m_imgDoorsClose = new ImageRect();
+            this.m_imgLogo = new ImageRect();
+            this.btnSettings = new ImageButton(symbol_settings, symbol_settings);
+            this.btnWeb = new ImageButton(symbol_web, symbol_web);
+            this.btnCallBack = new ImageButton(symbol_callBack, symbol_callBack);
+            this.serviceInfo = false;
+            this.serviceRect = new RectRounded();
+            this.m_imgLogo.setImage(logo_htdvere);
         }
         ScreenDoor.prototype.paint = function (canvas) {
-            _super.prototype.paint.call(this, canvas);
             var ctx = canvas.getContext('2d');
             var width = canvas.width;
             var height = canvas.height;
             ctx.clearRect(0, 0, width, height);
             var state = false;
             var door = this.getThing();
-            // window.alert("paint: " + door.image_open);
             if (this.m_contactSensorsMarks.length > 0) {
                 state = this.m_contactSensorsMarks[0].getState();
                 if (state) {
@@ -1089,8 +1125,66 @@ var KitchenInfoStation;
             this.m_textDoorName.paintText(ctx, "Door name: " + door.name);
             this.m_textDoorName.move(0, 20);
             this.m_textDoorName.paintText(ctx, "Door site path: " + door.getPath());
+            //Settings
+            this.btnSettings.size(width - 90, 30, 80, 80);
+            this.btnSettings.paint(ctx);
+            if (this.serviceInfo) {
+                this.paintSettings(ctx, 100, 80, width - 200, 250);
+            }
+        };
+        ScreenDoor.prototype.paintSettings = function (ctx, x, y, w, h) {
+            ctx.save();
+            this.serviceRect.size(x, y, w, h);
+            this.serviceRect.radius = 20;
+            this.serviceRect.paint(ctx);
+            ctx.fillStyle = "white";
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "gray";
+            ctx.fill();
+            ctx.stroke();
+            //Logo
+            this.m_imgLogo.size(x + 30, y + 20, 170, 60);
+            this.m_imgLogo.paint(ctx);
+            //Buttons
+            //this.btnWeb.size(x + 30 , y + 20 + 60 + 50, 70, 70);
+            //  this.btnWeb.paint(ctx);
+            this.btnCallBack.size(x + 30 + 170 + 30, y + 20, 60, 60);
+            this.btnCallBack.paint(ctx);
+            //History data
+            var textDesc = new TextSimple();
+            textDesc.bold = true;
+            textDesc.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+            textDesc.fontSize = 14;
+            textDesc.textAlign = 'left';
+            textDesc.textBaseline = 'bottom';
+            var lineGap = 20;
+            textDesc.size(x + 30, 160, 80, 40);
+            textDesc.paintText(ctx, "Message from HTdvere:");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "Date of install:");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "Your contact:");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "Next service:");
+            textDesc.bold = false;
+            textDesc.size(x + 200, 160, 80, 40);
+            textDesc.paintText(ctx, "Click on button anything you need our help :)");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "14-October-2015");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "Unknown");
+            textDesc.move(0, lineGap);
+            textDesc.paintText(ctx, "14-October-2016");
+            textDesc.bold = true;
+            textDesc.fontColor = "red";
+            textDesc.size(x + 30, y + h - 70, 80, 40);
+            textDesc.paintText(ctx, "Warning:");
+            textDesc.move(120, 0);
+            textDesc.paintText(ctx, "30 days after service interval!!!");
+            ctx.restore();
         };
         ScreenDoor.prototype.setThing = function (thing) {
+            this.serviceInfo = false;
             var oldThing = _super.prototype.getThing.call(this);
             _super.prototype.setThing.call(this, thing);
             var door1 = this.getThing();
@@ -1113,7 +1207,25 @@ var KitchenInfoStation;
                 }
             }
         };
+        ScreenDoor.prototype.MouseDownHandler = function (mx, my) {
+            if (this.btnSettings.PushEvent(mx, my)) {
+            }
+        };
         ScreenDoor.prototype.MouseUpHandler = function (mx, my) {
+            if (this.btnSettings.UpEvent(mx, my)) {
+                if (this.serviceInfo)
+                    this.serviceInfo = false;
+                else
+                    this.serviceInfo = true;
+                //  window.alert("****" + this.serviceInfo);
+                return null;
+            }
+            if (this.serviceInfo) {
+                if (this.serviceRect.isClicked(mx, my)) {
+                    this.serviceInfo = false;
+                    return null;
+                }
+            }
             this.returnVal.nextScreen = this.prevPage;
             for (var id in this.m_switchMarks) {
                 if (this.m_switchMarks[id].isClicked(mx, my)) {
@@ -1135,13 +1247,14 @@ var KitchenInfoStation;
     }(Screen));
     var ScreenDoorList = (function (_super) {
         __extends(ScreenDoorList, _super);
+        //protected clickedImage: ImageRect = null;
         function ScreenDoorList(m_siteData, m_graphics) {
             _super.call(this, m_siteData, m_graphics);
             this.m_arrayViewDoor = new Array();
-            this.m_iconBkgImage = new ImageRect(imageBkg1);
+            this.m_iconBkgImage = new ImageRect();
             this.btnLock = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
             this.btnUnLock = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);
-            this.clickedImage = null;
+            this.m_iconBkgImage.setImage(imageBkg1);
             this.setup();
         }
         ;
@@ -1197,12 +1310,12 @@ var KitchenInfoStation;
         };
         ScreenDoorList.prototype.MouseUpHandler = function (mx, my) {
             if (this.btnLock.UpEvent(mx, my)) {
-                this.m_siteData.postServerAllDoors('on');
+                this.m_siteData.postServerCommand('AllDoorSwitchesOn');
                 this.m_siteData.getFastData_DoorArray();
                 return null;
             }
             else if (this.btnUnLock.UpEvent(mx, my)) {
-                this.m_siteData.postServerAllDoors('off');
+                this.m_siteData.postServerCommand('AllDoorSwitchesOff');
                 this.m_siteData.getFastData_DoorArray();
                 return null;
             }
@@ -1251,7 +1364,7 @@ var KitchenInfoStation;
             this.m_siteData = null;
             this.m_graphics = null;
             this.rectName = new RectRounded();
-            this.m_imgDoorOpen = null;
+            this.m_imgDoorOpen = new ImageRect();
             this.border = false;
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
@@ -1262,7 +1375,7 @@ var KitchenInfoStation;
                 this.thing = m_door;
                 //Reload pictures etc...?
                 var door = this.thing;
-                this.m_imgDoorOpen = new ImageRect(door.image_close);
+                this.m_imgDoorOpen.setImage(door.image_close);
                 this.m_doorMark2 = new DoorMark();
                 this.m_doorMark2.setThing(this.thing);
             }

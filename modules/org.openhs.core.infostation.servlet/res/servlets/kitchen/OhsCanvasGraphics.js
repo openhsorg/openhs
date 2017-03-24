@@ -158,10 +158,110 @@ var OhsCanvasGraphics;
         return RectRounded;
     }(Rect));
     OhsCanvasGraphics.RectRounded = RectRounded;
+    /*
+    export class ImageRect extends RectRounded {
+                        
+        private img            :HTMLImageElement    = null;
+        private imgSrc         :string              = '---';
+        
+        public loaded          :boolean             = false;
+        protected border       :boolean             = false;
+        
+        protected rectClicked:  Rect = null;
+        
+        constructor (imgSrc: string) {
+            super();
+            
+            this.img = new Image();
+            
+            this.img.onload = (event) => {
+                  this.onImageLoad(event);
+            }
+                                               
+            this.img.src = imgSrc;
+            this.imgSrc = imgSrc;
+        }
+        
+        private onImageLoad(event):void {
+           this.loaded = true;
+        }
+        
+        public setImage (path: string) {
+            if (path != this.imgSrc) {
+                
+                this.img.src = path;
+                this.imgSrc = path;
+            }
+        }
+                        
+        public paint (ctx: CanvasRenderingContext2D){
+
+            ctx.save();
+            
+            super.paint(ctx);
+            if (this.radius != 0) {
+                ctx.clip();
+            }
+            
+            ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+            ctx.restore();
+            
+            if (this.border){
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
+        }
+        
+        protected paintPush (ctx: CanvasRenderingContext2D) {
+        
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), 10, 0, 2 * Math.PI, false);
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            
+        }
+        
+        public getImage() {
+            return this.img;
+        }
+        
+        public getImageSrc() {
+            return this.imgSrc;
+        }
+        
+        public MouseDownHandler(event, ctx: CanvasRenderingContext2D) {
+        
+            this.paint(ctx);
+            this.paintPush (ctx);
+            this.rectClicked = this.getSize();
+            
+            window.setTimeout(() => this.paint(ctx), 200);
+        }
+
+        public MouseUpHandler(event, ctx: CanvasRenderingContext2D) {
+            
+            if (this.rectClicked != null) {
+
+                this.rectClicked = null;
+            }
+        }
+    }
+    */
     var ImageRect = (function (_super) {
         __extends(ImageRect, _super);
-        function ImageRect(imgSrc) {
-            var _this = this;
+        function ImageRect() {
             _super.call(this);
             this.img = null;
             this.imgSrc = '---';
@@ -169,11 +269,6 @@ var OhsCanvasGraphics;
             this.border = false;
             this.rectClicked = null;
             this.img = new Image();
-            this.img.onload = function (event) {
-                _this.onImageLoad(event);
-            };
-            this.img.src = imgSrc;
-            this.imgSrc = imgSrc;
         }
         ImageRect.prototype.onImageLoad = function (event) {
             this.loaded = true;
@@ -236,78 +331,6 @@ var OhsCanvasGraphics;
         return ImageRect;
     }(RectRounded));
     OhsCanvasGraphics.ImageRect = ImageRect;
-    var ImageRect2 = (function (_super) {
-        __extends(ImageRect2, _super);
-        function ImageRect2() {
-            _super.call(this);
-            this.img = null;
-            this.imgSrc = '';
-            this.loaded = false;
-            this.border = false;
-            this.rectClicked = null;
-            this.img = new Image();
-        }
-        ImageRect2.prototype.onImageLoad = function (event) {
-            this.loaded = true;
-        };
-        ImageRect2.prototype.setImage = function (path) {
-            if (path != this.imgSrc) {
-                this.img.src = path;
-                this.imgSrc = path;
-            }
-        };
-        ImageRect2.prototype.paint = function (ctx) {
-            ctx.save();
-            _super.prototype.paint.call(this, ctx);
-            if (this.radius != 0) {
-                ctx.clip();
-            }
-            ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
-            ctx.restore();
-            if (this.border) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.rect(this.x, this.y, this.w, this.h);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'blue';
-                ctx.stroke();
-                ctx.closePath();
-                ctx.restore();
-            }
-        };
-        ImageRect2.prototype.paintPush = function (ctx) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), 10, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'blue';
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'blue';
-            ctx.stroke();
-            ctx.closePath();
-            ctx.restore();
-        };
-        ImageRect2.prototype.getImage = function () {
-            return this.img;
-        };
-        ImageRect2.prototype.getImageSrc = function () {
-            return this.imgSrc;
-        };
-        ImageRect2.prototype.MouseDownHandler = function (event, ctx) {
-            var _this = this;
-            this.paint(ctx);
-            this.paintPush(ctx);
-            this.rectClicked = this.getSize();
-            window.setTimeout(function () { return _this.paint(ctx); }, 200);
-        };
-        ImageRect2.prototype.MouseUpHandler = function (event, ctx) {
-            if (this.rectClicked != null) {
-                this.rectClicked = null;
-            }
-        };
-        return ImageRect2;
-    }(RectRounded));
-    OhsCanvasGraphics.ImageRect2 = ImageRect2;
     var ImageButton = (function (_super) {
         __extends(ImageButton, _super);
         function ImageButton(imgSrc, imgPush) {
@@ -372,7 +395,8 @@ var OhsCanvasGraphics;
         ImageRectArray.prototype.setImages = function (imgPaths) {
             for (var i = 0; i < imgPaths.length; i++) {
                 if (this.array.length < i + 1) {
-                    var img = new ImageRect(imgPaths[i].toString());
+                    var img = new ImageRect();
+                    img.setImage(imgPaths[i].toString());
                     this.array.push(img);
                 }
                 else {
@@ -381,7 +405,8 @@ var OhsCanvasGraphics;
                     }
                     else {
                         //Replace image on position 'i'
-                        var img = new ImageRect(imgPaths[i].toString());
+                        var img = new ImageRect();
+                        img.setImage(imgPaths[i].toString());
                         this.array.splice(i, 1, img);
                     }
                 }
@@ -428,6 +453,7 @@ var OhsCanvasGraphics;
             this.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             this.textAlign = "left";
             this.textBaseline = "middle";
+            this.bold = false;
             this.text = '';
             this.border = false;
         }
@@ -452,8 +478,12 @@ var OhsCanvasGraphics;
             else if (baseline == "middle") {
                 y = this.y + (this.h / 2);
             }
+            var boldString = '';
+            if (this.bold) {
+                boldString = 'bold ';
+            }
             ctx.save();
-            ctx.font = this.fontSize + this.fontFamily;
+            ctx.font = boldString + this.fontSize + this.fontFamily;
             ctx.textAlign = this.textAlign;
             ctx.textBaseline = this.textBaseline;
             ctx.fillStyle = this.fontColor;
@@ -478,10 +508,11 @@ var OhsCanvasGraphics;
             this.thing = null;
             this.colorIncideReady = '#a6a6a6';
             this.colorBorderReady = '#595959';
-            this.imgError = new ImageRect('/infores/servlets/kitchen/symbol_error.png');
+            this.imgError = new ImageRect();
         }
         Mark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
+            this.imgError.setImage('/infores/servlets/kitchen/symbol_error.png');
             this.imgError.size(x, y, w, h);
         };
         Mark.prototype.setThing = function (thing) {
@@ -497,17 +528,20 @@ var OhsCanvasGraphics;
         __extends(DoorMark, _super);
         function DoorMark() {
             _super.apply(this, arguments);
-            this.imgOpen = new ImageRect('/infores/servlets/kitchen/door_open.png');
-            this.imgClose = new ImageRect('/infores/servlets/kitchen/door_close.png');
-            this.imgLock = new ImageRect('/infores/servlets/kitchen/padlock.png');
+            this.imgOpen = new ImageRect();
+            this.imgClose = new ImageRect();
+            this.imgLock = new ImageRect();
         }
         DoorMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             var perc = 0.7;
+            this.imgOpen.setImage('/infores/servlets/kitchen/door_open.png');
             this.imgOpen.size(x, y, w, h);
             this.imgOpen.scaleSize(perc);
+            this.imgClose.setImage('/infores/servlets/kitchen/door_close.png');
             this.imgClose.size(x, y, w, h);
             this.imgClose.scaleSize(perc);
+            this.imgLock.setImage('/infores/servlets/kitchen/padlock.png');
             this.imgLock.size(x, y, w, h);
             this.imgLock.scaleSize(0.5);
         };
@@ -564,18 +598,21 @@ var OhsCanvasGraphics;
         __extends(WindowMark, _super);
         function WindowMark() {
             _super.apply(this, arguments);
-            this.imgOpen = new ImageRect('/infores/servlets/kitchen/symbol_windowOpen.png');
-            this.imgClose = new ImageRect('/infores/servlets/kitchen/symbol_windowClosed.png');
-            this.imgLock = new ImageRect('/infores/servlets/kitchen/padlock.png');
+            this.imgOpen = new ImageRect();
+            this.imgClose = new ImageRect();
+            this.imgLock = new ImageRect();
         }
         WindowMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             //Size of images            
             var perc = 0.7;
+            this.imgOpen.setImage('/infores/servlets/kitchen/symbol_windowOpen.png');
             this.imgOpen.size(x, y, w, h);
             this.imgOpen.scaleSize(perc);
+            this.imgClose.setImage('/infores/servlets/kitchen/symbol_windowClosed.png');
             this.imgClose.size(x, y, w, h);
             this.imgClose.scaleSize(perc);
+            this.imgLock.setImage('/infores/servlets/kitchen/padlock.png');
             this.imgLock.size(x, y, w, h);
             this.imgLock.scaleSize(0.5);
         };
@@ -632,8 +669,8 @@ var OhsCanvasGraphics;
         __extends(TempMark, _super);
         function TempMark() {
             _super.apply(this, arguments);
-            this.imgThermometer = new ImageRect('/infores/servlets/kitchen/tempSymbol.png');
-            this.imgFrost = new ImageRect('/infores/servlets/kitchen/tempSymbol.png');
+            this.imgThermometer = new ImageRect();
+            this.imgFrost = new ImageRect();
             this.textTemp = new TextSimple();
             this.border = false;
         }
@@ -641,7 +678,9 @@ var OhsCanvasGraphics;
             _super.prototype.size.call(this, x, y, w, h);
             var dx = 8;
             var dy = 8;
+            this.imgThermometer.setImage('/infores/servlets/kitchen/tempSymbol.png');
             this.imgThermometer.size(x - dx, y + dy, w - (2 * dx), h - (2 * dy));
+            this.imgFrost.setImage('/infores/servlets/kitchen/tempSymbol.png');
             this.imgFrost.size(x + dx - 3, y + dy, w - (2 * dx), h - (2 * dy));
             this.textTemp.size(x + 3 * dx, y + 2.5 * dy, 60, 30);
         };
@@ -700,21 +739,25 @@ var OhsCanvasGraphics;
         __extends(SwitchMark, _super);
         function SwitchMark() {
             _super.apply(this, arguments);
-            this.imgBulbOn = new ImageRect('/infores/servlets/kitchen/bulbOn.png');
-            this.imgBulbOff = new ImageRect('/infores/servlets/kitchen/bulbOff.png');
-            this.imgBulbOn_Off = new ImageRect('/infores/servlets/kitchen/bulbOn_Off.png');
-            this.imgBulbOff_On = new ImageRect('/infores/servlets/kitchen/bulbOff_On.png');
+            this.imgBulbOn = new ImageRect();
+            this.imgBulbOff = new ImageRect();
+            this.imgBulbOn_Off = new ImageRect();
+            this.imgBulbOff_On = new ImageRect();
             this.border = false;
         }
         SwitchMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             var perc = 0.9;
+            this.imgBulbOn.setImage('/infores/servlets/kitchen/bulbOn.png');
             this.imgBulbOn.size(x, y, w, h);
             this.imgBulbOn.scaleSize(perc);
+            this.imgBulbOff.setImage('/infores/servlets/kitchen/bulbOff.png');
             this.imgBulbOff.size(x, y, w, h);
             this.imgBulbOff.scaleSize(perc);
+            this.imgBulbOn_Off.setImage('/infores/servlets/kitchen/bulbOn_Off.png');
             this.imgBulbOn_Off.size(x, y, w, h);
             this.imgBulbOn_Off.scaleSize(perc);
+            this.imgBulbOff_On.setImage('/infores/servlets/kitchen/bulbOff_On.png');
             this.imgBulbOff_On.size(x, y, w, h);
             this.imgBulbOff_On.scaleSize(perc);
         };
@@ -790,21 +833,25 @@ var OhsCanvasGraphics;
         __extends(SwitchLockMark, _super);
         function SwitchLockMark() {
             _super.apply(this, arguments);
-            this.imgLockOn = new ImageRect('/infores/servlets/kitchen/symbol_lockOn.png');
-            this.imgLockOff = new ImageRect('/infores/servlets/kitchen/symbol_lockOff.png');
-            this.imgLockOn_Off = new ImageRect('/infores/servlets/kitchen/symbol_lockOn_Off.png');
-            this.imgLockOff_On = new ImageRect('/infores/servlets/kitchen/symbol_lockOff_On.png');
+            this.imgLockOn = new ImageRect();
+            this.imgLockOff = new ImageRect();
+            this.imgLockOn_Off = new ImageRect();
+            this.imgLockOff_On = new ImageRect();
             this.border = false;
         }
         SwitchLockMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             var perc = 0.9;
+            this.imgLockOn.setImage('/infores/servlets/kitchen/symbol_lockOn.png');
             this.imgLockOn.size(x, y, w, h);
             this.imgLockOn.scaleSize(perc);
+            this.imgLockOff.setImage('/infores/servlets/kitchen/symbol_lockOff.png');
             this.imgLockOff.size(x, y, w, h);
             this.imgLockOff.scaleSize(perc);
+            this.imgLockOn_Off.setImage('/infores/servlets/kitchen/symbol_lockOn_Off.png');
             this.imgLockOn_Off.size(x, y, w, h);
             this.imgLockOn_Off.scaleSize(perc);
+            this.imgLockOff_On.setImage('/infores/servlets/kitchen/symbol_lockOff_On.png');
             this.imgLockOff_On.size(x, y, w, h);
             this.imgLockOff_On.scaleSize(perc);
         };
@@ -880,18 +927,21 @@ var OhsCanvasGraphics;
         __extends(ContactSensorMark, _super);
         function ContactSensorMark() {
             _super.apply(this, arguments);
-            this.imgSensorOpen = new ImageRect('/infores/servlets/kitchen/symbol_open.png');
-            this.imgSensorClosed = new ImageRect('/infores/servlets/kitchen/symbol_close.png');
-            this.imgSensorOff = new ImageRect('/infores/servlets/kitchen/symbol_error.png');
+            this.imgSensorOpen = new ImageRect();
+            this.imgSensorClosed = new ImageRect();
+            this.imgSensorOff = new ImageRect();
             this.border = false;
         }
         ContactSensorMark.prototype.size = function (x, y, w, h) {
             _super.prototype.size.call(this, x, y, w, h);
             var perc = 0.9;
+            this.imgSensorOpen.setImage('/infores/servlets/kitchen/symbol_open.png');
             this.imgSensorOpen.size(x, y, w, h);
             this.imgSensorOpen.scaleSize(perc);
+            this.imgSensorClosed.setImage('/infores/servlets/kitchen/symbol_close.png');
             this.imgSensorClosed.size(x, y, w, h);
             this.imgSensorClosed.scaleSize(perc);
+            this.imgSensorOff.setImage('/infores/servlets/kitchen/symbol_error.png');
             this.imgSensorOff.size(x, y, w, h);
             this.imgSensorOff.scaleSize(perc);
         };
