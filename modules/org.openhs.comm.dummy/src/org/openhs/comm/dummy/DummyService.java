@@ -21,14 +21,14 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DummyService implements IMessageParser, ICommService, Runnable {
+public class DummyService implements IMessageParser, ICommService {
 
 	private Logger logger = LoggerFactory.getLogger(DummyService.class);
 	
 	private final String m_name = "DummyService";
 	private final String m_parserName = "dummy";
 
-	private Thread m_myThd = null;
+	//private Thread m_myThd = null;
     private volatile boolean running = true;
     
     private ISiteService m_siteService = null;
@@ -36,10 +36,10 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
     
     private ObjectFactory<ThingUpdater, JSONObject> m_updaterFactory;
     
-    private DummyMessage m_thm0 = new DummyMessage(0, "Thermometer", "0.0","");
-    private DummyMessage m_thm1 = new DummyMessage(1, "Thermometer", "0.0","");
-    private DummyMessage m_conc2 = new DummyMessage(2, "ContactSensor", "0.0","");
-    private DummyMessage m_conc3 = new DummyMessage(3, "ContactSensor", "0.0","");
+//    private DummyMessage m_thm0 = new DummyMessage(0, "Thermometer", "0.0","");
+//    private DummyMessage m_thm1 = new DummyMessage(1, "Thermometer", "0.0","");
+//    private DummyMessage m_conc2 = new DummyMessage(2, "ContactSensor", "0.0","");
+//    private DummyMessage m_conc3 = new DummyMessage(3, "ContactSensor", "0.0","");
 
     public DummyService() {
     	m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
@@ -52,18 +52,18 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
 		logger.info("**** activate()");
 		updated(properties);
-		m_myThd = new Thread(this);
-		m_myThd.start();
+		//m_myThd = new Thread(this);
+		//m_myThd.start();
 	}
 	
 	public void deactivate () {
         this.terminate();
-        try {
-			m_myThd.join();
-		} catch (InterruptedException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
+//        try {
+//			m_myThd.join();
+//		} catch (InterruptedException ex) {
+//			// TODO Auto-generated catch block
+//			ex.printStackTrace();
+//		}
 		logger.info("**** deactivate()");
 	}
 
@@ -168,6 +168,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
     		m_messageHandler = null;
     }
 
+    /*
 	@Override
 	public void run() {
 		try {
@@ -188,7 +189,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 		boolean bcon3 = false;
 		
 		while (running) {
-/*									
+									
 			if (m_messageHandler != null) {			
 				//msg 0
 				{
@@ -241,7 +242,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 						m_messageHandler.handleIncomingMessage(mes);
 					}
 				}
-			}*/
+			}
           	try {
 				Thread.sleep (2000);
 			} catch (InterruptedException e) {
@@ -251,6 +252,7 @@ public class DummyService implements IMessageParser, ICommService, Runnable {
 			}
 		}
 	}
+	*/
 
 	@Override
 	public ThingUpdater parseMessage(Message msg) {

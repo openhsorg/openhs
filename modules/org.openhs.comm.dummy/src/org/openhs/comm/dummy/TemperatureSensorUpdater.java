@@ -54,7 +54,7 @@ public class TemperatureSensorUpdater extends ThingUpdater {
 	
 	void updateTemperature() {
 		m_value = m_value + m_step < m_max ? m_value + m_step : m_min;
-    	logger.info(" Updated: " + getDevicePath() + " t= " + m_value);
+    	//logger.info(" Updated: " + getDevicePath() + " t= " + m_value);
     	updateIncoming();
 	}
 	

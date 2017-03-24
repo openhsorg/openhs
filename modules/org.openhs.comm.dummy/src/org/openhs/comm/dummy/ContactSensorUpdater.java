@@ -46,7 +46,7 @@ public class ContactSensorUpdater extends ThingUpdater {
 
 	void updateVal() {
 		m_value = ! m_value;
-    	logger.info(" Updated: " + getDevicePath() + " v= " + m_value);
+    	//logger.info(" Updated: " + getDevicePath() + " v= " + m_value);
     	updateIncoming();
 	}
 
