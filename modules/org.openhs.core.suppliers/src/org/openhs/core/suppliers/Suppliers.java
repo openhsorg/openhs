@@ -13,8 +13,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Supplier;
-import org.openhs.core.commons.api.ISuppliers;
+import org.openhs.core.commons.Thing;
+import org.openhs.core.suppliers.api.ISuppliers;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,5 +227,15 @@ public class Suppliers implements ISuppliers {
 		suppl.logo = "res/servlets/kitchen/logo_htdvere.png";
 		
 		suppliers.put("htdvere",  suppl);		
+	}
+	
+	public Supplier getSupplier (String name) throws SiteException {		
+		Supplier obj = suppliers.get(name);
+		
+		if (obj == null) {
+			throw new SiteException("Supplier does not exist...: " + name);
+		}		
+
+		return obj;		
 	}
 }

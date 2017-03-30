@@ -163,8 +163,14 @@ public class KitchenServlet extends HttpServlet {
 	    			
 	    			if (path != null) {	    			
 	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
-	    			}						
-		    			    		
+	    			}								    			    		
+				} else if (value.toString().equals("Supplier")) {
+					
+	    			String name = request.getParameter("name");
+	    			
+	    			if (name != null) {	    			
+	    				jsonString = this.m_infostation.JSON_Supplier(name);
+	    			}								    			    		
 				}
 	    	    
 	    	    if (jsonString != null) {

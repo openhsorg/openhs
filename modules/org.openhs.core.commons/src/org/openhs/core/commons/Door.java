@@ -9,8 +9,9 @@ public class Door extends Thing {
 	public float x = 0;
 	public float y = 0;
 	public float z = 0;
+
+    //Supplier...
+	public String supplier = "no supplier";
 	
-	//public boolean open = false;
-	public boolean lock = false;
 	
 }

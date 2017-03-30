@@ -1068,7 +1068,7 @@ var KitchenInfoStation;
             this.btnCallBack = new ImageButton(symbol_callBack, symbol_callBack);
             this.serviceInfo = false;
             this.serviceRect = new RectRounded();
-            this.m_imgLogo.setImage(logo_htdvere);
+            //this.m_imgLogo.setImage(logo_htdvere);            
         }
         ScreenDoor.prototype.paint = function (canvas) {
             var ctx = canvas.getContext('2d');
@@ -1129,10 +1129,10 @@ var KitchenInfoStation;
             this.btnSettings.size(width - 90, 30, 80, 80);
             this.btnSettings.paint(ctx);
             if (this.serviceInfo) {
-                this.paintSettings(ctx, 100, 80, width - 200, 250);
+                this.paintSettings(ctx, 100, 80, width - 200, 250, door);
             }
         };
-        ScreenDoor.prototype.paintSettings = function (ctx, x, y, w, h) {
+        ScreenDoor.prototype.paintSettings = function (ctx, x, y, w, h, door) {
             ctx.save();
             this.serviceRect.size(x, y, w, h);
             this.serviceRect.radius = 20;
@@ -1143,13 +1143,16 @@ var KitchenInfoStation;
             ctx.fill();
             ctx.stroke();
             //Logo
-            this.m_imgLogo.size(x + 30, y + 20, 170, 60);
-            this.m_imgLogo.paint(ctx);
+            if (door.supplier.valid) {
+                this.m_imgLogo.setImage(door.supplier.logo);
+                this.m_imgLogo.size(x + 30, y + 20, 170, 60);
+                this.m_imgLogo.paint(ctx);
+            }
             //Buttons
             //this.btnWeb.size(x + 30 , y + 20 + 60 + 50, 70, 70);
             //  this.btnWeb.paint(ctx);
-            this.btnCallBack.size(x + 30 + 170 + 30, y + 20, 60, 60);
-            this.btnCallBack.paint(ctx);
+            //   this.btnCallBack.size(x + 30 + 170 + 30 , y + 20, 60, 60);
+            // this.btnCallBack.paint(ctx);   
             //History data
             var textDesc = new TextSimple();
             textDesc.bold = true;
@@ -1159,28 +1162,43 @@ var KitchenInfoStation;
             textDesc.textBaseline = 'bottom';
             var lineGap = 20;
             textDesc.size(x + 30, 160, 80, 40);
-            textDesc.paintText(ctx, "Message from HTdvere:");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Date of install:");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Your contact:");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Next service:");
+            textDesc.paintText(ctx, "Message for you:");
+            textDesc.move(170, 0);
             textDesc.bold = false;
-            textDesc.size(x + 200, 160, 80, 40);
             textDesc.paintText(ctx, "Click on button anything you need our help :)");
-            textDesc.move(0, lineGap);
+            textDesc.move(-170, lineGap);
+            textDesc.bold = true;
+            textDesc.paintText(ctx, "Date of install:");
+            textDesc.move(170, 0);
+            textDesc.bold = false;
             textDesc.paintText(ctx, "14-October-2015");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Unknown");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "14-October-2016");
             textDesc.bold = true;
             textDesc.fontColor = "red";
             textDesc.size(x + 30, y + h - 70, 80, 40);
             textDesc.paintText(ctx, "Warning:");
             textDesc.move(120, 0);
             textDesc.paintText(ctx, "30 days after service interval!!!");
+            if (door.supplier.valid) {
+                textDesc.bold = true;
+                textDesc.fontColor = "black";
+                textDesc.size(x + 250, y + 10, 80, 40);
+                textDesc.paintText(ctx, "Address:");
+                textDesc.bold = false;
+                textDesc.move(90, 0);
+                textDesc.paintText(ctx, "" + door.supplier.address);
+                textDesc.move(-90, 20);
+                textDesc.bold = true;
+                textDesc.paintText(ctx, "Phone:");
+                textDesc.move(90, 0);
+                textDesc.bold = false;
+                textDesc.paintText(ctx, "" + door.supplier.phone);
+                textDesc.move(-90, 20);
+                textDesc.bold = true;
+                textDesc.paintText(ctx, "www:");
+                textDesc.move(90, 0);
+                textDesc.bold = false;
+                textDesc.paintText(ctx, "" + door.supplier.www);
+            }
             ctx.restore();
         };
         ScreenDoor.prototype.setThing = function (thing) {
@@ -1217,6 +1235,9 @@ var KitchenInfoStation;
                     this.serviceInfo = false;
                 else
                     this.serviceInfo = true;
+                // Get data about supplier
+                var door = this.getThing();
+                door.supplier.getServerData();
                 //  window.alert("****" + this.serviceInfo);
                 return null;
             }
@@ -1448,24 +1469,38 @@ var KitchenInfoStation;
             y: event.clientY - rect.top
         };
     }
-    function getAjax(urlAdr, id) {
-        var result = null;
-        $.ajaxSetup({
-            // Disable caching of AJAX responses
-            cache: false
-        });
-        $.ajax({ async: false, url: urlAdr, data: { orderId: id }, dataType: "json", success: function (data) {
-                result = data;
-            } });
-        return result;
+    /*
+function getAjax2(urlAdr: string, id: string) {
+       
+    var result = null;
+    
+    $.ajaxSetup ({
+    // Disable caching of AJAX responses
+    cache: false
+    });
+            
+    $.ajax({async: false, url: urlAdr, data: {orderId: id}, dataType: "json", success: function(data) {
+        
+        result = data;
+                                      
+        }});
+    
+    return result;
     }
-    function postAjax(urlAdr, id, dataPost) {
-        var result = null;
-        $.ajax({ async: false, type: "POST", url: urlAdr, data: { postId: id, dataId: dataPost }, dataType: "json", success: function (response) {
-                result = response;
-            } });
-        return result;
+    
+function postAjax2(urlAdr: string, id: string, dataPost: string) {
+       
+    var result = null;
+            
+    $.ajax({async: false, type: "POST", url: urlAdr, data: {postId: id, dataId: dataPost}, dataType: "json", success: function(response) {
+        
+        result = response;
+                                      
+        }});
+    
+    return result;
     }
+    */
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while (new Date().getTime() < unixtime_ms + ms) { }

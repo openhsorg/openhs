@@ -435,6 +435,38 @@ var OhsSiteData;
         return TemperatureSensor;
     }(Thing));
     OhsSiteData.TemperatureSensor = TemperatureSensor;
+    var Supplier = (function () {
+        function Supplier() {
+            this.valid = false;
+            this.name = "unknown";
+            this.www = "unknown";
+            this.address = "unknown address";
+            this.phone = "unknown";
+            this.logo = "unknown";
+        }
+        Supplier.prototype.getServerData = function () {
+            var req = {
+                orderId: "Supplier",
+                name: this.name
+            };
+            //  window.alert("****" + this.name);
+            var data = getAjax("kitchen", req);
+            this.parseServerData(data);
+        };
+        Supplier.prototype.parseServerData = function (data) {
+            if (data != null) {
+                this.valid = JSON.parse(data['__validity']);
+                if (this.valid) {
+                    this.www = data['www'];
+                    this.address = data['address'];
+                    this.phone = data['phone'];
+                    this.logo = data['logo'];
+                }
+            }
+        };
+        return Supplier;
+    }());
+    OhsSiteData.Supplier = Supplier;
     var Switch = (function (_super) {
         __extends(Switch, _super);
         function Switch() {
@@ -537,6 +569,7 @@ var OhsSiteData;
             this.name = "no name";
             this.image_open = "/infores/servlets/kitchen/room_default.png";
             this.image_close = "/infores/servlets/kitchen/room_default.png";
+            this.supplier = new Supplier();
             this.open = false;
             this.locked = false;
             this.x = 0;
@@ -565,21 +598,6 @@ var OhsSiteData;
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-            /*
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid){
-                    this.name = data['name'];
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.open = JSON.parse(data['open']);
-                    this.locked = JSON.parse(data['lock']);
-                    this.image_open = data['image_open'];
-                    this.image_close = data['image_close'];
-                }
-            }
-            */
         };
         Door.prototype.parseServerData = function (data) {
             if (data != null) {
@@ -593,6 +611,7 @@ var OhsSiteData;
                     this.locked = JSON.parse(data[this.path + '__lock']);
                     this.image_open = data[this.path + '__imagePath_open'];
                     this.image_close = data[this.path + '__imagePath_close'];
+                    this.supplier.name = data[this.path + '__supplierName'];
                 }
             }
         };

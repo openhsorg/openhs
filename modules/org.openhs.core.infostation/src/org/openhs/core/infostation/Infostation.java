@@ -18,11 +18,13 @@ import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Supplier;
 import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
+import org.openhs.core.suppliers.api.ISuppliers;
 import org.openhs.core.commons.api.IInfostation;
 import org.openhs.core.commons.api.IMeteostation;
 import org.openhs.core.email.*;
@@ -41,6 +43,7 @@ public class Infostation implements IInfostation {
 	private IMeteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
 	public OpenhsProps m_openhsProps = null;
+	public ISuppliers m_suppliers = null;  
 	private Email m_email = null;
         
     public void activate() {
@@ -76,6 +79,18 @@ public class Infostation implements IInfostation {
               m_meteo = null;
           }
       }	    
+      
+      public void setService(ISuppliers ser) {
+    	  logger.info("**** setService(): Suppliers");
+          m_suppliers = ser;          
+      }
+
+      public void unsetService(ISuppliers ser) {
+    	  logger.info("**** unsetService(): Suppliers");
+          if (m_suppliers == ser) {
+        	  m_suppliers = null;
+          }
+      }      
       
       public void setService(Email ser) {
     	  logger.info("**** setService(): Email");
@@ -353,7 +368,8 @@ public class Infostation implements IInfostation {
 				  json.put(path + "__y", String.format("%.3f", door.y));
 				  json.put(path + "__z", String.format("%.3f", door.z));	
 				  json.put(path + "__open", new Boolean(this.isClosed(door)));
-				  json.put(path + "__lock", new Boolean(this.isLocked(door)));	
+				  json.put(path + "__lock", new Boolean(this.isLocked(door)));
+				  json.put(path + "__supplierName", door.supplier);
 				  
 				//  System.out.println("Door path:" + door.getSitePath());
 				  
@@ -451,4 +467,37 @@ public class Infostation implements IInfostation {
       public String JSON_ThingArrayToString (Class<?> t) {
     	  return this.JSON_ThingArray(t).toString();
       }
+      
+      public String JSON_Supplier (String name) {
+    	  
+    	  JSONObject json = new JSONObject();
+    	  
+    	  Supplier suppl;
+		  
+		  try {
+			  suppl = this.m_suppliers.getSupplier(name);			  		  
+			  
+			  if (suppl != null) {
+				  
+				  json.put("__validity", new Boolean(true));
+				  json.put("www", suppl.www);
+				  json.put("address", suppl.address);
+				  json.put("phone", suppl.phone);
+				  json.put("logo", suppl.logo);
+			  
+			  } else {
+				  json.put("__validity", new Boolean(false));
+			  }
+
+
+			  
+		  } catch (SiteException e) {
+			  e.printStackTrace();
+			  json.put("__validity", new Boolean(false));
+		  }    	  
+    	  
+		  return json.toString();
+      } 
+      
+      
 }

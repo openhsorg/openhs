@@ -175,8 +175,7 @@ module KitchenInfoStation {
                 }
                 
             } else {
-                
-                 
+                                 
                 /////**** Benchmark*****  
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
@@ -237,9 +236,7 @@ module KitchenInfoStation {
             
             var refresh = this.refreshRateMain;
             var screen = null;
-            
-            
-                       
+                                               
            // window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
                     
             if (retVal.nextScreen == SwitchScreen.Floor) {               
@@ -1383,7 +1380,7 @@ module KitchenInfoStation {
         constructor (m_siteData:  SiteData, m_graphics: Graphics) {            
             super(m_siteData, m_graphics);      
             
-            this.m_imgLogo.setImage(logo_htdvere);            
+            //this.m_imgLogo.setImage(logo_htdvere);            
         }
       
         public paint(canvas: HTMLCanvasElement) {
@@ -1459,12 +1456,12 @@ module KitchenInfoStation {
             this.btnSettings.paint(ctx);
             
             if (this.serviceInfo) {
-                this.paintSettings(ctx, 100, 80, width - 200, 250);
+                this.paintSettings(ctx, 100, 80, width - 200, 250, door);
             }
             
         }
         
-        public paintSettings(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+        public paintSettings(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, door: Door) {
             
             ctx.save();  
              
@@ -1478,15 +1475,18 @@ module KitchenInfoStation {
             ctx.stroke();
             
             //Logo
-            this.m_imgLogo.size(x + 30, y + 20, 170, 60);
-            this.m_imgLogo.paint(ctx);
+            if (door.supplier.valid) {
+                this.m_imgLogo.setImage(door.supplier.logo);
+                this.m_imgLogo.size(x + 30, y + 20, 170, 60);
+                this.m_imgLogo.paint(ctx);
+            }
             
             //Buttons
             //this.btnWeb.size(x + 30 , y + 20 + 60 + 50, 70, 70);
           //  this.btnWeb.paint(ctx);
             
-            this.btnCallBack.size(x + 30 + 170 + 30 , y + 20, 60, 60);
-            this.btnCallBack.paint(ctx);   
+         //   this.btnCallBack.size(x + 30 + 170 + 30 , y + 20, 60, 60);
+           // this.btnCallBack.paint(ctx);   
             
             //History data
             var textDesc:TextSimple = new TextSimple();
@@ -1497,30 +1497,45 @@ module KitchenInfoStation {
             textDesc.textBaseline = 'bottom';
             var lineGap: number = 20;
             textDesc.size(x + 30, 160, 80, 40);            
-            textDesc.paintText(ctx, "Message from HTdvere:");
-            textDesc.move(0, lineGap);                
-            textDesc.paintText(ctx, "Date of install:");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Your contact:");   
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Next service:");     
-            
-            textDesc.bold = false;
-            textDesc.size(x + 200, 160, 80, 40);
+            textDesc.paintText(ctx, "Message for you:");
+            textDesc.move(170, 0);    
+            textDesc.bold = false;      
             textDesc.paintText(ctx, "Click on button anything you need our help :)");
-            textDesc.move(0, lineGap);            
-            textDesc.paintText(ctx, "14-October-2015");
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "Unknown");   
-            textDesc.move(0, lineGap);
-            textDesc.paintText(ctx, "14-October-2016");     
-            
+            textDesc.move(-170, lineGap);    
+            textDesc.bold = true;                                                    
+            textDesc.paintText(ctx, "Date of install:");
+            textDesc.move(170, 0);
+            textDesc.bold = false; 
+            textDesc.paintText(ctx, "14-October-2015");      
+
             textDesc.bold = true;
             textDesc.fontColor = "red";
             textDesc.size(x + 30, y + h - 70, 80, 40);
             textDesc.paintText(ctx, "Warning:");
             textDesc.move(120, 0);
-            textDesc.paintText(ctx, "30 days after service interval!!!");                   
+            textDesc.paintText(ctx, "30 days after service interval!!!"); 
+            
+            if (door.supplier.valid){
+                textDesc.bold = true;
+                textDesc.fontColor = "black";
+                textDesc.size(x + 250, y + 10, 80, 40);
+                textDesc.paintText(ctx, "Address:");
+                textDesc.bold = false;
+                textDesc.move(90, 0);
+                textDesc.paintText(ctx, "" + door.supplier.address); 
+                textDesc.move(-90, 20);
+                textDesc.bold = true;
+                textDesc.paintText(ctx, "Phone:");  
+                textDesc.move(90, 0);
+                textDesc.bold = false;
+                textDesc.paintText(ctx, "" + door.supplier.phone);       
+                textDesc.move(-90, 20);
+                textDesc.bold = true;
+                textDesc.paintText(ctx, "www:");  
+                textDesc.move(90, 0);
+                textDesc.bold = false;
+                textDesc.paintText(ctx, "" + door.supplier.www);    
+            }        
             
             ctx.restore();             
             
@@ -1574,6 +1589,10 @@ module KitchenInfoStation {
             if (this.btnSettings.UpEvent(mx, my)){                               
                 if (this.serviceInfo) this.serviceInfo = false;
                 else this.serviceInfo = true;
+                
+                // Get data about supplier
+                var door: Door = <Door> this.getThing();                
+                door.supplier.getServerData();
                 
               //  window.alert("****" + this.serviceInfo);
                                             
@@ -1877,8 +1896,8 @@ module KitchenInfoStation {
             y: event.clientY - rect.top
         };
     }
-        
-    function getAjax(urlAdr: string, id: string) {
+        /*
+    function getAjax2(urlAdr: string, id: string) {
            
         var result = null;
         
@@ -1896,7 +1915,7 @@ module KitchenInfoStation {
         return result;    
         }    
         
-    function postAjax(urlAdr: string, id: string, dataPost: string) {
+    function postAjax2(urlAdr: string, id: string, dataPost: string) {
            
         var result = null;
                 
@@ -1908,7 +1927,7 @@ module KitchenInfoStation {
         
         return result;    
         }     
-        
+        */
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while(new Date().getTime() < unixtime_ms + ms) {}

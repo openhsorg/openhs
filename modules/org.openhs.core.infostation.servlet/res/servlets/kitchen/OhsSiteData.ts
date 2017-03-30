@@ -577,9 +577,45 @@ module OhsSiteData {
         }          
     } 
     
-    export class Switch extends Thing{
+    export class Supplier {
+        
+        public valid: boolean = false;  
+        public name:  string = "unknown";
+        public www:  string = "unknown";     
+        public address:  string = "unknown address";
+        public phone:  string = "unknown";
+        public logo:  string = "unknown";
+        
+        public getServerData () {       
+             
+            var req: any = {                
+                orderId : "Supplier",
+                name:   this.name                
+            } 
+          //  window.alert("****" + this.name);
+            var data: string = getAjax("kitchen", req); 
+            
+            this.parseServerData(data);                                            
+        }       
+        
+        public parseServerData (data: any) {                               
+            if (data != null) {                
+                this.valid = JSON.parse(data['__validity']);
+
+                if (this.valid) {
+                    this.www = data['www'];
+                    this.address = data['address'];
+                    this.phone = data['phone'];
+                    this.logo = data['logo'];
+  
+                }
+            }                            
+        }         
+        
+    }
     
- 
+    export class Switch extends Thing {
+    
         protected   stateInt:  number; //        
         
         public x:   number;
@@ -721,6 +757,8 @@ module OhsSiteData {
         public x:   number;
         public y:   number;
         
+        public supplier:  Supplier = new Supplier ();
+        
         constructor () {
             super();
             this.open = false;
@@ -756,23 +794,7 @@ module OhsSiteData {
             
             var data: string = getAjax("kitchen", req); 
             
-            this.parseServerData(data);
-            
-            /*
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid){
-                    this.name = data['name'];
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.open = JSON.parse(data['open']);
-                    this.locked = JSON.parse(data['lock']);  
-                    this.image_open = data['image_open'];
-                    this.image_close = data['image_close'];          
-                }                                
-            }          
-            */                                             
+            this.parseServerData(data);                                            
         }       
         
         public parseServerData (data: any) {                   
@@ -787,7 +809,9 @@ module OhsSiteData {
                     this.open = JSON.parse(data[this.path + '__open']);
                     this.locked = JSON.parse(data[this.path + '__lock']);  
                     this.image_open = data[this.path + '__imagePath_open'];
-                    this.image_close = data[this.path + '__imagePath_close'];    
+                    this.image_close = data[this.path + '__imagePath_close'];
+                    this.supplier.name = data[this.path + '__supplierName']; 
+                   // window.alert("****" + this.supplier.name);     
                 }
             }                            
         }         
