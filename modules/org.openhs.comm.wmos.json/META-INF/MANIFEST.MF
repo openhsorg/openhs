@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Json
+Bundle-SymbolicName: org.openhs.comm.wmos.json
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.apache.commons.io,
+ org.json;version="20160810.0.0",
+ org.openhs.core.commons,
+ org.openhs.core.commons.api,
+ org.openhs.core.site.api,
+ org.openhs.core.site.services,
+ org.osgi.service.component;version="1.2.2",
+ org.slf4j;version="1.7.2"
+Service-Component: OSGI-INF/component.xml
