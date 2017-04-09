@@ -32,7 +32,7 @@ void setup(void){
   WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
  
-  mqtt.begin("192.168.1.211", net);
+  mqtt.begin("192.168.1.26", net);
  
   connect();
   Serial.printf("ready!");
@@ -51,11 +51,13 @@ void loop(void){
   // Check if any reads failed and exit early (to try again).
   
   if (!isnan(h) && !isnan(t)) {
-    mqtt.publish("test", "Temp: " + String(t));
-    mqtt.publish("test", "Hum: " + String(h));
+    mqtt.publish("Wmos", "{\"Type\":\"Thermometer\",\"Addr\":\"192.168.1.26\",\"Temperature\":" + String(t) + "}");
+    mqtt.publish("Wmos", "{\"Type\":\"Hygrometer\",\"Addr\":\"192.168.1.26\",\"Humidity\":" + String(h) + "}");
+    // mqtt.publish("Wmos", "{Temp: \"" + String(t) + "\"}");
+    // mqtt.publish("Wmos", "{Hum:  \"" + String(h) + "\"}");
   }
 
-  delay(2000); 
+  delay(5000); 
 }
  
 void connect() {
@@ -67,7 +69,7 @@ void connect() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
  
-  while (!mqtt.connect(host, "test", "test")) {
+  while (!mqtt.connect("WmosClient", "usr", "pswd")) {
     Serial.print(".");
   }
   Serial.println("\nconnected!");
