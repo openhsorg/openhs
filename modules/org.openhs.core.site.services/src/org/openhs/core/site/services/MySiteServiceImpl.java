@@ -921,7 +921,6 @@ public class MySiteServiceImpl implements ISiteService {
 						String sitePath = elementSitePath.getAttribute("sitePath");
 						ss.things.put(sitePath, obj);
 						obj.setSitePath(sitePath);
-						
 
 						//TODO use factory pattern
 
@@ -1125,14 +1124,18 @@ public class MySiteServiceImpl implements ISiteService {
 			if (xml.exists()) {
 
 				try {
+					logger.info("loading: " + xmlFileNamePath);
 					//System.out.println("\n++> LOADING XML...");
 
 					LoadXML(xmlFileNamePath);
 					//buildHouse();
 				} catch (Exception ex) {
+					logger.info("Caught exception: " + ex);
 
 				}
 			} else {
+				logger.info("file doesn't exists: " + xmlFileNamePath);
+				logger.info("callin buildHouse()");
 
 				//System.out.println("\n++> LOADING XML... but file is not here :( -> create something");
 

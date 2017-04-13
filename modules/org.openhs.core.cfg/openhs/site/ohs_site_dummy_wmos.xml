@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<site>
+<thing name="My first floor" sitePath="floors/Floor1" type="Floor">
+<images imageBkg="no path"/>
+<dimensions dim_x="22.450" dim_y="13.700"/>
+</thing>
+<thing name="Main Entrance" sitePath="floors/Floor1/doors/Door1" type="Door">
+<images imageClose="/infores/servlets/kitchen/door1_close.JPG" imageOpen="/infores/servlets/kitchen/door1_open.JPG"/>
+<position xCoord="11.000" yCoord="0.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/2/ContactSensor" name="MainDoor Closed" sitePath="floors/Floor1/doors/Door1/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="5.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/2/Switch" name="Main Door Lock" sitePath="floors/Floor1/doors/Door1/sensors/Lock" type="Switch">
+<position xCoord="25.000" yCoord="8.000" zCoord="0.000"/>
+</thing>
+<thing name="Back Entrance" sitePath="floors/Floor1/doors/Door2" type="Door">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="5.000" yCoord="9.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/3/ContactSensor" name="SideDoor Closed" sitePath="floors/Floor1/doors/Door2/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/3/Switch" name="Side Door Lock" sitePath="floors/Floor1/doors/Door2/sensors/Lock" type="Switch">
+<position xCoord="10.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
+<thing name="Back Garage" sitePath="floors/Floor1/doors/Door3" type="Door">
+<images imageClose="/infores/servlets/kitchen/door3_close.JPG" imageOpen="/infores/servlets/kitchen/door3_open.JPG"/>
+<position xCoord="3.500" yCoord="12.500" zCoord="0.000"/>
+</thing>
+<thing devicePath="" name="Back Garage Closed" sitePath="floors/Floor1/doors/Door3/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="15.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/5/Switch" name="Back Garage Lock" sitePath="floors/Floor1/doors/Door3/sensors/Lock" type="Switch">
+<position xCoord="15.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
+<thing name="Cellar" sitePath="floors/Floor1/doors/Door4" type="Door">
+<images imageClose="/infores/servlets/kitchen/door4_close.JPG" imageOpen="/infores/servlets/kitchen/door4_open.JPG"/>
+<position xCoord="3.500" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/5/ContactSensor" name="Cellar Closed" sitePath="floors/Floor1/doors/Door4/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/6/Switch" name="Cellar Lock" sitePath="floors/Floor1/doors/Door4/sensors/Lock" type="Switch">
+<position xCoord="20.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
+<thing name="To Garage" sitePath="floors/Floor1/doors/Door5" type="Door">
+<images imageClose="/infores/servlets/kitchen/door5_close.JPG" imageOpen="/infores/servlets/kitchen/door5_open.JPG"/>
+<position xCoord="3.500" yCoord="6.500" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/6/ContactSensor" name="To Garage Closed" sitePath="floors/Floor1/doors/Door5/sensors/Contact" type="ContactSensor">
+<position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/7/Switch" name="To Garage Lock" sitePath="floors/Floor1/doors/Door5/sensors/Lock" type="Switch">
+<position xCoord="25.000" yCoord="12.000" zCoord="0.000"/>
+</thing>
+<thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room0.png"/>
+</thing>
+<thing devicePath="Mqtt/Wmos/192.168.1.26/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
+<position xCoord="7.000" yCoord="13.000" zCoord="0.000"/>
+</thing>
+<thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room1.png"/>
+</thing>
+<thing devicePath="DummyService/dummy/0/Switch" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<position xCoord="10.000" yCoord="8.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
+<position xCoord="7.000" yCoord="5.000" zCoord="0.000"/>
+</thing>
+<thing name="Bathroom" sitePath="floors/Floor1/rooms/Room1/windows/Bathroom" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="17.000" yCoord="0.000" zCoord="0.000"/>
+</thing>
+<thing name="Garden room1" sitePath="floors/Floor1/rooms/Room1/windows/Garden_room1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="1.000" yCoord="13.700" zCoord="0.000"/>
+</thing>
+<thing name="Garden room2" sitePath="floors/Floor1/rooms/Room1/windows/Garden_room2" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="2.500" yCoord="13.700" zCoord="0.000"/>
+</thing>
+<thing name="Kid1" sitePath="floors/Floor1/rooms/Room1/windows/Kid1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="16.000" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing name="Kid2" sitePath="floors/Floor1/rooms/Room1/windows/Kid2" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="20.000" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing name="Sleeping Room" sitePath="floors/Floor1/rooms/Room1/windows/Sleeping_Room" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="22.450" yCoord="2.500" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/4/ContactSensor" name="South Window Closed" sitePath="floors/Floor1/rooms/Room1/windows/South Window/sensors/Contact" type="ContactSensor">
+<position xCoord="60.000" yCoord="80.000" zCoord="0.000"/>
+</thing>
+<thing name="Kitchen" sitePath="floors/Floor1/rooms/Room1/windows/South Window1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="8.500" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing name="Living room" sitePath="floors/Floor1/rooms/Room1/windows/South Window2" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="12.500" yCoord="10.000" zCoord="0.000"/>
+</thing>
+<thing name="Work room" sitePath="floors/Floor1/rooms/Room1/windows/Work_room" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="6.500" yCoord="1.500" zCoord="0.000"/>
+</thing>
+<thing name="Kid1" sitePath="floors/Floor1/rooms/Room2" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room2.png"/>
+</thing>
+<thing devicePath="DummyService/dummy/1/Switch" name="Bathroom Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid1_Switch" type="Switch">
+<position xCoord="15.000" yCoord="8.000" zCoord="0.000"/>
+</thing>
+<thing devicePath="DummyService/dummy/4/Switch" name="WC Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid2_Switch" type="Switch">
+<position xCoord="20.000" yCoord="8.000" zCoord="0.000"/>
+</thing>
+<thing name="My second floor" sitePath="floors/Floor2" type="Floor">
+<images imageBkg="no path"/>
+<dimensions dim_x="22.450" dim_y="13.700"/>
+</thing>
+<thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room">
+<images imageBkg="/infores/servlets/kitchen/room3.png"/>
+</thing>
+</site>

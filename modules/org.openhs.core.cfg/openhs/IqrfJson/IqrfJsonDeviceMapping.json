@@ -17,32 +17,82 @@
       "Type": "LedR"
     },
     {
-      "Addr": 1,
+      "Addr": 2,
+      "Type": "LedR"
+    },
+    {
+      "Addr": 3,
+      "Type": "LedR"
+    },
+    {
+      "Addr": 0,
       "Type": "IO",
-      "port": "PORTA",
-      "dirOut": true,
-      "bit": 0
+      "Comd": "SET",
+      "Port": "PORTC",
+      "Bit": 2
+    },
+    {
+      "Addr": 0,
+      "Type": "IO",
+      "Comd": "GET",
+      "Port": "PORTB",
+      "Bit": 4
     },
     {
       "Addr": 1,
       "Type": "IO",
-      "port": "PORTA",
-      "dirOut": false,
-      "bit": 1
+      "Comd": "SET",
+      "Port": "PORTC",
+      "Bit": 2
     },
     {
       "Addr": 1,
       "Type": "IO",
-      "port": "PORTA",
-      "dirOut": true,
-      "bit": 2
+      "Comd": "GET",
+      "Port": "PORTB",
+      "Bit": 4
     },
     {
-      "Addr": 1,
+      "Addr": 2,
       "Type": "IO",
-      "port": "PORTA",
-      "dirOut": false,
-      "bit": 3
+      "Comd": "SET",
+      "Port": "PORTC",
+      "Bit": 2
+    },
+    {
+      "Addr": 2,
+      "Type": "IO",
+      "Comd": "GET",
+      "Port": "PORTB",
+      "Bit": 4
+    },
+    {
+      "Addr": 3,
+      "Type": "IO",
+      "Comd": "SET",
+      "Port": "PORTC",
+      "Bit": 2
+    },
+    {
+      "Addr": 3,
+      "Type": "IO",
+      "Comd": "GET",
+      "Port": "PORTB",
+      "Bit": 4
+    },
+    {
+      "Addr": 4,
+      "Type": "IO",
+      "Comd": "SET",
+      "Port": "PORTC",
+      "Bit": 2
+    },
+    {
+      "Addr": 4,
+      "Type": "IO",
+      "Comd": "GET",
+      "Port": "PORTB",
+      "Bit": 4
     }
   ]
 }

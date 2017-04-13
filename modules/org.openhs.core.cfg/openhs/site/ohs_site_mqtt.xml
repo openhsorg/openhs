@@ -3,35 +3,66 @@
 <thing name="My first floor" sitePath="floors/Floor1" type="Floor">
 <images imageBkg="no path"/>
 </thing>
-<thing name="Outside" sitePath="floors/Floor1/doors/Door1" type="Door">
-<images imageBkg="/infores/servlets/kitchen/door1_close.JPG"/>
-<position xCoord="310" yCoord="0" zCoord="0"/>
+<thing name="Main Entrance" sitePath="floors/Floor1/doors/Door1" type="Door">
+<images imageClose="/infores/servlets/kitchen/door1_close.JPG" imageOpen="/infores/servlets/kitchen/door1_open.JPG"/>
+<position xCoord="320" yCoord="0" zCoord="0"/>
 </thing>
-<thing name="Inside" sitePath="floors/Floor1/doors/Door2" type="Door">
-<images imageBkg="/infores/servlets/kitchen/door2_close.JPG"/>
-<position xCoord="450" yCoord="50" zCoord="0"/>
+<thing name="Back Entrance" sitePath="floors/Floor1/doors/Door2" type="Door">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="150" yCoord="220" zCoord="0"/>
+</thing>
+<thing name="Back Garage" sitePath="floors/Floor1/doors/Door3" type="Door">
+<images imageClose="/infores/servlets/kitchen/door3_close.JPG" imageOpen="/infores/servlets/kitchen/door3_open.JPG"/>
+<position xCoord="100" yCoord="330" zCoord="0"/>
+</thing>
+<thing name="Cellar" sitePath="floors/Floor1/doors/Door4" type="Door">
+<images imageClose="/infores/servlets/kitchen/door4_close.JPG" imageOpen="/infores/servlets/kitchen/door4_open.JPG"/>
+<position xCoord="100" yCoord="250" zCoord="0"/>
+</thing>
+<thing name="To Garage" sitePath="floors/Floor1/doors/Door5" type="Door">
+<images imageClose="/infores/servlets/kitchen/door5_close.JPG" imageOpen="/infores/servlets/kitchen/door5_open.JPG"/>
+<position xCoord="100" yCoord="150" zCoord="0"/>
 </thing>
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>
 </thing>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/0/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
-<position xCoord="300" yCoord="300" zCoord="0"/>
-</thing>
 <thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room1.png"/>
 </thing>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/0/LedR" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
-<!--thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/SET/PORTC/2" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch"-->
-<position xCoord="220" yCoord="150" zCoord="0"/>
+<thing name="Bathroom" sitePath="floors/Floor1/rooms/Room1/windows/Bathroom" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="440" yCoord="0" zCoord="0"/>
 </thing>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
-<position xCoord="300" yCoord="150" zCoord="0"/>
+<thing name="Garden room" sitePath="floors/Floor1/rooms/Room1/windows/Garden_room" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="20" yCoord="350" zCoord="0"/>
+</thing>
+<thing name="Kid1" sitePath="floors/Floor1/rooms/Room1/windows/Kid1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="420" yCoord="220" zCoord="0"/>
+</thing>
+<thing name="Kid2" sitePath="floors/Floor1/rooms/Room1/windows/Kid2" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="520" yCoord="220" zCoord="0"/>
+</thing>
+<thing name="Sleeping room" sitePath="floors/Floor1/rooms/Room1/windows/Sleeping_room" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="550" yCoord="20" zCoord="0"/>
+</thing>
+<thing name="Main1" sitePath="floors/Floor1/rooms/Room1/windows/South Window1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="250" yCoord="220" zCoord="0"/>
+</thing>
+<thing name="Main2" sitePath="floors/Floor1/rooms/Room1/windows/South Window2" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="330" yCoord="220" zCoord="0"/>
+</thing>
+<thing name="Work" sitePath="floors/Floor1/rooms/Room1/windows/Work1" type="Window">
+<images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
+<position xCoord="200" yCoord="30" zCoord="0"/>
 </thing>
 <thing name="Kid1" sitePath="floors/Floor1/rooms/Room2" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room2.png"/>
-</thing>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/LedR" name="Bathroom Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid1_Switch" type="Switch">
-<position xCoord="420" yCoord="150" zCoord="0"/>
 </thing>
 <thing name="My second floor" sitePath="floors/Floor2" type="Floor">
 <images imageBkg="no path"/>
@@ -40,9 +71,42 @@
 <images imageBkg="/infores/servlets/kitchen/room3.png"/>
 </thing>
 
-<thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/SET/PORTC/2" name="MainDoor" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoor" type="Switch"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/GET/PORTB/4" name="MainDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/MainDoorClosed" type="ContactSensor"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/SET/PORTC/2" name="SideDoor" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoor" type="Switch"/>
-<thing devicePath="Mqtt/Iqrf/DpaResponse/1/IO/GET/PORTB/4" name="SideDoorClosed" sitePath="floors/Floor1/rooms/Room0/sensors/SideDoorClosed" type="ContactSensor"/>
+
+<thing devicePath="Mqtt/Iqrf/DpaResponse/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
+<position xCoord="300" yCoord="150" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/1/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
+<position xCoord="300" yCoord="300" zCoord="0"/>
+</thing>
+
+<thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/GET/PORTB/4" name="MainDoor Closed" sitePath="floors/Floor1/doors/Door1/sensors/Contact" type="ContactSensor">
+<position xCoord="10" yCoord="30" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/3/IO/GET/PORTB/4" name="SideDoor Closed" sitePath="floors/Floor1/doors/Door2/sensors/Contact" type="ContactSensor">
+<position xCoord="60" yCoord="80" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/4/IO/GET/PORTB/4" name="South Window Closed" sitePath="floors/Floor1/rooms/Room1/windows/South Window/sensors/Contact" type="ContactSensor">
+<position xCoord="60" yCoord="80" zCoord="0"/>
+</thing>
+
+<thing devicePath="Mqtt/Iqrf/DpaResponse/0/LedR" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<position xCoord="220" yCoord="150" zCoord="0"/>
+</thing>
+<!--thing devicePath="Mqtt/Iqrf/DpaResponse/0/IO/SET/PORTC/2" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<position xCoord="220" yCoord="150" zCoord="0"/>
+</thing-->
+
+<thing devicePath="Mqtt/Iqrf/DpaResponse/1/LedR" name="Bathroom Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid1_Switch" type="Switch">
+<position xCoord="420" yCoord="150" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/2/LedR" name="Main Door Lock" sitePath="floors/Floor1/doors/Door1/sensors/Lock" type="Switch">
+<position xCoord="100" yCoord="30" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/3/LedR" name="Side Door Lock" sitePath="floors/Floor1/doors/Door2/sensors/Lock" type="Switch">
+<position xCoord="150" yCoord="80" zCoord="0"/>
+</thing>
+<thing devicePath="Mqtt/Iqrf/DpaResponse/4/LedR" name="WC Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid2_Switch" type="Switch">
+<position xCoord="500" yCoord="150" zCoord="0"/>
+</thing>
 
 </site>

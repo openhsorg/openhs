@@ -35,6 +35,10 @@
       "Type": "Switch"
     },
     {
+      "Addr": 4,
+      "Type": "Switch"
+    },
+    {
       "Addr": 0,
       "Type": "ContactSensor",
       "Period": 9000,

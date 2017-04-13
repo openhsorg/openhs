@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="require" deactivate="deactivate" immediate="true" modified="updated" name="org.openhs.comm.wmos.json">
+   <implementation class="org.openhs.comm.wmos.json.JsonMessageParser"/>
+   <service>
+      <provide interface="org.openhs.core.commons.api.IMessageParser"/>
+   </service>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.api.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.commons.api.IMessageHandler" name="IMessageHandler" policy="static" unbind="unsetService"/>
+</scr:component>
