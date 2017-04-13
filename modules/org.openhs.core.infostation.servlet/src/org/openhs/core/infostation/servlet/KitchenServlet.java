@@ -163,8 +163,14 @@ public class KitchenServlet extends HttpServlet {
 	    			
 	    			if (path != null) {	    			
 	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
-	    			}						
-		    			    		
+	    			}								    			    		
+				} else if (value.toString().equals("Supplier")) {
+					
+	    			String name = request.getParameter("name");
+	    			
+	    			if (name != null) {	    			
+	    				jsonString = this.m_infostation.JSON_Supplier(name);
+	    			}								    			    		
 				}
 	    	    
 	    	    if (jsonString != null) {
@@ -232,29 +238,42 @@ public class KitchenServlet extends HttpServlet {
 		 				m_infostation.setSwitch(path, false);
 		 			}
 		 			
-		 		} else if (value.toString().equals("AllDoors")) {	
+		 		} else if (value.toString().equals("GeneralCommand")) {	
 		 			
-		 		//	String path = request.getParameter("path").toString();
 		 			String command = request.getParameter("command").toString();		
-		 			
-		 	//		System.out.println("\n\n\n\n****POST value:=" + command);
-		 			
-		 			if (command.equals("on")){
+
+		 			if (command.equals("AllRoomSwitchesOn")){
 		 				try {
-							m_infostation.setAllDoorsSwitch(true);
+							m_infostation.setAllRoomSwitches(true);
+							//m_infostation.sendMail();
 						} catch (SiteException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 		 				
-		 			} else if (command.equals("off")){
+		 			} else if (command.equals("AllRoomSwitchesOff")){
+		 				try {
+							m_infostation.setAllRoomSwitches(false);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
+		 				
+		 			} else if (command.equals("AllDoorSwitchesOn")){
+		 				try {
+							m_infostation.setAllDoorsSwitch(true);
+						} catch (SiteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}		 				
+		 			} else if (command.equals("AllDoorSwitchesOff")){
 		 				try {
 							m_infostation.setAllDoorsSwitch(false);
 						} catch (SiteException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}		 				
-		 			}
+		 			}		 		
 		 		}
 		 	}
 	    	

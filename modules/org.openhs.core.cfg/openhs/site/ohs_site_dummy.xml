@@ -7,6 +7,7 @@
 <thing name="Main Entrance" sitePath="floors/Floor1/doors/Door1" type="Door">
 <images imageClose="/infores/servlets/kitchen/door1_close.JPG" imageOpen="/infores/servlets/kitchen/door1_open.JPG"/>
 <position xCoord="11.000" yCoord="0.000" zCoord="0.000"/>
+<supplier name="htdvere"/>
 </thing>
 <thing devicePath="DummyService/dummy/2/ContactSensor" name="MainDoor Closed" sitePath="floors/Floor1/doors/Door1/sensors/Contact" type="ContactSensor">
 <position xCoord="15.000" yCoord="5.000" zCoord="0.000"/>
@@ -17,6 +18,7 @@
 <thing name="Back Entrance" sitePath="floors/Floor1/doors/Door2" type="Door">
 <images imageClose="/infores/servlets/kitchen/door2_close.JPG" imageOpen="/infores/servlets/kitchen/door2_open.JPG"/>
 <position xCoord="5.000" yCoord="9.000" zCoord="0.000"/>
+<supplier name="no supplier"/>
 </thing>
 <thing devicePath="DummyService/dummy/3/ContactSensor" name="SideDoor Closed" sitePath="floors/Floor1/doors/Door2/sensors/Contact" type="ContactSensor">
 <position xCoord="15.000" yCoord="10.000" zCoord="0.000"/>
@@ -27,6 +29,7 @@
 <thing name="Back Garage" sitePath="floors/Floor1/doors/Door3" type="Door">
 <images imageClose="/infores/servlets/kitchen/door3_close.JPG" imageOpen="/infores/servlets/kitchen/door3_open.JPG"/>
 <position xCoord="3.500" yCoord="12.500" zCoord="0.000"/>
+<supplier name="no supplier"/>
 </thing>
 <thing devicePath="" name="Back Garage Closed" sitePath="floors/Floor1/doors/Door3/sensors/Contact" type="ContactSensor">
 <position xCoord="15.000" yCoord="15.000" zCoord="0.000"/>
@@ -37,6 +40,7 @@
 <thing name="Cellar" sitePath="floors/Floor1/doors/Door4" type="Door">
 <images imageClose="/infores/servlets/kitchen/door4_close.JPG" imageOpen="/infores/servlets/kitchen/door4_open.JPG"/>
 <position xCoord="3.500" yCoord="10.000" zCoord="0.000"/>
+<supplier name="no supplier"/>
 </thing>
 <thing devicePath="DummyService/dummy/5/ContactSensor" name="Cellar Closed" sitePath="floors/Floor1/doors/Door4/sensors/Contact" type="ContactSensor">
 <position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>
@@ -47,6 +51,7 @@
 <thing name="To Garage" sitePath="floors/Floor1/doors/Door5" type="Door">
 <images imageClose="/infores/servlets/kitchen/door5_close.JPG" imageOpen="/infores/servlets/kitchen/door5_open.JPG"/>
 <position xCoord="3.500" yCoord="6.500" zCoord="0.000"/>
+<supplier name="no supplier"/>
 </thing>
 <thing devicePath="DummyService/dummy/6/ContactSensor" name="To Garage Closed" sitePath="floors/Floor1/doors/Door5/sensors/Contact" type="ContactSensor">
 <position xCoord="15.000" yCoord="20.000" zCoord="0.000"/>

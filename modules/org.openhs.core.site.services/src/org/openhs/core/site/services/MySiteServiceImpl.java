@@ -112,6 +112,7 @@ public class MySiteServiceImpl implements ISiteService {
 			door.z = 0.0f;
 			door.imagePath_open = "/infores/servlets/kitchen/door1_open.JPG";
 			door.imagePath_close = "/infores/servlets/kitchen/door1_close.JPG";
+			door.supplier = "htdvere";
 			addThing("floors/Floor1/doors/Door1", door);			
 			
 			door = new Door();
@@ -818,7 +819,16 @@ public class MySiteServiceImpl implements ISiteService {
 					// Z-coord
 					Attr zCoord = doc.createAttribute("zCoord");
 					zCoord.setValue(String.format("%.3f", ((Door) thing).z));					
-					position.setAttributeNode(zCoord);					
+					position.setAttributeNode(zCoord);		
+					
+					//Element supplier
+					Element supplier = doc.createElement("supplier");
+					element.appendChild(supplier);
+
+					// Name
+					Attr supplName = doc.createAttribute("name");
+					supplName.setValue(String.format("" + ((Door) thing).supplier));					
+					supplier.setAttributeNode(supplName);						
 					
 				} else if (thing instanceof Window) {
 					
@@ -876,7 +886,7 @@ public class MySiteServiceImpl implements ISiteService {
 	}	
 
 	public void LoadXML(String path) {
-
+		
 		try {
 			File inputFile = new File(path);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -1044,7 +1054,20 @@ public class MySiteServiceImpl implements ISiteService {
 								} catch (Exception ex) {
 								
 								} 
+							}		
+							
+							//Element position
+							Node supplierNode = elementSitePath.getElementsByTagName("supplier").item(0);
+							
+							if(supplierNode != null && supplierNode.getNodeType() == Node.ELEMENT_NODE) {								
+								String supplName =  ((Element) supplierNode).getAttribute("name");
+								
+								if (supplName != null) {
+									((Door) obj).supplier = supplName;
+								//	logger.info("\n\n\n" + supplName);
+								}
 							}							
+							
 						} else if (obj instanceof Window) {
 							Node imagesNode = elementSitePath.getElementsByTagName("images").item(0);
 							
