@@ -39,6 +39,18 @@
       "Type": "Switch"
     },
     {
+      "Addr": 5,
+      "Type": "Switch"
+    },
+    {
+      "Addr": 6,
+      "Type": "Switch"
+    },
+    {
+      "Addr": 7,
+      "Type": "Switch"
+    },	
+    {
       "Addr": 0,
       "Type": "ContactSensor",
       "Period": 9000,
@@ -67,6 +79,18 @@
       "Type": "ContactSensor",
       "Period": 9000,
 	  "Init": false
-    }
+    },
+    {
+      "Addr": 5,
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": true
+    },
+    {
+      "Addr": 6,
+      "Type": "ContactSensor",
+      "Period": 9000,
+	  "Init": false
+    }	
   ]
 }
