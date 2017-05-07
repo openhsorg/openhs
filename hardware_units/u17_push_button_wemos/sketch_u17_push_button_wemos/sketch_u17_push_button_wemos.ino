@@ -1,13 +1,35 @@
 #include <ESP8266WiFi.h>
 #include <Homie.h>
+#include "FS.h"
 
 const int buttonPin = D3;
 const int ledPin = BUILTIN_LED;
-//int buttonState = 0;
 int lastButtonState = -1;  
 
 HomieNode buttonNode("button", "button");
 Bounce debouncer = Bounce();
+
+void format () {
+
+  SPIFFS.format();    
+  delay(500);
+  ESP.reset();  
+}
+
+bool messageHandler(String value) {
+
+  Serial.print("Message:");
+  Serial.print(value);
+
+  //Switch back to config mode...
+  if (value == "configuration mode"){
+    format();
+  } else if (value == "reset") {
+    ESP.reset();
+  }
+
+  return true;
+}  
 
 void setupHandler() {
 
@@ -15,8 +37,7 @@ void setupHandler() {
   digitalWrite(buttonPin, HIGH);    
 
   debouncer.attach(buttonPin);
-  debouncer.interval(100);   
-  
+  debouncer.interval(100);     
 }
 
 void loopHandler () {
@@ -41,7 +62,8 @@ void loopHandler () {
 void setup() {
 
   Homie.setFirmware("OpenHS button", "1.0.0");
-  Homie.registerNode(buttonNode);  
+  Homie.registerNode(buttonNode);
+  buttonNode.subscribe("message", messageHandler);    
   Homie.setSetupFunction(setupHandler);
   Homie.setLoopFunction(loopHandler);  
   Homie.setup();
