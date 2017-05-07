@@ -3,7 +3,7 @@
 #include "FS.h"
 #include "DHT.h"
 
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11
 #define DHTPIN D4
 
 const int TEMPERATURE_INTERVAL = 30; // 30 sec...
