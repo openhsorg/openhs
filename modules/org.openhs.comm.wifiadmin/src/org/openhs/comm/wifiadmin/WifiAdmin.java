@@ -12,6 +12,7 @@ public class WifiAdmin {
 		logger.info("org.openhs.comm.wifiadmin: activate");	      	
 		
 		discovery.start();   
+		//ns.run();
     }
 
     public void deactivate() {
