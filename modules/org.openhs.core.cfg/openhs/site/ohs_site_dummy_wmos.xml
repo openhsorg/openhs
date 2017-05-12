@@ -57,7 +57,7 @@
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>
 </thing>
-<thing devicePath="Mqtt/Wmos/192.168.1.26/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
+<thing devicePath="Mqtt/devices/c0a99ee0/temperature" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
 <position xCoord="7.000" yCoord="13.000" zCoord="0.000"/>
 </thing>
 <thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">

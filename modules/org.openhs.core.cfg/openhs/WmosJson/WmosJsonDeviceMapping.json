@@ -1,11 +1,11 @@
 {
   "thingsMapping": [
     {
-      "Addr": "devices/15889de0/relay",
+      "Addr": "devices/15889de0",
       "Type": "relay"
     },
     {
-      "Addr": "devices/c0a99ee0/temperature",
+      "Addr": "devices/c0a99ee0",
       "Type": "temperature"
     }
   ]
