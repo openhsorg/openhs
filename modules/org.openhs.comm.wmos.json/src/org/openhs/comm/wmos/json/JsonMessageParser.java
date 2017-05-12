@@ -52,9 +52,8 @@ public class JsonMessageParser implements IMessageParser {
     
 	public JsonMessageParser() {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
-		m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
-		m_updaterFactory.registerClass("LedR", SwitchUpdater.class);
-		m_updaterFactory.registerClass("IO", IoUpdater.class);
+		m_updaterFactory.registerClass("temperature", TemperatureSensorUpdater.class);
+		m_updaterFactory.registerClass("relay", SwitchUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -138,11 +137,11 @@ public class JsonMessageParser implements IMessageParser {
     	Iterator<Object> it = things.iterator();
     	while (it.hasNext()) {
     		JSONObject thingJobj = (JSONObject)it.next();
-    		String iqrfType = thingJobj.getString("Type");
-        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, thingJobj);
+    		String wmosType = thingJobj.getString("Type");
+        	ThingUpdater thingUpdater = m_updaterFactory.createObject(wmosType, thingJobj);
         	thingUpdater.setMessageHandler(m_messageHandler);
 
-        	logger.info("TU: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
+        	logger.info("TU: " + wmosType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
         			" DP: " + thingUpdater.getDevicePath()
         			);
     		

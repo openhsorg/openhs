@@ -17,7 +17,7 @@ public class TemperatureSensorUpdater extends ThingUpdater {
 	public TemperatureSensorUpdater(JSONObject jobj) {
 		m_wmosNode = new WmosNode(jobj);
 
-		setDevicePath("Mqtt" + '/' + "Wmos" + '/' + m_wmosNode.getAddress()  + '/' + m_wmosNode.getType());  
+		setDevicePath("Mqtt" + '/' + m_wmosNode.getAddress()  + '/' + m_wmosNode.getType());  
 
 		m_temperature = jobj.optDouble("Temperature");
 	}

@@ -11,7 +11,7 @@ public class SwitchUpdater extends ThingUpdater {
 
 	private Logger logger = LoggerFactory.getLogger(SwitchUpdater.class);
 	
-	private WmosNode m_iqrfNode = new WmosNode();
+	private WmosNode m_wmosNode = new WmosNode();
 	private boolean m_state;
 	private boolean m_confirmed;
 	
@@ -19,16 +19,17 @@ public class SwitchUpdater extends ThingUpdater {
 	}
 
 	public SwitchUpdater(JSONObject jobj) {
-		m_iqrfNode = new WmosNode(jobj);
+		m_wmosNode = new WmosNode(jobj);
 
-		setDevicePath("Mqtt" + '/' + m_iqrfNode.getAddress()  + '/' + m_iqrfNode.getType());  
+		
+		setDevicePath("Mqtt" + '/' + m_wmosNode.getAddress());  
 
-		if(m_iqrfNode.getCommand().equals("ON")) 
+		if(m_wmosNode.getCommand().equals("ON")) 
 			m_state = true;
     	else
 			m_state = false;
 		
-		if (m_iqrfNode.isResult())
+		if (m_wmosNode.isResult())
 			m_confirmed = true;
 		
 		m_valid = true;
@@ -39,16 +40,19 @@ public class SwitchUpdater extends ThingUpdater {
 		m_state = ((Switch)getThing()).getState();
 		String cmd;
 		if(m_state)
-    		cmd = "ON";
+    		cmd = "true";
     	else
-    		cmd = "OFF";
+    		cmd = "false";
 		
-		m_iqrfNode.setCommand(cmd);
+		//m_iqrfNode.setCommand(cmd);
     	
-    	JSONObject jobj = new JSONObject();
-    	jobj = m_iqrfNode.encode(jobj);
+    	//JSONObject jobj = new JSONObject();
+    	//jobj = m_iqrfNode.encode(jobj);
     	
-    	Message msg = new Message("Mqtt", "Iqrf/DpaRequest", jobj.toString());
+    	//Message msg = new Message("Mqtt", "Wmos", jobj.toString());
+    	Message msg = new Message("Mqtt", "devices/15889de0/relay/on/set", cmd);
+    	//devices/15889de0/relay/on/set
+    	//devices/15889de0/temperature/degrees
     	getMessageHandler().handleOutcomingMessage(msg);
 	}
 
