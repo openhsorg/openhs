@@ -47,7 +47,8 @@ public class JsonMessageParser implements IMessageParser {
     
 	private ObjectFactory<ThingUpdater, JSONObject> m_updaterFactory = null;
 
-	private final String m_parserName = "Wmos";
+	//private final String m_parserName = "Wmos";
+	private final String m_parserName = "devices/c0a99ee0/temperature/degrees";
     
 	public JsonMessageParser() {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
@@ -106,8 +107,18 @@ public class JsonMessageParser implements IMessageParser {
 	
 	@Override
 	public ThingUpdater parseMessage(Message message) {
-    	JSONObject jobj = new JSONObject(message.getData());
+    	logger.info( "message: " + message.getTopic() + "|" + message.getData());
+    	String completeMsg = message.getTopic() + "/" + message.getData();
+
+    	String delims = "[/]+";
+    	String[] tokens = completeMsg.split(delims);
+    	String json = "{\"Type\":\"Thermometer\",\"Addr\":\"192.168.1.26\",\"Temperature\":" + tokens[4] + "}";
+    	JSONObject jobj = new JSONObject(json);
     	String id = jobj.getString("Type");
+    	
+    	//JSONObject jobj = new JSONObject(message.getData());
+    	//String id = jobj.getString("Type");
+
     	return m_updaterFactory.createObject(id, jobj);
 	}
 	

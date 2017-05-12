@@ -176,6 +176,7 @@ public class MqttService implements MqttCallback, ICommService {
 			int subQoS = 0;
 			myClient.subscribe(myTopic0, subQoS);
 			myClient.subscribe(myTopic1, subQoS);
+			myClient.subscribe("devices/+/temperature/degrees", subQoS);
 
 		} catch (Exception e) {
 			e.printStackTrace();
