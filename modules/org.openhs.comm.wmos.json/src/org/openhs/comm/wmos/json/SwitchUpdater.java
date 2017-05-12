@@ -22,7 +22,7 @@ public class SwitchUpdater extends ThingUpdater {
 		m_wmosNode = new WmosNode(jobj);
 
 		
-		setDevicePath("Mqtt" + '/' + m_wmosNode.getAddress());  
+		setDevicePath("Mqtt" + '/' + m_wmosNode.getAddress() + '/' + m_wmosNode.getType());  
 
 		if(m_wmosNode.getCommand().equals("ON")) 
 			m_state = true;
@@ -50,9 +50,8 @@ public class SwitchUpdater extends ThingUpdater {
     	//jobj = m_iqrfNode.encode(jobj);
     	
     	//Message msg = new Message("Mqtt", "Wmos", jobj.toString());
-    	Message msg = new Message("Mqtt", "devices/15889de0/relay/on/set", cmd);
-    	//devices/15889de0/relay/on/set
-    	//devices/15889de0/temperature/degrees
+
+		Message msg = new Message("Mqtt", "devices/15889de0/relay/on/set", cmd);
     	getMessageHandler().handleOutcomingMessage(msg);
 	}
 
