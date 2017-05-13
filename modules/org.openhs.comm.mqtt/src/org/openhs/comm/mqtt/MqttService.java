@@ -35,10 +35,7 @@ public class MqttService implements MqttCallback, ICommService {
 	 * Topics identificators...
 	 */
 	
-	//String myTopic = TopicsID.OPENHS.toString();
-	//static final String MQTT_TOPIC_DPA_RESPONSE = "Iqrf/DpaResponse";
-	String myTopic0 = "Iqrf/DpaResponse";
-	//String myTopic1 = "Wmos";
+	String[] topics = {"Iqrf/DpaResponse", "devices/+/temperature/degrees", "devices/+/relay/on"};
 	
 	Boolean brokerConnected = false;
 
@@ -174,10 +171,11 @@ public class MqttService implements MqttCallback, ICommService {
 		// subscribe to topic if subscriber
 		try {
 			int subQoS = 0;
-			myClient.subscribe(myTopic0, subQoS);
-			//myClient.subscribe(myTopic1, subQoS);
-			myClient.subscribe("devices/+/temperature/degrees", subQoS);
-			myClient.subscribe("devices/+/relay/on", subQoS);
+			int num = topics.length - 1;
+			while (num > 0) {
+				myClient.subscribe(topics[num--], subQoS);
+			}
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

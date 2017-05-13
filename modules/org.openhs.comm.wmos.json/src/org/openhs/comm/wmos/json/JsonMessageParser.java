@@ -46,6 +46,7 @@ public class JsonMessageParser implements IMessageParser {
     private IMessageHandler m_messageHandler = null;
     
 	private ObjectFactory<ThingUpdater, JSONObject> m_updaterFactory = null;
+	private ObjectFactory<ThingUpdater, String[]> m_updaterFactoryString = null;
 
 	private final String m_parserName = "Wmos";
     
@@ -53,6 +54,10 @@ public class JsonMessageParser implements IMessageParser {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
 		m_updaterFactory.registerClass("temperature", TemperatureSensorUpdater.class);
 		m_updaterFactory.registerClass("relay", SwitchUpdater.class);
+
+		m_updaterFactoryString = new ObjectFactory<ThingUpdater, String[]>(ThingUpdater.class);
+		m_updaterFactoryString.registerClass("temperature", TemperatureSensorUpdater.class);
+		m_updaterFactoryString.registerClass("relay", SwitchUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -102,41 +107,16 @@ public class JsonMessageParser implements IMessageParser {
     		m_messageHandler = null;
     }
 
-	
 	@Override
 	public ThingUpdater parseMessage(Message message) {
     	logger.info( "message: " + message.getTopic() + "|" + message.getData());
     	String completeMsg = message.getTopic() + "/" + message.getData();
-    	String json = "";
-    	String id = "";
-    	JSONObject jobj = null;
     	
     	String delims = "[/]+";
     	String[] tokens = completeMsg.split(delims);
+    	String id = tokens[2];
     	
-    	if (tokens[2].equals("temperature")) {
-    		json = "{\"Type\":\"temperature\",\"Addr\":\"devices/c0a99ee0\",\"Temperature\":" + tokens[4] + "}";
-    		jobj = new JSONObject(json);
-    		id = jobj.getString("Type");
-    	}
-    	else if (tokens[2].equals("relay")) {
-    		String cmd;
-    		if (message.getData().equals("true")) {
-    			cmd = "ON";
-    		}
-    		else {
-    			cmd = "OFF";
-    		}
-    		
-    		json = "{\"Type\":\"relay\",\"Addr\":\"devices/15889de0\",\"Comd\":\"" + cmd + "\",\"Status\":\"STATUS_NO_ERROR\"}";
-    		jobj = new JSONObject(json);
-    		id = jobj.getString("Type");
-    	}
-    	
-    	//JSONObject jobj = new JSONObject(message.getData());
-    	//String id = jobj.getString("Type");
-
-    	return m_updaterFactory.createObject(id, jobj);
+    	return m_updaterFactoryString.createObject(id, tokens);
 	}
 	
 	@Override

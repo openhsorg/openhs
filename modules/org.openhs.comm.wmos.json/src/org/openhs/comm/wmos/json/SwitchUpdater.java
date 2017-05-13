@@ -18,6 +18,26 @@ public class SwitchUpdater extends ThingUpdater {
 	public SwitchUpdater() {
 	}
 
+	public SwitchUpdater(String[] tokens) {
+		m_wmosNode = new WmosNode(tokens);
+
+		setDevicePath("Mqtt" + '/' + m_wmosNode.getAddress()  + '/' + m_wmosNode.getType());  
+		
+		boolean state = false;
+		if (tokens[4].equals("true"))
+			state = true;
+
+		if (tokens[3].equals("on")) {
+			m_state = state;
+			m_confirmed = true;
+			m_valid = true;
+		}
+		else {
+			m_confirmed = false;
+			m_valid = false;
+		}
+	}
+
 	public SwitchUpdater(JSONObject jobj) {
 		m_wmosNode = new WmosNode(jobj);
 
@@ -44,14 +64,7 @@ public class SwitchUpdater extends ThingUpdater {
     	else
     		cmd = "false";
 		
-		//m_iqrfNode.setCommand(cmd);
-    	
-    	//JSONObject jobj = new JSONObject();
-    	//jobj = m_iqrfNode.encode(jobj);
-    	
-    	//Message msg = new Message("Mqtt", "Wmos", jobj.toString());
-
-		Message msg = new Message("Mqtt", "devices/15889de0/relay/on/set", cmd);
+		Message msg = new Message("Mqtt", m_wmosNode.getAddress() + '/' + m_wmosNode.getType() + "/on/set", cmd);
     	getMessageHandler().handleOutcomingMessage(msg);
 	}
 
