@@ -1,3 +1,9 @@
+/*
+ * OpenHS Wifi Relay
+ * Michal Valny, michal.valny@openhs.org
+ * May-2017
+ */
+
 #include <ESP8266WiFi.h>
 #include <Homie.h>
 #include "FS.h"
@@ -10,14 +16,12 @@ HomieNode buttonNode("button", "button");
 Bounce debouncer = Bounce();
 
 void format () {
-
   SPIFFS.format();    
   delay(500);
   ESP.reset();  
 }
 
 bool messageHandler(String value) {
-
   Serial.print("Message:");
   Serial.print(value);
 
@@ -32,7 +36,6 @@ bool messageHandler(String value) {
 }  
 
 void setupHandler() {
-
   pinMode(buttonPin, INPUT);
   digitalWrite(buttonPin, HIGH);    
 
@@ -41,7 +44,6 @@ void setupHandler() {
 }
 
 void loopHandler () {
-
   int buttonState = debouncer.read();
 
   if (buttonState != lastButtonState) {
@@ -60,7 +62,6 @@ void loopHandler () {
 
 
 void setup() {
-
   Homie.setFirmware("OpenHS button", "1.0.0");
   Homie.registerNode(buttonNode);
   buttonNode.subscribe("message", messageHandler);    

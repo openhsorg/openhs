@@ -46,14 +46,18 @@ public class JsonMessageParser implements IMessageParser {
     private IMessageHandler m_messageHandler = null;
     
 	private ObjectFactory<ThingUpdater, JSONObject> m_updaterFactory = null;
+	private ObjectFactory<ThingUpdater, String[]> m_updaterFactoryString = null;
 
 	private final String m_parserName = "Wmos";
     
 	public JsonMessageParser() {
 		m_updaterFactory = new ObjectFactory<ThingUpdater, JSONObject>(ThingUpdater.class);
-		m_updaterFactory.registerClass("Thermometer", TemperatureSensorUpdater.class);
-		m_updaterFactory.registerClass("LedR", SwitchUpdater.class);
-		m_updaterFactory.registerClass("IO", IoUpdater.class);
+		m_updaterFactory.registerClass("temperature", TemperatureSensorUpdater.class);
+		m_updaterFactory.registerClass("relay", SwitchUpdater.class);
+
+		m_updaterFactoryString = new ObjectFactory<ThingUpdater, String[]>(ThingUpdater.class);
+		m_updaterFactoryString.registerClass("temperature", TemperatureSensorUpdater.class);
+		m_updaterFactoryString.registerClass("relay", SwitchUpdater.class);
 	}
 
     public void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -103,12 +107,16 @@ public class JsonMessageParser implements IMessageParser {
     		m_messageHandler = null;
     }
 
-	
 	@Override
 	public ThingUpdater parseMessage(Message message) {
-    	JSONObject jobj = new JSONObject(message.getData());
-    	String id = jobj.getString("Type");
-    	return m_updaterFactory.createObject(id, jobj);
+    	logger.info( "message: " + message.getTopic() + "|" + message.getData());
+    	String completeMsg = message.getTopic() + "/" + message.getData();
+    	
+    	String delims = "[/]+";
+    	String[] tokens = completeMsg.split(delims);
+    	String id = tokens[2];
+    	
+    	return m_updaterFactoryString.createObject(id, tokens);
 	}
 	
 	@Override
@@ -127,11 +135,11 @@ public class JsonMessageParser implements IMessageParser {
     	Iterator<Object> it = things.iterator();
     	while (it.hasNext()) {
     		JSONObject thingJobj = (JSONObject)it.next();
-    		String iqrfType = thingJobj.getString("Type");
-        	ThingUpdater thingUpdater = m_updaterFactory.createObject(iqrfType, thingJobj);
+    		String wmosType = thingJobj.getString("Type");
+        	ThingUpdater thingUpdater = m_updaterFactory.createObject(wmosType, thingJobj);
         	thingUpdater.setMessageHandler(m_messageHandler);
 
-        	logger.info("TU: " + iqrfType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
+        	logger.info("TU: " + wmosType + " " + (thingUpdater != null ? thingUpdater.getClass().getName() : "null") +
         			" DP: " + thingUpdater.getDevicePath()
         			);
     		

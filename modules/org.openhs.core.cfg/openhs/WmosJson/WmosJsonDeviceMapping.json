@@ -1,8 +1,12 @@
 {
   "thingsMapping": [
     {
-      "Addr": "192.168.1.26",
-      "Type": "Thermometer"
+      "Addr": "devices/15889de0",
+      "Type": "relay"
+    },
+    {
+      "Addr": "devices/c0a99ee0",
+      "Type": "temperature"
     }
   ]
 }
