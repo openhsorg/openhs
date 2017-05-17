@@ -18,23 +18,36 @@ public class WifiManager {
 	    return OS;		
 	}	
 	
-	void detectWifi() throws Exception {		
-    	logger.info("\n>Wifi Admin: " + "...detecting wifi");    	
+	ArrayList<String> GetIotWifiList(String filter) throws Exception {	
+				
+		ArrayList<String> fullDevList = GetFullWifiList();		
+		ArrayList<String> iotDevList = new ArrayList<String>(fullDevList);
+
+	//	iotDevList.removeAll(c)
+		
+		return iotDevList;
+	}
+		
+	
+	ArrayList<String> GetFullWifiList() throws Exception {		
+    	logger.info("\n>GetFullWifiList(): " + "...detecting wifi");    	
         
         String os = getOsName();
         
         if (os.contains("Windows")) {
-        	detectWifi_Win();
+        	return GetFullWifiList_Win();
         	
         } else if (os.contains("Linux")) {
-        	detectWifi_Linux();
+        	return GetFullWifiList_Linux();
         }
         
-       
+       return null;
     }	
 	
-	void detectWifi_Win() throws Exception {
-		logger.info("detectWifi_Win()> Windows system...");
+	ArrayList<String> GetFullWifiList_Win() throws Exception {		
+		ArrayList<String> devList = new ArrayList<String>();
+		
+		logger.info("GetFullWifiList_Win> Windows system...");				
 		
 		ProcessBuilder builder = new ProcessBuilder(
 				"cmd.exe", "/c", "netsh wlan show all");
@@ -47,14 +60,17 @@ public class WifiManager {
         String line = r.readLine();
         while(line != null)
         {
-          //logger.info(line);          
+            //logger.info(line);          
+        	//logger.info(">****");
           
           if (line.contains("SSID") || line.contains("Signal")){
               if(!line.contains("BSSID"))
-            	  logger.info(line);
-              	  logger.info(">****");
+            	  //logger.info(line);
+              	//  logger.info(">****");
                   if(line.contains("SSID") && !line.contains("name") && !line.contains("SSIDs"))
                   {
+                	  logger.info(">>>" + line + "<<<");
+                	  devList.add("line");
                       //line=line.substring(8);
                     //  ssids.add(line);
 
@@ -68,10 +84,14 @@ public class WifiManager {
           line = r.readLine();
         }
         
-        r.close();	             						
+        r.close();	    
+        
+        return devList;
 	}
 	
-	void detectWifi_Linux() throws Exception {
+	ArrayList<String> GetFullWifiList_Linux() throws Exception {
+		ArrayList<String> devList = new ArrayList<String>();
+		
 		logger.info("detectWifi_Linux()> Linux system...");
 	        
         ProcessBuilder builder = new ProcessBuilder(
@@ -89,13 +109,13 @@ public class WifiManager {
         while(line != null)
         {        	
         	logger.info(line);
-        	
-        	
-        	
-        	
+        	        	
+        	        	
         	line = r.readLine();
         }
         r.close();
+        
+        return devList;
 	}
 	
 

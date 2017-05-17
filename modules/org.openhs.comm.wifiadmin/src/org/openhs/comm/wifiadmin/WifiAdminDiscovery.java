@@ -37,7 +37,7 @@ public class WifiAdminDiscovery extends Thread {
         	 logger.info("\n<------ WIFI ADMIN ------------>");
         	 
         	 try {
-        		 m_wifiManager.detectWifi();
+        		 m_wifiManager.GetFullWifiList();
         	 }catch (Exception e) {
         		 System.out.println(e);
         	 }
