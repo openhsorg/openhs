@@ -3,6 +3,8 @@ package org.openhs.comm.wifiadmin;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,18 +20,24 @@ public class WifiManager {
 	    return OS;		
 	}	
 	
-	ArrayList<String> GetIotWifiList(String filter) throws Exception {	
+	/*
+	 * Function: Get a list of available IOT wifi items
+	 * 
+	 */
+	List<String> GetIotWifiList(String filter) throws Exception {	
 				
-		ArrayList<String> fullDevList = GetFullWifiList();		
-		ArrayList<String> iotDevList = new ArrayList<String>(fullDevList);
-
-	//	iotDevList.removeAll(c)
+		List<String> fullDevList = GetFullWifiList();		
+		
+		//Filter
+        List<String> iotDevList = fullDevList.stream()              
+                .filter(line -> line.contains(filter))    
+                .collect(Collectors.toList());             
 		
 		return iotDevList;
 	}
 		
 	
-	ArrayList<String> GetFullWifiList() throws Exception {		
+	List<String> GetFullWifiList() throws Exception {		
     	logger.info("\n>GetFullWifiList(): " + "...detecting wifi");    	
         
         String os = getOsName();
@@ -44,8 +52,8 @@ public class WifiManager {
        return null;
     }	
 	
-	ArrayList<String> GetFullWifiList_Win() throws Exception {		
-		ArrayList<String> devList = new ArrayList<String>();
+	List<String> GetFullWifiList_Win() throws Exception {		
+		List<String> devList = new ArrayList<String>();
 		
 		logger.info("GetFullWifiList_Win> Windows system...");				
 		
@@ -65,12 +73,12 @@ public class WifiManager {
           
           if (line.contains("SSID") || line.contains("Signal")){
               if(!line.contains("BSSID"))
-            	  //logger.info(line);
+            	 // logger.info(line);
               	//  logger.info(">****");
                   if(line.contains("SSID") && !line.contains("name") && !line.contains("SSIDs"))
                   {
-                	  logger.info(">>>" + line + "<<<");
-                	  devList.add("line");
+                	  //logger.info(">>>" + line + "<<<");
+                	  devList.add(line);
                       //line=line.substring(8);
                     //  ssids.add(line);
 
@@ -89,8 +97,8 @@ public class WifiManager {
         return devList;
 	}
 	
-	ArrayList<String> GetFullWifiList_Linux() throws Exception {
-		ArrayList<String> devList = new ArrayList<String>();
+	List<String> GetFullWifiList_Linux() throws Exception {
+		List<String> devList = new ArrayList<String>();
 		
 		logger.info("detectWifi_Linux()> Linux system...");
 	        
@@ -108,8 +116,7 @@ public class WifiManager {
         String line = r.readLine();
         while(line != null)
         {        	
-        	logger.info(line);
-        	        	
+        	//logger.info(line);        	        
         	        	
         	line = r.readLine();
         }

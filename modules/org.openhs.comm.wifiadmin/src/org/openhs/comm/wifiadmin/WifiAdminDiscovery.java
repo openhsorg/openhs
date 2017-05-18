@@ -37,7 +37,12 @@ public class WifiAdminDiscovery extends Thread {
         	 logger.info("\n<------ WIFI ADMIN ------------>");
         	 
         	 try {
-        		 m_wifiManager.GetFullWifiList();
+        		 List<String> iot = m_wifiManager.GetIotWifiList("SWIM_");
+ 
+        		 for (String line: iot) {
+        			 logger.info(">>" + line);
+        		 }
+        	
         	 }catch (Exception e) {
         		 System.out.println(e);
         	 }
