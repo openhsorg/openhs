@@ -8,6 +8,4 @@
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.meteostation.Meteostation" name="Meteostation" policy="static" unbind="unsetService"/>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.site.api.ISiteService" name="ISiteService" policy="static" unbind="unsetService"/>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.core.cfg.OpenhsProps" name="OpenhsProps" policy="static" unbind="unsetService"/>
-   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.email.Email" name="Email" policy="static" unbind="unsetService"/>
-   <reference bind="setService" cardinality="1..1" interface="org.openhs.core.suppliers.Suppliers" name="Suppliers" policy="static" unbind="unsetService"/>
 </scr:component>

@@ -24,10 +24,10 @@ import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.meteostation.Meteostation;
 import org.openhs.core.site.api.ISiteService;
-import org.openhs.core.suppliers.api.ISuppliers;
+//import org.openhs.core.suppliers.api.ISuppliers;
 import org.openhs.core.commons.api.IInfostation;
 import org.openhs.core.commons.api.IMeteostation;
-import org.openhs.core.email.*;
+//import org.openhs.core.email.*;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +43,8 @@ public class Infostation implements IInfostation {
 	private IMeteostation m_meteo = null;	
 	private HttpService m_httpService = null;	
 	public OpenhsProps m_openhsProps = null;
-	public ISuppliers m_suppliers = null;  
-	private Email m_email = null;
+	//public ISuppliers m_suppliers = null;  
+	//private Email m_email = null;
         
     public void activate() {
 		logger.info("**** activate()");
@@ -79,7 +79,7 @@ public class Infostation implements IInfostation {
               m_meteo = null;
           }
       }	    
-      
+      /*
       public void setService(ISuppliers ser) {
     	  logger.info("**** setService(): Suppliers");
           m_suppliers = ser;          
@@ -91,7 +91,8 @@ public class Infostation implements IInfostation {
         	  m_suppliers = null;
           }
       }      
-      
+      */
+      /*
       public void setService(Email ser) {
     	  logger.info("**** setService(): Email");
           m_email = ser;          
@@ -103,7 +104,7 @@ public class Infostation implements IInfostation {
         	  m_email = null;
           }
       }	         
-
+*/
       public void setService(ISiteService ser) {
     	  logger.info("**** setService(): ISiteService");
           m_siteService = ser;
@@ -285,7 +286,7 @@ public class Infostation implements IInfostation {
       
       public void sendMail () {
     	  logger.info("\nE-MAIL !!!!");
-    	  this.m_email.sendMessage2("AAAAAAA");
+    	//  this.m_email.sendMessage2("AAAAAAA");
       } 
             
       
@@ -467,7 +468,7 @@ public class Infostation implements IInfostation {
       public String JSON_ThingArrayToString (Class<?> t) {
     	  return this.JSON_ThingArray(t).toString();
       }
-      
+      /*
       public String JSON_Supplier (String name) {
     	  
     	  JSONObject json = new JSONObject();
@@ -498,6 +499,6 @@ public class Infostation implements IInfostation {
     	  
 		  return json.toString();
       } 
-      
+      */
       
 }

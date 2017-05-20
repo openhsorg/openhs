@@ -587,7 +587,7 @@ module OhsSiteData {
         public logo:  string = "unknown";
         
         public getServerData () {       
-             
+             /*
             var req: any = {                
                 orderId : "Supplier",
                 name:   this.name                
@@ -595,9 +595,10 @@ module OhsSiteData {
           //  window.alert("****" + this.name);
             var data: string = getAjax("kitchen", req); 
             
-            this.parseServerData(data);                                            
+            this.parseServerData(data);    
+            */                                        
         }       
-        
+        /*
         public parseServerData (data: any) {                               
             if (data != null) {                
                 this.valid = JSON.parse(data['__validity']);
@@ -611,7 +612,7 @@ module OhsSiteData {
                 }
             }                            
         }         
-        
+        */
     }
     
     export class Switch extends Thing {
