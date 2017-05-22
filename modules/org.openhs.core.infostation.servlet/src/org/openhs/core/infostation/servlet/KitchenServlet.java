@@ -62,6 +62,9 @@ public class KitchenServlet extends HttpServlet {
 	    			JSONObject json = getSiteDataToJSON();	
 	    			jsonString = json.toString();
 	    			
+	    		} else if (value.toString().contains("TimeDate")) {
+	    			jsonString =  this.JSON_TimeDateToString();
+	    			
 	    		} else if (value.toString().contains("TempSensors")){ 	    			
 	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(TemperatureSensor.class);
 		    				    		
@@ -322,9 +325,24 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("</body>");
 	    	out.println("</html>");    	
 	    }  
-	  
-	    protected JSONObject getSiteDataToJSON() {
+	    
+	    protected String JSON_TimeDateToString() {	    		    	
+		    Date curDate = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		    String time = format.format(curDate); 	 		  
+		    
+		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
+		    String date = format2.format(curDate); 	  	    	  		    		    	
 	    	
+			JSONObject json = new JSONObject();	
+			
+			json.put("time", time);
+			json.put("date", date);	
+			
+			return json.toString();
+	    }
+	  
+	    protected JSONObject getSiteDataToJSON() {	    	
 	    	
 		    Date curDate = new Date();
 		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");

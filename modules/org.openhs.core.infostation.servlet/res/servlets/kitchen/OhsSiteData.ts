@@ -59,6 +59,8 @@ module OhsSiteData {
         
         public getFastData () {
             
+            this.getFastData_Time();
+            
             if (this.getCount == 0) {            
                 this.getFastData_TemperatureSensorArray();
                                          
@@ -86,11 +88,26 @@ module OhsSiteData {
                 this.getCount = 0;
                 
             } else {
-                 this.getCount ++;    
-                
+                 this.getCount ++;                    
             }
          
         }
+        
+        public getFastData_Time (){
+                        
+            var req: any = {                                
+                orderId : "TimeDate"
+//                path:   this.path                
+            } 
+            
+            var data: string = getAjax("kitchen", req); 
+            
+            if (data != null) {         
+            
+                this.dateString = data['date'];
+                this.timeString = data['time'];                
+            }            
+        }        
         
         public getFastData_TemperatureSensorArray (){
                         
