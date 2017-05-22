@@ -1,0 +1,19 @@
+  GNU nano 2.2.6            File: openhs.service
+
+[Unit]
+Description=IQRF daemon iqrf_startup
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/pi/openhs
+ExecStart=/usr/bin/java -jar /home/pi/openhs/plugins/org.eclipse.osgi_3.11.3.v2$
+StandardOutput=syslog
+StandardError=syslog
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
