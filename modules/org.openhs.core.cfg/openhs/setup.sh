@@ -158,5 +158,27 @@ else
 fi
 
 #IQRF daemon install..
+platform=$(uname -m)
+
+<<"COMMENT"
+case "$platform" in
+   "arm"*)
+   echo "This is ARM, in"
+   ;;
+   "i68"*)
+    echo "i686 so not continue.."
+   ;;
+   "kiwi") echo "New Zealand is famous for kiwi."
+   ;;
+esac
+COMMENT
+
+if [[ $platform == *"arm"* ]]
+then
+  echo "This is ARM, check IQRF daemon.."
+elif [[ $platform == *"i68"* ]]
+then
+  echo "This is not ARM but $platform, exit.."
+fi
 
 echo "---------- Setup OpenHS done, enjoy! ----------"
