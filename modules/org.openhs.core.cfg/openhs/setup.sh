@@ -1,18 +1,18 @@
 #!/bin/bash
 # OpenHS setupp script
-<<"COMMENT"
 if [[ `whoami` != "root" ]]
 then
   echo "Script must be run as root."
   exit 1
 fi
-COMMENT
 
 openh_dir=`pwd`
 plugins_dir=$openh_dir"/plugins"
-config_dir=$plugins_dir"/cfg"
-config_file=$config_dir"/FILE.cfg"
+config_dir=$plugins_dir"/configuration"
+config_file=$config_dir"/config.ini"
+THE_USER=${SUDO_USER:-${USERNAME:-unknown}}
 
+#echo "USER is $THE_USER"
 #echo "OpenHS directory is $openh_dir"
 #echo "Plugins directory is: $plugins_dir"
 
@@ -35,11 +35,8 @@ do
   then
      #echo "It's there!"$eachfile
     # osgi_file = "$eachfile"
-
      osgi_file=" ${eachfile}${osgi_file}"
-
   fi
-
 done
 
  #echo "It's there!"$osgi_file
@@ -54,18 +51,18 @@ fi
 if [ ! -d "$config_dir" ]
 then
     #echo "File doesn't exist. Creating now"
-    mkdir $config_dir
+    sudo -u $THE_USER mkdir $config_dir
     #echo "File created"
 #else
     #echo "File exists"
 fi
 
 #Create config file
-echo "eclipse.ignoreApp=true" > $config_file
-echo "eclipse.exitOnError=false" >> $config_file
-echo "osgi.noShutdown=true" >> $config_file
-echo "org.osgi.service.http.port=7070" >> $config_file
-echo "osgi.bundles.defaultStartLevel=4" >> $config_file
+sudo -u $THE_USER echo "eclipse.ignoreApp=true" > $config_file
+sudo -u $THE_USER echo "eclipse.exitOnError=false" >> $config_file
+sudo -u $THE_USER echo "osgi.noShutdown=true" >> $config_file
+sudo -u $THE_USER echo "org.osgi.service.http.port=7070" >> $config_file
+sudo -u $THE_USER echo "osgi.bundles.defaultStartLevel=4" >> $config_file
 #echo "osgi.bundles="
 
 first=0
@@ -76,22 +73,23 @@ do
 
   if [ $first -eq 1 ]
   then
-    echo "osgi.bundles=./$(basename $eachfile)@start,\\" >> $config_file
+    sudo -u $THE_USER echo "osgi.bundles=./$(basename $eachfile)@start,\\" >> $config_file
   elif [ $first -eq $num_files ]
   then
-    echo "./$(basename $eachfile)@start" >> $config_file
+    sudo -u $THE_USER echo "./$(basename $eachfile)@start" >> $config_file
   else
-    echo "./$(basename $eachfile)@start,\\" >> $config_file
+    sudo -u $THE_USER echo "./$(basename $eachfile)@start,\\" >> $config_file
   fi
 done
 
-echo "OpenHS config file created..."
+echo "OpenHS config file.."
 
-
+# Create service
 service_file="/lib/systemd/system/openhs.service"
-echo "Platform is $(uname -s)"
+#echo "Platform is $(uname -s)"
 _JAVAC_LOCATION=`type java | cut -f3 -d' '`
-echo "Setup OpenHS service.."
+echo $_JAVAC_LOCATION
+echo "OpenHS service.."
 
 
 if [ -f "$service_file" ]; then
@@ -107,7 +105,7 @@ echo "Type=simple" >> $service_file
 echo "User=root" >> $service_file
 echo "Group=root" >> $service_file
 echo "WorkingDirectory=$openh_dir" >> $service_file
-echo "ExecStart=$_JAVA_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $service_file
+echo "ExecStart=$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $service_file
 echo "StandardOutput=syslog" >> $service_file
 echo "StandardError=syslog" >> $service_file
 echo "RestartSec=5" >> $service_file
@@ -115,6 +113,11 @@ echo "Restart=always" >> $service_file
 echo "" >> $service_file
 echo "[Install]" >> $service_file
 echo "WantedBy=multi-user.target" >> $service_file
+
+chmod 644 $service_file
+systemctl daemon-reload
+systemctl enable $service_file
+sudo systemctl status $service_file
 
 #MQTT mosquitto install..
 if ! [ -x "$(command -v mosquitto)" ]; then
@@ -124,7 +127,7 @@ if ! [ -x "$(command -v mosquitto)" ]; then
 #sudo /etc/init.d/mosquitto start
   sudo /etc/init.d/mosquitto stop
 
-  echo "Setup mosquitto.conf file.."
+  #echo "Setup mosquitto.conf file.."
 
   mosquito_conf="/etc/mosquitto/mosquitto.conf"
 
@@ -154,31 +157,41 @@ if ! [ -x "$(command -v mosquitto)" ]; then
 
 else
   echo 'MQTT Mosquitto is installed.' >&2
-  sudo /etc/init.d/mosquitto start
+  #sudo /etc/init.d/mosquitto start
 fi
 
 #IQRF daemon install..
 platform=$(uname -m)
-
-<<"COMMENT"
-case "$platform" in
-   "arm"*)
-   echo "This is ARM, in"
-   ;;
-   "i68"*)
-    echo "i686 so not continue.."
-   ;;
-   "kiwi") echo "New Zealand is famous for kiwi."
-   ;;
-esac
-COMMENT
+install_iqrf=0
+service_file_iqrf="/lib/systemd/system/iqrf-daemon.service"
 
 if [[ $platform == *"arm"* ]]
 then
   echo "This is ARM, check IQRF daemon.."
+
+  if [ -f "$service_file_iqrf" ]; then
+    echo "IQRF daemon exists.."
+  else
+    echo "IQRF daemon DOES NOT EXISTS!.."
+    install_iqrf=1
+  fi
+
 elif [[ $platform == *"i68"* ]]
 then
   echo "This is not ARM but $platform, exit.."
 fi
+
+if [ $install_iqrf -eq 1 ]; then
+  echo "IQRF daemon INSTALL GO!.."
+
+  if [[ $platform == *"arm"* ]]
+  then
+    echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
+    sudo apt-get -q -y update
+    sudo apt-get install -q -y iqrf-daemon
+    sudo systemctl status iqrf-daemon.service
+  fi
+fi
+
 
 echo "---------- Setup OpenHS done, enjoy! ----------"
