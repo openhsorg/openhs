@@ -10,6 +10,7 @@ openh_dir=`pwd`
 plugins_dir=$openh_dir"/plugins"
 config_dir=$plugins_dir"/configuration"
 config_file=$config_dir"/config.ini"
+start_file=$openh_dir"/start.sh"
 THE_USER=${SUDO_USER:-${USERNAME:-unknown}}
 
 #echo "USER is $THE_USER"
@@ -26,15 +27,11 @@ num_files=0
 
 for eachfile in $yourfilenames
 do
-  #echo $eachfile
-  #echo `basename "$eachfile"`
-  #echo $(basename $eachfile)
+
   ((num_files++))
 
   if [[ $eachfile == *"org.eclipse.osgi_"* ]]
   then
-     #echo "It's there!"$eachfile
-    # osgi_file = "$eachfile"
      osgi_file=" ${eachfile}${osgi_file}"
   fi
 done
@@ -50,11 +47,7 @@ fi
 #Create config dir
 if [ ! -d "$config_dir" ]
 then
-    #echo "File doesn't exist. Creating now"
     sudo -u $THE_USER mkdir $config_dir
-    #echo "File created"
-#else
-    #echo "File exists"
 fi
 
 #Create config file
@@ -88,9 +81,7 @@ echo "OpenHS config file.."
 service_file="/lib/systemd/system/openhs.service"
 #echo "Platform is $(uname -s)"
 _JAVAC_LOCATION=`type java | cut -f3 -d' '`
-echo $_JAVAC_LOCATION
 echo "OpenHS service.."
-
 
 if [ -f "$service_file" ]; then
   rm "$service_file" -r
@@ -114,17 +105,22 @@ echo "" >> $service_file
 echo "[Install]" >> $service_file
 echo "WantedBy=multi-user.target" >> $service_file
 
-chmod 644 $service_file
-systemctl daemon-reload
-systemctl enable $service_file
-sudo systemctl status $service_file
+#chmod 644 $service_file
+#systemctl daemon-reloa
+#systemctl enable $service_file
+#systemctl status openhs.service
+
+#Create start.sh script
+echo "Create $start_file.."
+echo "$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $start_file
+chmod +x $start_file
 
 #MQTT mosquitto install..
 if ! [ -x "$(command -v mosquitto)" ]; then
   echo 'MQTT Mosquitto is NOT installed, continue with this..' >&2
   apt-get update -y -qq
   apt-get install -y -qq mosquitto mosquitto-clients
-#sudo /etc/init.d/mosquitto start
+  sudo /etc/init.d/mosquitto start
   sudo /etc/init.d/mosquitto stop
 
   #echo "Setup mosquitto.conf file.."

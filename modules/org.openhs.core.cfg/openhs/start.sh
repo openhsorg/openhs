@@ -1,1 +1,0 @@
-java -jar plugins/org.eclipse.osgi_3.11.3.v20170209-1843.jar -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m
