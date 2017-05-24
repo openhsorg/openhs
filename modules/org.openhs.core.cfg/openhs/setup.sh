@@ -12,12 +12,14 @@ config_dir=$plugins_dir"/configuration"
 config_file=$config_dir"/config.ini"
 start_file=$openh_dir"/start.sh"
 THE_USER=${SUDO_USER:-${USERNAME:-unknown}}
+platform=$(uname -m)
 
 #echo "USER is $THE_USER"
 #echo "OpenHS directory is $openh_dir"
 #echo "Plugins directory is: $plugins_dir"
 
-echo "---------- Setup OpenHS ----------"
+echo "---------- Setup OpenHS [platform $platform]----------"
+#echo "Platform $platform"
 
 #Get list of files...
 cd $plugins_dir
@@ -105,13 +107,16 @@ echo "" >> $service_file
 echo "[Install]" >> $service_file
 echo "WantedBy=multi-user.target" >> $service_file
 
-#chmod 644 $service_file
-#systemctl daemon-reloa
-#systemctl enable $service_file
-#systemctl status openhs.service
+if [[ $platform == *"arm"* ]]
+then
+  chmod 644 $service_file
+  systemctl daemon-reloa
+  systemctl enable $service_file
+  systemctl status openhs.service
+fi
 
 #Create start.sh script
-echo "Create $start_file.."
+echo "Created startup script $start_file.."
 echo "$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $start_file
 chmod +x $start_file
 
@@ -157,7 +162,6 @@ else
 fi
 
 #IQRF daemon install..
-platform=$(uname -m)
 install_iqrf=0
 service_file_iqrf="/lib/systemd/system/iqrf-daemon.service"
 
@@ -171,10 +175,6 @@ then
     echo "IQRF daemon DOES NOT EXISTS!.."
     install_iqrf=1
   fi
-
-elif [[ $platform == *"i68"* ]]
-then
-  echo "This is not ARM but $platform, exit.."
 fi
 
 if [ $install_iqrf -eq 1 ]; then
@@ -183,9 +183,9 @@ if [ $install_iqrf -eq 1 ]; then
   if [[ $platform == *"arm"* ]]
   then
     echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
-    sudo apt-get -q -y update
-    sudo apt-get install -q -y iqrf-daemon
-    sudo systemctl status iqrf-daemon.service
+    apt-get -q -y update
+    apt-get install -q -y iqrf-daemon
+    systemctl status iqrf-daemon.service
   fi
 fi
 
