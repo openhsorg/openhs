@@ -110,7 +110,7 @@ echo "WantedBy=multi-user.target" >> $service_file
 if [[ $platform == *"arm"* ]]
 then
   chmod 644 $service_file
-  systemctl daemon-reloa
+  systemctl daemon-reload
   systemctl enable $service_file
   systemctl status openhs.service
 fi
@@ -179,15 +179,11 @@ fi
 
 if [ $install_iqrf -eq 1 ]; then
   echo "IQRF daemon INSTALL GO!.."
-
-  if [[ $platform == *"arm"* ]]
-  then
-    echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
-    apt-get -q -y update
-    apt-get install -q -y iqrf-daemon
-    systemctl status iqrf-daemon.service
-  fi
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66CB9A85
+  echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
+  apt-get -qq -y update
+  apt-get install -qq -y iqrf-daemon
+  systemctl status iqrf-daemon.service
 fi
-
 
 echo "---------- Setup OpenHS done, enjoy! ----------"
