@@ -5,7 +5,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +33,7 @@ public class WifiManager {
 	 * 
 	 */
 	List<String> GetIotWifiList(String filter) throws Exception {	
-				
+		
 		List<String> fullDevList = GetFullWifiList();		
 		
 		//Filter
@@ -125,5 +133,125 @@ public class WifiManager {
         return devList;
 	}
 	
+	void getIP () {
+		 InetAddress iAddress;
+		try {
+			iAddress = InetAddress.getLocalHost();
+			String currentIp = iAddress.getHostAddress();
+			System.out.println("Current IP address : " + currentIp); //gives only host address
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	void NetworkInterfaces () throws SocketException{
+        
+		Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        
+        for (NetworkInterface netint : Collections.list(nets)){
+        	
+        	logger.info("Display name: " + netint.getDisplayName());
+        	logger.info("Name: " + netint.getName());
+            
+            Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+            
+            for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            	logger.info("InetAddress: " + inetAddress);
+            }
+            
+            Enumeration<NetworkInterface> subIfs = netint.getSubInterfaces();
+           // logger.info("Sub Iinterfaces: ");
+            for (NetworkInterface subIf : Collections.list(subIfs)) {
+            	logger.info("Sub Interface Display name: " + subIf.getDisplayName());
+            	logger.info("Sub Interface Name: " + subIf.getName());
+            }
+        	
+        }
+            //displayInterfaceInformation(netint);
+	}
+	
+	void sendJson (){
+		try{
+			
+			JSONObject json = new JSONObject();
+			json.put("type", "CONNECT");
+			Socket s = new Socket("192.168.0.100", 7777);
+						
+		    OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8);
+		   
+		    out.write(json.toString());
+		    out.close();
+		
+		}catch (Exception e){
+			
+		}
+	}
 
+	public boolean reset() {
+		DataInputStream is;
+		DataOutputStream os;
+		boolean result = true;
+		String noReset = "Could not reset.";
+		String reset = "The server has been reset.";
+			
+		try {
+			Socket socket = new Socket(InetAddress.getByName("x.x.x.x"), 3994);
+			String string = "{\"id\":1,\"method\":\"object.deleteAll\",\"params\":[\"subscriber\"]}";
+			is = new DataInputStream(socket.getInputStream());
+			os = new DataOutputStream(socket.getOutputStream());
+			PrintWriter pw = new PrintWriter(os);
+			pw.println(string);
+			pw.flush();
+				
+			BufferedReader in = new BufferedReader(new InputStreamReader(is));
+			JSONObject json = new JSONObject(in.readLine());
+			if(!json.has("result")) {
+				System.out.println(noReset);
+				result = false;
+			}
+			is.close();
+			os.close();
+			
+			socket.close();
+				
+		} catch (IOException e) {
+			result = false;
+			System.out.println(noReset);
+			e.printStackTrace();			
+		} catch (JSONException e) {
+			result = false;
+			System.out.println(noReset);
+			e.printStackTrace();
+		}
+		
+		System.out.println(reset);
+		return result;
+	}	
+	
+	public void reset2 () throws IOException {
+		String host = "localhost";
+		int portNumber = 81;
+		System.out.println("Creating socket to '" + host + "' on port " + portNumber);
+
+		while (true) {
+			Socket socket = new Socket(host, portNumber);
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+			System.out.println("server says:" + br.readLine());
+
+			BufferedReader userInputBR = new BufferedReader(new InputStreamReader(System.in));
+			String userInput = userInputBR.readLine();
+
+			out.println(userInput);
+
+			System.out.println("server says:" + br.readLine());
+
+			if ("exit".equalsIgnoreCase(userInput)) {
+				socket.close();
+				break;
+			}						
+		}				
+	}
 }
