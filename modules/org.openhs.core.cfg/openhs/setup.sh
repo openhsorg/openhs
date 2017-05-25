@@ -19,7 +19,6 @@ platform=$(uname -m)
 #echo "Plugins directory is: $plugins_dir"
 
 echo "---------- Setup OpenHS [platform $platform]----------"
-#echo "Platform $platform"
 
 #Get list of files...
 cd $plugins_dir
@@ -79,10 +78,20 @@ done
 
 echo "OpenHS config file.."
 
-# Create service
-service_file="/lib/systemd/system/openhs.service"
-#echo "Platform is $(uname -s)"
+#Create start.sh script
 _JAVAC_LOCATION=`type java | cut -f3 -d' '`
+if [ -f "$start_file" ]; then
+  rm "$start_file" -r
+fi
+
+echo "Created startup script $start_file.."
+echo "$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $start_file
+chmod +x $start_file
+
+# Create service
+service_file_name="openhs.service"
+service_file="/lib/systemd/system/$service_file_name"
+#echo "Platform is $(uname -s)"
 echo "OpenHS service.."
 
 if [ -f "$service_file" ]; then
@@ -95,10 +104,11 @@ echo "After=network.target" >> $service_file
 echo "" >> $service_file
 echo "[Service]" >> $service_file
 echo "Type=simple" >> $service_file
-echo "User=root" >> $service_file
-echo "Group=root" >> $service_file
-echo "WorkingDirectory=$openh_dir" >> $service_file
+echo "User=$THE_USER" >> $service_file
+echo "Group=users" >> $service_file
+echo "WorkingDirectory=$openh_dir/plugins" >> $service_file
 echo "ExecStart=$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $service_file
+#echo "ExecStart=/bin/sh $openh_dir/start.sh" >> $service_file
 echo "StandardOutput=syslog" >> $service_file
 echo "StandardError=syslog" >> $service_file
 echo "RestartSec=5" >> $service_file
@@ -107,18 +117,15 @@ echo "" >> $service_file
 echo "[Install]" >> $service_file
 echo "WantedBy=multi-user.target" >> $service_file
 
-if [[ $platform == *"arm"* ]]
-then
+#if [[ $platform == *"arm"* ]]
+#then
   chmod 644 $service_file
   systemctl daemon-reload
-  systemctl enable $service_file
-  systemctl status openhs.service
-fi
+  systemctl enable $service_file_name
+  systemctl start $service_file_name
+  #systemctl status $service_file_name
+#fi
 
-#Create start.sh script
-echo "Created startup script $start_file.."
-echo "$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dorg.osgi.service.http.port=7070 -Dorg.eclipse.equinox.http.jetty.context.sessioninactiveinterval=0 -Xmx700m" >> $start_file
-chmod +x $start_file
 
 #MQTT mosquitto install..
 if ! [ -x "$(command -v mosquitto)" ]; then
