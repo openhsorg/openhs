@@ -36,6 +36,8 @@ public class WifiAdmin {
         		// logger.info("\n<------ Network interfaces ------------>");
         		// m_wifiManager.NetworkInterfaces();
         		 
+        		// m_wifiManager.getListDevices();
+        		 
         		 Thread.sleep(5000);
 		       }
 		     } catch (Exception e) { 
