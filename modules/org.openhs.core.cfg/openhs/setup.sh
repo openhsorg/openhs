@@ -1,5 +1,7 @@
 #!/bin/bash
-# OpenHS setupp script
+# OpenHS setup script
+#michal.valny@openhs.org
+
 if [[ `whoami` != "root" ]]
 then
   echo "Script must be run as root."
@@ -91,7 +93,7 @@ chmod +x $start_file
 # Create service
 service_file_name="openhs.service"
 service_file="/lib/systemd/system/$service_file_name"
-#echo "Platform is $(uname -s)"
+
 echo "OpenHS service.."
 
 if [ -f "$service_file" ]; then
@@ -117,14 +119,8 @@ echo "" >> $service_file
 echo "[Install]" >> $service_file
 echo "WantedBy=multi-user.target" >> $service_file
 
-#if [[ $platform == *"arm"* ]]
-#then
-  chmod 644 $service_file
-  systemctl daemon-reload
-  systemctl enable $service_file_name
-  systemctl start $service_file_name
-  #systemctl status $service_file_name
-#fi
+chmod 644 $service_file
+systemctl daemon-reload
 
 
 #MQTT mosquitto install..
@@ -134,8 +130,6 @@ if ! [ -x "$(command -v mosquitto)" ]; then
   apt-get install -y -qq mosquitto mosquitto-clients
   sudo /etc/init.d/mosquitto start
   sudo /etc/init.d/mosquitto stop
-
-  #echo "Setup mosquitto.conf file.."
 
   mosquito_conf="/etc/mosquitto/mosquitto.conf"
 
@@ -165,11 +159,9 @@ if ! [ -x "$(command -v mosquitto)" ]; then
 
 else
   echo 'MQTT Mosquitto is installed.' >&2
-  #sudo /etc/init.d/mosquitto start
 fi
 
 #IQRF daemon install..
-install_iqrf=0
 service_file_iqrf="/lib/systemd/system/iqrf-daemon.service"
 
 if [[ $platform == *"arm"* ]]
@@ -179,18 +171,17 @@ then
   if [ -f "$service_file_iqrf" ]; then
     echo "IQRF daemon exists.."
   else
-    echo "IQRF daemon DOES NOT EXISTS!.."
-    install_iqrf=1
+    echo "Installing IQRF daemon.."
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66CB9A85
+    echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
+    apt-get -qq -y update
+    apt-get install -qq -y iqrf-daemon
+    systemctl status iqrf-daemon.service
   fi
 fi
 
-if [ $install_iqrf -eq 1 ]; then
-  echo "IQRF daemon INSTALL GO!.."
-  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 66CB9A85
-  echo "deb http://repos.iqrfsdk.org/raspbian jessie testing" | sudo tee -a /etc/apt/sources.list
-  apt-get -qq -y update
-  apt-get install -qq -y iqrf-daemon
-  systemctl status iqrf-daemon.service
-fi
+echo "Starting OpenHS.."
+systemctl enable $service_file_name
+systemctl start $service_file_name
 
 echo "---------- Setup OpenHS done, enjoy! ----------"
