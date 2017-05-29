@@ -8,20 +8,59 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openhs.apps.cobalt.math.CobaltModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CobaltServlet extends HttpServlet {
+	
+	//initialize logger
+	private Logger logger = LoggerFactory.getLogger(CobaltServlet.class);
+	
+	private CobaltModel m_cobaltModel = null;
+	
+	CobaltServlet (CobaltModel cobaltModel){
+		this.m_cobaltModel = cobaltModel;
+	}
 	
 	@Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		response.setContentType("text/html");
-    	response.setCharacterEncoding("UTF-8");
-    	//response.setHeader("cache-control", "no-cache");		    	
+	 	String value = request.getParameter("orderId");
+        
+    	if (value != null) {
+    		
+    		String jsonString = null;
+    		
+    		if (value.toString().equals("Cobalt_Axes")) {	
 
-		PrintWriter out = response.getWriter();
-    
-		print_html (out);
-	        
-		out.close();	         
+    			logger.info("\n\n----------------> Gobalt_Axes....");
+    		
+    			jsonString = this.m_cobaltModel.axesToJSON();
+    		}
+    		
+    	    if (jsonString != null) {
+    			response.setContentType("application/json");
+    			response.setCharacterEncoding("UTF-8");
+
+    			PrintWriter out = response.getWriter();	    			
+			 
+    			out.println(jsonString);
+	    	        
+    			out.flush();
+    			out.close();	    	
+    	    }    		
+    		
+    	} else {
+			response.setContentType("text/html");
+	    	response.setCharacterEncoding("UTF-8");
+	    	//response.setHeader("cache-control", "no-cache");		    	
+	
+			PrintWriter out = response.getWriter();
+	    
+			print_html (out);
+		        
+			out.close();	   
+    	}
 
     }
 
@@ -63,6 +102,9 @@ public class CobaltServlet extends HttpServlet {
     //	out.println("<div id='content' style='width:500px;height:500px'></div>");
 
     	out.println("<script src='robotres/three/build/three.js'></script>");
+    	out.println("<script src='robotres/jquery-3.1.1.min.js'></script>");
+    	out.println("<script src='robotres/RobotMath.js'></script>");	
+    	out.println("<script src='robotres/CobaltModel.js'></script>");	
     	out.println("<script src='robotres/CobaltScript.js'></script>");	
     	
     	/*

@@ -2,6 +2,7 @@ package org.openhs.apps.cobalt;
 
 import javax.servlet.ServletException;
 
+import org.openhs.apps.cobalt.math.CobaltModel;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ public class Cobalt {
 	
 	private HttpService m_httpService = null;	
 	private CobaltServlet m_cobaltServlet = null;
+	private CobaltModel m_cobaltModel = null;
 	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(Cobalt.class);	
@@ -18,7 +20,8 @@ public class Cobalt {
 	public void activate() {
         logger.info("org.openhs.apps.cobalt: activate()");
         
-        m_cobaltServlet = new CobaltServlet ();	
+        m_cobaltModel = new CobaltModel();
+        m_cobaltServlet = new CobaltServlet (m_cobaltModel);	
         
 		/* Make adress references */										
         try {
