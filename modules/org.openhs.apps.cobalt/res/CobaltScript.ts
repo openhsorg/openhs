@@ -69,8 +69,7 @@ class ThreeJSTest {
             var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
             var line = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(line);        
-        
-        
+                
             var sphereGeometry = new THREE.SphereGeometry( 10, 32, 16 ); 
             // use a "lambert" material rather than "basic" for realistic lighting.
             //   (don't forget to add (at least one) light!)
@@ -92,11 +91,29 @@ class ThreeJSTest {
                 
             //    window.alert("xxxxxxxx:" + ax.cs.point.x);
             
-            } 
+            }
         
-         //      this.renderer.clear();
+            var triangleGeometry = new THREE.Geometry(); 
+            triangleGeometry.vertices.push(new THREE.Vector3( 60.0,  60.0, 0.0)); 
+            triangleGeometry.vertices.push(new THREE.Vector3(60.0, 400.0, 0.0)); 
+            triangleGeometry.vertices.push(new THREE.Vector3( 400.0, 400.0, 0.0)); 
+            triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));         
         
-        this.renderer.render(this.scene, this.camera);   
+            triangleGeometry.faces[0].vertexColors[0] = new THREE.Color(0xFF0000); 
+            triangleGeometry.faces[0].vertexColors[1] = new THREE.Color(0xFF0000); 
+            triangleGeometry.faces[0].vertexColors[2] = new THREE.Color(0xFF0000); 
+        
+            var triangleMaterial = new THREE.MeshBasicMaterial({ 
+                     vertexColors:THREE.VertexColors, 
+                     side:THREE.DoubleSide 
+             });         
+        
+            var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
+            triangleMesh.position.set(0.0, 0.0, 0.0); 
+            this.scene.add(triangleMesh);         
+
+        
+            this.renderer.render(this.scene, this.camera);   
 
           //  requestAnimationFrame(()=>this.paint());  
 
