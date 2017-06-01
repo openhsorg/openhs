@@ -20,7 +20,7 @@ public class CobaltModel {
 	public double h [] = new double [8];
 	public ArrayList<Axis> m_axes = new ArrayList<Axis>();
 	public CartesianSystem m_ep = new CartesianSystem();
-	
+		
 	public CobaltModel () {
 		
 		h[0] = 0.0;

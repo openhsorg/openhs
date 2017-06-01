@@ -52,7 +52,17 @@ public class Cobalt {
 		m_properties = properties;
 
 		String c1x = (String) m_properties.get("stl1");
+		
 		String openhsHome = (String) m_properties.get("openhsHome");
+
+		//Put geometrical data into model
+		
+		for (int i = 1; i <= 6; i++) {
+			String stlPath = openhsHome + (String) m_properties.get("stl" + i);
+			this.m_cobaltModel.m_axes.get(i).loadGeometry(stlPath);
+			//System.out.println("\n\n\n\n\n ********************** ------> " + stlPath);
+		}
+		
 		
 	//	System.out.println("\n\n\n\n\n ********************** ------> " + c1x + "***" + openhsHome);
 	}	
