@@ -1,8 +1,11 @@
 package org.openhs.apps.cobalt;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 
 import org.openhs.apps.cobalt.math.CobaltModel;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -14,11 +17,15 @@ public class Cobalt {
 	private CobaltServlet m_cobaltServlet = null;
 	private CobaltModel m_cobaltModel = null;
 	
+	private Map<String, Object> m_properties = null;
+	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(Cobalt.class);	
 	
-	public void activate() {
+	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
         logger.info("org.openhs.apps.cobalt: activate()");
+        
+        
         
         m_cobaltModel = new CobaltModel();
         m_cobaltServlet = new CobaltServlet (m_cobaltModel);	
@@ -36,7 +43,19 @@ public class Cobalt {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }          
+        
+        //Properties
+        updated(properties);
 	}
+	
+	public void updated(Map<String, Object> properties) {
+		m_properties = properties;
+
+		String c1x = (String) m_properties.get("stl1");
+		String openhsHome = (String) m_properties.get("openhsHome");
+		
+	//	System.out.println("\n\n\n\n\n ********************** ------> " + c1x + "***" + openhsHome);
+	}	
 	
 	public void deactivate() {
         logger.info("org.openhs.apps.cobalt: deactivate()");
