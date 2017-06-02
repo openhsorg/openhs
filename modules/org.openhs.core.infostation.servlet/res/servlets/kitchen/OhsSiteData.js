@@ -48,6 +48,7 @@ var OhsSiteData;
             this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
         };
         SiteData.prototype.getFastData = function () {
+            this.getFastData_Time();
             if (this.getCount == 0) {
                 this.getFastData_TemperatureSensorArray();
             }
@@ -74,6 +75,16 @@ var OhsSiteData;
             }
             else {
                 this.getCount++;
+            }
+        };
+        SiteData.prototype.getFastData_Time = function () {
+            var req = {
+                orderId: "TimeDate"
+            };
+            var data = getAjax("kitchen", req);
+            if (data != null) {
+                this.dateString = data['date'];
+                this.timeString = data['time'];
             }
         };
         SiteData.prototype.getFastData_TemperatureSensorArray = function () {
@@ -445,24 +456,16 @@ var OhsSiteData;
             this.logo = "unknown";
         }
         Supplier.prototype.getServerData = function () {
-            var req = {
-                orderId: "Supplier",
-                name: this.name
-            };
-            //  window.alert("****" + this.name);
-            var data = getAjax("kitchen", req);
-            this.parseServerData(data);
-        };
-        Supplier.prototype.parseServerData = function (data) {
-            if (data != null) {
-                this.valid = JSON.parse(data['__validity']);
-                if (this.valid) {
-                    this.www = data['www'];
-                    this.address = data['address'];
-                    this.phone = data['phone'];
-                    this.logo = data['logo'];
-                }
-            }
+            /*
+           var req: any = {
+               orderId : "Supplier",
+               name:   this.name
+           }
+         //  window.alert("****" + this.name);
+           var data: string = getAjax("kitchen", req);
+           
+           this.parseServerData(data);
+           */
         };
         return Supplier;
     }());

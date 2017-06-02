@@ -6,6 +6,7 @@ import Point3D = RobotMath.Point3D;
 import Vector3D = RobotMath.Vector3D;
 import CoordSystem = RobotMath.CoordSystem;
 import TransformCobalt = RobotMath.TransformCobalt;
+import Face = RobotMath.Face;
 
 module CobaltModel {  
 
@@ -13,14 +14,39 @@ module CobaltModel {
         
         //constants...
         public m_axisArray:            Array <Axis> = new Array <Axis>();
+        
+        protected getCount:  number = 0;
+        
+        private fastTimerGetData;
+        
+        public dataLoaded:  boolean = false;
       
         
         constructor () {
             this.getServerAxes();
             
+            this.timerGetGeometry(500);
+            
         }
         
+        private timerGetGeometry(step : number) {
+            
+           this.loadGeometry();
+                                               
+           window.clearTimeout(this.fastTimerGetData);
+           this.fastTimerGetData = window.setTimeout(() => this.timerGetGeometry(step), step); 
+        }              
         
+        public loadGeometry () {
+            
+            if (this.getCount < this.m_axisArray.length) {                
+                var ax = this.m_axisArray[this.getCount];
+                
+                this.getServerAxesGeometry(this.getCount + 1);
+                
+                this.getCount++;
+            }                              
+        }
         
         public getServerData () {       
              
@@ -53,10 +79,32 @@ module CobaltModel {
                     ax.parseData(data, i);
                     
                     this.m_axisArray.push(ax);                        
-                }
-            
+                }            
             }            
         }
+        
+        public getServerAxesGeometry (ax: number) {
+            var req: any = {                
+            orderId : "Cobalt_AxesGeometry" + ax          
+            } 
+            
+           var data: string = getAjax("robot", req); 
+            
+            if (data != null) {        
+            
+     
+                
+                if (ax == 2) {
+                    
+                    let axis = this.m_axisArray[ax];
+                
+                    axis.parseGeomData(data);                        
+                    
+                    this.dataLoaded = true;
+                }
+        
+            }            
+        }        
                         
     }
     
@@ -65,7 +113,12 @@ module CobaltModel {
         //Axis coord system
         public cs: CoordSystem = new CoordSystem();
         
+        //Faces
+        public faces:            Array <Face> = new Array <Face>();
+        
         public length: number = 100;
+        
+       
         
         public parseData (data: any, i: any) {
             
@@ -90,9 +143,54 @@ module CobaltModel {
             this.cs.k.z = parseFloat(data[i + 'cs_k_z']);     
             
             this.cs = transform.transformCs(this.cs);
+            
+            var numFaces = parseInt(data[i + 'num_faces']);            
 
         }
-               
+             
+        
+        public parseGeomData (data: any) {
+
+            var numFaces = parseInt(data['num_faces']);  
+            
+           // window.alert('Faces: ' + numFaces);
+            
+             for (var i = 0; i < numFaces; i++) {
+                 
+                 var fc: Face = new Face ();
+                            
+                 fc.normal.x = parseFloat(data[i + 'fc_n_x']);
+                 fc.normal.y = parseFloat(data[i + 'fc_n_y']);
+                 fc.normal.z = parseFloat(data[i + 'fc_n_z']);
+                 
+                // window.alert('Normal: ' + fc.normal.x + ' : ' + fc.normal.y + ' : ' + fc.normal.z);;
+                 
+                 var v0: Point3D = new Point3D();
+                 var v1: Point3D = new Point3D();
+                 var v2: Point3D = new Point3D();      
+                 
+                 v0.x = parseFloat(data[i + "_v:0" + "fc_v_x"]);
+                 v0.y = parseFloat(data[i + "_v:0" + "fc_v_y"]);
+                 v0.z = parseFloat(data[i + "_v:0" + "fc_v_z"]);                    
+      
+                 v1.x = parseFloat(data[i + "_v:1" + "fc_v_x"]);
+                 v1.y = parseFloat(data[i + "_v:1" + "fc_v_y"]);
+                 v1.z = parseFloat(data[i + "_v:1" + "fc_v_z"]);               
+                 
+                 v2.x = parseFloat(data[i + "_v:2" + "fc_v_x"]);
+                 v2.y = parseFloat(data[i + "_v:2" + "fc_v_y"]);
+                 v2.z = parseFloat(data[i + "_v:2" + "fc_v_z"]);   
+                 
+                 fc.vertex.push(v0);
+                 fc.vertex.push(v1);
+                 fc.vertex.push(v2);
+                 
+                 this.faces.push(fc);
+                 
+            }
+            
+            //this.dataLoaded = true;
+        }        
         
     }
     

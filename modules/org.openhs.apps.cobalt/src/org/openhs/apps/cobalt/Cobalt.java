@@ -23,12 +23,14 @@ public class Cobalt {
 	private Logger logger = LoggerFactory.getLogger(Cobalt.class);	
 	
 	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
-        logger.info("org.openhs.apps.cobalt: activate()");
+        logger.info("org.openhs.apps.cobalt: activate()");        
         
-        
-        
+        //Model
         m_cobaltModel = new CobaltModel();
         m_cobaltServlet = new CobaltServlet (m_cobaltModel);	
+        
+        //Properties
+        updated(properties);        
         
 		/* Make adress references */										
         try {
@@ -44,8 +46,7 @@ public class Cobalt {
             e.printStackTrace();
         }          
         
-        //Properties
-        updated(properties);
+
 	}
 	
 	public void updated(Map<String, Object> properties) {

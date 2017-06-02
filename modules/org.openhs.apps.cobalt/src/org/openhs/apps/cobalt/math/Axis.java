@@ -50,30 +50,15 @@ public class Axis {
 	        	  
 	        	  //Facet enabled...
 	        	  if (facetIn) {
-	        		  if (line.contains("normal")) {
-	        			  
-	        			  double[] num = new double[3];
-	        			  
-	        			  StringTokenizer stringTokenizer = new StringTokenizer(line);
-
-	        			  int numberOfTokens = stringTokenizer.countTokens();
-	        			  
-	        			  int iNum = 0;
-	        			  
-	        			  while (stringTokenizer.hasMoreElements()) {
-	        			      
-	        				  String s = stringTokenizer.nextElement().toString();
-	        				  if (this.isNumber(s)){
-	        					  
-	        					  num[iNum] = Double.parseDouble(s);
-	        					  //System.out.println(">>>>>i:" + iNum + "   ...num:" + num[iNum]);
-	        					  iNum++;	        					  
-	        				  }
-
-	        			  }
+	        		  if (line.contains("normal")) {	        			  
+	        			  Point3D pt = this.readPoint(line);
+	        			  face.normal.set(pt);	        			  
+	        			  //System.out.println(">>PointN: " + pt.x + " : " + pt.y + " : " + pt.z);  
 	        			  	        				        			    
 	        		  } else if (line.contains("vertex")){
-	        			  
+	        			  Point3D pt = this.readPoint(line);	        			  	        			  
+	        			  face.vertex.add(pt);
+	        			 // System.out.println(">>PointF: " + pt.x + " : " + pt.y + " : " + pt.z);
 	        		  }	        		  
 	        	  }	        	  
 	          }
@@ -84,6 +69,36 @@ public class Axis {
 	       }
 	
 		
+	}
+	
+	protected Point3D readPoint (String line) {
+		
+		Point3D p = new Point3D();
+				  
+		StringTokenizer stringTokenizer = new StringTokenizer(line);
+
+		int numberOfTokens = stringTokenizer.countTokens();
+		  
+		int iNum = 0;
+						  
+	    while (stringTokenizer.hasMoreElements()) {
+	    	     
+		    String s = stringTokenizer.nextElement().toString();
+		    
+		    if (isNumber(s)){
+		    			    	
+		    	double num = Double.parseDouble(s);
+			  
+		    	if (iNum == 0) p.x = num;
+		    	else if (iNum == 1) p.y = num;
+		    	else if (iNum == 2) p.z = num;
+					  				
+		    	//System.out.println(">>>>>i:" + iNum + "   ...num:" + num[iNum]);
+		    	iNum++;	        					  
+		    }
+		}
+		
+		return p;
 	}
 	
 	public static boolean isNumber(String string) {

@@ -2,6 +2,7 @@
 /// <reference path='CobaltModel.ts'/>
 
 import Cobalt = CobaltModel.Cobalt;
+import Axis = CobaltModel.Axis;
 
 class ThreeJSTest {        
     
@@ -110,25 +111,39 @@ class ThreeJSTest {
         
             var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
             triangleMesh.position.set(0.0, 0.0, 0.0); 
-            this.scene.add(triangleMesh);         
-
+            this.scene.add(triangleMesh);        
         
+                    
             this.renderer.render(this.scene, this.camera);   
 
           //  requestAnimationFrame(()=>this.paint());  
 
    
     }
+    
+    render() {
+        // Each frame we want to render the scene again
+        // Use typescript Arrow notation to retain the thisocity passing render to requestAnimationFrame
+        // It's possible I invented the word thisocity.
+        
+        this.renderer.clear();
+        
+        this.drawAxesGeometry();
+        
+        requestAnimationFrame(() => this.render());
+        this.renderer.render(this.scene, this.camera);
+    }    
 
     start() {
         //this.renderer.clear();
+        this.render();
     }
     
     public paint () {
         this.renderer.clear();
         
     }
-    
+
     public drawCS (x: number, y: number, z: number, lenght: number) {
             //Line X
             var lineGeometry = new THREE.Geometry();
@@ -156,6 +171,61 @@ class ThreeJSTest {
             var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
             var line = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(line);    
+    }
+    
+    public drawAxesGeometry () {
+        
+
+        if (this.cobalt.dataLoaded) {                          
+            
+            for(let ax of this.cobalt.m_axisArray) {               
+                               
+                
+                this.drawAxisGeometry(ax);                
+              
+            }
+            
+              this.cobalt.dataLoaded = false;
+        }
+                
+    }
+    
+    public drawAxisGeometry (ax: Axis) {
+        
+          //window.alert("-+");
+        
+        for(let fc of ax.faces) {
+            
+          //  window.alert("-+");
+            
+            var triangleGeometry = new THREE.Geometry(); 
+            triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[0].x,  fc.vertex[0].y, fc.vertex[0].z)); 
+            triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[1].x,  fc.vertex[1].y, fc.vertex[1].z)); 
+            triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[2].x,  fc.vertex[2].y, fc.vertex[2].z));
+            
+           // window.alert("<:>" + fc.vertex[0].x);
+            
+            var f3 = new THREE.Face3(0, 1, 2)
+            f3.vertexColors[0] = new THREE.Color(0xFF0000);
+            f3.vertexColors[1] = new THREE.Color(0xFF0000); 
+            f3.vertexColors[2] = new THREE.Color(0xFF0000);  
+            
+            triangleGeometry.faces.push(f3);    
+            
+            var triangleMaterial = new THREE.MeshBasicMaterial({ 
+                     vertexColors:THREE.VertexColors, 
+                     side:THREE.DoubleSide 
+             });         
+            
+            var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
+          //  triangleMesh.position.set(0.0, 0.0, 0.0); 
+            this.scene.add(triangleMesh);                
+ 
+            
+        }
+       
+        
+        
     }
 
 }

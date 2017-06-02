@@ -20,9 +20,14 @@ module RobotMath {
         constructor () {
             super();
         
-        }
-        
-    }    
+        }        
+    }  
+    
+    export class Face {
+        public normal:       Vector3D = new Vector3D();
+        public vertex:       Array <Point3D> = new Array <Point3D>();
+    
+    }
         
     export class CoordSystem {
         public i:       Vector3D = new Vector3D();

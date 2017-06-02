@@ -80,8 +80,7 @@ module OhsSiteData {
                 this.getFastData_RoomArray();
                 
             } else if (this.getCount == 6) {
-                this.getFastData_FloorArray();
-                
+                this.getFastData_FloorArray();                
             }
                         
             if (this.getCount == 6) {

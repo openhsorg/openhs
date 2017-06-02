@@ -20,6 +20,8 @@ public class CobaltModel {
 	public double h [] = new double [8];
 	public ArrayList<Axis> m_axes = new ArrayList<Axis>();
 	public CartesianSystem m_ep = new CartesianSystem();
+	
+	
 		
 	public CobaltModel () {
 		
@@ -123,7 +125,8 @@ public class CobaltModel {
 			
 			json.put(i + "lenght", String.format("%.2f", ax.length));	
 			
-			
+			json.put(i + "num_faces", String.format("%d", ax.m_faces.size()));			
+						
 			i++;
 			
 		}
@@ -131,12 +134,52 @@ public class CobaltModel {
 		
 		//String str = array.toString();
 		
-		logger.info("\n\nSSSS:" + json.toString());
+	//	logger.info("\n\nSSSS:" + json.toString());
 		
 		return json.toString();
 		
 	}
 	
-	
+	public String axesGeometryToJSON(int nAxis){
+		
+		JSONObject json = new JSONObject();
+		
+		Axis ax = m_axes.get(nAxis);
+		
+		json.put("num_faces", String.format("%d", ax.m_faces.size()));		
+						
+		int i = 0;						
+		
+		for (Face fc: ax.m_faces) {
+			
+			json.put(i + "fc_n_x", String.format("%.2f", fc.normal.x));
+			json.put(i + "fc_n_y", String.format("%.2f", fc.normal.y));
+			json.put(i + "fc_n_z", String.format("%.2f", fc.normal.z));
+			
+		//	logger.info("\n\nSSSS:" + fc.normal.x + fc.normal.y + fc.normal.z);
+			
+			int nV = 0;
+			
+			for (Point3D vertex: fc.vertex) {
+				
+				json.put(i + "_v:" + nV + "fc_v_x", String.format("%.2f", vertex.x));
+				json.put(i + "_v:" + nV + "fc_v_y", String.format("%.2f", vertex.y));
+				json.put(i + "_v:" + nV + "fc_v_z", String.format("%.2f", vertex.z));
+				
+				nV ++;
+			}				
+			
+			i++;
+		}
+
+		
+		
+		//String str = array.toString();
+		
+	//	logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();
+		
+	}	
 	
 }
