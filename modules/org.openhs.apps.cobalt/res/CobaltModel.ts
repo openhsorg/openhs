@@ -90,15 +90,13 @@ module CobaltModel {
             
            var data: string = getAjax("robot", req); 
             
-            if (data != null) {        
-            
-     
-                
-                if (ax == 2) {
+            if (data != null) {                                                        
                     
-                    let axis = this.m_axisArray[ax];
+               let axis = this.m_axisArray[ax];
                 
-                    axis.parseGeomData(data);                        
+               axis.parseGeomData(data);                        
+                
+                if (ax == 6) {
                     
                     this.dataLoaded = true;
                 }
@@ -117,9 +115,7 @@ module CobaltModel {
         public faces:            Array <Face> = new Array <Face>();
         
         public length: number = 100;
-        
-       
-        
+                       
         public parseData (data: any, i: any) {
             
             var transform : TransformCobalt = new TransformCobalt ();
@@ -154,6 +150,7 @@ module CobaltModel {
             var numFaces = parseInt(data['num_faces']);  
             
            // window.alert('Faces: ' + numFaces);
+            var transform : TransformCobalt = new TransformCobalt ();
             
              for (var i = 0; i < numFaces; i++) {
                  
@@ -185,7 +182,9 @@ module CobaltModel {
                  fc.vertex.push(v1);
                  fc.vertex.push(v2);
                  
-                 this.faces.push(fc);
+                 var fc2: Face = transform.transformFace(fc);
+                 
+                 this.faces.push(fc2);
                  
             }
             

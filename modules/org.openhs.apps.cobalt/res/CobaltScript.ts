@@ -31,11 +31,22 @@ class ThreeJSTest {
             //this.camera.lookAt(this.scene.position);  
         
             this.scene.add(this.camera);
+        
+        
+  var light = new THREE.PointLight(0xffffff, 2, 100);
+  light.position.set(1000,1300,1000);
+  this.scene.add(light);
+  var light2  = new THREE.DirectionalLight(0xffffff, 1.0);
+  light2.position.set(500, 500, 500);
+  this.scene.add(light2);
+  var light3  = new THREE.AmbientLight(0x404040);
+  this.scene.add(light3);           
 
             this.renderer = new THREE.WebGLRenderer({ antialias: true });
             this.renderer.setSize( window.innerWidth, window.innerHeight );
             this.renderer.setClearColor( 0xeeeeee );
             document.body.appendChild( this.renderer.domElement );
+          
                 
             //Cylinder
             var geometry = new THREE.CylinderGeometry( 60, 60, 80, 32 );
@@ -93,7 +104,7 @@ class ThreeJSTest {
             //    window.alert("xxxxxxxx:" + ax.cs.point.x);
             
             }
-        
+        /*
             var triangleGeometry = new THREE.Geometry(); 
             triangleGeometry.vertices.push(new THREE.Vector3( 60.0,  60.0, 0.0)); 
             triangleGeometry.vertices.push(new THREE.Vector3(60.0, 400.0, 0.0)); 
@@ -112,7 +123,7 @@ class ThreeJSTest {
             var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
             triangleMesh.position.set(0.0, 0.0, 0.0); 
             this.scene.add(triangleMesh);        
-        
+        */
                     
             this.renderer.render(this.scene, this.camera);   
 
@@ -194,36 +205,54 @@ class ThreeJSTest {
         
           //window.alert("-+");
         
+        var triangleMaterial = new THREE.MeshBasicMaterial({ 
+                 vertexColors:THREE.VertexColors, 
+                 side:THREE.DoubleSide 
+         });
+        
+        var solidMatA = new THREE.MeshLambertMaterial({
+            color: 0x00cc99 
+        })
+        solidMatA.side = THREE.DoubleSide;        
+        
+        var triangleGeometry = new THREE.Geometry(); 
+        
+        var i = 0;
+        
         for(let fc of ax.faces) {
             
           //  window.alert("-+");
             
-            var triangleGeometry = new THREE.Geometry(); 
+            var ct = i * 3;
+            
+            
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[0].x,  fc.vertex[0].y, fc.vertex[0].z)); 
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[1].x,  fc.vertex[1].y, fc.vertex[1].z)); 
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[2].x,  fc.vertex[2].y, fc.vertex[2].z));
             
            // window.alert("<:>" + fc.vertex[0].x);
             
-            var f3 = new THREE.Face3(0, 1, 2)
-            f3.vertexColors[0] = new THREE.Color(0xFF0000);
-            f3.vertexColors[1] = new THREE.Color(0xFF0000); 
-            f3.vertexColors[2] = new THREE.Color(0xFF0000);  
+            var f3 = new THREE.Face3(0 + ct, 1 + ct, 2 + ct);
+          //  f3.vertexColors[0] = new THREE.Color(0xFF0000);
+        //    f3.vertexColors[1] = new THREE.Color(0xFF0000); 
+        //    f3.vertexColors[2] = new THREE.Color(0xFF0000);  
             
-            triangleGeometry.faces.push(f3);    
-            
-            var triangleMaterial = new THREE.MeshBasicMaterial({ 
-                     vertexColors:THREE.VertexColors, 
-                     side:THREE.DoubleSide 
-             });         
-            
-            var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
-          //  triangleMesh.position.set(0.0, 0.0, 0.0); 
-            this.scene.add(triangleMesh);                
- 
+            triangleGeometry.faces.push(f3);   
+
+            i++;
+                                  
             
         }
+        
+            //        triangleGeometry.computeFaceNormals(); 
+        
+        triangleGeometry.computeFaceNormals();
+      //  triangleGeometry.computeVertexNormals();
        
+            var triangleMesh = new THREE.Mesh(triangleGeometry, solidMatA); 
+          //  triangleMesh.position.set(0.0, 0.0, 0.0); 
+            this.scene.add(triangleMesh);      
+        
         
         
     }
