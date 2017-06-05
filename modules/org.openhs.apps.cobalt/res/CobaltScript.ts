@@ -13,6 +13,7 @@ class ThreeJSTest {
     scene: THREE.Scene;
     
     numAxes: number = 0;
+    rot : number = -0.008;
     
     constructor(){
         
@@ -25,28 +26,26 @@ class ThreeJSTest {
             var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
             var VIEW_ANGLE = 50, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
             this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-            this.camera.position.set(2000, 2000, 2000);
+            this.camera.position.set(2000, 2500, 2000);        
+            this.camera.lookAt(new THREE.Vector3(0,0,0));        
+            this.scene.add(this.camera);        
         
-            this.camera.lookAt(new THREE.Vector3(0,0,0));
-            //this.camera.lookAt(this.scene.position);  
+            //Lights
+            var light = new THREE.PointLight(0xffffff, 2, 100);
+            light.position.set(1000,1300,1000);
+            this.scene.add(light);
         
-            this.scene.add(this.camera);
+            var light2  = new THREE.DirectionalLight(0xffffff, 1.0);
+            light2.position.set(500, 500, 500);
+            this.scene.add(light2);
         
-        
-  var light = new THREE.PointLight(0xffffff, 2, 100);
-  light.position.set(1000,1300,1000);
-  this.scene.add(light);
-  var light2  = new THREE.DirectionalLight(0xffffff, 1.0);
-  light2.position.set(500, 500, 500);
-  this.scene.add(light2);
-  var light3  = new THREE.AmbientLight(0x404040);
-  this.scene.add(light3);           
+            var light3  = new THREE.AmbientLight(0x404040);
+            this.scene.add(light3);           
 
             this.renderer = new THREE.WebGLRenderer({ antialias: true });
             this.renderer.setSize( window.innerWidth, window.innerHeight );
             this.renderer.setClearColor( 0xeeeeee );
-            document.body.appendChild( this.renderer.domElement );
-          
+            document.body.appendChild( this.renderer.domElement );          
                 
             //Cylinder
             var geometry = new THREE.CylinderGeometry( 60, 60, 80, 32 );
@@ -141,6 +140,9 @@ class ThreeJSTest {
         
         this.drawAxesGeometry();
         
+        this.moveAxesGeometry();
+        
+        
         requestAnimationFrame(() => this.render());
         this.renderer.render(this.scene, this.camera);
     }    
@@ -185,21 +187,27 @@ class ThreeJSTest {
     }
     
     public drawAxesGeometry () {
-        
-
-        if (this.cobalt.dataLoaded) {                          
-            
-            for(let ax of this.cobalt.m_axisArray) {               
-                               
-                
-                this.drawAxisGeometry(ax);                
-              
-            }
-            
-              this.cobalt.dataLoaded = false;
-        }
-                
+                                                      
+            for(let ax of this.cobalt.m_axisArray) {   
+                if (ax.dataLoaded) {                                                           
+                    this.drawAxisGeometry(ax);
+                    ax.dataLoaded = false;
+                }                              
+            }                
     }
+    
+    public moveAxesGeometry () {
+        
+        if (this.cobalt.allAxesLoaded() == 1) {                          
+            
+            for(let ax of this.cobalt.m_axisArray) {   
+              
+                if (ax.mesh != null) {
+                    ax.mesh.rotateY( this.rot );
+                }
+            }
+         }                
+    }    
     
     public drawAxisGeometry (ax: Axis) {
         
@@ -224,8 +232,7 @@ class ThreeJSTest {
           //  window.alert("-+");
             
             var ct = i * 3;
-            
-            
+                        
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[0].x,  fc.vertex[0].y, fc.vertex[0].z)); 
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[1].x,  fc.vertex[1].y, fc.vertex[1].z)); 
             triangleGeometry.vertices.push(new THREE.Vector3( fc.vertex[2].x,  fc.vertex[2].y, fc.vertex[2].z));
@@ -253,6 +260,9 @@ class ThreeJSTest {
           //  triangleMesh.position.set(0.0, 0.0, 0.0); 
             this.scene.add(triangleMesh);      
         
+        ax.mesh = triangleMesh;
+        
+        //triangleMesh.rotateX( Math.PI / 2 );
         
         
     }

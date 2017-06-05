@@ -19,9 +19,7 @@ public class CobaltModel {
 	
 	public double h [] = new double [8];
 	public ArrayList<Axis> m_axes = new ArrayList<Axis>();
-	public CartesianSystem m_ep = new CartesianSystem();
-	
-	
+	public CartesianSystem m_ep = new CartesianSystem();	
 		
 	public CobaltModel () {
 		
@@ -151,12 +149,6 @@ public class CobaltModel {
 		int i = 0;						
 		
 		for (Face fc: ax.m_faces) {
-			
-			json.put(i + "fc_n_x", String.format("%.2f", fc.normal.x));
-			json.put(i + "fc_n_y", String.format("%.2f", fc.normal.y));
-			json.put(i + "fc_n_z", String.format("%.2f", fc.normal.z));
-			
-		//	logger.info("\n\nSSSS:" + fc.normal.x + fc.normal.y + fc.normal.z);
 			
 			int nV = 0;
 			

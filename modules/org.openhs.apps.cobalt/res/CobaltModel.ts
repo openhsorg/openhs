@@ -19,7 +19,7 @@ module CobaltModel {
         
         private fastTimerGetData;
         
-        public dataLoaded:  boolean = false;
+        //public dataLoaded:  boolean = false;
       
         
         constructor () {
@@ -69,7 +69,7 @@ module CobaltModel {
             
             if (data != null) {                
                 var numAxes = parseInt(data['num_axes']);
-                
+                                                
                 this.m_axisArray.length = 0;
                 
                 for (var i = 0; i < numAxes; i++) {
@@ -95,14 +95,32 @@ module CobaltModel {
                let axis = this.m_axisArray[ax];
                 
                axis.parseGeomData(data);                        
-                
+                /*
                 if (ax == 6) {
                     
                     this.dataLoaded = true;
                 }
-        
+        */
             }            
         }        
+        
+        public allAxesLoaded () {            
+            var loaded = 1; 
+                        
+            var i = 0;
+            
+            for(var ax of this.m_axisArray) {      
+                       
+              if (i != 0 && !ax.dataDone) {
+                  loaded = 0;
+              }
+                
+                i ++;
+            }
+
+            return loaded;
+        }
+        
                         
     }
     
@@ -115,6 +133,11 @@ module CobaltModel {
         public faces:            Array <Face> = new Array <Face>();
         
         public length: number = 100;
+        
+        public dataLoaded:  boolean = false;
+        public dataDone:  boolean = false;
+        
+        public mesh: THREE.Mesh = null;
                        
         public parseData (data: any, i: any) {
             
@@ -155,13 +178,7 @@ module CobaltModel {
              for (var i = 0; i < numFaces; i++) {
                  
                  var fc: Face = new Face ();
-                            
-                 fc.normal.x = parseFloat(data[i + 'fc_n_x']);
-                 fc.normal.y = parseFloat(data[i + 'fc_n_y']);
-                 fc.normal.z = parseFloat(data[i + 'fc_n_z']);
-                 
-                // window.alert('Normal: ' + fc.normal.x + ' : ' + fc.normal.y + ' : ' + fc.normal.z);;
-                 
+ 
                  var v0: Point3D = new Point3D();
                  var v1: Point3D = new Point3D();
                  var v2: Point3D = new Point3D();      
@@ -184,11 +201,11 @@ module CobaltModel {
                  
                  var fc2: Face = transform.transformFace(fc);
                  
-                 this.faces.push(fc2);
-                 
+                 this.faces.push(fc2);                 
             }
-            
-            //this.dataLoaded = true;
+                     
+            this.dataLoaded = true;
+            this.dataDone = true;
         }        
         
     }
