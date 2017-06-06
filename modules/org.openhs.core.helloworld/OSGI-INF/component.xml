@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.openhs.core.helloworld">
+   <implementation class="org.openhs.core.heloworld.hello"/>
+   <service>
+      <provide interface="org.openhs.core.heloworld.helloService"/>
+   </service>
+   <property name="service.exported.interfaces" type="String" value="*"/>
+   <property name="service.exported.configs" type="String" value="org.glassfish.jersey.core.jersey-server"/>
+   <property name="org.glassfish.jersey.core.jersey-server.alias" type="String" value="/jersey"/>
+</scr:component>
