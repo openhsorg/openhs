@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 public class CobaltModel {
 	
+	GCodeLoader m_GCodeLoader = new GCodeLoader ();
+	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(CobaltModel.class);	
 	
@@ -20,6 +22,7 @@ public class CobaltModel {
 	public double h [] = new double [8];
 	public ArrayList<Axis> m_axes = new ArrayList<Axis>();
 	public CartesianSystem m_ep = new CartesianSystem();	
+	public ArrayList<Trajectory> m_trajectories = new ArrayList<Trajectory>();
 		
 	public CobaltModel () {
 		
@@ -34,8 +37,9 @@ public class CobaltModel {
 		
 		this.setAxes();
 		
-		this.setEP();
+		this.setEP();	
 		
+		this.m_GCodeLoader.Load("");
 	}
 	
 	protected void setAxes() {
@@ -125,11 +129,9 @@ public class CobaltModel {
 			
 			json.put(i + "num_faces", String.format("%d", ax.m_faces.size()));			
 						
-			i++;
-			
+			i++;			
 		}
-		
-		
+				
 		//String str = array.toString();
 		
 	//	logger.info("\n\nSSSS:" + json.toString());
@@ -159,19 +161,20 @@ public class CobaltModel {
 				json.put(i + "_v:" + nV + "fc_v_z", String.format("%.2f", vertex.z));
 				
 				nV ++;
-			}				
+			}			
 			
 			i++;
 		}
-
-		
-		
-		//String str = array.toString();
 		
 	//	logger.info("\n\nSSSS:" + json.toString());
 		
-		return json.toString();
-		
-	}	
+		return json.toString();		
+	}		
 	
+	public boolean loadGCode(String path) {
+		boolean res = false;
+		
+		
+		return res;
+	}
 }
