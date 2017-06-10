@@ -14,10 +14,12 @@ module CobaltModel {
         
         //constants...
         public m_axisArray:            Array <Axis> = new Array <Axis>();
+        public m_trajArray:            Array <Trajectory> = new Array <Trajectory>();
         
         protected getCount:  number = 0;
         
         private fastTimerGetData;
+        private fastTimerGetPositions;
         
         //public dataLoaded:  boolean = false;
       
@@ -26,6 +28,10 @@ module CobaltModel {
             this.getServerAxes();
             
             this.timerGetGeometry(500);
+            
+            this.getServerTrajectories();
+            
+            this.timerGetPositions(1000);
             
         }
         
@@ -46,6 +52,42 @@ module CobaltModel {
                 
                 this.getCount++;
             }                              
+        }
+        
+        private timerGetPositions(step : number) {
+            
+           this.getPositions();
+                                               
+           window.clearTimeout(this.fastTimerGetPositions);
+           this.fastTimerGetPositions = window.setTimeout(() => this.timerGetPositions(step), step); 
+        }           
+        
+        public getPositions(){
+        
+            var req: any = {                
+            orderId : "Cobalt_AxesPositions"            
+            } 
+            
+           var data: string = getAjax("robot", req); 
+            
+            if (data != null) {                
+                var numAxes = parseInt(data['num_axes']);
+                                                
+                var i = 0;
+            
+                for(var ax of this.m_axisArray) {      
+                           
+                  if (i < numAxes) {
+                   
+                      ax.fi = parseFloat(data[i + 'fi']);
+                      
+                  //    window.alert("fi" + i + ": " + ax.fi );
+                      
+                  }                    
+                    i ++;
+                }     
+            }            
+        
         }
         
         public getServerData () {       
@@ -82,6 +124,29 @@ module CobaltModel {
                 }            
             }            
         }
+        
+        public getServerTrajectories () {
+            var req: any = {                
+            orderId : "Cobalt_Trajectories"            
+            } 
+            
+           var data: string = getAjax("robot", req); 
+            
+            if (data != null) {                
+                var numTrajs = parseInt(data['num_trajs']);
+                                                
+                this.m_trajArray.length = 0;
+                                                
+                for (var i = 0; i < numTrajs; i++) {
+                    
+                    let traj: Trajectory = new Trajectory ();
+                    
+                    traj.parseData(data, i);
+                    
+                    this.m_trajArray.push(traj);                        
+                }            
+            }            
+        }        
         
         public getServerAxesGeometry (ax: number) {
             var req: any = {                
@@ -138,6 +203,8 @@ module CobaltModel {
         public dataDone:  boolean = false;
         
         public mesh: THREE.Mesh = null;
+        
+        public fi: number = 0.0;  //Axis rotation...
                        
         public parseData (data: any, i: any) {
             
@@ -208,6 +275,91 @@ module CobaltModel {
             this.dataDone = true;
         }        
         
+    }
+    
+    export class Trajectory {
+        
+        public m_segments:            Array <Geometry3D> = new Array <Geometry3D>();
+        
+        public origin:  Point3D = new Point3D();
+        
+        public dataUpdated:  boolean = false;
+        
+//        public mesh: THREE.Mesh = null;
+        
+        constructor () {
+        
+            this.origin.x = 0.0;
+            this.origin.y = 0.0;
+            this.origin.z = 0.0;
+            //this.m_segments.push(new Line3D());
+            
+            
+        }
+        
+        public parseData (data: any, i: any) {
+            
+            var transform : TransformCobalt = new TransformCobalt ();
+            
+            var id: String = i + "_";
+            
+            var numSegments = parseInt(data[id + 'num_segments']);
+            
+            this.origin.x = parseFloat(data[id + 'origin_x']);
+            this.origin.y = parseFloat(data[id + 'origin_y']);
+            this.origin.z = parseFloat(data[id + 'origin_z']);
+            
+            this.origin = transform.transformPt(this.origin);
+            
+           // window.alert('numtraj ' + numSegments);
+                      
+            for (var j = 0; j < numSegments; j++) {
+                
+                var ids: String = id + "" + j + "_";
+                
+                let gtype = data[ids + 'seg_type']; 
+                
+              //  window.alert('segtype: ' + gtype);
+                
+                if (gtype != null && gtype === 'line') {
+                    
+                    var line: Line3D = new Line3D();
+                    
+                    line.pt1.x = parseFloat(data[ids + 'p1_x']);
+                    line.pt1.y = parseFloat(data[ids + 'p1_y']);
+                    line.pt1.z = parseFloat(data[ids + 'p1_z']);
+                    
+                    line.pt2.x = parseFloat(data[ids + 'p2_x']);
+                    line.pt2.y = parseFloat(data[ids + 'p2_y']);
+                    line.pt2.z = parseFloat(data[ids + 'p2_z']);      
+                    
+                    line.pt1 = transform.transformPt(line.pt1);
+                    line.pt2 = transform.transformPt(line.pt2);
+                    
+                    this.m_segments.push(line);
+                    
+                } 
+                   
+            }   
+                       
+            this.dataUpdated = true;
+
+        }        
+        
+        
+    }
+    
+    export class Geometry3D {
+  
+    
+    }
+    
+    export class Line3D extends Geometry3D {
+        public pt1:            Point3D = new Point3D();
+        public pt2:            Point3D = new Point3D();
+        
+        public line: THREE.Line = null;
+    
     }
     
     

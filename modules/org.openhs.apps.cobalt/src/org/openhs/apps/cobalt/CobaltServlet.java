@@ -73,7 +73,19 @@ public class CobaltServlet extends HttpServlet {
     			
     			jsonString = this.m_cobaltModel.axesGeometryToJSON(6);
     			
+    		} else if (value.toString().equals("Cobalt_Trajectories")) {
+    			
+    			logger.info("\n\n----------------> Cobalt_Trajectories....");
+    			
+    			jsonString = this.m_cobaltModel.trajsToJSON();
+    			
+    		} else if (value.toString().equals("Cobalt_AxesPositions")) {
+    			
+    			logger.info("\n\n----------------> Cobalt_AxesPositions....");
+    			
+    			jsonString = this.m_cobaltModel.axesPositionsToJSON();
     		}
+    			
     		
     	    if (jsonString != null) {
     			response.setContentType("application/json");

@@ -56,14 +56,19 @@ public class Cobalt {
 		
 		String openhsHome = (String) m_properties.get("openhsHome");
 
-		//Put geometrical data into model
-		
+		//Put geometrical data into model		
 		for (int i = 1; i <= 6; i++) {
 			String stlPath = openhsHome + (String) m_properties.get("stl" + i);
 			this.m_cobaltModel.m_axes.get(i).loadGeometry(stlPath);
 			//System.out.println("\n\n\n\n\n ********************** ------> " + stlPath);
 		}
 		
+		//Load Trajectory
+		String gcodePath = openhsHome + (String) m_properties.get("gcode");
+		this.m_cobaltModel.loadGCode(gcodePath);
+		
+		//Run robot
+		this.m_cobaltModel.StartRun();
 		
 	//	System.out.println("\n\n\n\n\n ********************** ------> " + c1x + "***" + openhsHome);
 	}	

@@ -20,6 +20,12 @@ public class Axis {
 	
 	public ArrayList<Face> m_faces = new ArrayList<Face>();
 	
+	public double fi;
+	
+	Axis () {
+		fi = 0.0;
+	}
+	
 	public void loadGeometry (String filePath) {
 				
 		  try{

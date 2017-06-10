@@ -3,6 +3,8 @@
 
 import Cobalt = CobaltModel.Cobalt;
 import Axis = CobaltModel.Axis;
+import Trajectory = CobaltModel.Trajectory;
+import Line3D = CobaltModel.Line3D;
 
 class ThreeJSTest {        
     
@@ -142,7 +144,8 @@ class ThreeJSTest {
         
         this.moveAxesGeometry();
         
-        
+        this.drawTrajectories();
+                
         requestAnimationFrame(() => this.render());
         this.renderer.render(this.scene, this.camera);
     }    
@@ -198,14 +201,33 @@ class ThreeJSTest {
     
     public moveAxesGeometry () {
         
-        if (this.cobalt.allAxesLoaded() == 1) {                          
+        if (this.cobalt.allAxesLoaded() == 1) {    
+        
+            //Rotate by axis
+            for (var i = 0; i < this.cobalt.m_axisArray.length; i++) {
+                
+                //Rotate following axes
+                for (var j = i + 1; j < this.cobalt.m_axisArray.length; j++  ) {
+                    
+                    var ax : Axis = this.cobalt.m_axisArray[j];
+                    
+                }                
+            }
+            
+            
+            /*
+            var nAx = 0;
             
             for(let ax of this.cobalt.m_axisArray) {   
-              
+
                 if (ax.mesh != null) {
-                    ax.mesh.rotateY( this.rot );
+                   // ax.mesh.rotateY(this.cobalt.m_axisArray[1].fi);
+                    ax.mesh.rotation.set(0, this.cobalt.m_axisArray[1].fi, 0);                   
                 }
+                
+                nAx ++;
             }
+            */
          }                
     }    
     
@@ -265,6 +287,47 @@ class ThreeJSTest {
         //triangleMesh.rotateX( Math.PI / 2 );
         
         
+    }
+    
+    public drawTrajectories () {
+                                                      
+            for(let tr of this.cobalt.m_trajArray) {   
+                if (tr.dataUpdated) {                                                           
+                    this.drawTrajectory(tr);
+                    tr.dataUpdated = false;
+                }                              
+            }                
+    }    
+    
+    public drawTrajectory (tr: Trajectory) {
+        
+        for(let seg of tr.m_segments) {
+            
+            if (seg instanceof Line3D) {
+                
+                var segment = <Line3D> seg;
+                
+                var lineGeometry = new THREE.Geometry();
+                var vertArray = lineGeometry.vertices;
+                vertArray.push( new THREE.Vector3(tr.origin.x + segment.pt1.x, tr.origin.y + segment.pt1.y, tr.origin.z + segment.pt1.z), new THREE.Vector3(tr.origin.x + segment.pt2.x, tr.origin.y + segment.pt2.y, tr.origin.z + segment.pt2.z) );
+                lineGeometry.computeLineDistances();
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+                segment.line = new THREE.Line( lineGeometry, lineMaterial );
+                this.scene.add(segment.line);                                                
+            }            
+        }
+        
+        /*
+                    //Line X
+            var lineGeometry = new THREE.Geometry();
+            var vertArray = lineGeometry.vertices;
+            vertArray.push( new THREE.Vector3(x, y, z), new THREE.Vector3(x + lenght, y, z) );
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+            var line = new THREE.Line( lineGeometry, lineMaterial );
+            this.scene.add(line);
+        */
+    
     }
 
 }
