@@ -55,6 +55,7 @@ public class CobaltModel {
 		Axis ax = new Axis();
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(0.0, 0.0, 0.0);
+		ax.rot.set(0, 0, 50);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -62,6 +63,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(0.0, 0.0, 0.0);
+		ax.rot.set(0, 0, 1000);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -69,6 +71,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1]);
+		ax.rot.set(0, 1000, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -76,6 +79,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1] + h[3]);
+		ax.rot.set(0, 1000, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);			
 		
@@ -83,6 +87,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(1000, 0.0, 0.0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -90,6 +95,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(0, 1000, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -97,6 +103,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6] + h[7], h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(1000, 0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);			
 					
@@ -137,6 +144,10 @@ public class CobaltModel {
 			json.put(i + "cs_k_x", String.format("%.2f", ax.cs.k.x));
 			json.put(i + "cs_k_y", String.format("%.2f", ax.cs.k.y));
 			json.put(i + "cs_k_z", String.format("%.2f", ax.cs.k.z));		
+			
+			json.put(i + "rot_x", String.format("%.2f", ax.rot.x));
+			json.put(i + "rot_y", String.format("%.2f", ax.rot.y));
+			json.put(i + "rot_z", String.format("%.2f", ax.rot.z));				
 			
 			json.put(i + "lenght", String.format("%.2f", ax.length));	
 			

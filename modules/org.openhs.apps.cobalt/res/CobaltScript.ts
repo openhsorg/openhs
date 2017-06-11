@@ -91,10 +91,15 @@ class ThreeJSTest {
             sphere.position.set(780, 1000, 0);
             this.scene.add(sphere);                
         
-            this.drawCS(780, 1000, 0, 50);
+          //  this.drawCS(780, 1000, 0, 50);
         
              //window.alert("xxxxxxxx:" + this.cobalt.m_axisArray.length);
         
+            for (var ax of this.cobalt.m_axisArray){
+                this.drawCS2(ax);
+            }
+        
+        /*
             //Robot axes
             for (var i = 0; i < this.cobalt.m_axisArray.length; i++) {
                 
@@ -105,30 +110,11 @@ class ThreeJSTest {
             //    window.alert("xxxxxxxx:" + ax.cs.point.x);
             
             }
-        /*
-            var triangleGeometry = new THREE.Geometry(); 
-            triangleGeometry.vertices.push(new THREE.Vector3( 60.0,  60.0, 0.0)); 
-            triangleGeometry.vertices.push(new THREE.Vector3(60.0, 400.0, 0.0)); 
-            triangleGeometry.vertices.push(new THREE.Vector3( 400.0, 400.0, 0.0)); 
-            triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));         
-        
-            triangleGeometry.faces[0].vertexColors[0] = new THREE.Color(0xFF0000); 
-            triangleGeometry.faces[0].vertexColors[1] = new THREE.Color(0xFF0000); 
-            triangleGeometry.faces[0].vertexColors[2] = new THREE.Color(0xFF0000); 
-        
-            var triangleMaterial = new THREE.MeshBasicMaterial({ 
-                     vertexColors:THREE.VertexColors, 
-                     side:THREE.DoubleSide 
-             });         
-        
-            var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); 
-            triangleMesh.position.set(0.0, 0.0, 0.0); 
-            this.scene.add(triangleMesh);        
         */
+  
                     
             this.renderer.render(this.scene, this.camera);   
 
-          //  requestAnimationFrame(()=>this.paint());  
 
    
     }
@@ -141,8 +127,6 @@ class ThreeJSTest {
         this.renderer.clear();
         
         this.drawAxesGeometry();
-        
-        this.moveAxesGeometry();
         
         this.drawTrajectories();
                 
@@ -159,7 +143,7 @@ class ThreeJSTest {
         this.renderer.clear();
         
     }
-
+/*
     public drawCS (x: number, y: number, z: number, lenght: number) {
             //Line X
             var lineGeometry = new THREE.Geometry();
@@ -188,6 +172,51 @@ class ThreeJSTest {
             var line = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(line);    
     }
+    */
+    public drawCS2 (ax: Axis) {
+            //Line X
+            var lineGeometry = new THREE.Geometry();
+            var vertArray = lineGeometry.vertices;
+            vertArray.push( new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z), new THREE.Vector3(ax.cs.point.x + 100, ax.cs.point.y, ax.cs.point.z) );
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
+            ax.xLine = new THREE.Line( lineGeometry, lineMaterial );
+            this.scene.add(ax.xLine);
+        
+            //Line Y
+            var lineGeometry = new THREE.Geometry();
+            var vertArray = lineGeometry.vertices;
+            vertArray.push( new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z), new THREE.Vector3(ax.cs.point.x, ax.cs.point.y + 100, ax.cs.point.z) );
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x009933 } );
+            ax.yLine = new THREE.Line( lineGeometry, lineMaterial );
+            this.scene.add(ax.yLine);    
+        
+            //Line Z
+            var lineGeometry = new THREE.Geometry();
+            var vertArray = lineGeometry.vertices;
+            vertArray.push( new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z), new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z + 100) );
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
+            ax.zLine = new THREE.Line( lineGeometry, lineMaterial );
+            this.scene.add(ax.zLine);    
+        
+            //Rotation          
+            var lineGeometry = new THREE.Geometry();
+            var vertArray = lineGeometry.vertices;
+            ax.rotP1 = new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z);
+            ax.rotP2 = new THREE.Vector3(ax.cs.point.x + ax.rot.x, ax.cs.point.y + ax.rot.y, ax.cs.point.z + ax.rot.z)
+            vertArray.push( ax.rotP1, ax.rotP2 );
+            lineGeometry.computeLineDistances();
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff6600 } );
+            ax.rLine = new THREE.Line( lineGeometry, lineMaterial );
+            this.scene.add(ax.rLine);          
+                
+          //  ax.axVec = new THREE.Vector3 (ax.rot.x, ax.rot.y, ax.rot.z);
+          //  ax.axVec.normalize();
+        
+        //var tg: THREE.Geometry = ax.zLine.getWorldRotation(
+    }    
     
     public drawAxesGeometry () {
                                                       
@@ -198,39 +227,7 @@ class ThreeJSTest {
                 }                              
             }                
     }
-    
-    public moveAxesGeometry () {
-        
-        if (this.cobalt.allAxesLoaded() == 1) {    
-        
-            //Rotate by axis
-            for (var i = 0; i < this.cobalt.m_axisArray.length; i++) {
-                
-                //Rotate following axes
-                for (var j = i + 1; j < this.cobalt.m_axisArray.length; j++  ) {
-                    
-                    var ax : Axis = this.cobalt.m_axisArray[j];
-                    
-                }                
-            }
-            
-            
-            /*
-            var nAx = 0;
-            
-            for(let ax of this.cobalt.m_axisArray) {   
-
-                if (ax.mesh != null) {
-                   // ax.mesh.rotateY(this.cobalt.m_axisArray[1].fi);
-                    ax.mesh.rotation.set(0, this.cobalt.m_axisArray[1].fi, 0);                   
-                }
-                
-                nAx ++;
-            }
-            */
-         }                
-    }    
-    
+   
     public drawAxisGeometry (ax: Axis) {
         
           //window.alert("-+");

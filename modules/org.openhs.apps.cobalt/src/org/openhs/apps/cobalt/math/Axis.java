@@ -15,6 +15,7 @@ public class Axis {
 	public String id = "";
 	
 	public CartesianSystem 	cs = new CartesianSystem();
+	public Vector3D rot = new Vector3D ();
 	
 	double length = 0.0;
 	
