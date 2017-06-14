@@ -47,7 +47,7 @@ public class GCodeLoader {
 		}
 		
 		//Control array
-		traj.controlPointsArray(10);
+		traj.controlPointsArray(1);
 		
 		
 		

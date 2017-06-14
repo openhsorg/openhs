@@ -21,6 +21,7 @@ module CobaltModel {
         private fastTimerGetData;
         private fastTimerGetPositions;
         
+        public updating_position:  boolean = false; 
         
         //public dataLoaded:  boolean = false;
       
@@ -32,7 +33,7 @@ module CobaltModel {
             
             this.getServerTrajectories();
             
-            this.timerGetPositions(1000);
+            this.timerGetPositions(150);
             
         }
         
@@ -190,44 +191,61 @@ module CobaltModel {
             return loaded;
         }
         
-        
-        public updatePosition () {
-        
-  
-             if (this.allAxesLoaded() == 1) {   
+        public rotateAllAxes (back: boolean) {
+
+            if (this.allAxesLoaded() == 1) {   
             
+               
+                
                 //Rotate by axis
-                for (var i = 1; i < 3; /* this.m_axisArray.length;*/ i++) {
+                for (var i = 1; i < this.m_axisArray.length; i++) {
                     
                     var axr : Axis = this.m_axisArray[i];
                     
+                    var rad: number;
+                    
+                    if (back) {
+                        rad = -1 * axr.oldAngle1;
+                        axr.oldAngle1 = 0.0;
+                        
+                    } else {
+                        rad = axr.fi;
+                        axr.oldAngle1 = axr.fi;                                                
+                    }           
+                                        
+                    //Point od Axis
+                    var rotPt1 = new THREE.Vector3(axr.axPt1.x, axr.axPt1.y, axr.axPt1.z);
+                    var rotPt2 = new THREE.Vector3(axr.axPt2.x, axr.axPt2.y, axr.axPt2.z);
+                    
+                    //Vector of Axis
+                   // var rotVect = new THREE.Vector3(axr.axVec2.x, axr.axVec2.y, axr.axVec2.z);
+                     var rotVect = new THREE.Vector3(rotPt2.x - rotPt1.x, rotPt2.y - rotPt1.y, rotPt2.z - rotPt1.z);
+                    rotVect.normalize();                    
+                                        
                     //Rotate following axes
-                    for (var j = i + 1; j < this.m_axisArray.length; j++  ) {
+                    for (var j = i + 1 ; j < this.m_axisArray.length; j++  ) {
                         
                         var ax : Axis = this.m_axisArray[j];
                         
-                     //   var axis: THREE.Vector3 = axr.rLine.getWorldDirection();
-                       // var point: THREE.Vector3 = axr.rLine.getWorldPosition();
-                        
-                      //  var vecR: THREE.Vector3 = new THREE.Vector3(axr.rotP2.x - axr.rotP1.x, axr.rotP2.y - axr.rotP1.y, axr.rotP2.z - axr.rotP1.z);
-                        var point: THREE.Vector3 = axr.rLine.geometry.center();
-                    //    var point2: THREE.Vector3 = axr.rLine.geometry.
-                        
-                    //    var positions = axr.rLine.geometry.attributes.position.array;
-                        
-                        //var geom: THREE.Geometry = axr.rLine.geometry.clone();
-                        
-                     //   vecR.normalize(); 
-                                            
-                       // window.alert("i: " + i + " j: " + j + " Rot:" + axr.fi + " Ax:" + vecR.x + " : " + vecR.y + " : " + vecR.z + "  Pt: " + axr.rotP1.x + " : " + axr.rotP1.y + " : " + axr.rotP1.z );
-                        
-                        //ax.rotate(axr.fi, axr.axVec);
-                        ax.rotateAll(axr.fi, point, axr.axVec2); 
-                        //ax.rotateAll(axr.fi, axr.rotP1, vecR); 
-                        
-                    }                
-                }    
-            }        
+                        //rotate axis
+                        ax.rotateAll(rad, rotPt1, rotVect);   
+                                        
+                    }
+                    
+                }  
+                
+
+            }                 
+        
+        }
+               
+        
+        public updatePosition () {
+           
+            this.updating_position = true;
+            this.rotateAllAxes (true);
+            this.rotateAllAxes (false)     
+            this.updating_position = false;                    
         }
                         
     }
@@ -252,12 +270,17 @@ module CobaltModel {
         public yLine: THREE.Line = null;
         public zLine: THREE.Line = null;
         public rLine: THREE.Line = null;
-        public axVec2: THREE.Vector3 = null;
-        public rotP1: THREE.Vector3 = null;
-        public rotP2: THREE.Vector3 = null;
+     //   public axVec2: THREE.Vector3 = null;
+        public axPt1: THREE.Vector3 = null;
+        public axPt2: THREE.Vector3 = null;
+    //    public rotP1: THREE.Vector3 = null;
+     //   public rotP2: THREE.Vector3 = null;
+  //      public rotGeom:  THREE.Geometry = null;
+        //public rotVertArray:  THREE.BufferGeometry = null;
+        
         
         public fi: number = 0.0;  //Axis rotation...
-        protected oldAngle: number = 0.0;
+        public oldAngle1: number = 0.0;
                        
         public parseData (data: any, i: any) {
             
@@ -288,10 +311,13 @@ module CobaltModel {
             this.cs = transform.transformCs(this.cs);
             this.rot = transform.transform(this.rot);
             
-            this.axVec2 = new THREE.Vector3 (this.rot.x, this.rot.y, this.rot.z);
-            this.axVec2.normalize();
+  //          this.axVec2 = new THREE.Vector3 (this.rot.x, this.rot.y, this.rot.z);
+    //        this.axVec2.normalize();
             
-        //    window.alert("je: " + i + "vec: "+ this.rot.x + " : " + this.rot.y + " : " + this.rot.z);
+            this.axPt1 = new THREE.Vector3 (this.cs.point.x, this.cs.point.y, this.cs.point.z);
+            this.axPt2 = new THREE.Vector3 (this.cs.point.x + this.rot.x, this.cs.point.y + this.rot.y, this.cs.point.z + this.rot.z);
+            
+         //   window.alert("je: " + i + "vec: "+ this.rot.x + " : " + this.rot.y + " : " + this.rot.z);
             
             var numFaces = parseInt(data[i + 'num_faces']);            
 
@@ -338,73 +364,85 @@ module CobaltModel {
             this.dataDone = true;
         }        
         
-        public rotate (rad : number, axis: THREE.Vector3) {
-            
-           // var axis: THREE.Vector3 = new THREE.Vector3(vec.x, vec.y, vec.z);
-            /*
-            var rotWorldMatrix = new THREE.Matrix4();
-            rotWorldMatrix.makeRotationAxis(axis.normalize(), rad);
-            rotWorldMatrix.multiply(this.mesh.matrix);        // pre-multiply
-            this.mesh.matrix = rotWorldMatrix;
-            this.mesh.rotation.setFromRotationMatrix(this.mesh.matrix);
-            */            
-            this.mesh.rotation.set(0, 0, 0); 
-            this.mesh.rotateOnAxis(axis.normalize(), rad);
-           
-            /*
-            this.xLine.rotateOnAxis(axis.normalize(), rad);
-            this.yLine.rotateOnAxis(axis.normalize(), rad);
-            this.zLine.rotateOnAxis(axis.normalize(), rad);
-            this.rLine.rotateOnAxis(axis.normalize(), rad);
-            */
-            
-            
-         //   this.axVec.applyAxisAngle(axis.normalize(), rad);                   
-       
-        }
-        
         public rotateAll(rad : number, point: THREE.Vector3, axis: THREE.Vector3) {
             
-            this.rotate2 (this.mesh, point, axis, -1* this.oldAngle, true);
-            this.rotate2 (this.xLine, point, axis, -1* this.oldAngle, true);
-            this.rotate2 (this.yLine, point, axis, -1* this.oldAngle, true);
-            this.rotate2 (this.zLine, point, axis, -1* this.oldAngle, true);
-            this.rotate2 (this.rLine, point, axis, -1* this.oldAngle, true);   
-            this.axVec2.applyAxisAngle( axis, -1* this.oldAngle );         
-            
-            this.rotate2 (this.mesh, point, axis, rad, true);
-            this.rotate2 (this.xLine, point, axis, rad, true);
-            this.rotate2 (this.yLine, point, axis, rad, true);
-            this.rotate2 (this.zLine, point, axis, rad, true);
-            this.rotate2 (this.rLine, point, axis, rad, true);
-            this.axVec2.applyAxisAngle( axis, rad );
-                    
-            this.oldAngle = rad;
+            this.rotateObject (this.mesh, point, axis, rad, true);
+            this.rotateObject (this.xLine, point, axis, rad, true);
+            this.rotateObject (this.yLine, point, axis, rad, true);
+            this.rotateObject (this.zLine, point, axis, rad, true);
+            this.rotateObject (this.rLine, point, axis, rad, true); //rotation line       
+             
+            this.rotatePoint(this.axPt1, point, axis, rad);
+            this.rotatePoint(this.axPt2, point, axis, rad);                    
         
         }
         
-        public rotate2 (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, theta: number, pointIsWorld: boolean) {
+        public rotateObject (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, angle: number, pointIsWorld: boolean) {
             
+            var q1 = new THREE.Quaternion();
+            
+            q1.setFromAxisAngle( axis, angle );
+
+            obj.quaternion.multiplyQuaternions( q1, obj.quaternion );
+
+            obj.position.sub( point );
+            obj.position.applyQuaternion( q1 );
+            obj.position.add( point );
+
+      //  return this;
+            
+            /*
             pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
           
             if(pointIsWorld){
-                obj.parent.localToWorld(obj.position); // compensate for world coordinate
+                //obj.parent.localToWorld(obj.position); // compensate for world coordinate
             }
           
             obj.position.sub(point); // remove the offset
             obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+            obj.rotateOnAxis(axis, theta); // rotate the OBJECT    
             obj.position.add(point); // re-add the offset
           
             if(pointIsWorld){
-                obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
+              //  obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
             }
-          
-            obj.rotateOnAxis(axis, theta); // rotate the OBJECT                 
+          */
+                        
        
         }    
-        
-        
-        
+           /*   
+        public rotateVector (vec: THREE.Vector3, axis: THREE.Vector3, angle: number) {
+         //   var rotationMatrix = new THREE.Matrix4();             
+           // rotationMatrix.makeRotationAxis( axis, angle ).multiplyVector3( vec );
+            vec.applyAxisAngle( axis, angle );
+            
+        }
+         */
+        public rotatePoint (pt: THREE.Vector3, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
+            /*
+            var q1 = new THREE.Quaternion();
+            
+            q1.setFromAxisAngle( axis, angle );
+
+            pt.quaternion.multiplyQuaternions( q1, pt.quaternion );
+
+            obj.position.sub( point );
+            obj.position.applyQuaternion( q1 );
+            obj.position.add( point );            
+            */
+            pt.sub(point); // remove the offset
+            pt.applyAxisAngle(axis, angle); // rotate the POSITION
+            pt.add(point); // re-add the offset      
+            
+                            
+            
+            /*
+            
+            var rotationMatrix = new THREE.Matrix4();             
+            rotationMatrix.makeRotationAxis( axis, angle ).multiplyVector3( vec );
+            */
+        }        
+            
     }
     
     export class Trajectory {

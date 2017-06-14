@@ -55,7 +55,7 @@ class ThreeJSTest {
             var cube = new THREE.Mesh( geometry, material );
             cube.position.set(0,40,0);
             this.scene.add( cube );
-        
+        /*
             //Line X
             var lineGeometry = new THREE.Geometry();
             var vertArray = lineGeometry.vertices;
@@ -81,8 +81,10 @@ class ThreeJSTest {
             lineGeometry.computeLineDistances();
             var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
             var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);        
-                
+            this.scene.add(line);     
+        
+        */
+                /*
             var sphereGeometry = new THREE.SphereGeometry( 10, 32, 16 ); 
             // use a "lambert" material rather than "basic" for realistic lighting.
             //   (don't forget to add (at least one) light!)
@@ -90,7 +92,7 @@ class ThreeJSTest {
             var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             sphere.position.set(780, 1000, 0);
             this.scene.add(sphere);                
-        
+        */
           //  this.drawCS(780, 1000, 0, 50);
         
              //window.alert("xxxxxxxx:" + this.cobalt.m_axisArray.length);
@@ -124,11 +126,14 @@ class ThreeJSTest {
         // Use typescript Arrow notation to retain the thisocity passing render to requestAnimationFrame
         // It's possible I invented the word thisocity.
         
-        this.renderer.clear();
-        
-        this.drawAxesGeometry();
-        
-        this.drawTrajectories();
+        if (!this.cobalt.updating_position) {
+            
+            this.renderer.clear();
+            
+            this.drawAxesGeometry();
+            
+            this.drawTrajectories();
+        }
                 
         requestAnimationFrame(() => this.render());
         this.renderer.render(this.scene, this.camera);
@@ -143,36 +148,7 @@ class ThreeJSTest {
         this.renderer.clear();
         
     }
-/*
-    public drawCS (x: number, y: number, z: number, lenght: number) {
-            //Line X
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(x, y, z), new THREE.Vector3(x + lenght, y, z) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);
-        
-            //Line Y
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(x, y, z), new THREE.Vector3(x, y + lenght, z) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x009933 } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);    
-        
-            //Line Z
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + lenght) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);    
-    }
-    */
+
     public drawCS2 (ax: Axis) {
             //Line X
             var lineGeometry = new THREE.Geometry();
@@ -202,13 +178,13 @@ class ThreeJSTest {
             this.scene.add(ax.zLine);    
         
             //Rotation          
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            ax.rotP1 = new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z);
-            ax.rotP2 = new THREE.Vector3(ax.cs.point.x + ax.rot.x, ax.cs.point.y + ax.rot.y, ax.cs.point.z + ax.rot.z)
-            vertArray.push( ax.rotP1, ax.rotP2 );
+            var rotGeom = new THREE.Geometry();
+            var rotVertArray = lineGeometry.vertices;
+            var rotP1 = new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z);
+            var rotP2 = new THREE.Vector3(ax.cs.point.x + ax.rot.x, ax.cs.point.y + ax.rot.y, ax.cs.point.z + ax.rot.z)
+            vertArray.push( rotP1, rotP2 );
             lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff6600 } );
+            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc6600 } );
             ax.rLine = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(ax.rLine);          
                 

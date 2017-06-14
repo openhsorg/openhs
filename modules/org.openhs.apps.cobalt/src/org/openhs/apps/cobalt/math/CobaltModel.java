@@ -15,7 +15,7 @@ public class CobaltModel {
 	
 	protected MathEngine m_MathEngine = new MathEngine (); 
 	
-	private int m_period = 2000;
+	private int m_period = 120;
 	public Run m_run;
 	public Thread m_myThd;	
 	
