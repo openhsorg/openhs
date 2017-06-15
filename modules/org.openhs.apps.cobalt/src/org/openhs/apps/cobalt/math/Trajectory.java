@@ -16,10 +16,13 @@ public class Trajectory {
 	public ArrayList<Point3D> defPoints = new  ArrayList<Point3D>();
 	
 	//Points for control of trajectory
-	public ArrayList<PointControl> controlPoints = new  ArrayList<PointControl>();
+	public ArrayList<PointControl> controlPoints = new  ArrayList<PointControl>();	
 	
 	//Origin of trajectory...
 	public Point3D origin = new Point3D ();
+	
+	//Realtime pointer to control array
+	public int ptrPoint = 0; 
 	
 	Trajectory () {
 		origin.set(0.0, 0.0, 0.0);
@@ -100,14 +103,6 @@ public class Trajectory {
 	}
 		
 	public void controlPointsRobotArray () {
-		
-		//remembered values
-		double f1 = 0.0;
-		double f2 = 0.0;
-		double f3 = 0.0;
-		double f4 = 0.0;
-		double f5 = 0.0;
-		double f6 = 0.0;
 				
 		for (PointControl cp: controlPoints) {
 			
@@ -133,11 +128,9 @@ public class Trajectory {
 					cp.validity = true;
 					
 				//	logger.info("robot---->: " + cp.f1 + " : " + cp.f2 + " : " + cp.f3 + " : " + cp.f4 + " : " + cp.f5 + " : " + cp.f6);
-				}
-				
+				}				
 			}
-		}
-		
+		}		
 	}
 	
 	

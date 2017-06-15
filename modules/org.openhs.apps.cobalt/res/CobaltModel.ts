@@ -7,6 +7,7 @@ import Vector3D = RobotMath.Vector3D;
 import CoordSystem = RobotMath.CoordSystem;
 import TransformCobalt = RobotMath.TransformCobalt;
 import Face = RobotMath.Face;
+import GraphLib = RobotMath.GraphLib;
 
 module CobaltModel {  
 
@@ -15,6 +16,7 @@ module CobaltModel {
         //constants...
         public m_axisArray:            Array <Axis> = new Array <Axis>();
         public m_trajArray:            Array <Trajectory> = new Array <Trajectory>();
+        public m_endGrab:              EndGrab = new EndGrab();
         
         protected getCount:  number = 0;
         
@@ -23,13 +25,19 @@ module CobaltModel {
         
         public updating_position:  boolean = false; 
         
+        public sphere: THREE.Mesh = null;
+        
         //public dataLoaded:  boolean = false;
+        
+        protected gLib: GraphLib = new GraphLib();
       
         
         constructor () {
             this.getServerAxes();
             
             this.timerGetGeometry(500);
+            
+       //     this.getServerEndpoint();
             
             this.getServerTrajectories();
             
@@ -67,13 +75,13 @@ module CobaltModel {
         public getPositions(){
         
             var req: any = {                
-            orderId : "Cobalt_AxesPositions"            
+                orderId : "Cobalt_AxesPositions"            
             } 
             
            var data: string = getAjax("robot", req); 
             
             if (data != null) {                
-                var numAxes = parseInt(data['num_axes']);
+                var numAxes = parseInt(data['num_axes']);                     
                                                 
                 var i = 0;
             
@@ -93,19 +101,7 @@ module CobaltModel {
                 this.updatePosition();
             }            
         
-        }
-        
-        public getServerData () {       
-             
-            var req: any = {                
-                orderId : "Cobalt_Axes"
-               // path:   "test"                
-            } 
-            
-           var data: string = getAjax("robot", req); 
-            
-            //this.parseServerData(data);                                            
-        }        
+        }   
         
         public getServerAxes () {
             var req: any = {                
@@ -116,6 +112,8 @@ module CobaltModel {
             
             if (data != null) {                
                 var numAxes = parseInt(data['num_axes']);
+                
+           //window.alert("axes" + numAxes);                
                                                 
                 this.m_axisArray.length = 0;
                 
@@ -129,6 +127,21 @@ module CobaltModel {
                 }            
             }            
         }
+        
+        public getServerEndpoint () {
+            
+            var req: any = {                
+            orderId : "Cobalt_Endpoint"            
+            } 
+            
+           var data: string = getAjax("robot", req); 
+            
+            if (data != null) {                
+                
+                this.m_endGrab.parseData(data);
+                 
+            }            
+        }        
         
         public getServerTrajectories () {
             var req: any = {                
@@ -165,12 +178,6 @@ module CobaltModel {
                let axis = this.m_axisArray[ax];
                 
                axis.parseGeomData(data);                        
-                /*
-                if (ax == 6) {
-                    
-                    this.dataLoaded = true;
-                }
-        */
             }            
         }        
         
@@ -193,9 +200,7 @@ module CobaltModel {
         
         public rotateAllAxes (back: boolean) {
 
-            if (this.allAxesLoaded() == 1) {   
-            
-               
+            if (this.allAxesLoaded() == 1) {
                 
                 //Rotate by axis
                 for (var i = 1; i < this.m_axisArray.length; i++) {
@@ -204,6 +209,10 @@ module CobaltModel {
                     
                     var rad: number;
                     
+                    rad = axr.fi - axr.oldAngle1;
+                    axr.oldAngle1 = axr.fi;
+                    
+                    /*
                     if (back) {
                         rad = -1 * axr.oldAngle1;
                         axr.oldAngle1 = 0.0;
@@ -211,7 +220,8 @@ module CobaltModel {
                     } else {
                         rad = axr.fi;
                         axr.oldAngle1 = axr.fi;                                                
-                    }           
+                    }   
+                    */        
                                         
                     //Point od Axis
                     var rotPt1 = new THREE.Vector3(axr.axPt1.x, axr.axPt1.y, axr.axPt1.z);
@@ -232,23 +242,115 @@ module CobaltModel {
                                         
                     }
                     
+                    
+                    this.gLib.rotateObject(this.sphere, rotPt1, rotVect, rad);
+                    
+                    
                 }  
                 
 
             }                 
         
-        }
-               
+        }               
         
         public updatePosition () {
            
             this.updating_position = true;
-            this.rotateAllAxes (true);
+    //        this.rotateAllAxes (true);
             this.rotateAllAxes (false)     
             this.updating_position = false;                    
         }
                         
     }
+    
+    export class EndGrab {
+        
+        public dataLoaded: boolean = false; //Loaded from server
+        public dataDisplayed: boolean = false; //Added to scene
+        
+        public point: THREE.Vector3 = null;
+        public i: THREE.Vector3 = null;
+        public j: THREE.Vector3 = null;
+        public k: THREE.Vector3 = null;
+        
+        public iLine: THREE.Line = null;
+        public jLine: THREE.Line = null;
+        public kLine: THREE.Line = null;
+        
+        public sphere: THREE.Mesh = null;
+        
+        protected gLib: GraphLib = new GraphLib();
+        
+        public parseData (data: any) {
+            
+            var x = parseFloat(data['ep_px']);
+            var y = parseFloat(data['ep_py']);
+            var z = parseFloat(data['ep_pz']);
+            
+            this.point = new THREE.Vector3 (x, y, z);
+            
+            x = parseFloat(data['ep_i_x']);
+            y = parseFloat(data['ep_i_y']);
+            z = parseFloat(data['ep_i_z']);
+            
+            this.i = new THREE.Vector3 (x, y, z);   
+            
+            x = parseFloat(data['ep_j_x']);
+            y = parseFloat(data['ep_j_y']);
+            z = parseFloat(data['ep_j_z']);
+            
+            this.j = new THREE.Vector3 (x, y, z);               
+     
+            x = parseFloat(data['ep_k_x']);
+            y = parseFloat(data['ep_k_y']);
+            z = parseFloat(data['ep_k_z']);
+            
+            this.k = new THREE.Vector3 (x, y, z);                  
+            
+            this.dataLoaded = true;
+        }
+        
+        public addScene(scene: THREE.Scene) {
+            
+            if (this.dataLoaded && !this.dataDisplayed) {
+                
+                //Line i
+                var lineGeometry = new THREE.Geometry();
+                var vertArray = lineGeometry.vertices;
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.i.x, this.point.y + this.i.y, this.point.z + this.i.z) );
+                lineGeometry.computeLineDistances();
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+                this.iLine = new THREE.Line( lineGeometry, lineMaterial );
+                scene.add(this.iLine);       
+                
+                //Line j
+                var lineGeometry = new THREE.Geometry();
+                var vertArray = lineGeometry.vertices;
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.j.x, this.point.y + this.j.y, this.point.z + this.j.z) );
+                lineGeometry.computeLineDistances();
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0x33cc33 } );
+                this.jLine = new THREE.Line( lineGeometry, lineMaterial );
+                scene.add(this.jLine);   
+                
+                //Line k
+                var lineGeometry = new THREE.Geometry();
+                var vertArray = lineGeometry.vertices;
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.k.x, this.point.y + this.k.y, this.point.z + this.k.z) );
+                lineGeometry.computeLineDistances();
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+                this.kLine = new THREE.Line( lineGeometry, lineMaterial );
+                scene.add(this.kLine);     
+                
+                var gSphere = new THREE.SphereGeometry(20, 60, 80, 32);
+                var material = new THREE.MeshBasicMaterial( {color: 0xcc66ff } );
+                this.sphere = new THREE.Mesh( gSphere, material );
+                this.sphere.position.set(this.point.x, this.point.y, this.point.z );
+                scene.add( this.sphere );                     
+                                            
+                this.dataDisplayed = true;
+            }        
+        }
+   }
     
     export class Axis {
         
@@ -265,22 +367,19 @@ module CobaltModel {
         public dataDone:  boolean = false;
         
         public mesh: THREE.Mesh = null;
+      //  public sphere: THREE.Mesh = null;
         
         public xLine: THREE.Line = null;
         public yLine: THREE.Line = null;
         public zLine: THREE.Line = null;
-        public rLine: THREE.Line = null;
-     //   public axVec2: THREE.Vector3 = null;
+       // public rLine: THREE.Line = null;
         public axPt1: THREE.Vector3 = null;
-        public axPt2: THREE.Vector3 = null;
-    //    public rotP1: THREE.Vector3 = null;
-     //   public rotP2: THREE.Vector3 = null;
-  //      public rotGeom:  THREE.Geometry = null;
-        //public rotVertArray:  THREE.BufferGeometry = null;
+        public axPt2: THREE.Vector3 = null;       
         
+        public fi: number = 0.0;            //Axis rotation...
+        public oldAngle1: number = 0.0;     //Remember axis rotation
         
-        public fi: number = 0.0;  //Axis rotation...
-        public oldAngle1: number = 0.0;
+        protected gLib: GraphLib = new GraphLib();
                        
         public parseData (data: any, i: any) {
             
@@ -366,18 +465,16 @@ module CobaltModel {
         
         public rotateAll(rad : number, point: THREE.Vector3, axis: THREE.Vector3) {
             
-            this.rotateObject (this.mesh, point, axis, rad, true);
-            this.rotateObject (this.xLine, point, axis, rad, true);
-            this.rotateObject (this.yLine, point, axis, rad, true);
-            this.rotateObject (this.zLine, point, axis, rad, true);
-            this.rotateObject (this.rLine, point, axis, rad, true); //rotation line       
-             
-            this.rotatePoint(this.axPt1, point, axis, rad);
-            this.rotatePoint(this.axPt2, point, axis, rad);                    
+            this.gLib.rotateObject (this.mesh, point, axis, rad);         
+            this.gLib.rotateObject (this.xLine, point, axis, rad);
+            this.gLib.rotateObject (this.yLine, point, axis, rad);
+            this.gLib.rotateObject (this.zLine, point, axis, rad);                
+            this.gLib.rotatePoint(this.axPt1, point, axis, rad);
+            this.gLib.rotatePoint(this.axPt2, point, axis, rad);                    
         
         }
-        
-        public rotateObject (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, angle: number, pointIsWorld: boolean) {
+        /*
+        public rotateObject (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
             
             var q1 = new THREE.Quaternion();
             
@@ -387,62 +484,19 @@ module CobaltModel {
 
             obj.position.sub( point );
             obj.position.applyQuaternion( q1 );
-            obj.position.add( point );
-
-      //  return this;
-            
-            /*
-            pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
-          
-            if(pointIsWorld){
-                //obj.parent.localToWorld(obj.position); // compensate for world coordinate
-            }
-          
-            obj.position.sub(point); // remove the offset
-            obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
-            obj.rotateOnAxis(axis, theta); // rotate the OBJECT    
-            obj.position.add(point); // re-add the offset
-          
-            if(pointIsWorld){
-              //  obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
-            }
-          */
-                        
+            obj.position.add( point );                   
        
         }    
-           /*   
-        public rotateVector (vec: THREE.Vector3, axis: THREE.Vector3, angle: number) {
-         //   var rotationMatrix = new THREE.Matrix4();             
-           // rotationMatrix.makeRotationAxis( axis, angle ).multiplyVector3( vec );
-            vec.applyAxisAngle( axis, angle );
-            
-        }
-         */
+*/
+        /*
         public rotatePoint (pt: THREE.Vector3, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
-            /*
-            var q1 = new THREE.Quaternion();
-            
-            q1.setFromAxisAngle( axis, angle );
 
-            pt.quaternion.multiplyQuaternions( q1, pt.quaternion );
-
-            obj.position.sub( point );
-            obj.position.applyQuaternion( q1 );
-            obj.position.add( point );            
-            */
             pt.sub(point); // remove the offset
             pt.applyAxisAngle(axis, angle); // rotate the POSITION
             pt.add(point); // re-add the offset      
-            
-                            
-            
-            /*
-            
-            var rotationMatrix = new THREE.Matrix4();             
-            rotationMatrix.makeRotationAxis( axis, angle ).multiplyVector3( vec );
-            */
+    
         }        
-            
+            */
     }
     
     export class Trajectory {

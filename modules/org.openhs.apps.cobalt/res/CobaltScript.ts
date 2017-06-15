@@ -14,9 +14,6 @@ class ThreeJSTest {
     camera: THREE.PerspectiveCamera;
     scene: THREE.Scene;
     
-    numAxes: number = 0;
-    rot : number = -0.008;
-    
     constructor(){
         
             this.cobalt = new Cobalt ();
@@ -48,77 +45,22 @@ class ThreeJSTest {
             this.renderer.setSize( window.innerWidth, window.innerHeight );
             this.renderer.setClearColor( 0xeeeeee );
             document.body.appendChild( this.renderer.domElement );          
-                
-            //Cylinder
-            var geometry = new THREE.CylinderGeometry( 60, 60, 80, 32 );
-            var material = new THREE.MeshBasicMaterial( { color: 0x862145 } );
-            var cube = new THREE.Mesh( geometry, material );
-            cube.position.set(0,40,0);
-            this.scene.add( cube );
-        /*
-            //Line X
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(500, 0, 0) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc0000 } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);
-        
-            //Line Y
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 500, 0) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x009933 } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);    
-        
-            //Line Z
-            var lineGeometry = new THREE.Geometry();
-            var vertArray = lineGeometry.vertices;
-            vertArray.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 500) );
-            lineGeometry.computeLineDistances();
-            var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0066ff } );
-            var line = new THREE.Line( lineGeometry, lineMaterial );
-            this.scene.add(line);     
-        
-        */
-                /*
-            var sphereGeometry = new THREE.SphereGeometry( 10, 32, 16 ); 
-            // use a "lambert" material rather than "basic" for realistic lighting.
-            //   (don't forget to add (at least one) light!)
-            var sphereMaterial = new THREE.MeshBasicMaterial( {color: 0x8888ff} ); 
-            var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-            sphere.position.set(780, 1000, 0);
-            this.scene.add(sphere);                
-        */
-          //  this.drawCS(780, 1000, 0, 50);
-        
-             //window.alert("xxxxxxxx:" + this.cobalt.m_axisArray.length);
-        
+                    
             for (var ax of this.cobalt.m_axisArray){
                 this.drawCS2(ax);
             }
         
-        /*
-            //Robot axes
-            for (var i = 0; i < this.cobalt.m_axisArray.length; i++) {
-                
-                var ax = this.cobalt.m_axisArray[i];
-                
-                this.drawCS(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z, 50);
-                
-            //    window.alert("xxxxxxxx:" + ax.cs.point.x);
-            
-            }
-        */
-  
-                    
+            var axLast = this.cobalt.m_axisArray[this.cobalt.m_axisArray.length - 1];
+        
+            //Last point sphere....
+            var gSphere = new THREE.SphereGeometry(20, 60, 80, 32);
+            var material = new THREE.MeshBasicMaterial( {color: 0x862145 } );
+            this.cobalt.sphere = new THREE.Mesh( gSphere, material );
+            this.cobalt.sphere.position.set(axLast.cs.point.x, axLast.cs.point.y, axLast.cs.point.z );
+            this.scene.add( this.cobalt.sphere );       
+        
+                   
             this.renderer.render(this.scene, this.camera);   
-
-
-   
     }
     
     render() {
@@ -132,6 +74,8 @@ class ThreeJSTest {
             
             this.drawAxesGeometry();
             
+        //    this.cobalt.m_endGrab.addScene(this.scene);
+            
             this.drawTrajectories();
         }
                 
@@ -142,11 +86,6 @@ class ThreeJSTest {
     start() {
         //this.renderer.clear();
         this.render();
-    }
-    
-    public paint () {
-        this.renderer.clear();
-        
     }
 
     public drawCS2 (ax: Axis) {
@@ -177,7 +116,8 @@ class ThreeJSTest {
             ax.zLine = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(ax.zLine);    
         
-            //Rotation          
+            //Rotation       
+        /*   
             var rotGeom = new THREE.Geometry();
             var rotVertArray = lineGeometry.vertices;
             var rotP1 = new THREE.Vector3(ax.cs.point.x, ax.cs.point.y, ax.cs.point.z);
@@ -187,7 +127,7 @@ class ThreeJSTest {
             var lineMaterial = new THREE.LineBasicMaterial( { color: 0xcc6600 } );
             ax.rLine = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(ax.rLine);          
-                
+                */
           //  ax.axVec = new THREE.Vector3 (ax.rot.x, ax.rot.y, ax.rot.z);
           //  ax.axVec.normalize();
         

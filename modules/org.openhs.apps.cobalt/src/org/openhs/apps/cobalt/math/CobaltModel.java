@@ -63,7 +63,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(0.0, 0.0, 0.0);
-		ax.rot.set(0, 0, 1000);
+		ax.rot.set(0, 0, 1.0);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -71,7 +71,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1]);
-		ax.rot.set(0, 1000, 0);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -79,7 +79,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1] + h[3]);
-		ax.rot.set(0, 1000, 0);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);			
 		
@@ -87,7 +87,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
-		ax.rot.set(1000, 0.0, 0.0);
+		ax.rot.set(1.0, 0.0, 0.0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -95,17 +95,18 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
-		ax.rot.set(0, 1000, 0);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
 		//System 6
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
-		ax.cs.point.set(h[2] + h[6] + h[7], h[5], h[1] + h[3] + h[4]);
-		ax.rot.set(1000, 0, 0);
+		ax.cs.point.set(h[2] + h[6] + h[7] - 30.0, h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(1.0, 0, 0);
 		ax.length = 50;		
-		this.m_axes.add(ax);			
+		this.m_axes.add(ax);		
+		
 					
 	}
 	
@@ -164,24 +165,66 @@ public class CobaltModel {
 		
 	}
 	
+	public String endpointToJSON(){
+		
+		JSONObject json = new JSONObject();
+
+		json.put("ep_px", String.format("%.4f", m_ep.point.x));
+		json.put("ep_py", String.format("%.4f", m_ep.point.y));
+		json.put("ep_pz", String.format("%.4f", m_ep.point.z));
+		
+		json.put("ep_i_x", String.format("%.4f", m_ep.i.x));
+		json.put("ep_i_y", String.format("%.4f", m_ep.i.y));
+		json.put("ep_i_z", String.format("%.4f", m_ep.i.z));
+		
+		json.put("ep_j_x", String.format("%.4f", m_ep.j.x));
+		json.put("ep_j_y", String.format("%.4f", m_ep.j.y));
+		json.put("ep_j_z", String.format("%.4f", m_ep.j.z));		
+		
+		json.put("ep_k_x", String.format("%.4f", m_ep.k.x));
+		json.put("ep_k_y", String.format("%.4f", m_ep.k.y));
+		json.put("ep_k_z", String.format("%.4f", m_ep.k.z));		
+									
+				
+		//String str = array.toString();
+		
+	//	logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();
+		
+	}	
+	
 	public String axesPositionsToJSON(){
 		
 		JSONObject json = new JSONObject();
 		json.put("num_axes", String.format("%d", m_axes.size()));
 		
-		int i = 0;
+		Trajectory traj = this.m_trajectories.get(0);
+		PointControl pc =traj.controlPoints.get(traj.ptrPoint);
 		
+		json.put("0fi", String.format("%.4f", pc.f0));
+		json.put("1fi", String.format("%.4f", pc.f1));
+		json.put("2fi", String.format("%.4f", pc.f2));
+		json.put("3fi", String.format("%.4f", pc.f3));
+		json.put("4fi", String.format("%.4f", pc.f4));
+		json.put("5fi", String.format("%.4f", pc.f5));
+		json.put("6fi", String.format("%.4f", pc.f6));
+		
+		/*
+		int i = 0;
+				
 		for (Axis ax : m_axes){			
-
 			json.put(i + "fi", String.format("%.2f", ax.fi));
+			
+			//traj.controlPoints.get(traj.ptrPoint).f1
 		//	logger.info("\n\n--->ax: " + i + " fi: "+ ax.fi);
 						
 			i++;			
 		}
-				
+			*/	
 		//String str = array.toString();
 		
-	//	logger.info("\n\nSSSS:" + json.toString());
+		logger.info("\n\nSSSS:" + json.toString());
 		
 		return json.toString();
 		
@@ -291,12 +334,13 @@ public class CobaltModel {
 	class Run implements Runnable {
 
 		Trajectory traj;
-		int ptr = 0;
+		//int ptr = 0;
 		
 		@Override
 		public void run() {
 			
 			traj = m_trajectories.get(0);
+			traj.ptrPoint = 0;
 			
 			if (m_period > 0) {
 				while (true) {
@@ -305,26 +349,26 @@ public class CobaltModel {
 					for (Axis ax: m_axes) {
 						
 						if (nAx == 1) {
-							ax.fi = traj.controlPoints.get(ptr).f1;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f1;
 						} else if (nAx == 2) {
-							ax.fi = traj.controlPoints.get(ptr).f2;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f2;
 						} else if (nAx == 3) {
-							ax.fi = traj.controlPoints.get(ptr).f3;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f3;
 						} else if (nAx == 4) {
-							ax.fi = traj.controlPoints.get(ptr).f4;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f4;
 						} else if (nAx == 5) {
-							ax.fi = traj.controlPoints.get(ptr).f5;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f5;
 						} else if (nAx == 6) {
-							ax.fi = traj.controlPoints.get(ptr).f6;
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f6;
 						}
 						
 						nAx ++;
 					}
 					
-					ptr ++;
+					traj.ptrPoint ++;
 					
-					if (ptr >= traj.controlPoints.size()) {
-						ptr = 0;
+					if (traj.ptrPoint >= traj.controlPoints.size()) {
+						traj.ptrPoint = 0;
 					}
 					
 					try {
