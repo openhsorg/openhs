@@ -6,15 +6,19 @@ module RobotMath {
         
         public rotateObject (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
             
-            var q1 = new THREE.Quaternion();
+            if (obj != null) {
             
-            q1.setFromAxisAngle( axis, angle );
-
-            obj.quaternion.multiplyQuaternions( q1, obj.quaternion );
-
-            obj.position.sub( point );
-            obj.position.applyQuaternion( q1 );
-            obj.position.add( point );                          
+                var q1 = new THREE.Quaternion();
+                
+                q1.setFromAxisAngle( axis, angle );
+    
+                obj.quaternion.multiplyQuaternions( q1, obj.quaternion );
+    
+                obj.position.sub( point );
+                obj.position.applyQuaternion( q1 );
+                obj.position.add( point );
+                
+            }
         }     
         
         public rotatePoint (pt: THREE.Vector3, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {

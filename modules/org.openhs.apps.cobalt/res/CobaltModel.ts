@@ -25,7 +25,7 @@ module CobaltModel {
         
         public updating_position:  boolean = false; 
         
-        public sphere: THREE.Mesh = null;
+       // public sphere: THREE.Mesh = null;
         
         //public dataLoaded:  boolean = false;
         
@@ -37,7 +37,7 @@ module CobaltModel {
             
             this.timerGetGeometry(500);
             
-       //     this.getServerEndpoint();
+            this.getServerEndpoint();
             
             this.getServerTrajectories();
             
@@ -242,8 +242,8 @@ module CobaltModel {
                                         
                     }
                     
-                    
-                    this.gLib.rotateObject(this.sphere, rotPt1, rotVect, rad);
+                    this.m_endGrab.rotate(rad, rotPt1, rotVect);
+         //           this.gLib.rotateObject(this.sphere, rotPt1, rotVect, rad);
                     
                     
                 }  
@@ -256,8 +256,8 @@ module CobaltModel {
         public updatePosition () {
            
             this.updating_position = true;
-    //        this.rotateAllAxes (true);
             this.rotateAllAxes (false)     
+            
             this.updating_position = false;                    
         }
                         
@@ -283,41 +283,61 @@ module CobaltModel {
         
         public parseData (data: any) {
             
-            var x = parseFloat(data['ep_px']);
-            var y = parseFloat(data['ep_py']);
-            var z = parseFloat(data['ep_pz']);
+           // window.alert("----Parsinbg...-------------");
             
-            this.point = new THREE.Vector3 (x, y, z);
+            var transform : TransformCobalt = new TransformCobalt ();
             
-            x = parseFloat(data['ep_i_x']);
-            y = parseFloat(data['ep_i_y']);
-            z = parseFloat(data['ep_i_z']);
+            var pt: Point3D = new Point3D ();
             
-            this.i = new THREE.Vector3 (x, y, z);   
+            pt.x = parseFloat(data['ep_px']);
+            pt.y = parseFloat(data['ep_py']);
+            pt.z = parseFloat(data['ep_pz']);
             
-            x = parseFloat(data['ep_j_x']);
-            y = parseFloat(data['ep_j_y']);
-            z = parseFloat(data['ep_j_z']);
+            pt = transform.transformPt(pt);
             
-            this.j = new THREE.Vector3 (x, y, z);               
+            this.point = new THREE.Vector3 (pt.x, pt.y, pt.z);
+            
+            pt.x = parseFloat(data['ep_i_x']);
+            pt.y = parseFloat(data['ep_i_y']);
+            pt.z = parseFloat(data['ep_i_z']);
+            
+            pt = transform.transformPt(pt);
+            
+            this.i = new THREE.Vector3 (pt.x, pt.y, pt.z);   
+            
+            pt.x = parseFloat(data['ep_j_x']);
+            pt.y = parseFloat(data['ep_j_y']);
+            pt.z = parseFloat(data['ep_j_z']);
+            
+            pt = transform.transformPt(pt);
+            
+            this.j = new THREE.Vector3 (pt.x, pt.y, pt.z);               
      
-            x = parseFloat(data['ep_k_x']);
-            y = parseFloat(data['ep_k_y']);
-            z = parseFloat(data['ep_k_z']);
+            pt.x = parseFloat(data['ep_k_x']);
+            pt.y = parseFloat(data['ep_k_y']);
+            pt.z = parseFloat(data['ep_k_z']);
             
-            this.k = new THREE.Vector3 (x, y, z);                  
+            pt = transform.transformPt(pt);
+            
+            this.k = new THREE.Vector3 (pt.x, pt.y, pt.z);       
+            
+                        
             
             this.dataLoaded = true;
+            
+           // window.alert("----Parsed-------------" + this.point.x + this.point.y + this.point.z);
         }
         
         public addScene(scene: THREE.Scene) {
+
+            if (this.dataLoaded && !this.dataDisplayed) {      
             
-            if (this.dataLoaded && !this.dataDisplayed) {
+                var size: number = 100.0;
                 
                 //Line i
                 var lineGeometry = new THREE.Geometry();
                 var vertArray = lineGeometry.vertices;
-                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.i.x, this.point.y + this.i.y, this.point.z + this.i.z) );
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + (size * this.i.x), this.point.y + (size * this.i.y), this.point.z + (size * this.i.z)) );
                 lineGeometry.computeLineDistances();
                 var lineMaterial = new THREE.LineBasicMaterial( { color: 0xff0000 } );
                 this.iLine = new THREE.Line( lineGeometry, lineMaterial );
@@ -326,7 +346,7 @@ module CobaltModel {
                 //Line j
                 var lineGeometry = new THREE.Geometry();
                 var vertArray = lineGeometry.vertices;
-                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.j.x, this.point.y + this.j.y, this.point.z + this.j.z) );
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + (size * this.j.x), this.point.y + (size * this.j.y), this.point.z + (size * this.j.z)) );
                 lineGeometry.computeLineDistances();
                 var lineMaterial = new THREE.LineBasicMaterial( { color: 0x33cc33 } );
                 this.jLine = new THREE.Line( lineGeometry, lineMaterial );
@@ -335,7 +355,7 @@ module CobaltModel {
                 //Line k
                 var lineGeometry = new THREE.Geometry();
                 var vertArray = lineGeometry.vertices;
-                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + this.k.x, this.point.y + this.k.y, this.point.z + this.k.z) );
+                vertArray.push( new THREE.Vector3(this.point.x, this.point.y, this.point.z), new THREE.Vector3(this.point.x + (size * this.k.x), this.point.y + (size * this.k.y), this.point.z + (size * this.k.z)) );
                 lineGeometry.computeLineDistances();
                 var lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
                 this.kLine = new THREE.Line( lineGeometry, lineMaterial );
@@ -348,8 +368,19 @@ module CobaltModel {
                 scene.add( this.sphere );                     
                                             
                 this.dataDisplayed = true;
+                
+                //window.alert("----ADDed to display-------------");
             }        
         }
+        
+        public rotate(rad : number, point: THREE.Vector3, axis: THREE.Vector3) {
+            
+            
+            this.gLib.rotateObject (this.iLine, point, axis, rad);
+            this.gLib.rotateObject (this.jLine, point, axis, rad);  
+            this.gLib.rotateObject (this.kLine, point, axis, rad);
+            this.gLib.rotateObject (this.sphere, point, axis, rad);         
+        }        
    }
     
     export class Axis {
@@ -473,30 +504,7 @@ module CobaltModel {
             this.gLib.rotatePoint(this.axPt2, point, axis, rad);                    
         
         }
-        /*
-        public rotateObject (obj: THREE.Object3D, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
-            
-            var q1 = new THREE.Quaternion();
-            
-            q1.setFromAxisAngle( axis, angle );
 
-            obj.quaternion.multiplyQuaternions( q1, obj.quaternion );
-
-            obj.position.sub( point );
-            obj.position.applyQuaternion( q1 );
-            obj.position.add( point );                   
-       
-        }    
-*/
-        /*
-        public rotatePoint (pt: THREE.Vector3, point: THREE.Vector3, axis: THREE.Vector3, angle: number) {
-
-            pt.sub(point); // remove the offset
-            pt.applyAxisAngle(axis, angle); // rotate the POSITION
-            pt.add(point); // re-add the offset      
-    
-        }        
-            */
     }
     
     export class Trajectory {

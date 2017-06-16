@@ -49,7 +49,7 @@ class ThreeJSTest {
             for (var ax of this.cobalt.m_axisArray){
                 this.drawCS2(ax);
             }
-        
+        /*
             var axLast = this.cobalt.m_axisArray[this.cobalt.m_axisArray.length - 1];
         
             //Last point sphere....
@@ -58,7 +58,7 @@ class ThreeJSTest {
             this.cobalt.sphere = new THREE.Mesh( gSphere, material );
             this.cobalt.sphere.position.set(axLast.cs.point.x, axLast.cs.point.y, axLast.cs.point.z );
             this.scene.add( this.cobalt.sphere );       
-        
+        */
                    
             this.renderer.render(this.scene, this.camera);   
     }
@@ -74,7 +74,7 @@ class ThreeJSTest {
             
             this.drawAxesGeometry();
             
-        //    this.cobalt.m_endGrab.addScene(this.scene);
+            this.cobalt.m_endGrab.addScene(this.scene);
             
             this.drawTrajectories();
         }

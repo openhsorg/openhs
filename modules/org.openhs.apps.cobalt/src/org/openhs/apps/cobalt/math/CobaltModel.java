@@ -102,7 +102,7 @@ public class CobaltModel {
 		//System 6
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
-		ax.cs.point.set(h[2] + h[6] + h[7] - 30.0, h[5], h[1] + h[3] + h[4]);
+		ax.cs.point.set(h[2] + h[6] + h[7] - 50.0, h[5], h[1] + h[3] + h[4]);
 		ax.rot.set(1.0, 0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
@@ -224,7 +224,7 @@ public class CobaltModel {
 			*/	
 		//String str = array.toString();
 		
-		logger.info("\n\nSSSS:" + json.toString());
+		//logger.info("\n\nSSSS:" + json.toString());
 		
 		return json.toString();
 		
