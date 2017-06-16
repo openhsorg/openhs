@@ -25,6 +25,8 @@ module CobaltModel {
         
         public updating_position:  boolean = false; 
         
+        public c: number = 0;
+        
        // public sphere: THREE.Mesh = null;
         
         //public dataLoaded:  boolean = false;
@@ -256,7 +258,10 @@ module CobaltModel {
         public updatePosition () {
            
             this.updating_position = true;
-            this.rotateAllAxes (false)     
+            this.rotateAllAxes (false)    
+            
+            this.m_endGrab.drawEndpointText();
+           
             
             this.updating_position = false;                    
         }
@@ -265,6 +270,10 @@ module CobaltModel {
     
     export class EndGrab {
         
+        public camera: THREE.PerspectiveCamera;
+        public renderer: THREE.WebGLRenderer;
+        public text2:  HTMLDivElement;
+            
         public dataLoaded: boolean = false; //Loaded from server
         public dataDisplayed: boolean = false; //Added to scene
         
@@ -282,8 +291,6 @@ module CobaltModel {
         protected gLib: GraphLib = new GraphLib();
         
         public parseData (data: any) {
-            
-           // window.alert("----Parsinbg...-------------");
             
             var transform : TransformCobalt = new TransformCobalt ();
             
@@ -320,15 +327,12 @@ module CobaltModel {
             pt = transform.transformPt(pt);
             
             this.k = new THREE.Vector3 (pt.x, pt.y, pt.z);       
-            
-                        
-            
+                                                
             this.dataLoaded = true;
             
-           // window.alert("----Parsed-------------" + this.point.x + this.point.y + this.point.z);
-        }
+       }
         
-        public addScene(scene: THREE.Scene) {
+        public addScene(scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) {
 
             if (this.dataLoaded && !this.dataDisplayed) {      
             
@@ -365,22 +369,59 @@ module CobaltModel {
                 var material = new THREE.MeshBasicMaterial( {color: 0xcc66ff } );
                 this.sphere = new THREE.Mesh( gSphere, material );
                 this.sphere.position.set(this.point.x, this.point.y, this.point.z );
-                scene.add( this.sphere );                     
-                                            
-                this.dataDisplayed = true;
+                scene.add( this.sphere );          
+
+                this.text2 = document.createElement('div');
+                this.text2.style.position = 'absolute';
+                //text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+                this.text2.style.width = '100';
+                this.text2.style.height = '100';
+                this.text2.style.backgroundColor = "transparent";
+                //text2.style.t
+                this.text2.innerHTML = "hi there!";
+                this.text2.style.top = 300 + 'px';
+                this.text2.style.left = 500 + 'px';
+                document.body.appendChild(this.text2);                   
                 
-                //window.alert("----ADDed to display-------------");
+                this.camera = camera;
+                this.renderer = renderer;
+                this.dataDisplayed = true;
             }        
         }
         
         public rotate(rad : number, point: THREE.Vector3, axis: THREE.Vector3) {
-            
-            
+
             this.gLib.rotateObject (this.iLine, point, axis, rad);
             this.gLib.rotateObject (this.jLine, point, axis, rad);  
             this.gLib.rotateObject (this.kLine, point, axis, rad);
-            this.gLib.rotateObject (this.sphere, point, axis, rad);         
-        }        
+            this.gLib.rotateObject (this.sphere, point, axis, rad);
+            this.gLib.rotatePoint(this.point, point, axis, rad);           
+        }    
+        
+       public getEndpoint2D () {
+       
+           return this.gLib.getPoint2D(this.point, this.camera, this.renderer.context.canvas.width, this.renderer.context.canvas.height);
+       }
+        
+       public drawEndpointText() {
+           
+           
+           if (this.dataDisplayed) {
+                
+          //  var pt2D = this.getEndpoint2D();
+               
+            var pt2D = this.getEndpoint2D();
+     
+            this.text2.style.left = pt2D.x + 10 + 'px';
+            this.text2.style.top = pt2D.y + 10 + 'px';                                       
+               
+            this.text2.innerHTML = "X: " + this.point.x.toPrecision(7) + "<br>  Y: " + this.point.y.toPrecision(7) + "<br>  Z: " + this.point.z.toPrecision(7);
+                
+        //    this.c = this.c + 1;
+          }           
+       
+       } 
+   
    }
     
     export class Axis {
@@ -397,13 +438,10 @@ module CobaltModel {
         public dataLoaded:  boolean = false;
         public dataDone:  boolean = false;
         
-        public mesh: THREE.Mesh = null;
-      //  public sphere: THREE.Mesh = null;
-        
+        public mesh: THREE.Mesh = null;        
         public xLine: THREE.Line = null;
         public yLine: THREE.Line = null;
         public zLine: THREE.Line = null;
-       // public rLine: THREE.Line = null;
         public axPt1: THREE.Vector3 = null;
         public axPt2: THREE.Vector3 = null;       
         
@@ -441,16 +479,10 @@ module CobaltModel {
             this.cs = transform.transformCs(this.cs);
             this.rot = transform.transform(this.rot);
             
-  //          this.axVec2 = new THREE.Vector3 (this.rot.x, this.rot.y, this.rot.z);
-    //        this.axVec2.normalize();
-            
             this.axPt1 = new THREE.Vector3 (this.cs.point.x, this.cs.point.y, this.cs.point.z);
             this.axPt2 = new THREE.Vector3 (this.cs.point.x + this.rot.x, this.cs.point.y + this.rot.y, this.cs.point.z + this.rot.z);
-            
-         //   window.alert("je: " + i + "vec: "+ this.rot.x + " : " + this.rot.y + " : " + this.rot.z);
-            
+   
             var numFaces = parseInt(data[i + 'num_faces']);            
-
         }
              
         
@@ -501,8 +533,7 @@ module CobaltModel {
             this.gLib.rotateObject (this.yLine, point, axis, rad);
             this.gLib.rotateObject (this.zLine, point, axis, rad);                
             this.gLib.rotatePoint(this.axPt1, point, axis, rad);
-            this.gLib.rotatePoint(this.axPt2, point, axis, rad);                    
-        
+            this.gLib.rotatePoint(this.axPt2, point, axis, rad);                            
         }
 
     }
@@ -517,14 +548,10 @@ module CobaltModel {
         
 //        public mesh: THREE.Mesh = null;
         
-        constructor () {
-        
+        constructor () {        
             this.origin.x = 0.0;
             this.origin.y = 0.0;
             this.origin.z = 0.0;
-            //this.m_segments.push(new Line3D());
-            
-            
         }
         
         public parseData (data: any, i: any) {
@@ -568,15 +595,11 @@ module CobaltModel {
                     
                     this.m_segments.push(line);
                     
-                } 
-                   
+                }                    
             }   
                        
             this.dataUpdated = true;
-
-        }        
-        
-        
+        }                        
     }
     
     export class Geometry3D {

@@ -44,22 +44,100 @@ class ThreeJSTest {
             this.renderer = new THREE.WebGLRenderer({ antialias: true });
             this.renderer.setSize( window.innerWidth, window.innerHeight );
             this.renderer.setClearColor( 0xeeeeee );
-            document.body.appendChild( this.renderer.domElement );          
+            document.body.appendChild( this.renderer.domElement );       
+       
                     
             for (var ax of this.cobalt.m_axisArray){
                 this.drawCS2(ax);
             }
-        /*
-            var axLast = this.cobalt.m_axisArray[this.cobalt.m_axisArray.length - 1];
         
-            //Last point sphere....
-            var gSphere = new THREE.SphereGeometry(20, 60, 80, 32);
-            var material = new THREE.MeshBasicMaterial( {color: 0x862145 } );
-            this.cobalt.sphere = new THREE.Mesh( gSphere, material );
-            this.cobalt.sphere.position.set(axLast.cs.point.x, axLast.cs.point.y, axLast.cs.point.z );
-            this.scene.add( this.cobalt.sphere );       
+        
+        
+        /*
+var canvas1 = document.createElement('canvas');
+    var context1 = canvas1.getContext('2d');
+    context1.font = "Bold 40px Arial";
+    context1.fillStyle = "rgba(255,0,0,0.95)";
+    context1.fillText("Ahojte", 0, 50);
+
+    var texture1 = new THREE.Texture(canvas1);
+    texture1.needsUpdate = true;
+
+    var material1 = new THREE.MeshBasicMaterial( { map: texture1, side:THREE.DoubleSide } );
+    material1.transparent = true;
+
+    var mesh1 = new THREE.Mesh(
+        new THREE.PlaneGeometry(canvas1.width, canvas1.height),
+        material1
+    );
+
+    mesh1.position.set(500 + 10, 1500, 500);                      
+
+    this.scene.add( mesh1 );        
         */
-                   
+       /*
+            this.cobalt.m_endGrab.text2 = document.createElement('div');
+            this.cobalt.m_endGrab.text2.style.position = 'absolute';
+            //text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+            this.cobalt.m_endGrab.text2.style.width = '100';
+            this.cobalt.m_endGrab.text2.style.height = '100';
+            this.cobalt.m_endGrab.text2.style.backgroundColor = "transparent";
+            //text2.style.t
+            this.cobalt.m_endGrab.text2.innerHTML = "hi there!";
+            this.cobalt.m_endGrab.text2.style.top = 300 + 'px';
+            this.cobalt.m_endGrab.text2.style.left = 500 + 'px';
+            document.body.appendChild(this.cobalt.m_endGrab.text2);        
+        */
+        
+        /*
+            var canvas = document.createElement( 'canvas' );
+            var context = canvas.getContext('2d');
+            context.beginPath();
+            context.rect(3, 3, 150, 100);
+            context.fillStyle = 'white';
+            context.fill();
+            context.lineWidth = 3;
+            context.strokeStyle = 'black';
+            context.stroke();
+            context.font = "20px Verdana";
+            context.fillStyle = "#000";
+            context.fillText("Legend", 40, 25);
+            
+            canvas.style.position = 'absolute';
+            canvas.style.top =  '20';//( window.innerHeight - 100 - 10 ) + 'px';
+            canvas.style.left = '10';
+            canvas.style.margin = '0px';
+            canvas.style.padding = '0px';
+            
+            document.body.appendChild( canvas );        
+                   */
+        
+        /*
+                      var canvas1 = document.createElement('canvas');
+                        var context1 = canvas1.getContext('2d');
+                        context1.font = "Bold 10px Arial";
+                        context1.fillStyle = "rgba(255,0,0,1)";
+                        context1.fillText('Hello, world!', 50, 60);
+
+                        // canvas contents will be used for a texture
+                        var texture1 = new THREE.Texture(canvas1)
+                        texture1.needsUpdate = true;
+
+                        var material1 = new THREE.MeshBasicMaterial({ map: texture1, side: THREE.DoubleSide });
+                        material1.transparent = true;
+
+                        var mesh1 = new THREE.Mesh(
+                            new THREE.PlaneGeometry(50, 10),
+                            material1
+                          );
+                        mesh1.position.set(25, 5, -5);
+                        mesh1.rotation.x = -0.9;
+                        shape.add(mesh1);
+                        // Note that mesh1 gets added to the shape and not to the scene
+
+                       this.scene.add(shape)     
+        */
+        
             this.renderer.render(this.scene, this.camera);   
     }
     
@@ -73,8 +151,8 @@ class ThreeJSTest {
             this.renderer.clear();
             
             this.drawAxesGeometry();
-            
-            this.cobalt.m_endGrab.addScene(this.scene);
+                        
+            this.cobalt.m_endGrab.addScene(this.scene, this.camera, this.renderer);
             
             this.drawTrajectories();
         }
@@ -87,7 +165,11 @@ class ThreeJSTest {
         //this.renderer.clear();
         this.render();
     }
+    
+   
 
+      roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill(); ctx.stroke(); }    
+    
     public drawCS2 (ax: Axis) {
             //Line X
             var lineGeometry = new THREE.Geometry();

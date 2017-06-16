@@ -27,7 +27,35 @@ module RobotMath {
             pt.applyAxisAngle(axis, angle); // rotate the POSITION
             pt.add(point); // re-add the offset      
     
-        }          
+        }   
+        
+        public getPoint2D (p: THREE.Vector3, camera: THREE.PerspectiveCamera, width: number, height: number) {
+            /*
+        //    var p = new THREE.Vector3(x, y, z);
+            var vector = new THREE.Vector3(p.project(camera).x, p.project(camera).y, p.project(camera).z);
+            //var vector = p.project(camera);
+
+            vector.x = (vector.x + 1) / 2 * width;
+            vector.y = -(vector.y - 1) / 2 * height;
+
+            return vector;
+            */
+            
+            var pIn = new THREE.Vector3(p.x, p.y, p.z);
+            var vector = new THREE.Vector3();
+            
+            vector.set( 1, 2, 3 );
+            
+            // map to normalized device coordinate (NDC) space
+            pIn.project( camera );
+            
+            // map to 2D screen space
+            vector.x = Math.round( (   pIn.x + 1 ) * width  / 2 );
+            vector.y = Math.round( ( - pIn.y + 1 ) * height / 2 );
+            vector.z = 0;    
+            
+            return vector;
+        }
         
              
     }
