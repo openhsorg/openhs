@@ -378,10 +378,10 @@ module CobaltModel {
                 this.text2.style.height = '100';
                 this.text2.style.backgroundColor = "transparent";
                 //text2.style.t
-                this.text2.innerHTML = "hi there!";
+                this.text2.innerHTML = "";
                 this.text2.style.top = 300 + 'px';
                 this.text2.style.left = 500 + 'px';
-                this.text2.style.fontSize = "24px";
+                this.text2.style.fontSize = '16px';                
                 this.text2.style.fontFamily = 'Lucida Sans Unicode, Lucida Grande, sans-serif';
                 document.body.appendChild(this.text2);                   
                 
