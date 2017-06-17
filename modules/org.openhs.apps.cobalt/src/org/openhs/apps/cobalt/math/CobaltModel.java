@@ -130,27 +130,27 @@ public class CobaltModel {
 		
 		for (Axis ax : m_axes){			
 
-			json.put(i + "cs_px", String.format("%.2f", ax.cs.point.x));
-			json.put(i + "cs_py", String.format("%.2f", ax.cs.point.y));
-			json.put(i + "cs_pz", String.format("%.2f", ax.cs.point.z));
+			json.put(i + "cs_px", String.format("%.4f", ax.cs.point.x));
+			json.put(i + "cs_py", String.format("%.4f", ax.cs.point.y));
+			json.put(i + "cs_pz", String.format("%.4f", ax.cs.point.z));
 			
-			json.put(i + "cs_i_x", String.format("%.2f", ax.cs.i.x));
-			json.put(i + "cs_i_y", String.format("%.2f", ax.cs.i.y));
-			json.put(i + "cs_i_z", String.format("%.2f", ax.cs.i.z));
+			json.put(i + "cs_i_x", String.format("%.4f", ax.cs.i.x));
+			json.put(i + "cs_i_y", String.format("%.4f", ax.cs.i.y));
+			json.put(i + "cs_i_z", String.format("%.4f", ax.cs.i.z));
 			
-			json.put(i + "cs_j_x", String.format("%.2f", ax.cs.j.x));
-			json.put(i + "cs_j_y", String.format("%.2f", ax.cs.j.y));
-			json.put(i + "cs_j_z", String.format("%.2f", ax.cs.j.z));		
+			json.put(i + "cs_j_x", String.format("%.4f", ax.cs.j.x));
+			json.put(i + "cs_j_y", String.format("%.4f", ax.cs.j.y));
+			json.put(i + "cs_j_z", String.format("%.4f", ax.cs.j.z));		
 			
-			json.put(i + "cs_k_x", String.format("%.2f", ax.cs.k.x));
-			json.put(i + "cs_k_y", String.format("%.2f", ax.cs.k.y));
-			json.put(i + "cs_k_z", String.format("%.2f", ax.cs.k.z));		
+			json.put(i + "cs_k_x", String.format("%.4f", ax.cs.k.x));
+			json.put(i + "cs_k_y", String.format("%.4f", ax.cs.k.y));
+			json.put(i + "cs_k_z", String.format("%.4f", ax.cs.k.z));		
 			
-			json.put(i + "rot_x", String.format("%.2f", ax.rot.x));
-			json.put(i + "rot_y", String.format("%.2f", ax.rot.y));
-			json.put(i + "rot_z", String.format("%.2f", ax.rot.z));				
+			json.put(i + "rot_x", String.format("%.4f", ax.rot.x));
+			json.put(i + "rot_y", String.format("%.4f", ax.rot.y));
+			json.put(i + "rot_z", String.format("%.4f", ax.rot.z));				
 			
-			json.put(i + "lenght", String.format("%.2f", ax.length));	
+			json.put(i + "lenght", String.format("%.4f", ax.length));	
 			
 			json.put(i + "num_faces", String.format("%d", ax.m_faces.size()));			
 						
@@ -202,13 +202,13 @@ public class CobaltModel {
 		Trajectory traj = this.m_trajectories.get(0);
 		PointControl pc =traj.controlPoints.get(traj.ptrPoint);
 		
-		json.put("0fi", String.format("%.4f", pc.f0));
-		json.put("1fi", String.format("%.4f", pc.f1));
-		json.put("2fi", String.format("%.4f", pc.f2));
-		json.put("3fi", String.format("%.4f", pc.f3));
-		json.put("4fi", String.format("%.4f", pc.f4));
-		json.put("5fi", String.format("%.4f", pc.f5));
-		json.put("6fi", String.format("%.4f", pc.f6));
+		json.put("0fi", String.format("%.7f", pc.f0));
+		json.put("1fi", String.format("%.7f", pc.f1));
+		json.put("2fi", String.format("%.7f", pc.f2));
+		json.put("3fi", String.format("%.7f", pc.f3));
+		json.put("4fi", String.format("%.7f", pc.f4));
+		json.put("5fi", String.format("%.7f", pc.f5));
+		json.put("6fi", String.format("%.7f", pc.f6));
 		
 		/*
 		int i = 0;
@@ -243,9 +243,9 @@ public class CobaltModel {
 			
 			String id = i + "_";
 			
-			json.put(id + "origin_x", String.format("%.2f", tr.origin.x));
-			json.put(id + "origin_y", String.format("%.2f", tr.origin.y));
-			json.put(id + "origin_z", String.format("%.2f", tr.origin.z));
+			json.put(id + "origin_x", String.format("%.7f", tr.origin.x));
+			json.put(id + "origin_y", String.format("%.7f", tr.origin.y));
+			json.put(id + "origin_z", String.format("%.7f", tr.origin.z));
 			json.put(id + "num_segments", String.format("%d", tr.segments.size()));
 			
 			int j = 0;
@@ -258,13 +258,13 @@ public class CobaltModel {
 					
 					json.put(id2 + "seg_type", String.format("line"));
 					
-					json.put(id2 + "p1_x", String.format("%.2f", ((Line3D) seg).p1.x));
-					json.put(id2 + "p1_y", String.format("%.2f", ((Line3D) seg).p1.y));
-					json.put(id2 + "p1_z", String.format("%.2f", ((Line3D) seg).p1.z));
+					json.put(id2 + "p1_x", String.format("%.7f", ((Line3D) seg).p1.x));
+					json.put(id2 + "p1_y", String.format("%.7f", ((Line3D) seg).p1.y));
+					json.put(id2 + "p1_z", String.format("%.7f", ((Line3D) seg).p1.z));
 					
-					json.put(id2 + "p2_x", String.format("%.2f", ((Line3D) seg).p2.x));
-					json.put(id2 + "p2_y", String.format("%.2f", ((Line3D) seg).p2.y));
-					json.put(id2 + "p2_z", String.format("%.2f", ((Line3D) seg).p2.z));
+					json.put(id2 + "p2_x", String.format("%.7f", ((Line3D) seg).p2.x));
+					json.put(id2 + "p2_y", String.format("%.7f", ((Line3D) seg).p2.y));
+					json.put(id2 + "p2_z", String.format("%.7f", ((Line3D) seg).p2.z));
 																				
 				}		
 				
@@ -298,9 +298,9 @@ public class CobaltModel {
 			
 			for (Point3D vertex: fc.vertex) {
 				
-				json.put(i + "_v:" + nV + "fc_v_x", String.format("%.2f", vertex.x));
-				json.put(i + "_v:" + nV + "fc_v_y", String.format("%.2f", vertex.y));
-				json.put(i + "_v:" + nV + "fc_v_z", String.format("%.2f", vertex.z));
+				json.put(i + "_v:" + nV + "fc_v_x", String.format("%.4f", vertex.x));
+				json.put(i + "_v:" + nV + "fc_v_y", String.format("%.4f", vertex.y));
+				json.put(i + "_v:" + nV + "fc_v_z", String.format("%.4f", vertex.z));
 				
 				nV ++;
 			}			

@@ -14,9 +14,12 @@ class ThreeJSTest {
     camera: THREE.PerspectiveCamera;
     scene: THREE.Scene;
     
+    panel: Panel;
+    
     constructor(){
         
             this.cobalt = new Cobalt ();
+            this.panel = new Panel (this.cobalt);
         
             this.scene = new THREE.Scene();
             this.scene.add( new THREE.GridHelper( 2500, 30 ) );
@@ -51,92 +54,41 @@ class ThreeJSTest {
                 this.drawCS2(ax);
             }
         
+            var container = document.createElement( 'div' );
+         //   container.style.position = 'relative';
+            container.style.position = 'absolute';
+            container.style.top =  window.innerHeight - 300 + 'px';
+            container.style.left = 30 + 'px';
+            container.style.width = "1000";
+            container.style.height = '770';        
+            document.body.appendChild( container );
+                            
+            var background = document.createElement( 'canvas' );
+            background.width = 800;
+            background.height = 500;
         
-        
-        /*
-var canvas1 = document.createElement('canvas');
-    var context1 = canvas1.getContext('2d');
-    context1.font = "Bold 40px Arial";
-    context1.fillStyle = "rgba(255,0,0,0.95)";
-    context1.fillText("Ahojte", 0, 50);
-
-    var texture1 = new THREE.Texture(canvas1);
-    texture1.needsUpdate = true;
-
-    var material1 = new THREE.MeshBasicMaterial( { map: texture1, side:THREE.DoubleSide } );
-    material1.transparent = true;
-
-    var mesh1 = new THREE.Mesh(
-        new THREE.PlaneGeometry(canvas1.width, canvas1.height),
-        material1
-    );
-
-    mesh1.position.set(500 + 10, 1500, 500);                      
-
-    this.scene.add( mesh1 );        
-        */
-       /*
-            this.cobalt.m_endGrab.text2 = document.createElement('div');
-            this.cobalt.m_endGrab.text2.style.position = 'absolute';
-            //text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-            this.cobalt.m_endGrab.text2.style.width = '100';
-            this.cobalt.m_endGrab.text2.style.height = '100';
-            this.cobalt.m_endGrab.text2.style.backgroundColor = "transparent";
-            //text2.style.t
-            this.cobalt.m_endGrab.text2.innerHTML = "hi there!";
-            this.cobalt.m_endGrab.text2.style.top = 300 + 'px';
-            this.cobalt.m_endGrab.text2.style.left = 500 + 'px';
-            document.body.appendChild(this.cobalt.m_endGrab.text2);        
-        */
+            this.panel.canvas = background;
         
         /*
-            var canvas = document.createElement( 'canvas' );
-            var context = canvas.getContext('2d');
+            var context = background.getContext( '2d' );
+        
+            
+                  
             context.beginPath();
-            context.rect(3, 3, 150, 100);
-            context.fillStyle = 'white';
+            context.rect(3, 3, 400, 200);
+            context.fillStyle = 'rgba(255,0,0,0.5)';
+            //context.fillRect( 0, 0, background.width, background.height );
+            //context.fillStyle = 'white';
             context.fill();
             context.lineWidth = 3;
-            context.strokeStyle = 'black';
+            context.strokeStyle = '0x00cc99';
             context.stroke();
             context.font = "20px Verdana";
             context.fillStyle = "#000";
             context.fillText("Legend", 40, 25);
-            
-            canvas.style.position = 'absolute';
-            canvas.style.top =  '20';//( window.innerHeight - 100 - 10 ) + 'px';
-            canvas.style.left = '10';
-            canvas.style.margin = '0px';
-            canvas.style.padding = '0px';
-            
-            document.body.appendChild( canvas );        
-                   */
-        
-        /*
-                      var canvas1 = document.createElement('canvas');
-                        var context1 = canvas1.getContext('2d');
-                        context1.font = "Bold 10px Arial";
-                        context1.fillStyle = "rgba(255,0,0,1)";
-                        context1.fillText('Hello, world!', 50, 60);
-
-                        // canvas contents will be used for a texture
-                        var texture1 = new THREE.Texture(canvas1)
-                        texture1.needsUpdate = true;
-
-                        var material1 = new THREE.MeshBasicMaterial({ map: texture1, side: THREE.DoubleSide });
-                        material1.transparent = true;
-
-                        var mesh1 = new THREE.Mesh(
-                            new THREE.PlaneGeometry(50, 10),
-                            material1
-                          );
-                        mesh1.position.set(25, 5, -5);
-                        mesh1.rotation.x = -0.9;
-                        shape.add(mesh1);
-                        // Note that mesh1 gets added to the shape and not to the scene
-
-                       this.scene.add(shape)     
-        */
+ */
+            container.appendChild( background );
+       
         
             this.renderer.render(this.scene, this.camera);   
     }
@@ -156,6 +108,8 @@ var canvas1 = document.createElement('canvas');
             
             this.drawTrajectories();
         }
+        
+        this.panel.paint();
                 
         requestAnimationFrame(() => this.render());
         this.renderer.render(this.scene, this.camera);
@@ -324,6 +278,59 @@ var canvas1 = document.createElement('canvas');
         */
     
     }
+
+}
+
+class Panel {
+    
+    public robot: Cobalt = null;
+    
+    public canvas:  HTMLCanvasElement = null;
+    
+    constructor (robot: Cobalt) {
+        this.robot = robot;
+    
+    
+    }
+    
+    public paint (){        
+        //const ctx = this.canvas;
+        
+        var ctx = this.canvas.getContext( '2d' );
+        
+        ctx.clearRect(3, 3, 600, 250);   
+                  
+        ctx.beginPath();
+        ctx.rect(3, 3, 600, 250);
+        ctx.fillStyle = 'rgba(0,204,153,0.5)';
+        //context.fillRect( 0, 0, background.width, background.height );
+        //context.fillStyle = 'white';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#0066cc';
+        ctx.stroke();        
+        ctx.font = 'bold 24px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        ctx.fillStyle = "#0066cc";
+        ctx.fillText("Cobalt Demo", 10, 25);   
+        
+        //Position of endpoint
+        ctx.font = 'bold 20px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        ctx.fillText("Grab pos:", 10, 60);                          
+        
+        var ept: String = "X: " + this.robot.m_endGrab.point.x.toPrecision(7) + "  Y: " + this.robot.m_endGrab.point.y.toPrecision(7) + "  Z: " + this.robot.m_endGrab.point.z.toPrecision(7);
+        ctx.fillText(ept.toString(), 120, 60);
+        
+        //Axes of robot
+        var ept: String = "Ax1: " + this.robot.m_axisArray[1].fi.toPrecision(4) + "  Ax2: " + this.robot.m_axisArray[2].fi.toPrecision(4) + "  Ax3: " + this.robot.m_axisArray[3].fi.toPrecision(4);
+        ctx.fillText(ept.toString(), 10, 100);        
+ 
+        var ept: String = "Ax4: " + this.robot.m_axisArray[4].fi.toPrecision(4) + "  Ax5: " + this.robot.m_axisArray[5].fi.toPrecision(4) + "  Ax6: " + this.robot.m_axisArray[6].fi.toPrecision(4);
+        ctx.fillText(ept.toString(), 10, 140);          
+        
+        ctx.restore(); 
+    }
+      
+
 
 }
 
