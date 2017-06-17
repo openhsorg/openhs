@@ -1,10 +1,7 @@
-/// <reference path="typings/tsd.d.ts" />  
+////// <reference path="typings/tsd.d.ts" />
+/// <reference path="tt/typings/index.d.ts" />
+/// <reference path="tt/jquery/jquery.d.ts" />    
 /// <reference path='RobotMath.ts'/>
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var Point3D = RobotMath.Point3D;
 var Vector3D = RobotMath.Vector3D;
 var CoordSystem = RobotMath.CoordSystem;
@@ -13,8 +10,8 @@ var Face = RobotMath.Face;
 var GraphLib = RobotMath.GraphLib;
 var CobaltModel;
 (function (CobaltModel) {
-    var Cobalt = (function () {
-        function Cobalt() {
+    class Cobalt {
+        constructor() {
             //constants...
             this.m_axisArray = new Array();
             this.m_trajArray = new Array();
@@ -31,26 +28,24 @@ var CobaltModel;
             this.getServerTrajectories();
             this.timerGetPositions(150);
         }
-        Cobalt.prototype.timerGetGeometry = function (step) {
-            var _this = this;
+        timerGetGeometry(step) {
             this.loadGeometry();
             window.clearTimeout(this.fastTimerGetData);
-            this.fastTimerGetData = window.setTimeout(function () { return _this.timerGetGeometry(step); }, step);
-        };
-        Cobalt.prototype.loadGeometry = function () {
+            this.fastTimerGetData = window.setTimeout(() => this.timerGetGeometry(step), step);
+        }
+        loadGeometry() {
             if (this.getCount < this.m_axisArray.length) {
                 var ax = this.m_axisArray[this.getCount];
                 this.getServerAxesGeometry(this.getCount + 1);
                 this.getCount++;
             }
-        };
-        Cobalt.prototype.timerGetPositions = function (step) {
-            var _this = this;
+        }
+        timerGetPositions(step) {
             this.getPositions();
             window.clearTimeout(this.fastTimerGetPositions);
-            this.fastTimerGetPositions = window.setTimeout(function () { return _this.timerGetPositions(step); }, step);
-        };
-        Cobalt.prototype.getPositions = function () {
+            this.fastTimerGetPositions = window.setTimeout(() => this.timerGetPositions(step), step);
+        }
+        getPositions() {
             var req = {
                 orderId: "Cobalt_AxesPositions"
             };
@@ -58,8 +53,7 @@ var CobaltModel;
             if (data != null) {
                 var numAxes = parseInt(data['num_axes']);
                 var i = 0;
-                for (var _i = 0, _a = this.m_axisArray; _i < _a.length; _i++) {
-                    var ax = _a[_i];
+                for (var ax of this.m_axisArray) {
                     if (i < numAxes) {
                         ax.fi = parseFloat(data[i + 'fi']);
                     }
@@ -68,8 +62,8 @@ var CobaltModel;
                 ////UPDATE....
                 this.updatePosition();
             }
-        };
-        Cobalt.prototype.getServerAxes = function () {
+        }
+        getServerAxes() {
             var req = {
                 orderId: "Cobalt_Axes"
             };
@@ -79,13 +73,13 @@ var CobaltModel;
                 //window.alert("axes" + numAxes);                
                 this.m_axisArray.length = 0;
                 for (var i = 0; i < numAxes; i++) {
-                    var ax = new Axis();
+                    let ax = new Axis();
                     ax.parseData(data, i);
                     this.m_axisArray.push(ax);
                 }
             }
-        };
-        Cobalt.prototype.getServerEndpoint = function () {
+        }
+        getServerEndpoint() {
             var req = {
                 orderId: "Cobalt_Endpoint"
             };
@@ -93,8 +87,8 @@ var CobaltModel;
             if (data != null) {
                 this.m_endGrab.parseData(data);
             }
-        };
-        Cobalt.prototype.getServerTrajectories = function () {
+        }
+        getServerTrajectories() {
             var req = {
                 orderId: "Cobalt_Trajectories"
             };
@@ -103,35 +97,34 @@ var CobaltModel;
                 var numTrajs = parseInt(data['num_trajs']);
                 this.m_trajArray.length = 0;
                 for (var i = 0; i < numTrajs; i++) {
-                    var traj = new Trajectory();
+                    let traj = new Trajectory();
                     traj.parseData(data, i);
                     this.m_trajArray.push(traj);
                 }
             }
-        };
-        Cobalt.prototype.getServerAxesGeometry = function (ax) {
+        }
+        getServerAxesGeometry(ax) {
             var req = {
                 orderId: "Cobalt_AxesGeometry" + ax
             };
             var data = getAjax("robot", req);
             if (data != null) {
-                var axis = this.m_axisArray[ax];
+                let axis = this.m_axisArray[ax];
                 axis.parseGeomData(data);
             }
-        };
-        Cobalt.prototype.allAxesLoaded = function () {
+        }
+        allAxesLoaded() {
             var loaded = 1;
             var i = 0;
-            for (var _i = 0, _a = this.m_axisArray; _i < _a.length; _i++) {
-                var ax = _a[_i];
+            for (var ax of this.m_axisArray) {
                 if (i != 0 && !ax.dataDone) {
                     loaded = 0;
                 }
                 i++;
             }
             return loaded;
-        };
-        Cobalt.prototype.rotateAllAxes = function (back) {
+        }
+        rotateAllAxes(back) {
             if (this.allAxesLoaded() == 1) {
                 //Rotate by axis
                 for (var i = 1; i < this.m_axisArray.length; i++) {
@@ -165,18 +158,17 @@ var CobaltModel;
                     this.m_endGrab.rotate(rad, rotPt1, rotVect);
                 }
             }
-        };
-        Cobalt.prototype.updatePosition = function () {
+        }
+        updatePosition() {
             this.updating_position = true;
             this.rotateAllAxes(false);
             this.m_endGrab.drawEndpointText();
             this.updating_position = false;
-        };
-        return Cobalt;
-    }());
+        }
+    }
     CobaltModel.Cobalt = Cobalt;
-    var EndGrab = (function () {
-        function EndGrab() {
+    class EndGrab {
+        constructor() {
             this.dataLoaded = false; //Loaded from server
             this.dataDisplayed = false; //Added to scene
             this.point = null;
@@ -189,7 +181,7 @@ var CobaltModel;
             this.sphere = null;
             this.gLib = new GraphLib();
         }
-        EndGrab.prototype.parseData = function (data) {
+        parseData(data) {
             var transform = new TransformCobalt();
             var pt = new Point3D();
             pt.x = parseFloat(data['ep_px']);
@@ -213,8 +205,8 @@ var CobaltModel;
             pt = transform.transformPt(pt);
             this.k = new THREE.Vector3(pt.x, pt.y, pt.z);
             this.dataLoaded = true;
-        };
-        EndGrab.prototype.addScene = function (scene, camera, renderer) {
+        }
+        addScene(scene, camera, renderer) {
             if (this.dataLoaded && !this.dataDisplayed) {
                 var size = 100.0;
                 //Line i
@@ -263,18 +255,18 @@ var CobaltModel;
                 this.renderer = renderer;
                 this.dataDisplayed = true;
             }
-        };
-        EndGrab.prototype.rotate = function (rad, point, axis) {
+        }
+        rotate(rad, point, axis) {
             this.gLib.rotateObject(this.iLine, point, axis, rad);
             this.gLib.rotateObject(this.jLine, point, axis, rad);
             this.gLib.rotateObject(this.kLine, point, axis, rad);
             this.gLib.rotateObject(this.sphere, point, axis, rad);
             this.gLib.rotatePoint(this.point, point, axis, rad);
-        };
-        EndGrab.prototype.getEndpoint2D = function () {
+        }
+        getEndpoint2D() {
             return this.gLib.getPoint2D(this.point, this.camera, this.renderer.context.canvas.width, this.renderer.context.canvas.height);
-        };
-        EndGrab.prototype.drawEndpointText = function () {
+        }
+        drawEndpointText() {
             if (this.dataDisplayed) {
                 //  var pt2D = this.getEndpoint2D();
                 var pt2D = this.getEndpoint2D();
@@ -282,12 +274,11 @@ var CobaltModel;
                 this.text2.style.top = pt2D.y + 10 + 'px';
                 this.text2.innerHTML = "X: " + this.point.x.toPrecision(7) + "<br>  Y: " + this.point.y.toPrecision(7) + "<br>  Z: " + this.point.z.toPrecision(7);
             }
-        };
-        return EndGrab;
-    }());
+        }
+    }
     CobaltModel.EndGrab = EndGrab;
-    var Axis = (function () {
-        function Axis() {
+    class Axis {
+        constructor() {
             //Axis coord system
             this.cs = new CoordSystem();
             this.rot = new Vector3D();
@@ -306,7 +297,7 @@ var CobaltModel;
             this.oldAngle1 = 0.0; //Remember axis rotation
             this.gLib = new GraphLib();
         }
-        Axis.prototype.parseData = function (data, i) {
+        parseData(data, i) {
             var transform = new TransformCobalt();
             this.length = parseFloat(data[i + 'lenght']);
             this.cs.point.x = parseFloat(data[i + 'cs_px']);
@@ -329,8 +320,8 @@ var CobaltModel;
             this.axPt1 = new THREE.Vector3(this.cs.point.x, this.cs.point.y, this.cs.point.z);
             this.axPt2 = new THREE.Vector3(this.cs.point.x + this.rot.x, this.cs.point.y + this.rot.y, this.cs.point.z + this.rot.z);
             var numFaces = parseInt(data[i + 'num_faces']);
-        };
-        Axis.prototype.parseGeomData = function (data) {
+        }
+        parseGeomData(data) {
             var numFaces = parseInt(data['num_faces']);
             // window.alert('Faces: ' + numFaces);
             var transform = new TransformCobalt();
@@ -356,21 +347,20 @@ var CobaltModel;
             }
             this.dataLoaded = true;
             this.dataDone = true;
-        };
-        Axis.prototype.rotateAll = function (rad, point, axis) {
+        }
+        rotateAll(rad, point, axis) {
             this.gLib.rotateObject(this.mesh, point, axis, rad);
             this.gLib.rotateObject(this.xLine, point, axis, rad);
             this.gLib.rotateObject(this.yLine, point, axis, rad);
             this.gLib.rotateObject(this.zLine, point, axis, rad);
             this.gLib.rotatePoint(this.axPt1, point, axis, rad);
             this.gLib.rotatePoint(this.axPt2, point, axis, rad);
-        };
-        return Axis;
-    }());
+        }
+    }
     CobaltModel.Axis = Axis;
-    var Trajectory = (function () {
+    class Trajectory {
         //        public mesh: THREE.Mesh = null;
-        function Trajectory() {
+        constructor() {
             this.m_segments = new Array();
             this.origin = new Point3D();
             this.dataUpdated = false;
@@ -378,7 +368,7 @@ var CobaltModel;
             this.origin.y = 0.0;
             this.origin.z = 0.0;
         }
-        Trajectory.prototype.parseData = function (data, i) {
+        parseData(data, i) {
             var transform = new TransformCobalt();
             var id = i + "_";
             var numSegments = parseInt(data[id + 'num_segments']);
@@ -389,7 +379,7 @@ var CobaltModel;
             // window.alert('numtraj ' + numSegments);
             for (var j = 0; j < numSegments; j++) {
                 var ids = id + "" + j + "_";
-                var gtype = data[ids + 'seg_type'];
+                let gtype = data[ids + 'seg_type'];
                 //  window.alert('segtype: ' + gtype);
                 if (gtype != null && gtype === 'line') {
                     var line = new Line3D();
@@ -405,26 +395,20 @@ var CobaltModel;
                 }
             }
             this.dataUpdated = true;
-        };
-        return Trajectory;
-    }());
-    CobaltModel.Trajectory = Trajectory;
-    var Geometry3D = (function () {
-        function Geometry3D() {
         }
-        return Geometry3D;
-    }());
+    }
+    CobaltModel.Trajectory = Trajectory;
+    class Geometry3D {
+    }
     CobaltModel.Geometry3D = Geometry3D;
-    var Line3D = (function (_super) {
-        __extends(Line3D, _super);
-        function Line3D() {
-            _super.apply(this, arguments);
+    class Line3D extends Geometry3D {
+        constructor(...args) {
+            super(...args);
             this.pt1 = new Point3D();
             this.pt2 = new Point3D();
             this.line = null;
         }
-        return Line3D;
-    }(Geometry3D));
+    }
     CobaltModel.Line3D = Line3D;
     function getAjax(urlAdr, dataIn) {
         var result = null;

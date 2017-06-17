@@ -1,14 +1,7 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var RobotMath;
 (function (RobotMath) {
-    var GraphLib = (function () {
-        function GraphLib() {
-        }
-        GraphLib.prototype.rotateObject = function (obj, point, axis, angle) {
+    class GraphLib {
+        rotateObject(obj, point, axis, angle) {
             if (obj != null) {
                 var q1 = new THREE.Quaternion();
                 q1.setFromAxisAngle(axis, angle);
@@ -17,13 +10,13 @@ var RobotMath;
                 obj.position.applyQuaternion(q1);
                 obj.position.add(point);
             }
-        };
-        GraphLib.prototype.rotatePoint = function (pt, point, axis, angle) {
+        }
+        rotatePoint(pt, point, axis, angle) {
             pt.sub(point); // remove the offset
             pt.applyAxisAngle(axis, angle); // rotate the POSITION
             pt.add(point); // re-add the offset      
-        };
-        GraphLib.prototype.getPoint2D = function (p, camera, width, height) {
+        }
+        getPoint2D(p, camera, width, height) {
             /*
         //    var p = new THREE.Vector3(x, y, z);
             var vector = new THREE.Vector3(p.project(camera).x, p.project(camera).y, p.project(camera).z);
@@ -44,12 +37,11 @@ var RobotMath;
             vector.y = Math.round((-pIn.y + 1) * height / 2);
             vector.z = 0;
             return vector;
-        };
-        return GraphLib;
-    }());
+        }
+    }
     RobotMath.GraphLib = GraphLib;
-    var Point3D = (function () {
-        function Point3D() {
+    class Point3D {
+        constructor() {
             this.x = 0;
             this.z = 0;
             this.y = 0;
@@ -57,61 +49,54 @@ var RobotMath;
             this.y = 0.0;
             this.z = 0.0;
         }
-        return Point3D;
-    }());
+    }
     RobotMath.Point3D = Point3D;
-    var Vector3D = (function (_super) {
-        __extends(Vector3D, _super);
-        function Vector3D() {
-            _super.call(this);
+    class Vector3D extends Point3D {
+        constructor() {
+            super();
         }
-        return Vector3D;
-    }(Point3D));
+    }
     RobotMath.Vector3D = Vector3D;
-    var Face = (function () {
-        function Face() {
+    class Face {
+        constructor() {
             this.normal = new Vector3D();
             this.vertex = new Array();
         }
-        return Face;
-    }());
+    }
     RobotMath.Face = Face;
-    var CoordSystem = (function () {
-        function CoordSystem() {
+    class CoordSystem {
+        constructor() {
             this.i = new Vector3D();
             this.j = new Vector3D();
             this.k = new Vector3D();
             this.point = new Point3D();
         }
-        return CoordSystem;
-    }());
+    }
     RobotMath.CoordSystem = CoordSystem;
-    var TransformCobalt = (function () {
-        function TransformCobalt() {
-        }
-        TransformCobalt.prototype.transform = function (vec) {
+    class TransformCobalt {
+        transform(vec) {
             var vec2 = new Vector3D();
             vec2.x = vec.x;
             vec2.y = vec.z;
             vec2.z = -1 * vec.y;
             return vec2;
-        };
-        TransformCobalt.prototype.transformPt = function (vec) {
+        }
+        transformPt(vec) {
             var vec2 = new Point3D();
             vec2.x = vec.x;
             vec2.y = vec.z;
             vec2.z = -1 * vec.y;
             return vec2;
-        };
-        TransformCobalt.prototype.transformCs = function (cs) {
+        }
+        transformCs(cs) {
             var cs2 = new CoordSystem();
             cs2.point = this.transform(cs.point);
             cs2.i = this.transform(cs.i);
             cs2.j = this.transform(cs.j);
             cs2.k = this.transform(cs.k);
             return cs2;
-        };
-        TransformCobalt.prototype.transformFace = function (fc) {
+        }
+        transformFace(fc) {
             var fc2 = new Face();
             fc2.normal = this.transform(fc.normal);
             /*
@@ -122,7 +107,7 @@ var RobotMath;
             }
             */
             for (var i = 0; i < fc.vertex.length; i++) {
-                var p = this.transformPt(fc.vertex[i]);
+                let p = this.transformPt(fc.vertex[i]);
                 fc2.vertex.push(p);
             }
             /*
@@ -132,8 +117,7 @@ var RobotMath;
             cs2.k = this.transform(cs.k);
             */
             return fc2;
-        };
-        return TransformCobalt;
-    }());
+        }
+    }
     RobotMath.TransformCobalt = TransformCobalt;
 })(RobotMath || (RobotMath = {}));

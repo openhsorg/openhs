@@ -1,5 +1,7 @@
 
-/// <reference path="typings/tsd.d.ts" />  
+////// <reference path="typings/tsd.d.ts" />
+/// <reference path="tt/typings/index.d.ts" />
+/// <reference path="tt/jquery/jquery.d.ts" />    
 /// <reference path='RobotMath.ts'/>
 
 import Point3D = RobotMath.Point3D;

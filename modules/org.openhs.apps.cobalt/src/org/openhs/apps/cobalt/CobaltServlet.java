@@ -156,7 +156,8 @@ public class CobaltServlet extends HttpServlet {
     	
     //	out.println("<div id='content' style='width:500px;height:500px'></div>");
 
-    	out.println("<script src='robotres/three/build/three.js'></script>");
+    	out.println("<script src='robotres/tt/bower_components/three.js/build/three.js'></script>");
+    	out.println("<script src='robotres/tt/bower_components/three.js/examples/js/controls/OrbitControls.js'></script>");
     	out.println("<script src='robotres/jquery-3.1.1.min.js'></script>");
     	out.println("<script src='robotres/RobotMath.js'></script>");	
     	out.println("<script src='robotres/CobaltModel.js'></script>");	

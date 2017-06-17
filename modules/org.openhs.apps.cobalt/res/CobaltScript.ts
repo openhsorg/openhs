@@ -1,4 +1,7 @@
-/// <reference path="typings/tsd.d.ts" />  
+////// <reference path="typings/tsd.d.ts" />
+/// <reference path="tt/typings/index.d.ts" />
+/// <reference path="tt/typings/three-orbitcontrols.d.ts" />
+/// <reference path="tt/jquery/jquery.d.ts" />     
 /// <reference path='CobaltModel.ts'/>
 
 import Cobalt = CobaltModel.Cobalt;
@@ -12,6 +15,7 @@ class ThreeJSTest {
     
     renderer: THREE.WebGLRenderer;
     camera: THREE.PerspectiveCamera;
+    controls: THREE.OrbitControls;
     scene: THREE.Scene;
     
     panel: Panel;
@@ -30,19 +34,45 @@ class ThreeJSTest {
             this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
             this.camera.position.set(2000, 2500, 2000);        
             this.camera.lookAt(new THREE.Vector3(0,0,0));        
-            this.scene.add(this.camera);        
+            this.scene.add(this.camera);       
+        
+            //Orbit controls
+            this.controls = new THREE.OrbitControls( this.camera );
+            this.controls.minDistance = 2000;
+            this.controls.maxDistance = 5700;
         
             //Lights
-            var light = new THREE.PointLight(0xffffff, 2, 100);
-            light.position.set(1000,1300,1000);
-            this.scene.add(light);
+        
+            var lightP = new THREE.PointLight(0xffffff, 2.0, 1000);
+            lightP.position.set(-1000, 1300, 0);
+            this.scene.add(lightP);
+        /*
+            var lightP2 = new THREE.PointLight(0xffffff, 2, 100);
+            lightP2.position.set(2000,1300,-2000);
+            this.scene.add(lightP2);        
+        */
+        
         
             var light2  = new THREE.DirectionalLight(0xffffff, 1.0);
-            light2.position.set(500, 500, 500);
+            light2.position.set(2000, 2000, 2000);
             this.scene.add(light2);
-        
-            var light3  = new THREE.AmbientLight(0x404040);
-            this.scene.add(light3);           
+        /*
+            var light3  = new THREE.DirectionalLight(0xffffff, 0.5);
+            light3.position.set(1000, 2000, -2000);
+            this.scene.add(light3);        
+        */
+            var light4  = new THREE.DirectionalLight(0xffffff, 0.5);
+            light4.position.set(-2000, 2000, -1000);
+            this.scene.add(light4);                 
+          /*
+            var light5  = new THREE.AmbientLight(0xffffff, 0.5);         
+            this.scene.add(light5);
+        */      
+        /*
+            var light4  = new THREE.AmbientLight(0x404040);
+            light4.position.set(-1000,1000,-1000);
+            this.scene.add(light4);
+        */          
 
             this.renderer = new THREE.WebGLRenderer({ antialias: true });
             this.renderer.setSize( window.innerWidth, window.innerHeight );

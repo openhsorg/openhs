@@ -1,18 +1,17 @@
 var OhsWeatherData;
 (function (OhsWeatherData) {
-    var WeatherDataForecast = (function () {
-        function WeatherDataForecast() {
+    class WeatherDataForecast {
+        constructor() {
             this.forecasts = new Array();
             this.currentForecast = new WeatherForecast();
             this.timerGetServerDataEvent(10000);
         }
-        WeatherDataForecast.prototype.timerGetServerDataEvent = function (step) {
-            var _this = this;
+        timerGetServerDataEvent(step) {
             this.getServerData();
             window.clearTimeout(this.timerGetData);
-            this.timerGetData = window.setTimeout(function () { return _this.timerGetServerDataEvent(step); }, step);
-        };
-        WeatherDataForecast.prototype.setNumberForecasts = function (num) {
+            this.timerGetData = window.setTimeout(() => this.timerGetServerDataEvent(step), step);
+        }
+        setNumberForecasts(num) {
             if (num > this.forecasts.length) {
                 for (var i = this.forecasts.length; i < num; i++) {
                     this.forecasts.push(new WeatherForecast());
@@ -21,14 +20,14 @@ var OhsWeatherData;
             else if (num < this.forecasts.length) {
                 this.forecasts.length = num;
             }
-        };
-        WeatherDataForecast.prototype.setWeatherItem = function (num, data) {
+        }
+        setWeatherItem(num, data) {
             if (num + 1 > this.forecasts.length) {
                 this.setNumberForecasts(num + 1);
             }
             this.forecasts[num].setWeather(data);
-        };
-        WeatherDataForecast.prototype.getForecast = function (num) {
+        }
+        getForecast(num) {
             if (num + 1 <= this.forecasts.length) {
                 return this.forecasts[num];
             }
@@ -37,11 +36,11 @@ var OhsWeatherData;
                 fcs.valid = false;
                 return fcs;
             }
-        };
-        WeatherDataForecast.prototype.getCurrent = function () {
+        }
+        getCurrent() {
             return this.currentForecast;
-        };
-        WeatherDataForecast.prototype.getServerData = function () {
+        }
+        getServerData() {
             for (var i = 0; i < 4; i++) {
                 var req = {
                     orderId: "WeatherForecast_" + i
@@ -59,12 +58,11 @@ var OhsWeatherData;
             if (data != null) {
                 this.currentForecast.setWeather2(data);
             }
-        };
-        return WeatherDataForecast;
-    }());
+        }
+    }
     OhsWeatherData.WeatherDataForecast = WeatherDataForecast;
-    var WeatherForecast = (function () {
-        function WeatherForecast() {
+    class WeatherForecast {
+        constructor() {
             this.valid = false; //content of the forecast is valid
             this.tempIn = 0.0;
             this.tempOut = 0.0;
@@ -78,22 +76,21 @@ var OhsWeatherData;
             this.img = null;
             this.images = new Array();
         }
-        WeatherForecast.prototype.setWeather = function (data) {
+        setWeather(data) {
             this.tempOut = parseFloat(data['temp']);
             this.weatherSymbol = JSON.parse(data['weatherSymbol']);
             this.windSpeed = parseFloat(data['windSpeed']);
             this.valid = true;
-        };
-        WeatherForecast.prototype.setWeather2 = function (data) {
+        }
+        setWeather2(data) {
             this.tempIn = parseFloat(data['tempIn']);
             this.tempOut = parseFloat(data['tempOut']);
             this.frostOutside = JSON.parse(data['frostOutside']);
             this.weatherSymbol = JSON.parse(data['weatherSymbol']);
             this.windSpeed = parseFloat(data['windSpeed']);
             this.valid = true;
-        };
-        return WeatherForecast;
-    }());
+        }
+    }
     OhsWeatherData.WeatherForecast = WeatherForecast;
     function getAjax(urlAdr, dataIn) {
         var result = null;

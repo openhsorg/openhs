@@ -1,23 +1,18 @@
 /**
  * Module with data structure...
  */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var OhsSiteData;
 (function (OhsSiteData) {
-    var servletUrl = 'kitchen';
-    var switchId = 'SwitchS';
-    var contactSensorId = 'ContactSensor';
-    var allDoorsId = 'AllDoors';
+    const servletUrl = 'kitchen';
+    const switchId = 'SwitchS';
+    const contactSensorId = 'ContactSensor';
+    const allDoorsId = 'AllDoors';
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while (new Date().getTime() < unixtime_ms + ms) { }
     }
-    var SiteData = (function () {
-        function SiteData() {
+    class SiteData {
+        constructor() {
             //---Site data---
             this.m_floorArray = null;
             this.m_roomArray = null;
@@ -41,13 +36,12 @@ var OhsSiteData;
             this.getServerData();
             this.fastTimerGetDataEvent(250);
         }
-        SiteData.prototype.fastTimerGetDataEvent = function (step) {
-            var _this = this;
+        fastTimerGetDataEvent(step) {
             this.getFastData();
             window.clearTimeout(this.fastTimerGetData);
-            this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
-        };
-        SiteData.prototype.getFastData = function () {
+            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step);
+        }
+        getFastData() {
             this.getFastData_Time();
             if (this.getCount == 0) {
                 this.getFastData_TemperatureSensorArray();
@@ -76,8 +70,8 @@ var OhsSiteData;
             else {
                 this.getCount++;
             }
-        };
-        SiteData.prototype.getFastData_Time = function () {
+        }
+        getFastData_Time() {
             var req = {
                 orderId: "TimeDate"
             };
@@ -86,8 +80,8 @@ var OhsSiteData;
                 this.dateString = data['date'];
                 this.timeString = data['time'];
             }
-        };
-        SiteData.prototype.getFastData_TemperatureSensorArray = function () {
+        }
+        getFastData_TemperatureSensorArray() {
             var req = {
                 orderId: "TempSensors"
             };
@@ -95,13 +89,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_tempSensorArray) {
+                    for (let id in this.m_tempSensorArray) {
                         this.m_tempSensorArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_ContactArray = function () {
+        }
+        getFastData_ContactArray() {
             var req = {
                 orderId: "ContactSensors"
             };
@@ -109,13 +103,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_contactSensorArray) {
+                    for (let id in this.m_contactSensorArray) {
                         this.m_contactSensorArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_SwitchArray = function () {
+        }
+        getFastData_SwitchArray() {
             var req = {
                 orderId: "SwitchSensors"
             };
@@ -124,13 +118,13 @@ var OhsSiteData;
                 var valid = JSON.parse(data['Array_validity']);
                 //   window.alert("SwitchSensors");
                 if (valid) {
-                    for (var id in this.m_switchArray) {
+                    for (let id in this.m_switchArray) {
                         this.m_switchArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_DoorArray = function () {
+        }
+        getFastData_DoorArray() {
             var req = {
                 orderId: "DoorArray"
             };
@@ -138,13 +132,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_doorArray) {
+                    for (let id in this.m_doorArray) {
                         this.m_doorArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_WindowArray = function () {
+        }
+        getFastData_WindowArray() {
             var req = {
                 orderId: "WindowArray"
             };
@@ -152,13 +146,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_windowArray) {
+                    for (let id in this.m_windowArray) {
                         this.m_windowArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_RoomArray = function () {
+        }
+        getFastData_RoomArray() {
             var req = {
                 orderId: "RoomArray"
             };
@@ -166,13 +160,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_roomArray) {
+                    for (let id in this.m_roomArray) {
                         this.m_roomArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.getFastData_FloorArray = function () {
+        }
+        getFastData_FloorArray() {
             var req = {
                 orderId: "FloorArray"
             };
@@ -180,13 +174,13 @@ var OhsSiteData;
             if (data != null) {
                 var valid = JSON.parse(data['Array_validity']);
                 if (valid) {
-                    for (var id in this.m_floorArray) {
+                    for (let id in this.m_floorArray) {
                         this.m_floorArray[id].parseServerData(data);
                     }
                 }
             }
-        };
-        SiteData.prototype.setNumber = function (num, arg, types) {
+        }
+        setNumber(num, arg, types) {
             if (num > arg.length) {
                 for (var i = arg.length; i < num; i++) {
                     var ss = new types();
@@ -196,8 +190,8 @@ var OhsSiteData;
             else if (num < arg.length) {
                 arg.length = num;
             }
-        };
-        SiteData.prototype.getFilteredThings = function (arg, filterPath) {
+        }
+        getFilteredThings(arg, filterPath) {
             if (filterPath == null) {
                 return arg;
             }
@@ -207,8 +201,8 @@ var OhsSiteData;
                     return thing.getPath().indexOf(filterPath) >= 0;
                 });
             }
-        };
-        SiteData.prototype.getFilteredThingsNoContains = function (arg, filterPath) {
+        }
+        getFilteredThingsNoContains(arg, filterPath) {
             if (filterPath == null) {
                 return arg;
             }
@@ -218,8 +212,8 @@ var OhsSiteData;
                     return !(thing.getPath().indexOf(filterPath) >= 0);
                 });
             }
-        };
-        SiteData.prototype.getParentPath = function (thing) {
+        }
+        getParentPath(thing) {
             if (thing == null) {
                 return null;
             }
@@ -235,50 +229,50 @@ var OhsSiteData;
                 var parts = path2.split('/'); //split string
                 parts.pop();
                 parts.pop();
-                var newPath = parts.join('/');
+                let newPath = parts.join('/');
                 //  window.alert("*** getParent ***, newPath: " + newPath);
                 return newPath;
             }
-        };
-        SiteData.prototype.getThing = function (path) {
-            for (var id in this.m_floorArray) {
+        }
+        getThing(path) {
+            for (let id in this.m_floorArray) {
                 if (this.m_floorArray[id].getPath() == path) {
                     return this.m_floorArray[id];
                 }
             }
-            for (var id in this.m_roomArray) {
+            for (let id in this.m_roomArray) {
                 if (this.m_roomArray[id].getPath() == path) {
                     return this.m_roomArray[id];
                 }
             }
-            for (var id in this.m_tempSensorArray) {
+            for (let id in this.m_tempSensorArray) {
                 if (this.m_tempSensorArray[id].getPath() == path) {
                     return this.m_tempSensorArray[id];
                 }
             }
-            for (var id in this.m_switchArray) {
+            for (let id in this.m_switchArray) {
                 if (this.m_switchArray[id].getPath() == path) {
                     return this.m_switchArray[id];
                 }
             }
-            for (var id in this.m_doorArray) {
+            for (let id in this.m_doorArray) {
                 if (this.m_doorArray[id].getPath() == path) {
                     return this.m_doorArray[id];
                 }
             }
-            for (var id in this.m_windowArray) {
+            for (let id in this.m_windowArray) {
                 if (this.m_windowArray[id].getPath() == path) {
                     return this.m_windowArray[id];
                 }
             }
-            for (var id in this.m_contactSensorArray) {
+            for (let id in this.m_contactSensorArray) {
                 if (this.m_contactSensorArray[id].getPath() == path) {
                     return this.m_contactSensorArray[id];
                 }
             }
             return null;
-        };
-        SiteData.prototype.getServerData = function () {
+        }
+        getServerData() {
             var req = {
                 orderId: "SiteData"
             };
@@ -288,8 +282,8 @@ var OhsSiteData;
                 this.timeString = data['time'];
                 // Floors                  
                 this.setNumber(parseInt(data['number_floors']), this.m_floorArray, Floor);
-                for (var id_1 in this.m_floorArray) {
-                    this.m_floorArray[id_1].setPath(data['floorPath_' + id_1]);
+                for (let id in this.m_floorArray) {
+                    this.m_floorArray[id].setPath(data['floorPath_' + id]);
                 }
                 // Rooms            
                 this.setNumber(parseInt(data['number_rooms']), this.m_roomArray, Room);
@@ -298,84 +292,80 @@ var OhsSiteData;
                 }
                 // TempSensors                                             
                 this.setNumber(parseInt(data['number_tempsensors']), this.m_tempSensorArray, TemperatureSensor);
-                for (var id_2 in this.m_tempSensorArray) {
-                    this.m_tempSensorArray[id_2].setPath(data['tempSensorPath_' + id_2]);
+                for (let id in this.m_tempSensorArray) {
+                    this.m_tempSensorArray[id].setPath(data['tempSensorPath_' + id]);
                 }
                 // Switches                                     
                 this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
                 // window.alert("ns: " + this.m_switchArray.length);
-                for (var id_3 in this.m_switchArray) {
-                    this.m_switchArray[id_3].setPath(data['switchPath_' + id_3]);
+                for (let id in this.m_switchArray) {
+                    this.m_switchArray[id].setPath(data['switchPath_' + id]);
                 }
                 // ContactSensors                                                     
                 this.setNumber(parseInt(data['number_contactSensors']), this.m_contactSensorArray, ContactSensor);
                 //window.alert("Num:" + parseInt(data['number_contactSensors']));
-                for (var id_4 in this.m_contactSensorArray) {
-                    this.m_contactSensorArray[id_4].setPath(data['contactSensorPath_' + id_4]);
+                for (let id in this.m_contactSensorArray) {
+                    this.m_contactSensorArray[id].setPath(data['contactSensorPath_' + id]);
                 }
                 // Door                                     
                 this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
-                for (var id_5 in this.m_doorArray) {
-                    this.m_doorArray[id_5].setPath(data['doorPath_' + id_5]);
+                for (let id in this.m_doorArray) {
+                    this.m_doorArray[id].setPath(data['doorPath_' + id]);
                 }
                 // Window          
                 this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
-                for (var id_6 in this.m_windowArray) {
-                    this.m_windowArray[id_6].setPath(data['windowPath_' + id_6]);
+                for (let id in this.m_windowArray) {
+                    this.m_windowArray[id].setPath(data['windowPath_' + id]);
                 }
             }
-        };
-        SiteData.prototype.postServerCommand = function (cmd) {
+        }
+        postServerCommand(cmd) {
             var req = {
                 postId: 'GeneralCommand',
                 command: cmd
             };
             postAjax(servletUrl, req);
-        };
-        return SiteData;
-    }());
+        }
+    }
     OhsSiteData.SiteData = SiteData;
-    var Thing = (function () {
-        function Thing() {
+    class Thing {
+        constructor() {
             this.valid = false; //content of the forecast is valid        
             this.path = null; //OpenHS path     
         }
-        Thing.prototype.setPath = function (path) {
+        setPath(path) {
             this.path = path;
-        };
-        Thing.prototype.getPath = function () {
+        }
+        getPath() {
             return this.path;
-        };
-        Thing.prototype.isValid = function () {
+        }
+        isValid() {
             return this.valid;
-        };
-        Thing.prototype.getServerData = function () {
-        };
-        Thing.prototype.getServerDataDelayed = function (wait) {
-            var _this = this;
-            window.setTimeout(function () { return _this.getServerData(); }, wait);
-        };
-        return Thing;
-    }());
+        }
+        getServerData() {
+        }
+        getServerDataDelayed(wait) {
+            window.setTimeout(() => this.getServerData(), wait);
+        }
+    }
     OhsSiteData.Thing = Thing;
-    var Floor = (function (_super) {
-        __extends(Floor, _super);
-        function Floor() {
-            _super.apply(this, arguments);
+    class Floor extends Thing {
+        constructor(...args) {
+            super(...args);
             this.imagePath = "/infores/servlets/kitchen/room_default.png";
             this.name = 'no name';
             this.dim_x = 0;
             this.dim_y = 0;
         }
-        Floor.prototype.getServerData = function () {
+        getServerData() {
             var req = {
                 orderId: "TempSensor",
                 path: this.path
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-        };
-        Floor.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -385,26 +375,24 @@ var OhsSiteData;
                     this.dim_y = parseFloat(data[this.path + '__dim_y']);
                 }
             }
-        };
-        return Floor;
-    }(Thing));
+        }
+    }
     OhsSiteData.Floor = Floor;
-    var Room = (function (_super) {
-        __extends(Room, _super);
-        function Room() {
-            _super.call(this);
+    class Room extends Thing {
+        constructor() {
+            super();
             this.imageBkgPath = "/infores/servlets/kitchen/room_default.png";
             this.name = "no name :(";
         }
-        Room.prototype.getServerData = function () {
+        getServerData() {
             var req = {
                 orderId: "Room",
                 path: this.path
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-        };
-        Room.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -412,27 +400,25 @@ var OhsSiteData;
                     this.imageBkgPath = data[this.path + '__imagePath'];
                 }
             }
-        };
-        return Room;
-    }(Thing));
+        }
+    }
     OhsSiteData.Room = Room;
-    var TemperatureSensor = (function (_super) {
-        __extends(TemperatureSensor, _super);
-        function TemperatureSensor() {
-            _super.call(this);
+    class TemperatureSensor extends Thing {
+        constructor() {
+            super();
             this.x = 0;
             this.y = 0;
             this.temp = 0.0;
         }
-        TemperatureSensor.prototype.getServerData = function () {
+        getServerData() {
             var req = {
                 orderId: "TempSensor",
                 path: this.path
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-        };
-        TemperatureSensor.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -442,12 +428,11 @@ var OhsSiteData;
                     this.temp = parseFloat(data[this.path + '__temperature']);
                 }
             }
-        };
-        return TemperatureSensor;
-    }(Thing));
+        }
+    }
     OhsSiteData.TemperatureSensor = TemperatureSensor;
-    var Supplier = (function () {
-        function Supplier() {
+    class Supplier {
+        constructor() {
             this.valid = false;
             this.name = "unknown";
             this.www = "unknown";
@@ -455,7 +440,7 @@ var OhsSiteData;
             this.phone = "unknown";
             this.logo = "unknown";
         }
-        Supplier.prototype.getServerData = function () {
+        getServerData() {
             /*
            var req: any = {
                orderId : "Supplier",
@@ -466,57 +451,55 @@ var OhsSiteData;
            
            this.parseServerData(data);
            */
-        };
-        return Supplier;
-    }());
+        }
+    }
     OhsSiteData.Supplier = Supplier;
-    var Switch = (function (_super) {
-        __extends(Switch, _super);
-        function Switch() {
-            _super.call(this);
+    class Switch extends Thing {
+        constructor() {
+            super();
             this.x = 0;
             this.y = 0;
             this.stateInt = 0;
         }
-        Switch.prototype.setState = function (state) {
+        setState(state) {
             this.stateInt = state;
-        };
-        Switch.prototype.getState = function () {
+        }
+        getState() {
             return this.stateInt;
-        };
-        Switch.prototype.postServerClick = function () {
+        }
+        postServerClick() {
             var req = {
                 postId: switchId,
                 path: this.path,
                 command: 'click'
             };
             postAjax(servletUrl, req);
-        };
-        Switch.prototype.postServerSetOn = function () {
+        }
+        postServerSetOn() {
             var req = {
                 postId: switchId,
                 path: this.path,
                 command: 'on'
             };
             postAjax(servletUrl, req);
-        };
-        Switch.prototype.postServerSetOff = function () {
+        }
+        postServerSetOff() {
             var req = {
                 postId: switchId,
                 path: this.path,
                 command: 'off'
             };
             postAjax(servletUrl, req);
-        };
-        Switch.prototype.getServerData = function () {
+        }
+        getServerData() {
             var req = {
                 orderId: switchId,
                 path: this.path
             };
             var data = getAjax(servletUrl, req);
             this.parseServerData(data);
-        };
-        Switch.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 //window.alert("valid: " + this.path);
@@ -526,33 +509,31 @@ var OhsSiteData;
                     this.y = parseFloat(data[this.path + '__y']);
                 }
             }
-        };
-        return Switch;
-    }(Thing));
+        }
+    }
     OhsSiteData.Switch = Switch;
-    var ContactSensor = (function (_super) {
-        __extends(ContactSensor, _super);
-        function ContactSensor() {
-            _super.call(this);
+    class ContactSensor extends Thing {
+        constructor() {
+            super();
             this.x = 0;
             this.y = 0;
             this.state = false;
         }
-        ContactSensor.prototype.setState = function (st) {
+        setState(st) {
             this.state = st;
-        };
-        ContactSensor.prototype.getState = function () {
+        }
+        getState() {
             return this.state;
-        };
-        ContactSensor.prototype.getServerData = function () {
+        }
+        getServerData() {
             var req = {
                 orderId: contactSensorId,
                 path: this.path
             };
             var data = getAjax(servletUrl, req);
             this.parseServerData(data);
-        };
-        ContactSensor.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -561,14 +542,12 @@ var OhsSiteData;
                     this.y = parseFloat(data[this.path + '__y']);
                 }
             }
-        };
-        return ContactSensor;
-    }(Thing));
+        }
+    }
     OhsSiteData.ContactSensor = ContactSensor;
-    var Door = (function (_super) {
-        __extends(Door, _super);
-        function Door() {
-            _super.call(this);
+    class Door extends Thing {
+        constructor() {
+            super();
             this.name = "no name";
             this.image_open = "/infores/servlets/kitchen/room_default.png";
             this.image_close = "/infores/servlets/kitchen/room_default.png";
@@ -578,7 +557,7 @@ var OhsSiteData;
             this.x = 0;
             this.y = 0;
         }
-        Door.prototype.getState = function () {
+        getState() {
             if (!this.valid)
                 return 0;
             if (this.open)
@@ -586,23 +565,23 @@ var OhsSiteData;
             if (this.locked)
                 return 3;
             return 2;
-        };
-        Door.prototype.postServerClick = function () {
+        }
+        postServerClick() {
             var req = {
                 postId: "DoorD",
                 path: this.path
             };
             postAjax(servletUrl, req);
-        };
-        Door.prototype.getServerData = function () {
+        }
+        getServerData() {
             var req = {
                 orderId: "DoorD",
                 path: this.path
             };
             var data = getAjax("kitchen", req);
             this.parseServerData(data);
-        };
-        Door.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -617,14 +596,12 @@ var OhsSiteData;
                     this.supplier.name = data[this.path + '__supplierName'];
                 }
             }
-        };
-        return Door;
-    }(Thing));
+        }
+    }
     OhsSiteData.Door = Door;
-    var Window = (function (_super) {
-        __extends(Window, _super);
-        function Window() {
-            _super.call(this);
+    class Window extends Thing {
+        constructor() {
+            super();
             this.name = "no name";
             this.image_open = "/infores/servlets/kitchen/room_default.png";
             this.image_close = "/infores/servlets/kitchen/room_default.png";
@@ -633,7 +610,7 @@ var OhsSiteData;
             this.x = 0;
             this.y = 0;
         }
-        Window.prototype.getState = function () {
+        getState() {
             if (!this.valid)
                 return 0;
             if (this.open)
@@ -641,15 +618,15 @@ var OhsSiteData;
             if (this.locked)
                 return 3;
             return 2;
-        };
-        Window.prototype.postServerClick = function () {
+        }
+        postServerClick() {
             var req = {
                 postId: "Window",
                 path: this.path
             };
             postAjax(servletUrl, req);
-        };
-        Window.prototype.getServerData = function () {
+        }
+        getServerData() {
             var req = {
                 orderId: "Window",
                 path: this.path
@@ -671,8 +648,8 @@ var OhsSiteData;
                 }
             }
             */
-        };
-        Window.prototype.parseServerData = function (data) {
+        }
+        parseServerData(data) {
             if (data != null) {
                 this.valid = JSON.parse(data[this.path + '__validity']);
                 if (this.valid) {
@@ -686,9 +663,8 @@ var OhsSiteData;
                     this.image_close = data[this.path + '__imagePath_close'];
                 }
             }
-        };
-        return Window;
-    }(Thing));
+        }
+    }
     OhsSiteData.Window = Window;
     function getAjax(urlAdr, dataIn) {
         var result = null;

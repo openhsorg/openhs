@@ -1,11 +1,14 @@
-/// <reference path="typings/tsd.d.ts" />  
+////// <reference path="typings/tsd.d.ts" />
+/// <reference path="tt/typings/index.d.ts" />
+/// <reference path="tt/typings/three-orbitcontrols.d.ts" />
+/// <reference path="tt/jquery/jquery.d.ts" />     
 /// <reference path='CobaltModel.ts'/>
 var Cobalt = CobaltModel.Cobalt;
 var Axis = CobaltModel.Axis;
 var Trajectory = CobaltModel.Trajectory;
 var Line3D = CobaltModel.Line3D;
-var ThreeJSTest = (function () {
-    function ThreeJSTest() {
+class ThreeJSTest {
+    constructor() {
         this.cobalt = new Cobalt();
         this.panel = new Panel(this.cobalt);
         this.scene = new THREE.Scene();
@@ -17,21 +20,44 @@ var ThreeJSTest = (function () {
         this.camera.position.set(2000, 2500, 2000);
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.scene.add(this.camera);
+        //Orbit controls
+        this.controls = new THREE.OrbitControls(this.camera);
+        this.controls.minDistance = 2000;
+        this.controls.maxDistance = 5700;
         //Lights
-        var light = new THREE.PointLight(0xffffff, 2, 100);
-        light.position.set(1000, 1300, 1000);
-        this.scene.add(light);
+        var lightP = new THREE.PointLight(0xffffff, 2.0, 1000);
+        lightP.position.set(-1000, 1300, 0);
+        this.scene.add(lightP);
+        /*
+            var lightP2 = new THREE.PointLight(0xffffff, 2, 100);
+            lightP2.position.set(2000,1300,-2000);
+            this.scene.add(lightP2);
+        */
         var light2 = new THREE.DirectionalLight(0xffffff, 1.0);
-        light2.position.set(500, 500, 500);
+        light2.position.set(2000, 2000, 2000);
         this.scene.add(light2);
-        var light3 = new THREE.AmbientLight(0x404040);
-        this.scene.add(light3);
+        /*
+            var light3  = new THREE.DirectionalLight(0xffffff, 0.5);
+            light3.position.set(1000, 2000, -2000);
+            this.scene.add(light3);
+        */
+        var light4 = new THREE.DirectionalLight(0xffffff, 0.5);
+        light4.position.set(-2000, 2000, -1000);
+        this.scene.add(light4);
+        /*
+          var light5  = new THREE.AmbientLight(0xffffff, 0.5);
+          this.scene.add(light5);
+      */
+        /*
+            var light4  = new THREE.AmbientLight(0x404040);
+            light4.position.set(-1000,1000,-1000);
+            this.scene.add(light4);
+        */
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0xeeeeee);
         document.body.appendChild(this.renderer.domElement);
-        for (var _i = 0, _a = this.cobalt.m_axisArray; _i < _a.length; _i++) {
-            var ax = _a[_i];
+        for (var ax of this.cobalt.m_axisArray) {
             this.drawCS2(ax);
         }
         var container = document.createElement('div');
@@ -67,11 +93,10 @@ var ThreeJSTest = (function () {
         container.appendChild(background);
         this.renderer.render(this.scene, this.camera);
     }
-    ThreeJSTest.prototype.render = function () {
+    render() {
         // Each frame we want to render the scene again
         // Use typescript Arrow notation to retain the thisocity passing render to requestAnimationFrame
         // It's possible I invented the word thisocity.
-        var _this = this;
         if (!this.cobalt.updating_position) {
             this.renderer.clear();
             this.drawAxesGeometry();
@@ -79,15 +104,15 @@ var ThreeJSTest = (function () {
             this.drawTrajectories();
         }
         this.panel.paint();
-        requestAnimationFrame(function () { return _this.render(); });
+        requestAnimationFrame(() => this.render());
         this.renderer.render(this.scene, this.camera);
-    };
-    ThreeJSTest.prototype.start = function () {
+    }
+    start() {
         //this.renderer.clear();
         this.render();
-    };
-    ThreeJSTest.prototype.roundRect = function (ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill(); ctx.stroke(); };
-    ThreeJSTest.prototype.drawCS2 = function (ax) {
+    }
+    roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r); ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r); ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    drawCS2(ax) {
         //Line X
         var lineGeometry = new THREE.Geometry();
         var vertArray = lineGeometry.vertices;
@@ -127,17 +152,16 @@ var ThreeJSTest = (function () {
         //  ax.axVec = new THREE.Vector3 (ax.rot.x, ax.rot.y, ax.rot.z);
         //  ax.axVec.normalize();
         //var tg: THREE.Geometry = ax.zLine.getWorldRotation(
-    };
-    ThreeJSTest.prototype.drawAxesGeometry = function () {
-        for (var _i = 0, _a = this.cobalt.m_axisArray; _i < _a.length; _i++) {
-            var ax = _a[_i];
+    }
+    drawAxesGeometry() {
+        for (let ax of this.cobalt.m_axisArray) {
             if (ax.dataLoaded) {
                 this.drawAxisGeometry(ax);
                 ax.dataLoaded = false;
             }
         }
-    };
-    ThreeJSTest.prototype.drawAxisGeometry = function (ax) {
+    }
+    drawAxisGeometry(ax) {
         //window.alert("-+");
         var triangleMaterial = new THREE.MeshBasicMaterial({
             vertexColors: THREE.VertexColors,
@@ -149,8 +173,7 @@ var ThreeJSTest = (function () {
         solidMatA.side = THREE.DoubleSide;
         var triangleGeometry = new THREE.Geometry();
         var i = 0;
-        for (var _i = 0, _a = ax.faces; _i < _a.length; _i++) {
-            var fc = _a[_i];
+        for (let fc of ax.faces) {
             //  window.alert("-+");
             var ct = i * 3;
             triangleGeometry.vertices.push(new THREE.Vector3(fc.vertex[0].x, fc.vertex[0].y, fc.vertex[0].z));
@@ -172,19 +195,17 @@ var ThreeJSTest = (function () {
         this.scene.add(triangleMesh);
         ax.mesh = triangleMesh;
         //triangleMesh.rotateX( Math.PI / 2 );
-    };
-    ThreeJSTest.prototype.drawTrajectories = function () {
-        for (var _i = 0, _a = this.cobalt.m_trajArray; _i < _a.length; _i++) {
-            var tr = _a[_i];
+    }
+    drawTrajectories() {
+        for (let tr of this.cobalt.m_trajArray) {
             if (tr.dataUpdated) {
                 this.drawTrajectory(tr);
                 tr.dataUpdated = false;
             }
         }
-    };
-    ThreeJSTest.prototype.drawTrajectory = function (tr) {
-        for (var _i = 0, _a = tr.m_segments; _i < _a.length; _i++) {
-            var seg = _a[_i];
+    }
+    drawTrajectory(tr) {
+        for (let seg of tr.m_segments) {
             if (seg instanceof Line3D) {
                 var segment = seg;
                 var lineGeometry = new THREE.Geometry();
@@ -206,16 +227,15 @@ var ThreeJSTest = (function () {
             var line = new THREE.Line( lineGeometry, lineMaterial );
             this.scene.add(line);
         */
-    };
-    return ThreeJSTest;
-}());
-var Panel = (function () {
-    function Panel(robot) {
+    }
+}
+class Panel {
+    constructor(robot) {
         this.robot = null;
         this.canvas = null;
         this.robot = robot;
     }
-    Panel.prototype.paint = function () {
+    paint() {
         //const ctx = this.canvas;
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(3, 3, 600, 250);
@@ -242,10 +262,9 @@ var Panel = (function () {
         var ept = "Ax4: " + this.robot.m_axisArray[4].fi.toPrecision(4) + "  Ax5: " + this.robot.m_axisArray[5].fi.toPrecision(4) + "  Ax6: " + this.robot.m_axisArray[6].fi.toPrecision(4);
         ctx.fillText(ept.toString(), 10, 140);
         ctx.restore();
-    };
-    return Panel;
-}());
-window.onload = function () {
+    }
+}
+window.onload = () => {
     var three = new ThreeJSTest();
     three.start();
 };
