@@ -2,25 +2,30 @@ package org.openhs.apps.cobalt.math;
 
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhs.apps.cobalt.CobaltServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CobaltModel {
+	
+	GCodeLoader m_GCodeLoader = new GCodeLoader ();
 	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(CobaltModel.class);	
 	
 	protected MathEngine m_MathEngine = new MathEngine (); 
 	
+	private int m_period = 120;
+	public Run m_run;
+	public Thread m_myThd;	
+	
 	public Point3D pt;
 	
 	public double h [] = new double [8];
 	public ArrayList<Axis> m_axes = new ArrayList<Axis>();
-	public CartesianSystem m_ep = new CartesianSystem();
-	
+	public CartesianSystem m_ep = new CartesianSystem();	
+	public ArrayList<Trajectory> m_trajectories = new ArrayList<Trajectory>();
+		
 	public CobaltModel () {
 		
 		h[0] = 0.0;
@@ -34,8 +39,14 @@ public class CobaltModel {
 		
 		this.setAxes();
 		
-		this.setEP();
-		
+		this.setEP();	
+
+		m_run = new Run();
+		m_myThd = new Thread(m_run);
+	}
+	
+	public void StartRun () {
+		m_myThd.start();
 	}
 	
 	protected void setAxes() {
@@ -44,6 +55,7 @@ public class CobaltModel {
 		Axis ax = new Axis();
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(0.0, 0.0, 0.0);
+		ax.rot.set(0, 0, 50);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -51,6 +63,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(0.0, 0.0, 0.0);
+		ax.rot.set(0, 0, 1.0);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
@@ -58,6 +71,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1]);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -65,6 +79,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2], 0.0, h[1] + h[3]);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);			
 		
@@ -72,6 +87,7 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(1.0, 0.0, 0.0);
 		ax.length = 50;		
 		this.m_axes.add(ax);		
 		
@@ -79,22 +95,31 @@ public class CobaltModel {
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
 		ax.cs.point.set(h[2] + h[6], h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(0, 1.0, 0);
 		ax.length = 50;		
 		this.m_axes.add(ax);
 		
 		//System 6
 		ax = new Axis();		
 		ax.cs.setUnitSystem();	
-		ax.cs.point.set(h[2] + h[6] + h[7], h[5], h[1] + h[3] + h[4]);
+		ax.cs.point.set(h[2] + h[6] + h[7] - 50.0, h[5], h[1] + h[3] + h[4]);
+		ax.rot.set(1.0, 0, 0);
 		ax.length = 50;		
-		this.m_axes.add(ax);			
+		this.m_axes.add(ax);		
+		
 					
 	}
 	
 	void setEP () {
 		this.m_ep.setUnitSystem();
 		this.m_ep.point.set(h[2] + h[6] +h[7], h[5], h[1] + h[3] + h[4]);
+		
+		//logger.info("------------------*****: " + this.m_ep.point.x + this.m_ep.point.y + this.m_ep.point.z);
 	}
+	
+	public Point3D getEP () {		
+		return this.m_ep.point;
+	}	
 	
 	public String axesToJSON(){
 		
@@ -105,38 +130,254 @@ public class CobaltModel {
 		
 		for (Axis ax : m_axes){			
 
-			json.put(i + "cs_px", String.format("%.2f", ax.cs.point.x));
-			json.put(i + "cs_py", String.format("%.2f", ax.cs.point.y));
-			json.put(i + "cs_pz", String.format("%.2f", ax.cs.point.z));
+			json.put(i + "cs_px", String.format("%.4f", ax.cs.point.x));
+			json.put(i + "cs_py", String.format("%.4f", ax.cs.point.y));
+			json.put(i + "cs_pz", String.format("%.4f", ax.cs.point.z));
 			
-			json.put(i + "cs_i_x", String.format("%.2f", ax.cs.i.x));
-			json.put(i + "cs_i_y", String.format("%.2f", ax.cs.i.y));
-			json.put(i + "cs_i_z", String.format("%.2f", ax.cs.i.z));
+			json.put(i + "cs_i_x", String.format("%.4f", ax.cs.i.x));
+			json.put(i + "cs_i_y", String.format("%.4f", ax.cs.i.y));
+			json.put(i + "cs_i_z", String.format("%.4f", ax.cs.i.z));
 			
-			json.put(i + "cs_j_x", String.format("%.2f", ax.cs.j.x));
-			json.put(i + "cs_j_y", String.format("%.2f", ax.cs.j.y));
-			json.put(i + "cs_j_z", String.format("%.2f", ax.cs.j.z));		
+			json.put(i + "cs_j_x", String.format("%.4f", ax.cs.j.x));
+			json.put(i + "cs_j_y", String.format("%.4f", ax.cs.j.y));
+			json.put(i + "cs_j_z", String.format("%.4f", ax.cs.j.z));		
 			
-			json.put(i + "cs_k_x", String.format("%.2f", ax.cs.k.x));
-			json.put(i + "cs_k_y", String.format("%.2f", ax.cs.k.y));
-			json.put(i + "cs_k_z", String.format("%.2f", ax.cs.k.z));		
+			json.put(i + "cs_k_x", String.format("%.4f", ax.cs.k.x));
+			json.put(i + "cs_k_y", String.format("%.4f", ax.cs.k.y));
+			json.put(i + "cs_k_z", String.format("%.4f", ax.cs.k.z));		
 			
-			json.put(i + "lenght", String.format("%.2f", ax.length));	
+			json.put(i + "rot_x", String.format("%.4f", ax.rot.x));
+			json.put(i + "rot_y", String.format("%.4f", ax.rot.y));
+			json.put(i + "rot_z", String.format("%.4f", ax.rot.z));				
 			
+			json.put(i + "lenght", String.format("%.4f", ax.length));	
 			
-			i++;
-			
+			json.put(i + "num_faces", String.format("%d", ax.m_faces.size()));			
+						
+			i++;			
 		}
-		
-		
+				
 		//String str = array.toString();
 		
-		logger.info("\n\nSSSS:" + json.toString());
+	//	logger.info("\n\nSSSS:" + json.toString());
 		
 		return json.toString();
 		
 	}
 	
+	public String endpointToJSON(){
+		
+		JSONObject json = new JSONObject();
+
+		json.put("ep_px", String.format("%.4f", m_ep.point.x));
+		json.put("ep_py", String.format("%.4f", m_ep.point.y));
+		json.put("ep_pz", String.format("%.4f", m_ep.point.z));
+		
+		json.put("ep_i_x", String.format("%.4f", m_ep.i.x));
+		json.put("ep_i_y", String.format("%.4f", m_ep.i.y));
+		json.put("ep_i_z", String.format("%.4f", m_ep.i.z));
+		
+		json.put("ep_j_x", String.format("%.4f", m_ep.j.x));
+		json.put("ep_j_y", String.format("%.4f", m_ep.j.y));
+		json.put("ep_j_z", String.format("%.4f", m_ep.j.z));		
+		
+		json.put("ep_k_x", String.format("%.4f", m_ep.k.x));
+		json.put("ep_k_y", String.format("%.4f", m_ep.k.y));
+		json.put("ep_k_z", String.format("%.4f", m_ep.k.z));		
+									
+				
+		//String str = array.toString();
+		
+	//	logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();
+		
+	}	
 	
+	public String axesPositionsToJSON(){
+		
+		JSONObject json = new JSONObject();
+		json.put("num_axes", String.format("%d", m_axes.size()));
+		
+		Trajectory traj = this.m_trajectories.get(0);
+		PointControl pc =traj.controlPoints.get(traj.ptrPoint);
+		
+		json.put("0fi", String.format("%.7f", pc.f0));
+		json.put("1fi", String.format("%.7f", pc.f1));
+		json.put("2fi", String.format("%.7f", pc.f2));
+		json.put("3fi", String.format("%.7f", pc.f3));
+		json.put("4fi", String.format("%.7f", pc.f4));
+		json.put("5fi", String.format("%.7f", pc.f5));
+		json.put("6fi", String.format("%.7f", pc.f6));
+		
+		/*
+		int i = 0;
+				
+		for (Axis ax : m_axes){			
+			json.put(i + "fi", String.format("%.2f", ax.fi));
+			
+			//traj.controlPoints.get(traj.ptrPoint).f1
+		//	logger.info("\n\n--->ax: " + i + " fi: "+ ax.fi);
+						
+			i++;			
+		}
+			*/	
+		//String str = array.toString();
+		
+		//logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();
+		
+	}	
 	
+	public String trajsToJSON(){
+		
+		JSONObject json = new JSONObject();
+		json.put("num_trajs", String.format("%d", m_trajectories.size()));
+		
+		int i = 0;
+		
+		for (Trajectory tr : m_trajectories){			
+
+			//tr.trajToJSON(i + "_");
+			
+			String id = i + "_";
+			
+			json.put(id + "origin_x", String.format("%.7f", tr.origin.x));
+			json.put(id + "origin_y", String.format("%.7f", tr.origin.y));
+			json.put(id + "origin_z", String.format("%.7f", tr.origin.z));
+			json.put(id + "num_segments", String.format("%d", tr.segments.size()));
+			
+			int j = 0;
+			
+			for (Geometry3D seg : tr.segments) {
+				
+				String id2 = id + j + "_";
+				
+				if (seg instanceof Line3D) {
+					
+					json.put(id2 + "seg_type", String.format("line"));
+					
+					json.put(id2 + "p1_x", String.format("%.7f", ((Line3D) seg).p1.x));
+					json.put(id2 + "p1_y", String.format("%.7f", ((Line3D) seg).p1.y));
+					json.put(id2 + "p1_z", String.format("%.7f", ((Line3D) seg).p1.z));
+					
+					json.put(id2 + "p2_x", String.format("%.7f", ((Line3D) seg).p2.x));
+					json.put(id2 + "p2_y", String.format("%.7f", ((Line3D) seg).p2.y));
+					json.put(id2 + "p2_z", String.format("%.7f", ((Line3D) seg).p2.z));
+																				
+				}		
+				
+				j++;
+			}
+			
+			i++;			
+		}
+				
+		//String str = array.toString();
+		
+	//	logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();
+		
+	}	
+	
+	public String axesGeometryToJSON(int nAxis){
+		
+		JSONObject json = new JSONObject();
+		
+		Axis ax = m_axes.get(nAxis);
+		
+		json.put("num_faces", String.format("%d", ax.m_faces.size()));		
+						
+		int i = 0;						
+		
+		for (Face fc: ax.m_faces) {
+			
+			int nV = 0;
+			
+			for (Point3D vertex: fc.vertex) {
+				
+				json.put(i + "_v:" + nV + "fc_v_x", String.format("%.4f", vertex.x));
+				json.put(i + "_v:" + nV + "fc_v_y", String.format("%.4f", vertex.y));
+				json.put(i + "_v:" + nV + "fc_v_z", String.format("%.4f", vertex.z));
+				
+				nV ++;
+			}			
+			
+			i++;
+		}
+		
+	//	logger.info("\n\nSSSS:" + json.toString());
+		
+		return json.toString();		
+	}		
+	
+	public boolean loadGCode(String path) {
+		boolean res = false;
+		
+		Trajectory traj = m_GCodeLoader.Load(path);
+		
+		if (traj != null) {
+			traj.origin.set(this.getEP());
+			
+			//Interpolation points
+			traj.controlPointsRobotArray();
+						
+			m_trajectories.add(traj);
+			res = true;
+		}
+		
+		return res;
+	}
+	
+	class Run implements Runnable {
+
+		Trajectory traj;
+		//int ptr = 0;
+		
+		@Override
+		public void run() {
+			
+			traj = m_trajectories.get(0);
+			traj.ptrPoint = 0;
+			
+			if (m_period > 0) {
+				while (true) {
+				//	updateVal();
+					int nAx = 0;
+					for (Axis ax: m_axes) {
+						
+						if (nAx == 1) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f1;
+						} else if (nAx == 2) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f2;
+						} else if (nAx == 3) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f3;
+						} else if (nAx == 4) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f4;
+						} else if (nAx == 5) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f5;
+						} else if (nAx == 6) {
+							ax.fi = traj.controlPoints.get(traj.ptrPoint).f6;
+						}
+						
+						nAx ++;
+					}
+					
+					traj.ptrPoint ++;
+					
+					if (traj.ptrPoint >= traj.controlPoints.size()) {
+						traj.ptrPoint = 0;
+					}
+					
+					try {
+						Thread.sleep(m_period);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+	};	
 }

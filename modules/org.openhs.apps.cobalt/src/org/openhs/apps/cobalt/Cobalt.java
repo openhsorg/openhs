@@ -1,8 +1,11 @@
 package org.openhs.apps.cobalt;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 
 import org.openhs.apps.cobalt.math.CobaltModel;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -14,14 +17,20 @@ public class Cobalt {
 	private CobaltServlet m_cobaltServlet = null;
 	private CobaltModel m_cobaltModel = null;
 	
+	private Map<String, Object> m_properties = null;
+	
 	//initialize logger
 	private Logger logger = LoggerFactory.getLogger(Cobalt.class);	
 	
-	public void activate() {
-        logger.info("org.openhs.apps.cobalt: activate()");
+	public void activate(ComponentContext componentContext, Map<String, Object> properties) {
+        logger.info("org.openhs.apps.cobalt: activate()");        
         
+        //Model
         m_cobaltModel = new CobaltModel();
         m_cobaltServlet = new CobaltServlet (m_cobaltModel);	
+        
+        //Properties
+        updated(properties);        
         
 		/* Make adress references */										
         try {
@@ -36,7 +45,33 @@ public class Cobalt {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }          
+        
+
 	}
+	
+	public void updated(Map<String, Object> properties) {
+		m_properties = properties;
+
+		String c1x = (String) m_properties.get("stl1");
+		
+		String openhsHome = (String) m_properties.get("openhsHome");
+
+		//Put geometrical data into model		
+		for (int i = 1; i <= 6; i++) {
+			String stlPath = openhsHome + (String) m_properties.get("stl" + i);
+			this.m_cobaltModel.m_axes.get(i).loadGeometry(stlPath);
+			//System.out.println("\n\n\n\n\n ********************** ------> " + stlPath);
+		}
+		
+		//Load Trajectory
+		String gcodePath = openhsHome + (String) m_properties.get("gcode");
+		this.m_cobaltModel.loadGCode(gcodePath);
+		
+		//Run robot
+		this.m_cobaltModel.StartRun();
+		
+	//	System.out.println("\n\n\n\n\n ********************** ------> " + c1x + "***" + openhsHome);
+	}	
 	
 	public void deactivate() {
         logger.info("org.openhs.apps.cobalt: deactivate()");

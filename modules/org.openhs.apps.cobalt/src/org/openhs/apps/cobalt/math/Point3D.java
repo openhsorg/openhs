@@ -24,4 +24,15 @@ public class Point3D {
 		this.z = z;
 	}	
 
+	public void set (Point3D pt) {
+		this.x = pt.x;
+		this.y = pt.y;
+		this.z = pt.z;
+	}		
+	
+	public void setZero () {
+		this.x = 0.0;
+		this.y = 0.0;
+		this.z = 0.0;
+	}
 }

@@ -33,10 +33,65 @@ public class CobaltServlet extends HttpServlet {
     		
     		if (value.toString().equals("Cobalt_Axes")) {	
 
-    			logger.info("\n\n----------------> Gobalt_Axes....");
+    			//logger.info("\n\n----------------> Gobalt_Axes....");
     		
     			jsonString = this.m_cobaltModel.axesToJSON();
+    			
+    		} else if (value.toString().equals("Cobalt_Endpoint")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_Endpoint....");
+    			
+    			jsonString = this.m_cobaltModel.endpointToJSON();
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry1")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry1....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(1);
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry2")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry2....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(2);
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry3")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry3....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(3);
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry4")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry4....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(4);
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry5")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry5....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(5);
+    			
+    		} else if (value.toString().equals("Cobalt_AxesGeometry6")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesGeometry6....");
+    			
+    			jsonString = this.m_cobaltModel.axesGeometryToJSON(6);
+    			
+    		} else if (value.toString().equals("Cobalt_Trajectories")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_Trajectories....");
+    			
+    			jsonString = this.m_cobaltModel.trajsToJSON();
+    			
+    		} else if (value.toString().equals("Cobalt_AxesPositions")) {
+    			
+    			//logger.info("\n\n----------------> Cobalt_AxesPositions....");
+    			
+    			jsonString = this.m_cobaltModel.axesPositionsToJSON();
     		}
+    			
     		
     	    if (jsonString != null) {
     			response.setContentType("application/json");
@@ -101,7 +156,8 @@ public class CobaltServlet extends HttpServlet {
     	
     //	out.println("<div id='content' style='width:500px;height:500px'></div>");
 
-    	out.println("<script src='robotres/three/build/three.js'></script>");
+    	out.println("<script src='robotres/tt/bower_components/three.js/build/three.js'></script>");
+    	out.println("<script src='robotres/tt/bower_components/three.js/examples/js/controls/OrbitControls.js'></script>");
     	out.println("<script src='robotres/jquery-3.1.1.min.js'></script>");
     	out.println("<script src='robotres/RobotMath.js'></script>");	
     	out.println("<script src='robotres/CobaltModel.js'></script>");	
