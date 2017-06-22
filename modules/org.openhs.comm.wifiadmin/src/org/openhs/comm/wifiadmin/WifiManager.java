@@ -42,6 +42,7 @@ public class WifiManager {
                 .collect(Collectors.toList());             
 		
 		return iotDevList;
+		
 	}
 		
 	
@@ -124,9 +125,12 @@ public class WifiManager {
         String line = r.readLine();
         while(line != null)
         {        	
-        	//logger.info(line);        	        
+        	//logger.info(line);
         	        	
+        	devList.add(line);        	       	        	
+        	        	        	        	
         	line = r.readLine();
+
         }
         r.close();
         

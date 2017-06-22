@@ -27,7 +27,11 @@ public class WifiAdmin {
 		       while (m_runningIncoming) {
 		    	   
 		    	 logger.info("\n<------ WIFI ADMIN ------------>");
-        		 iot = m_wifiManager.GetIotWifiList("SWIM_");
+        		 iot = m_wifiManager.GetIotWifiList("Homie");
+        		 
+        		 if (iot.size() <= 0) {
+        			 logger.info(">> No IOT :(");
+        		 }
         		 
         		 for (String line: iot) {
         			 logger.info(">>" + line);
@@ -41,6 +45,7 @@ public class WifiAdmin {
         		 Thread.sleep(5000);
 		       }
 		     } catch (Exception e) { 
+		    	 System.out.println(e);
 		    	 logger.debug("MessageLoopOutcoming: No message for 20 sec");
 		     }
     	}
