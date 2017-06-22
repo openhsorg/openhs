@@ -177,7 +177,17 @@ public class Dataupdate implements IMessageHandler {
     		
     		//TODO select parser according channel and topic
     		ThingUpdater tu = null;
-    		IMessageParser parser = m_parsers.get(msg.getTopic());
+    		IMessageParser parser = null;
+    		
+        	String delims = "[/]+";
+        	String[] tokens = msg.getTopic().split(delims);
+        	//hack
+        	if (tokens[0].equals("devices")) {
+        		parser = m_parsers.get("Wmos");
+        	}
+        	else {
+        		parser = m_parsers.get(msg.getTopic());
+        	}
     		if (parser != null)
     			tu = parser.parseMessage(msg);
     		else

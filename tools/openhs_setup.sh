@@ -5,13 +5,13 @@
 # to convert a file:
 # dos2unix myscript.sh
 
-OPENHS="openhs_12222016"
+OPENHS="openhs"
 
 echo "********** OpenHS setupsetup of computer unit (Raspberry Pi )... **********"
 
 cd $HOME
 
-wget http://openhs.org/wordpress/wp-content/uploads/$OPENHS.zip
+wget https://github.com/openhsorg/openhs/releases/download/v1.0/$OPENHS.zip
 
 if [ -d "openhs" ]; then
   rm openhs -r

@@ -1476,9 +1476,11 @@ module KitchenInfoStation {
             
             //Logo
             if (door.supplier.valid) {
+                /*
                 this.m_imgLogo.setImage(door.supplier.logo);
                 this.m_imgLogo.size(x + 30, y + 20, 170, 60);
                 this.m_imgLogo.paint(ctx);
+                */
             }
             
             //Buttons
@@ -1516,6 +1518,7 @@ module KitchenInfoStation {
             textDesc.paintText(ctx, "30 days after service interval!!!"); 
             
             if (door.supplier.valid){
+                /*
                 textDesc.bold = true;
                 textDesc.fontColor = "black";
                 textDesc.size(x + 250, y + 10, 80, 40);
@@ -1535,6 +1538,7 @@ module KitchenInfoStation {
                 textDesc.move(90, 0);
                 textDesc.bold = false;
                 textDesc.paintText(ctx, "" + door.supplier.www);    
+                */
             }        
             
             ctx.restore();             
@@ -1591,8 +1595,8 @@ module KitchenInfoStation {
                 else this.serviceInfo = true;
                 
                 // Get data about supplier
-                var door: Door = <Door> this.getThing();                
-                door.supplier.getServerData();
+                //var door: Door = <Door> this.getThing();                
+               // door.supplier.getServerData();
                 
               //  window.alert("****" + this.serviceInfo);
                                             

@@ -57,16 +57,16 @@
 <thing name="Outside" sitePath="floors/Floor1/rooms/Room0" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room0.png"/>
 </thing>
-<thing devicePath="Mqtt/Wmos/192.168.1.26/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
+<thing devicePath="DummyService/dummy/0/Thermometer" name="Outside" sitePath="floors/Floor1/rooms/Room0/sensors/SensorOut" type="TemperatureSensor">
 <position xCoord="7.000" yCoord="13.000" zCoord="0.000"/>
 </thing>
 <thing name="Living room" sitePath="floors/Floor1/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room1.png"/>
 </thing>
-<thing devicePath="DummyService/dummy/0/Switch" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
+<thing devicePath="Mqtt/devices/cb5b29e0/relay" name="Kitchen_Switch" sitePath="floors/Floor1/rooms/Room1/sensors/Kitchen_Switch" type="Switch">
 <position xCoord="10.000" yCoord="8.000" zCoord="0.000"/>
 </thing>
-<thing devicePath="DummyService/dummy/0/Thermometer" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
+<thing devicePath="Mqtt/devices/c0a99ee0/temperature" name="LivingTemp" sitePath="floors/Floor1/rooms/Room1/sensors/Livin_Room" type="TemperatureSensor">
 <position xCoord="7.000" yCoord="5.000" zCoord="0.000"/>
 </thing>
 <thing name="Bathroom" sitePath="floors/Floor1/rooms/Room1/windows/Bathroom" type="Window">

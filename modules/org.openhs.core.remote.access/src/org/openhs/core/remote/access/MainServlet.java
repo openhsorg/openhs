@@ -35,7 +35,7 @@ public class MainServlet {
     private ImageServlet3 imageServlet3 = null;
     private ButtonServlet btnSrv = null;
     //private MeteoServlet meteoServlet = null;
-    private TimeServlet timeServlet = null;
+    //private TimeServlet timeServlet = null;
     private TimeServlet2 timeServlet2 = null;
     private TestServlet testServlet = null;
     private WelcomeServlet welcomeServlet = null;
@@ -64,7 +64,7 @@ public class MainServlet {
         imageServlet3 = new ImageServlet3();
         btnSrv = new ButtonServlet();
        // meteoServlet = new MeteoServlet(m_meteo);
-        timeServlet = new TimeServlet(m_siteService);
+        //timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
         welcomeServlet = new WelcomeServlet();
