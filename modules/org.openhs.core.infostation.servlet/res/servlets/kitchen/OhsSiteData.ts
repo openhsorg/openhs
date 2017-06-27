@@ -5,9 +5,13 @@
 module OhsSiteData {
     
     const servletUrl = 'kitchen';
+    const url = 'services/ohs_site_data';
     const switchId = 'SwitchS';
-    const contactSensorId = 'ContactSensor';
+    const idCcontactSensor = 'ContactSensor';
     const allDoorsId = 'AllDoors';
+    const idTimeDate = 'idTimeDate';
+    const idSiteData = 'idSiteData';
+    const idContactSensArr = 'idContactSensArr';
     
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -44,10 +48,18 @@ module OhsSiteData {
             this.m_windowArray = new Array<Door>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
                         
-            //this.slowTimerGetDataEvent(1000);
+            this.slowTimerGetDataEvent(1000);
             this.getServerData();            
             this.fastTimerGetDataEvent(250);
         }
+        
+        private slowTimerGetDataEvent(step : number) {
+            
+           this.getSlowData();
+                                               
+           window.clearTimeout(this.slowTimerGetData);
+           this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
+        }          
         
         private fastTimerGetDataEvent(step : number) {
             
@@ -55,11 +67,28 @@ module OhsSiteData {
                                                
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
-        }           
+        }       
+        
+        public getSlowData () {
+            
+            //Date & Time
+            var req: any = {                                
+                idGet : idTimeDate           
+            } 
+            
+            var data: string = getAjax(url, req); 
+            
+            if (data != null) {         
+            
+                this.dateString = data['date'];
+                this.timeString = data['time'];                
+            }               
+            
+       }
         
         public getFastData () {
             
-            this.getFastData_Time();
+          //  this.getFastData_Time();
             
             if (this.getCount == 0) {            
                 this.getFastData_TemperatureSensorArray();
@@ -100,7 +129,7 @@ module OhsSiteData {
 //                path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {         
             
@@ -112,11 +141,10 @@ module OhsSiteData {
         public getFastData_TemperatureSensorArray (){
                         
             var req: any = {                                
-                orderId : "TempSensors"
-//                path:   this.path                
+                orderId : "TempSensors"        
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {         
                 
@@ -133,10 +161,10 @@ module OhsSiteData {
         public getFastData_ContactArray (){
                         
             var req: any = {                                
-                orderId : "ContactSensors"         
+                idGet : idContactSensArr        
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
                 
@@ -156,7 +184,7 @@ module OhsSiteData {
                 orderId : "SwitchSensors"         
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {         
                             
@@ -178,7 +206,7 @@ module OhsSiteData {
                 orderId : "DoorArray"         
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {         
                 
@@ -198,7 +226,7 @@ module OhsSiteData {
                 orderId : "WindowArray"         
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             if (data != null) {         
                 
@@ -218,7 +246,7 @@ module OhsSiteData {
                 orderId : "RoomArray"         
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
 
             if (data != null) {         
                 var valid: boolean = JSON.parse(data['Array_validity']);
@@ -238,7 +266,7 @@ module OhsSiteData {
                 orderId : "FloorArray"         
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
 
             if (data != null) {         
                 var valid: boolean = JSON.parse(data['Array_validity']);
@@ -374,11 +402,10 @@ module OhsSiteData {
         public getServerData () {       
              
             var req: any = {                
-                orderId : "SiteData"
-//                path:   this.path                
+                idGet : idSiteData            
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {
                 
@@ -499,7 +526,7 @@ module OhsSiteData {
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             this.parseServerData(data);                    
         }        
@@ -538,7 +565,7 @@ module OhsSiteData {
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             this.parseServerData(data);                                 
         }              
@@ -575,7 +602,7 @@ module OhsSiteData {
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             this.parseServerData(data);                    
         }        
@@ -739,7 +766,7 @@ module OhsSiteData {
         public getServerData () {       
              
             var req: any = {                
-                orderId : contactSensorId,
+                orderId : idCcontactSensor,
                 path:   this.path                
             } 
             
@@ -810,7 +837,7 @@ module OhsSiteData {
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             this.parseServerData(data);                                            
         }       
@@ -880,7 +907,7 @@ module OhsSiteData {
                 path:   this.path                
             } 
             
-            var data: string = getAjax("kitchen", req); 
+            var data: string = getAjax(servletUrl, req); 
             
             this.parseServerData(data);
             /*

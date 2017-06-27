@@ -59,8 +59,8 @@ public class KitchenServlet extends HttpServlet {
 	    		String jsonString = null;
 
 	    	    if (value.toString().equals("SiteData")) {	    		
-	    			JSONObject json = getSiteDataToJSON();	
-	    			jsonString = json.toString();
+	    		//	JSONObject json = getSiteDataToJSON();	
+	    		//	jsonString = json.toString();
 	    			
 	    		} else if (value.toString().contains("TimeDate")) {
 	    			jsonString =  this.JSON_TimeDateToString();
@@ -69,7 +69,7 @@ public class KitchenServlet extends HttpServlet {
 	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(TemperatureSensor.class);
 		    				    		
 	    		} else if (value.toString().contains("ContactSensors")){ 	    			
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(ContactSensor.class);	    			
+	    			//jsonString =  this.m_infostation.JSON_ThingArrayToString(ContactSensor.class);	    			
 	    		
 	    		} else if (value.toString().contains("SwitchSensors")){ 	    			
 	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Switch.class);	    				    			
@@ -353,8 +353,8 @@ public class KitchenServlet extends HttpServlet {
 	    	
 			JSONObject json = new JSONObject();	
 			
-			json.put("time", time);
-			json.put("date", date);			
+			json.put("time", "--");
+			json.put("date", "--");			
 			
 			// Floors
 			try {

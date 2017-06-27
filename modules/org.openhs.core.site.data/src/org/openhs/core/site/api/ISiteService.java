@@ -12,6 +12,7 @@ import org.openhs.core.commons.Thing;
 
 import java.util.Set;
 
+import org.json.JSONObject;
 import org.openhs.core.commons.Humidity;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
@@ -51,5 +52,11 @@ public interface ISiteService {
 	public boolean isClosed (Thing m_thing) throws SiteException;
 	
 	public boolean isLocked (Thing m_thing) throws SiteException;
+	
+	public JSONObject getThingJSON (String path);
+
+	public JSONObject getThingArrayJSON (Class<?> t);
+	
+	public JSONObject getTimeDateJSON();
 
 }
