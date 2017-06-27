@@ -14,8 +14,13 @@ import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Window;
 import org.openhs.core.site.api.ISiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonSiteMapping {
+	
+	// initialize logger
+	private Logger logger = LoggerFactory.getLogger(JsonSiteMapping.class);	
 	
 	public ISiteService m_siteService = null;
 	
@@ -23,9 +28,7 @@ public class JsonSiteMapping {
 		m_siteService = ser;
 	}
 	
-	protected JSONObject getSiteDataToJSON() {	   
-		
-		
+	protected JSONObject getSiteDataToJSON() {	   			
 	    	
 		Date curDate = new Date();
 	    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
@@ -181,5 +184,13 @@ public class JsonSiteMapping {
 		
 		return json;
 	}	
+	
+	public void command (JSONObject json) {
+		
+		String msg = json.getString("idPost");
+		
+		logger.info("POST2....>> " + msg);
+		
+	}
 
 }

@@ -1,5 +1,6 @@
 /**
  * Module with data structure...
+ * This module communicates with: org.openhs.core.site.webservices
  */
 
 module OhsSiteData {
@@ -12,6 +13,12 @@ module OhsSiteData {
     const idTimeDate = 'idTimeDate';
     const idSiteData = 'idSiteData';
     const idContactSensArr = 'idContactSensArr';
+    const idTempSensArr = 'idTempSensArr';
+    const idSwitchArr = 'idSwitchArr';
+    const idDoorArr = 'idDoorArr';
+    const idWindowArr = 'idWindowArr';
+    const idRoomArr = 'idRoomArr';
+    const idFloorArr = 'idFloorArr';
     
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -72,23 +79,13 @@ module OhsSiteData {
         public getSlowData () {
             
             //Date & Time
-            var req: any = {                                
-                idGet : idTimeDate           
-            } 
-            
-            var data: string = getAjax(url, req); 
-            
-            if (data != null) {         
-            
-                this.dateString = data['date'];
-                this.timeString = data['time'];                
-            }               
+            this.get_DateTime();          
             
        }
         
         public getFastData () {
             
-          //  this.getFastData_Time();
+            this.get_DateTime();
             
             if (this.getCount == 0) {            
                 this.getFastData_TemperatureSensorArray();
@@ -122,29 +119,29 @@ module OhsSiteData {
          
         }
         
-        public getFastData_Time (){
+        public get_DateTime (){
                         
+            //Date & Time
             var req: any = {                                
-                orderId : "TimeDate"
-//                path:   this.path                
+                idGet : idTimeDate           
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
             
                 this.dateString = data['date'];
                 this.timeString = data['time'];                
-            }            
+            }               
         }        
         
         public getFastData_TemperatureSensorArray (){
                         
             var req: any = {                                
-                orderId : "TempSensors"        
+                idGet : idTempSensArr        
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
                 
@@ -181,10 +178,10 @@ module OhsSiteData {
         public getFastData_SwitchArray (){
                         
             var req: any = {                                
-                orderId : "SwitchSensors"         
+                idGet : idSwitchArr         
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
                             
@@ -203,10 +200,10 @@ module OhsSiteData {
         public getFastData_DoorArray (){
                         
             var req: any = {                                
-                orderId : "DoorArray"         
+                idGet : idDoorArr         
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
                 
@@ -223,10 +220,10 @@ module OhsSiteData {
         public getFastData_WindowArray (){
                         
             var req: any = {                                
-                orderId : "WindowArray"         
+                idGet : idWindowArr         
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
             
             if (data != null) {         
                 
@@ -243,10 +240,10 @@ module OhsSiteData {
         public getFastData_RoomArray (){
                         
             var req: any = {                                
-                orderId : "RoomArray"         
+                idGet : idRoomArr         
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
 
             if (data != null) {         
                 var valid: boolean = JSON.parse(data['Array_validity']);
@@ -263,10 +260,10 @@ module OhsSiteData {
         public getFastData_FloorArray (){
                         
             var req: any = {                                
-                orderId : "FloorArray"         
+                idGet : idFloorArr       
             } 
             
-            var data: string = getAjax(servletUrl, req); 
+            var data: string = getAjax(url, req); 
 
             if (data != null) {         
                 var valid: boolean = JSON.parse(data['Array_validity']);
@@ -471,7 +468,7 @@ module OhsSiteData {
                                
             }      
         }   
-
+/*
         public postServerCommand (cmd: string) {            
             var req: any = {
                 postId : 'GeneralCommand',
@@ -479,7 +476,16 @@ module OhsSiteData {
             }
             
             postAjax(servletUrl, req);
-        }           
+        }    
+        */
+        public postServerCommand (cmd: string) {            
+            var req: any = {
+                idPost : 'GeneralCommand'//,
+              //  command: cmd                
+            }
+        //    window.alert('aa');
+            postAjax(url, req);
+        }          
     }
     
     export class Thing {
@@ -682,6 +688,16 @@ module OhsSiteData {
             return this.stateInt;
         }
         
+        public toJSON() {
+
+            return JSON.stringify({
+                idPost : 'clicked',
+                path:   this.path,
+                command: 'click' 
+                });
+            
+        }        
+        /*
         public postServerClick () {            
             var req: any = {
                 postId : switchId,
@@ -689,8 +705,21 @@ module OhsSiteData {
                 command: 'click'                
             }
             
+        //    window.alert('aaaaa');
+            
             postAjax(servletUrl, req);
         }   
+        */
+        public postServerClick () {
+                                    
+            var js = JSON.stringify({
+            idPost : 'ccccclick...',
+            path:   this.path,
+            command: 'clickAAAAAA' 
+            });                        
+            
+            postAjax2(url, js);
+        }           
         
         public postServerSetOn () {            
             var req: any = {
@@ -698,7 +727,7 @@ module OhsSiteData {
                 path:   this.path,
                 command: 'on'                
             }
-            
+           //  window.alert('ss');
             postAjax(servletUrl, req);
         }           
         
@@ -978,6 +1007,26 @@ module OhsSiteData {
     
         return result;    
     }      
+    
+    function postAjax2(urlAdr: string, jsonDat: string) {
+       
+        var result = null;
+            
+            $.ajax({
+                async: false,
+                type: "POST",
+                contentType: 'application/json',
+                url: url,                
+                data: jsonDat,
+                dataType: "json",
+                success: function(response) {
+        
+                result = response;
+                                      
+             }});  
+    
+        return result;    
+    }       
         
     
 }
