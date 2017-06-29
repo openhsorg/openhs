@@ -41,17 +41,17 @@ echo "********** ---------- Update Ubuntu ... ---------- **********"
 apt-get update && apt-get upgrade -y -q
 
 # Java
-#apt-get install -y default-jre
-#apt-get install -y default-jdk
-#apt-cache search jdk
-sudo add-apt-repository ppa:openjdk-r/ppa
-sudo apt-get -y update
-sudo apt-get -y install openjdk-8-jdk
+apt-get update
+apt-get install default-jre
+apt-get install default-jdk
 
-# Dosbox
-apt-get -y update
-apt-get -y install dosbox
-copy_shortcut "dosbox.desktop"
+#Atom
+add-apt-repository ppa:webupd8team/atom
+sudo apt-get update
+sudo apt-get install atom
+
+#Chromium
+apt-get install chromium-browser
 
 # VLC
 add-apt-repository -y ppa:videolan/stable-daily
@@ -68,11 +68,6 @@ sudo apt-get -f -y install rar unrar
 #Gthumb
 apt-get -f -y install gthumb
 copy_shortcut "gthumb.desktop"
-
-#Filezilla
-apt-get -y update
-apt-get -f -y install filezilla
-copy_shortcut "filezilla.desktop"
 
 #Double commander
 add-apt-repository -y ppa:alexx2000/doublecmd
@@ -97,12 +92,6 @@ add-apt-repository -y ppa:webupd8team/tor-browser
 apt-get -y update
 apt-get -y install tor-browser
 
-#Chrome
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-apt-get -y update
-sudo apt-get -y install google-chrome-stable
-
 #GIT
 apt-get -y update
 apt-get -f -y install git-core
@@ -115,10 +104,6 @@ git config --list
 #apt-get -y install smartgit
 #copy_shortcut "smartgit.desktop"
 
-#Maven
-apt-get -y update
-apt-get -y install maven
-
 #Gparted
 apt-get -y update
 apt-get -f -y install gparted
@@ -128,42 +113,12 @@ add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner
 apt-get -y update
 apt-get -y install skype
 
-#JDownloader
-wget http://installer.jdownloader.org/JD2SilentSetup_x64.sh
-chmod +x JD2SilentSetup_x64.sh
-./JD2SilentSetup_x64.sh
-
 #Cryptsetup
 sudo apt-get -y update
 sudo apt-get -y install cryptsetup
 
 #Settings
-echo "********** ---------- Settings... ---------- **********"
-gconftool -s /apps/nm-applet/disable-disconnected-notifications --type=bool true
-gconftool -s /apps/nm-applet/disable-connected-notifications --type=bool true
 
-path=$HOME"/.local/share/applications/mimeapps.list"
-
-echo $path
-
-echo "[Default Applications]" > $path
-echo "text/html=google-chrome.desktop" >> $path
-echo "x-scheme-handler/http=google-chrome.desktop" >> $path
-echo "x-scheme-handler/https=google-chrome.desktop" >> $path
-echo "x-scheme-handler/about=google-chrome.desktop" >> $path
-echo "x-scheme-handler/unknown=google-chrome.desktop" >> $path
-echo "video/x-msvideo=vlc.desktop" >> $path
-echo "video/x-ms-wmv=vlc.desktop" >> $path
-echo "video/mpeg=vlc.desktop" >> $path
-echo "video/mp4=vlc.desktop" >> $path
-echo "video/flv=vlc.desktop" >> $path
-echo "video/mov=vlc.desktop" >> $path
-echo "application/vnd.rn-realmedia=vlc.desktop" >> $path
-echo "video/x-flv=vlc.desktop" >> $path
-echo "video/avi=vlc.desktop" >> $path
-echo "video/rm=vlc.desktop" >> $path
-echo "video/divx=vlc.desktop" >> $path
-echo "video/mpg=vlc.desktop" >> $path
 
 # cd /opt/openhab
 # sudo ./start.sh
