@@ -38,20 +38,20 @@ read -p "Press any key for continue..."
 
 echo "********** ---------- Update Ubuntu ... ---------- **********"
 
-apt-get update && apt-get upgrade -y -q
+apt-get -y update && apt-get upgrade -y -q
 
 # Java
 apt-get update
-apt-get install default-jre
-apt-get install default-jdk
+apt-get -y install default-jre
+apt-get -y install default-jdk
 
 #Atom
 add-apt-repository ppa:webupd8team/atom
-sudo apt-get update
-sudo apt-get install atom
+sudo apt-get -y update
+sudo apt-get -y install atom
 
 #Chromium
-apt-get install chromium-browser
+apt-get -y install chromium-browser
 
 # VLC
 add-apt-repository -y ppa:videolan/stable-daily
