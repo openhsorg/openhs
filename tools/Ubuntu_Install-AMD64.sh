@@ -53,11 +53,6 @@ sudo apt-get -y install atom
 #Chromium
 apt-get -y install chromium-browser
 
-# VLC
-add-apt-repository -y ppa:videolan/stable-daily
-apt-get -y update
-apt-get -f -y install vlc
-
 # unrar
 apt-get -f -y install unrar-free
 
