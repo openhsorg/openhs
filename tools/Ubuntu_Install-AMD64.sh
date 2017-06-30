@@ -45,6 +45,14 @@ apt-get update
 apt-get -y install default-jre
 apt-get -y install default-jdk
 
+#gcc
+apt-get -y update
+apt-get -f -y install gcc
+
+#cmake
+apt-get -y update
+sudo apt-get -f -y install cmake
+
 #Atom
 add-apt-repository ppa:webupd8team/atom
 sudo apt-get -y update
