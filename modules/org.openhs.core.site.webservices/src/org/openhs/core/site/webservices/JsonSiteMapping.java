@@ -11,7 +11,9 @@ import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Window;
 import org.openhs.core.site.api.ISiteService;
 import org.slf4j.Logger;
@@ -184,6 +186,148 @@ public class JsonSiteMapping {
 		
 		return json;
 	}	
+	
+	public JSONObject getThingJSON (String path) {
+	  	  
+	  	  JSONObject json = new JSONObject();
+	  	  
+	  	  Thing thing;
+			  
+			  try {
+				  thing = m_siteService.getThing(path);			  			  
+				  
+				  if (thing instanceof Floor) {
+					  Floor floor = (Floor) thing;		
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", floor.getName());
+					  json.put(path + "__imagePath", floor.imagePath);
+					  json.put(path + "__dim_x", String.format("%.3f",  floor.dim_x));
+					  json.put(path + "__dim_y", String.format("%.3f",  floor.dim_y));				  				
+					  
+				  } else if (thing instanceof Room) {
+					  Room room = (Room) thing;		
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", room.getName());
+					  json.put(path + "__imagePath", room.imagePath);
+					  
+				  } else if (thing instanceof Door) {
+					  Door door = (Door) thing;
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", door.getName());
+					  json.put(path + "__imagePath_open", door.imagePath_open);
+					  json.put(path + "__imagePath_close", door.imagePath_close);
+					  json.put(path + "__x", String.format("%.3f", door.x));
+					  json.put(path + "__y", String.format("%.3f", door.y));
+					  json.put(path + "__z", String.format("%.3f", door.z));	
+					  json.put(path + "__open", new Boolean(m_siteService.isClosed(door)));
+					  json.put(path + "__lock", new Boolean(m_siteService.isLocked(door)));
+					  json.put(path + "__supplierName", door.supplier);
+					  
+					//  System.out.println("Door path:" + door.getSitePath());
+					  
+				  } else if (thing instanceof Window) {
+					  Window window = (Window) thing;
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", window.getName());
+					  json.put(path + "__imagePath_open", window.imagePath_open);
+					  json.put(path + "__imagePath_close", window.imagePath_close);
+					  json.put(path + "__x", String.format("%.3f", window.x));
+					  json.put(path + "__y", String.format("%.3f", window.y));
+					  json.put(path + "__z", String.format("%.3f", window.z));	
+					  json.put(path + "__open", new Boolean(m_siteService.isClosed(window)));
+					  json.put(path + "__lock", new Boolean(m_siteService.isLocked(window)));					  
+					  
+				  } else if (thing instanceof TemperatureSensor) {
+					  TemperatureSensor sensor = (TemperatureSensor) thing;
+					  Temperature temp = sensor.getTemperature();
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", sensor.getName());
+					  json.put(path + "__temperature", String.format("%.2f",  temp.getCelsius()));
+					  json.put(path + "__x", String.format("%.3f", sensor.x));
+					  json.put(path + "__y", String.format("%.3f", sensor.y));
+					  json.put(path + "__z", String.format("%.3f", sensor.z));				  
+					  
+				  } else if (thing instanceof ContactSensor) {
+					  ContactSensor contact = (ContactSensor) thing;
+					  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", contact.getName());
+					  json.put(path + "__state_int", new Boolean(contact.getState()));
+					  json.put(path + "__x", String.format("%.3f", contact.x));
+					  json.put(path + "__y", String.format("%.3f", contact.y));
+					  json.put(path + "__z", String.format("%.3f", contact.z));				  
+					  
+				  } else if (thing instanceof Switch) {
+					  Switch swt = (Switch) thing;
+					  				  
+					  json.put(path + "__validity", new Boolean(true));
+					  json.put(path + "__name", swt.getName());
+					  json.put(path + "__state_int", new Integer(swt.getStateInt()));
+					  json.put(path + "__x", String.format("%.3f", swt.x));
+					  json.put(path + "__y", String.format("%.3f", swt.y));
+					  json.put(path + "__z", String.format("%.3f", swt.z));
+					  
+				  } else {
+					  json.put(path + "__validity", new Boolean(false));
+				  }
+				  
+			  } catch (SiteException e) {
+				  e.printStackTrace();
+				  json.put(path + "__validity", new Boolean(false));
+			  }    	  
+	  	  
+			  return json;
+	    }  	
+		
+		public JSONObject getThingArrayJSON (Class<?> t) {
+	  	  
+	  	  JSONObject json = new JSONObject();	
+	  	  
+	  	  Set<String> paths;
+	  	  try {
+	  		  paths =m_siteService.getThingPathSet(t);
+	  		  json.put("Array_validity", new Boolean(true));
+	  		  
+	  	  } catch (SiteException e) {    		  
+	  		  json.put("Array_validity", new Boolean(false));
+	  		  e.printStackTrace();    		  
+	  		  return json;
+	  	  }				
+	  	  
+	  	  for (String path: paths) {
+	  		  JSONObject jsonItem = getThingJSON (path);
+	  		  
+	  		  if (jsonItem.length() > 0){    			  
+				      for(String key : JSONObject.getNames(jsonItem))
+				      {
+				    	  json.put(key, jsonItem.get(key));
+				      }
+	  		 }	      		  
+	  	  }
+	  	  
+	  	  return json; 
+	    }	
+		
+	    public JSONObject getTimeDateJSON() {	    		    	
+		    Date curDate = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		    String time = format.format(curDate); 	 		  
+		    
+		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
+		    String date = format2.format(curDate); 	  	    	  		    		    	
+	    	
+			JSONObject json = new JSONObject();	
+			
+			json.put("time", time);
+			json.put("date", date);	
+			
+			return json;
+	    } 	
 	
 	public void command (JSONObject json) {
 		

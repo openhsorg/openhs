@@ -63,31 +63,31 @@ public class SiteWebServiceImpl implements ISiteWebService {
     	
     	if (id != null) {
     		if (id.equals(idTimeDate)) {
-        		return m_siteService.getTimeDateJSON().toString();
+        		return jsonMap.getTimeDateJSON().toString();
         		
         	} else if (id.equals(idSiteData)) {
         		return jsonMap.getSiteDataToJSON().toString();
         		
         	} else if (id.equals(idContactSensArr)){
-        		return m_siteService.getThingArrayJSON(ContactSensor.class).toString();
+        		return jsonMap.getThingArrayJSON(ContactSensor.class).toString();
         		
         	} else if (id.equals(idTempSensArr)){
-        		return m_siteService.getThingArrayJSON(TemperatureSensor.class).toString();
+        		return jsonMap.getThingArrayJSON(TemperatureSensor.class).toString();
         		
         	} else if (id.equals(idSwitchArr)){
-        		return m_siteService.getThingArrayJSON(Switch.class).toString();
+        		return jsonMap.getThingArrayJSON(Switch.class).toString();
         		
         	} else if (id.equals(idDoorArr)){
-        		return m_siteService.getThingArrayJSON(Door.class).toString();
+        		return jsonMap.getThingArrayJSON(Door.class).toString();
         		
         	} else if (id.equals(idWindowArr)){
-        		return m_siteService.getThingArrayJSON(Window.class).toString();
+        		return jsonMap.getThingArrayJSON(Window.class).toString();
         		
         	} else if (id.equals(idRoomArr)){
-        		return m_siteService.getThingArrayJSON(Room.class).toString();
+        		return jsonMap.getThingArrayJSON(Room.class).toString();
         		
         	} else if (id.equals(idFloorArr)){
-        		return m_siteService.getThingArrayJSON(Floor.class).toString();
+        		return jsonMap.getThingArrayJSON(Floor.class).toString();
         		
         	}
     	}
