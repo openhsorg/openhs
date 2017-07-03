@@ -19,6 +19,8 @@ module OhsSiteData {
     const idWindowArr = 'idWindowArr';
     const idRoomArr = 'idRoomArr';
     const idFloorArr = 'idFloorArr';
+    const idThingCommand = 'idThingCommand';
+    const idThingGet = 'idThingGet';
     
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -679,15 +681,60 @@ module OhsSiteData {
             
             this.stateInt = 0;
         }    
-        
-        public setState(state: number) {
-            this.stateInt = state;
-        }            
- 
+
         public getState () {
             return this.stateInt;
         }
         
+        protected getStateServer() {            
+            var js = JSON.stringify({
+            idGet : idThingGet,
+            path:   this.path,
+            command: 'state_int' 
+            });                        
+            
+            var ret = postAjax2(url, js);
+            
+            
+        }
+        
+        public click () {                        
+            if (this.getState() == 1 || this.getState() == 2) {
+                this.on();            
+            } else {
+                this.off();            
+            }            
+        }
+        
+        public on () {            
+            var js = JSON.stringify({
+            idPost : idThingCommand,
+            path:   this.path,
+            command: 'on' 
+            });               
+            
+            var ret = postAjax2(url, js);        
+            
+            if (JSON.parse(ret['return'])){
+                this.stateInt = parseInt(ret['state_int']);            
+            }            
+        }
+        
+        public off () {
+            var js = JSON.stringify({
+            idPost : idThingCommand,
+            path:   this.path,
+            command: 'off' 
+            });               
+            
+            var ret = postAjax2(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                this.stateInt = parseInt(ret['state_int']);            
+            }
+        }                    
+        
+        /*
         public toJSON() {
 
             return JSON.stringify({
@@ -696,7 +743,8 @@ module OhsSiteData {
                 command: 'click' 
                 });
             
-        }        
+        }      
+        */  
         /*
         public postServerClick () {            
             var req: any = {
@@ -710,6 +758,7 @@ module OhsSiteData {
             postAjax(servletUrl, req);
         }   
         */
+        
         public postServerClick () {
                                     
             var js = JSON.stringify({
@@ -740,7 +789,7 @@ module OhsSiteData {
             
             postAjax(servletUrl, req);
         }           
-        
+        /*
         public getServerData () {       
              
             var req: any = {                
@@ -753,7 +802,7 @@ module OhsSiteData {
             this.parseServerData(data);           
                                       
         }              
-        
+        */
         public parseServerData (data: any) {                   
             if (data != null) {
                  this.valid = JSON.parse(data[this.path + '__validity']);
@@ -1027,6 +1076,7 @@ module OhsSiteData {
     
         return result;    
     }       
+ 
         
     
 }

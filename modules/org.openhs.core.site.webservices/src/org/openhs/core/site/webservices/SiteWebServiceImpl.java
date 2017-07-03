@@ -42,6 +42,7 @@ public class SiteWebServiceImpl implements ISiteWebService {
 	final String idWindowArr = "idWindowArr";
 	final String idRoomArr = "idRoomArr";
 	final String idFloorArr = "idFloorArr";
+	final String idThingGet = "idThingGet";
 		
 	// initialize logger
 	private Logger logger = LoggerFactory.getLogger(SiteWebServiceImpl.class);
@@ -56,10 +57,14 @@ public class SiteWebServiceImpl implements ISiteWebService {
     // type "text/plain"
     @Produces("text/plain")
     public String getMessage(
-    		@QueryParam("idGet") String id) {
+    		@QueryParam("idGet") String id,
+    		@QueryParam("path") String path,
+    		@QueryParam("command") String command) {
         // Return some textual content
     	
-    	//logger.info("GET....>> " + id);
+    //	JSONObject json = new JSONObject(id);
+    	
+    	//logger.info("GET....>> " + id);    	    	
     	
     	if (id != null) {
     		if (id.equals(idTimeDate)) {
@@ -89,6 +94,9 @@ public class SiteWebServiceImpl implements ISiteWebService {
         	} else if (id.equals(idFloorArr)){
         		return jsonMap.getThingArrayJSON(Floor.class).toString();
         		
+        	} else if (id.equals(idThingGet)){
+        		return jsonMap.getThingArrayJSON(Floor.class).toString();
+        		
         	}
     	}
     	
@@ -99,22 +107,15 @@ public class SiteWebServiceImpl implements ISiteWebService {
  //   @Produces("text/plain")
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })    
-    public void postMessage(String id){
+    public String postMessage(String id){
     	
     	//logger.info("POST....>> " + id);
     	
     	JSONObject json = new JSONObject(id);	
     	
-    	jsonMap.command(json);
+    	JSONObject jsonR = jsonMap.command(json);
     	
-    //	String msg = json.getString("command");
-    	    	
-  //  	logger.info("POST2....>> " + msg);
-    	
-    	//JSONParser parse = new JSONParser();
-    	
-    	   	
-    	
+    	return jsonR.toString();    	
     	
     }
 	

@@ -18,15 +18,16 @@ public interface ISiteWebService {
     // The Java method will process HTTP GET requests
     @GET
     // The Java method will produce content identified by the MIME Media
-    // type "text/plain"
     @Produces("text/plain")
     public String getMessage(
-    		@QueryParam("idGet") String id);	
+    		@QueryParam("idGet") String id,
+    		@QueryParam("path") String path,
+    		@QueryParam("command") String command);	
     
     @POST
     //
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })  
-    public void postMessage(String id);
+    public String postMessage(String id);
 
 }

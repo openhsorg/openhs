@@ -1096,11 +1096,13 @@ module KitchenInfoStation {
                   
                 var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
                 
+                switchSensor.click();
+                   /*
                 switchSensor.postServerClick();           
                 switchSensor.getServerData();
                 switchSensor.getServerDataDelayed(100);
              //   this.paint();
-                   
+                   */
                 this.returnVal.nextScreen = null;    
                    return this.returnVal;                     
                    

@@ -329,12 +329,100 @@ public class JsonSiteMapping {
 			return json;
 	    } 	
 	
-	public void command (JSONObject json) {
+	public JSONObject command (JSONObject json) {
 		
-		String msg = json.getString("idPost");
+		String id = json.getString("idPost");
+		String path = json.getString("path");
+		String command = json.getString("command");
 		
-		logger.info("POST2....>> " + msg);
+		JSONObject jsonRet = new JSONObject ();
+		jsonRet.put("return", new Boolean(false));
+		
+		//logger.info("POST2....>> " + json.toString());
+		
+		if (id.equals("idThingCommand")) {
+			
+			Thing thing;
+			
+			try {
+				  thing = m_siteService.getThing(path);		
+				  
+				  //logger.info("PATH: " + path);
+				  
+				  if (thing instanceof Switch) {
+					  Switch swt = (Switch) thing;
+					  
+					  if (command.equals("on")) {
+						  swt.setState(true);
+						  
+					  } else if (command.equals("off")) {
+						  swt.setState(false);
+					  }
+
+					  jsonRet.put("return", new Boolean(true));
+					  jsonRet.put("state_int", new Integer(swt.getStateInt()));
+					  
+					  logger.info("Command to set:" );
+					  
+				  }
+				  
+			}catch (SiteException e) {
+				  e.printStackTrace();
+				  jsonRet.put("return", new Boolean(false));
+			  } 
+
+		}
+		
+		return jsonRet;
 		
 	}
+	
+	public JSONObject get (JSONObject json) {
+		
+		String id = json.getString("idPost");
+		String path = json.getString("path");
+		String command = json.getString("command");
+		
+		JSONObject jsonRet = new JSONObject ();
+		jsonRet.put("return", new Boolean(false));
+		
+		//logger.info("POST2....>> " + json.toString());
+		
+		if (id.equals("idThingCommand")) {
+			
+			Thing thing;
+			
+			try {
+				  thing = m_siteService.getThing(path);		
+				  
+				  //logger.info("PATH: " + path);
+				  
+				  if (thing instanceof Switch) {
+					  Switch swt = (Switch) thing;
+					  
+					  if (command.equals("on")) {
+						  swt.setState(true);
+						  
+					  } else if (command.equals("off")) {
+						  swt.setState(false);
+					  }
+
+					  jsonRet.put("return", new Boolean(true));
+					  jsonRet.put("state_int", new Integer(swt.getStateInt()));
+					  
+					  logger.info("Command to set:" );
+					  
+				  }
+				  
+			}catch (SiteException e) {
+				  e.printStackTrace();
+				  jsonRet.put("return", new Boolean(false));
+			  } 
+
+		}
+		
+		return jsonRet;
+		
+	}	
 
 }
