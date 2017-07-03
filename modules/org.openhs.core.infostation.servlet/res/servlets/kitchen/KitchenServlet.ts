@@ -246,7 +246,7 @@ module KitchenInfoStation {
                 
               //  window.alert("floor");
                 
-                // window.alert("path:   " + this.m_siteData.m_floorArray[0].getPath() + " dx: " + this.m_siteData.m_floorArray[0].dim_x + " dy: " + this.m_siteData.m_floorArray[0].dim_y);
+                // window.alert("path:   " + this.m_siteData.m_floorArray[0].getSitePath() + " dx: " + this.m_siteData.m_floorArray[0].dim_x + " dy: " + this.m_siteData.m_floorArray[0].dim_y);
                 
             } else if (retVal.nextScreen == SwitchScreen.Main) {
                 screen = this.m_screenMain;     
@@ -393,7 +393,7 @@ module KitchenInfoStation {
         }   
         
         public getThingPath () {
-            return this.thing.getPath();
+            return this.thing.getSitePath();
         }          
     }
     
@@ -982,7 +982,7 @@ module KitchenInfoStation {
                 if (thing instanceof Floor) {                    
                     
                     //Doors
-                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getPath());
+                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber3(m_doorArray.length, this.m_doorMarks, DoorMark);
                     
@@ -991,7 +991,7 @@ module KitchenInfoStation {
                     }
                     
                     //Windows
-                    var m_windowArray: Array<Window> = this.m_siteData.getFilteredThings(this.m_siteData.m_windowArray, thing.getPath());
+                    var m_windowArray: Array<Window> = this.m_siteData.getFilteredThings(this.m_siteData.m_windowArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber3(m_windowArray.length, this.m_windowMarks, WindowMark);
                     
@@ -1000,7 +1000,7 @@ module KitchenInfoStation {
                     }                    
                     
                     //Temperature Sensors
-                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getPath());
+                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber3(temps.length, this.m_tempMarks, TempMark);
                     
@@ -1009,7 +1009,7 @@ module KitchenInfoStation {
                     }                    
                     
                     //Switch
-                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getPath());
+                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getSitePath());
                     var m_switchArray2: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
                     var m_switchArray3: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
                     
@@ -1020,7 +1020,7 @@ module KitchenInfoStation {
                     }   
                     
                     //Contact Sensor
-                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getPath());
+                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getSitePath());
                     var m_contactSensorArray2: Array<ContactSensor> = this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
                     m_contactSensorArray2= this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
                     
@@ -1050,22 +1050,22 @@ module KitchenInfoStation {
          
             
             if (this.btnLock.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
-                this.m_siteData.getFastData_DoorArray();                                 
+      //          this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
+         //       this.m_siteData.getFastData_DoorArray();                                 
                 return null; 
                 
             } else if (this.btnUnLock.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
-                this.m_siteData.getFastData_DoorArray();                   
+           //     this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
+           //     this.m_siteData.getFastData_DoorArray();                   
                 return null;
                 
             } else if (this.btnSwitchOn.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllRoomSwitchesOn');  
-                this.m_siteData.getFastData_SwitchArray();                   
+          //      this.m_siteData.postServerCommand('AllRoomSwitchesOn');  
+          //      this.m_siteData.getFastData_SwitchArray();                   
                 return null;
             } else if (this.btnSwitchOff.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllRoomSwitchesOff'); 
-                this.m_siteData.getFastData_SwitchArray();                   
+           //     this.m_siteData.postServerCommand('AllRoomSwitchesOff'); 
+           //     this.m_siteData.getFastData_SwitchArray();                   
                 return null;
             }              
             
@@ -1079,7 +1079,7 @@ module KitchenInfoStation {
            for (let id in this.m_doorMarks) {
                if (this.m_doorMarks[id].isClicked(mx, my)) {
                    this.returnVal.nextScreen = SwitchScreen.DoorScreen;
-                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getPath();
+                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getSitePath();
                    }
            }
             
@@ -1113,7 +1113,7 @@ module KitchenInfoStation {
                if (this.m_contactSensorsMarks[id].isClicked(mx, my)) {
                    this.returnVal.nextScreen = null;
                    
-                   window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getPath());
+                   window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getSitePath());
                    
                    //this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
               }
@@ -1143,12 +1143,12 @@ module KitchenInfoStation {
                     
                     var floor: Floor = <Floor> thing;
                                     
-                    if (floor.dim_x != 0) {
-                        scaleX = this.imgFloor2.w / (floor.dim_x); 
+                    if (floor.dimX != 0) {
+                        scaleX = this.imgFloor2.w / (floor.dimX); 
                     }
                     
-                    if (floor.dim_y != 0) {
-                        scaleY = this.imgFloor2.h / (floor.dim_y); 
+                    if (floor.dimY != 0) {
+                        scaleY = this.imgFloor2.h / (floor.dimY); 
                     }                               
                 }
             }                    
@@ -1226,7 +1226,7 @@ module KitchenInfoStation {
             for (let id in this.m_doorMarks) {
                if (this.m_doorMarks[id].isClicked(mx, my)) {
                    this.returnVal.nextScreen = SwitchScreen.DoorScreen;
-                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getPath();
+                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getSitePath();
                    return this.returnVal;
                }
            }
@@ -1242,8 +1242,8 @@ module KitchenInfoStation {
                if (this.m_switchMarks[id].isClicked(mx, my)) {
                   
                 var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();                
-                switchSensor.postServerClick();
-                switchSensor.getServerData();
+         //       switchSensor.postServerClick();
+              //  switchSensor.getServerData();
                 
                 this.returnVal.nextScreen = null;    
                 return this.returnVal;                     
@@ -1282,7 +1282,7 @@ module KitchenInfoStation {
                     }                                        
                           */             
                     //Doors
-                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getPath());
+                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber2(m_doorArray.length, this.m_doorMarks, DoorMark, 0, 0, 0, 0);
                     
@@ -1291,7 +1291,7 @@ module KitchenInfoStation {
                     }
                     
                     //Temp marks
-                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getPath());
+                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber2(temps.length, this.m_tempMarks, TempMark, 0, 0, 0, 0);
                     
@@ -1300,7 +1300,7 @@ module KitchenInfoStation {
                     }                    
                     
                     //Switch marks
-                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getPath());
+                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getSitePath());
                     
                     this.m_graphics.setNumber2(m_switchArray.length, this.m_switchMarks, SwitchMark, 0, 0, 0, 0);
                     
@@ -1451,7 +1451,7 @@ module KitchenInfoStation {
             this.m_textDoorName.paintText(ctx, "Door name: " + door.name);    
             
             this.m_textDoorName.move(0, 20);
-            this.m_textDoorName.paintText(ctx, "Door site path: " + door.getPath());
+            this.m_textDoorName.paintText(ctx, "Door site path: " + door.getSitePath());
             
             //Settings
             this.btnSettings.size(width - 90, 30, 80, 80);
@@ -1563,7 +1563,7 @@ module KitchenInfoStation {
                 if (thing instanceof Door) {                  
                     
                     //Switch
-                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getPath());                  
+                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getSitePath());                  
                     
                     this.m_graphics.setNumber2(m_switchArray.length, this.m_switchMarks, SwitchLockMark, 0, 0, 0, 0);
                     
@@ -1572,7 +1572,7 @@ module KitchenInfoStation {
                     }   
                     
                     //Contact Sensor
-                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getPath());                    
+                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getSitePath());                    
                     
                     this.m_graphics.setNumber2(m_contactSensorArray.length, this.m_contactSensorsMarks, ContactSensorMark, 0, 0, 0, 0);
                     
@@ -1620,9 +1620,9 @@ module KitchenInfoStation {
                       
                     var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
                     
-                    switchSensor.postServerClick();                  
-                    switchSensor.getServerData();
-                    switchSensor.getServerDataDelayed(100);                  
+            //        switchSensor.postServerClick();                  
+             //       switchSensor.getServerData();
+             //       switchSensor.getServerDataDelayed(100);                  
                     
                     this.returnVal.nextScreen = null;                         
                        
@@ -1730,13 +1730,13 @@ module KitchenInfoStation {
         MouseUpHandler(mx: number, my: number) {  
         
             if (this.btnLock.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
-                this.m_siteData.getFastData_DoorArray();                                                
+     //           this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
+         //       this.m_siteData.getFastData_DoorArray();                                                
                 return null; 
                 
             }else if (this.btnUnLock.UpEvent(mx, my)){                
-                this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
-                this.m_siteData.getFastData_DoorArray();                    
+         //       this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
+          //      this.m_siteData.getFastData_DoorArray();                    
                 return null;
             }            
             
@@ -1753,7 +1753,7 @@ module KitchenInfoStation {
             
             if (viewDoorClicked != null) {
                 this.returnVal.nextScreen = SwitchScreen.DoorScreen;
-                this.returnVal.nextThingPath = viewDoorClicked.getThing().getPath();
+                this.returnVal.nextThingPath = viewDoorClicked.getThing().getSitePath();
             }                                
             
             return this.returnVal;

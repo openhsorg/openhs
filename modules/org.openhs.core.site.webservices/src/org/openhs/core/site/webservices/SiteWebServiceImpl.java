@@ -54,23 +54,31 @@ public class SiteWebServiceImpl implements ISiteWebService {
 	// The Java method will process HTTP GET requests
     @GET
     // The Java method will produce content identified by the MIME Media
-    // type "text/plain"
     @Produces("text/plain")
     public String getMessage(
     		@QueryParam("idGet") String id,
     		@QueryParam("path") String path,
     		@QueryParam("command") String command) {
         // Return some textual content
+   // 	JSONObject jsonRet = new JSONObject();
+ //   	jsonRet.put("return", new Boolean(true));
     	
-    //	JSONObject json = new JSONObject(id);
+    //	logger.info("GET....>> " + js);  
     	
-    	//logger.info("GET....>> " + id);    	    	
+    //	JSONObject json = new JSONObject(js);
+   // 	String id = json.getString("idGet");
+    	/*
+    	
+    	logger.info("GET....>> " + js);    	    	
     	
     	if (id != null) {
+    		
     		if (id.equals(idTimeDate)) {
         		return jsonMap.getTimeDateJSON().toString();
         		
-        	} else if (id.equals(idSiteData)) {
+        	}
+  
+    		else if (id.equals(idSiteData)) {
         		return jsonMap.getSiteDataToJSON().toString();
         		
         	} else if (id.equals(idContactSensArr)){
@@ -98,8 +106,9 @@ public class SiteWebServiceImpl implements ISiteWebService {
         		return jsonMap.getThingArrayJSON(Floor.class).toString();
         		
         	}
+    		
     	}
-    	
+    	*/
         return "Hello ohs_site_data web service!!!";
     }	      
     
@@ -113,9 +122,9 @@ public class SiteWebServiceImpl implements ISiteWebService {
     	
     	JSONObject json = new JSONObject(id);	
     	
-    	JSONObject jsonR = jsonMap.command(json);
+    	//JSONObject jsonR = jsonMap.command(json);
     	
-    	return jsonR.toString();    	
+    	return jsonMap.command(json).toString();    	
     	
     }
 	
