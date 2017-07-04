@@ -122,10 +122,6 @@
 <thing devicePath="DummyService/dummy/4/Switch" name="WC Switch" sitePath="floors/Floor1/rooms/Room2/sensors/Kid2_Switch" type="Switch">
 <position xCoord="20.000" yCoord="8.000" zCoord="0.000"/>
 </thing>
-<thing name="My second floor" sitePath="floors/Floor2" type="Floor">
-<images imageBkg="no path"/>
-<dimensions dim_x="22.450" dim_y="13.700"/>
-</thing>
 <thing name="Kid2" sitePath="floors/Floor2/rooms/Room1" type="Room">
 <images imageBkg="/infores/servlets/kitchen/room3.png"/>
 </thing>

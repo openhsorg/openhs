@@ -302,8 +302,8 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("<head>");
 	    	out.println("<meta http-equiv='content-type' content='text/html; charset=UTF8'>");
 
-	    	out.println("<script src='infores/servlets/kitchen/jquery-3.1.1.min.js'></script>");
-	    	out.println("<link href='infores/servlets/kitchen/styles.css' rel='stylesheet' type='text/css'>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsLibrary/jquery-3.1.1.min.js'></script>");
+	    	out.println("<link href='infores/servlets/kitchen/OhsLibrary/styles.css' rel='stylesheet' type='text/css'>");
 	    	    	
 	    	out.print("</head>");    		    	
 	    	out.println("<body>");
@@ -313,9 +313,9 @@ public class KitchenServlet extends HttpServlet {
 	    	out.println("Error: Your browser does not support the HTML canvas element.");
 	    	out.println("</canvas>");
 	    	
-	    	out.println("<script src='infores/servlets/kitchen/OhsSiteData.js' charset='utf-8'></script>");
-	    	out.println("<script src='infores/servlets/kitchen/OhsWeatherData.js' charset='utf-8'></script>");
-	    	out.println("<script src='infores/servlets/kitchen/OhsCanvasGraphics.js' charset='utf-8'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsLibrary/OhsWeatherData.js' charset='utf-8'></script>");
+	    	out.println("<script src='infores/servlets/kitchen/OhsLibrary/OhsCanvasGraphics.js' charset='utf-8'></script>");
 	    	out.println("<script src='infores/servlets/kitchen/KitchenServlet.js' charset='utf-8'></script>");
 	    	
 	    	out.println("<script type='text/javascript'>");

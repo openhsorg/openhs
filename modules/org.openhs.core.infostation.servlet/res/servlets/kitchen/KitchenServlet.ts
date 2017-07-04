@@ -3,10 +3,10 @@
 //
 // Home page: ***
 
-/// <reference path="jquery.d.ts" />
-/// <reference path='OhsCanvasGraphics.ts'/>
-/// <reference path='OhsWeatherData.ts'/>
-/// <reference path='OhsSiteData.ts'/>
+/// <reference path="OhsLibrary/jquery.d.ts" />
+/// <reference path='OhsLibrary/OhsCanvasGraphics.ts'/>
+/// <reference path='OhsLibrary/OhsWeatherData.ts'/>
+/// <reference path='OhsLibrary/OhsSiteData.ts'/>
 
 module KitchenInfoStation {        
 

@@ -1,5 +1,7 @@
 /**
  * Module with data structure...
+ * Author: Michal Valny
+ * Date: July-4-2017
  * This module communicates with: org.openhs.core.site.webservices
  */
 
@@ -94,7 +96,7 @@ module OhsSiteData {
             this.get_DateTime();  
             
             //Switch 
-            this.getObjectArray(idSwitchArr);            
+        //    this.getObjectArray(idSwitchArr);            
        }
         
         public getSlowData () {
@@ -129,8 +131,7 @@ module OhsSiteData {
                 
             } else {
                  this.getCount ++;                    
-            }
-         
+            }         
         }
         
         public get_DateTime (){
@@ -139,13 +140,16 @@ module OhsSiteData {
             idPost : idTimeDate
             });               
             
-            var ret = postAjax(url, js);        
+            var ret = postAjax(url, js);    
             
-            if (JSON.parse(ret['return'])){
-               // this.stateInt = parseInt(ret['state_int']);  
-                this.dateString = ret['date'];
-                this.timeString = ret['time'];             
-            } 
+            if (ret != null) {
+                
+                if (JSON.parse(ret['return'])){
+                   // this.stateInt = parseInt(ret['state_int']);  
+                    this.dateString = ret['date'];
+                    this.timeString = ret['time'];             
+                } 
+            }
         }        
  
         public getObjectArray (idObjArray:  string){
@@ -352,6 +356,7 @@ module OhsSiteData {
             return null;
         }
         
+        /*
         public getServerData () {       
              
             var req = JSON.stringify({                
@@ -424,6 +429,7 @@ module OhsSiteData {
                                
             }      
         }   
+        */
      
     }
     
@@ -574,8 +580,7 @@ module OhsSiteData {
             }
         }
     
-        public update () {
-        
+        public update () {       
             var js = JSON.stringify({
                 idPost : idThingCommand,
                 path:   this.sitePath,
@@ -608,34 +613,7 @@ module OhsSiteData {
  
         public getState () {
             return this.state;
-        }            
-        /*
-        public getServerData () {       
-             
-            var req = JSON.stringify({               
-                orderId : idCcontactSensor,
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData (data); 
-                    
-        }
-        
-        public parseServerData (data: any) {                   
-            if (data != null) {
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-                
-                if (this.valid){
-                    this.state = JSON.parse(data[this.sitePath + '__state_int']);
-                    this.x = parseFloat(data[this.sitePath + '__x']);
-                    this.y = parseFloat(data[this.sitePath + '__y']);
-                  //  this.z = parseInt(data[this.sitePath + '__z']);
-                }                                
-            }                            
-        }        
-        */
+        }                   
     }       
     
     export class Door extends Thing {
@@ -690,38 +668,15 @@ module OhsSiteData {
             return 2;                                    
         }        
     }    
-    
-    /*
-    function getAjax(urlAdr: string, dataIn: string) {
-       
-        var result = null;
-    
-        $.ajaxSetup ({
-            // Disable caching of AJAX responses
-            cache: false
-        });
-            
-           window.alert(dataIn);
-        
-        $.ajax({
-            async: false,
-            type: "GET",
-            contentType: 'application/json',
-            url: urlAdr,
-            data: dataIn,
-            dataType: "json",
-            success: function(response) {
-        
-            result = response;
-                                      
-        }});
-    
-        return result;    
-    }     
-*/
+
     function postAjax(urlAdr: string, jsonDat: string) {
        
         var result = null;
+        
+        $.ajaxSetup ({
+                    // Disable caching of AJAX responses
+                    cache: false
+                });        
             
             $.ajax({
                 async: false,

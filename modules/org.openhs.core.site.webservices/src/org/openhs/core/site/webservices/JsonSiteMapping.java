@@ -177,6 +177,8 @@ public class JsonSiteMapping {
 		json.put("time", time);
 		json.put("date", date);	
 		
+		//logger.info("TIME, DATE....>> " + json.toString());
+		
 	//	return json;
     } 		    
 	
@@ -245,7 +247,7 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(false));				
 			}	
 			
-			logger.info("JsonXX: " + jsonRet.toString());	
+//			logger.info("JsonXX: " + jsonRet.toString());	
 			
 		} else if (id.equals("idRoomArr")) {
 			
@@ -327,6 +329,8 @@ public class JsonSiteMapping {
 			
 			//logger.info("JsonXX: " + jsonRet.toString());			
 		}
+		
+		//logger.info("JsonXX: " + jsonRet.toString());
 
 		return jsonRet;		
 	}			
