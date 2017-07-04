@@ -13,6 +13,10 @@ import java.util.TreeMap;
 public class Room extends Thing {
 	
 	public String imagePath = "no path";
+	
+	public double x = 0.0;
+	public double y = 0.0;
+	public double z = 0.0;
 
 
 }

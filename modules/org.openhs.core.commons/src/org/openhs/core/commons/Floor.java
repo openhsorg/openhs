@@ -10,6 +10,10 @@ public class Floor extends Thing {
 	public double dim_x = 0.000f; 
 	public double dim_y = 0.000f;	
 	
+	public double x = 0.0;
+	public double y = 0.0;
+	public double z = 0.0;	
+	
 	public void setDimensions(float dimx, float dimy){		
 		this.dim_x = dimx;
 		this.dim_y = dimy;

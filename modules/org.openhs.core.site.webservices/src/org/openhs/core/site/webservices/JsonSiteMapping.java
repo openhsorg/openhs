@@ -34,322 +34,151 @@ public class JsonSiteMapping {
 		m_siteService = ser;
 	}
 	
-	protected void getSiteDataToJSON(JSONObject json) {	   			
-	    	
-		Date curDate = new Date();
-	    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+		public JSONObject getThingToJSON (Thing thing) {
+			
+			//These strings must reflect to TypeScript definitions of strings
+			final String keyName = "name";
+			final String keySitePath = "sitePath";
+			final String keyImagePath = "imagePath";
+			final String keyPosX = "posX";
+			final String keyPosY = "posY";
+			final String keyPosZ = "posZ";
+			final String keyDimX = "dimX";
+			final String keyDimY = "dimY";
+			final String keyStateInt = "stateInt";
+			final String keyTemperature = "temperature";
+			final String keyValid = "valid";
+			
+			JSONObject json = new JSONObject();
+			
+			try {
+				
+				if (thing instanceof Floor) {
+					Floor floor = (Floor) thing;	
+					
+					json.put(keyName, floor.getName());
+					json.put(keySitePath, floor.getSitePath());
+				//	json.put(keyImagePath, floor.getSitePath());
+					json.put(keyPosX, floor.x);
+					json.put(keyPosY, floor.y);
+					json.put(keyPosZ, floor.z);
+					json.put(keyDimX, floor.dim_x);
+					json.put(keyDimY, floor.dim_y);
+					json.put(keyValid, new Boolean(true));
+
+				} else if (thing instanceof Room) {
+					Room room = (Room) thing;		
+					
+					json.put(keyName, room.getName());
+					json.put(keySitePath, room.getSitePath());
+					json.put(keyPosX, room.x);
+					json.put(keyPosY, room.y);
+					json.put(keyPosZ, room.z);	
+					json.put(keyValid, new Boolean(true));
+				  
+				} else if (thing instanceof Door) {
+					Door door = (Door) thing;
+					
+					json.put(keyName, door.getName());
+					json.put(keySitePath, door.getSitePath());
+					json.put(keyPosX, door.x);
+					json.put(keyPosY, door.y);
+					json.put(keyPosZ, door.z);	
+					json.put(keyValid, new Boolean(true));
+	  
+				} else if (thing instanceof Window) {
+					Window window = (Window) thing;
+					
+					json.put(keyName, window.getName());
+					json.put(keySitePath, window.getSitePath());
+					json.put(keyPosX, window.x);
+					json.put(keyPosY, window.y);
+					json.put(keyPosZ, window.z);	
+					json.put(keyValid, new Boolean(true));
+
+				} else if (thing instanceof TemperatureSensor) {
+										
+					TemperatureSensor ts = (TemperatureSensor) thing;
+					
+					json.put(keyName, ts.getName());
+					json.put(keySitePath, ts.getSitePath());
+					json.put(keyPosX, ts.x);
+					json.put(keyPosY, ts.y);
+					json.put(keyPosZ, ts.z);
+					json.put(keyTemperature, ts.getTemperature().getCelsius());	
+					json.put(keyValid, new Boolean(true));
+				  
+				} else if (thing instanceof ContactSensor) {
+					ContactSensor contact = (ContactSensor) thing;
+					
+					json.put(keyName, contact.getName());
+					json.put(keySitePath, contact.getSitePath());
+					json.put(keyPosX, contact.x);
+					json.put(keyPosY, contact.y);
+					json.put(keyPosZ, contact.z);	
+					json.put(keyValid, new Boolean(true));
+
+				} else if (thing instanceof Switch) {
+					Switch swt = (Switch) thing;
+					
+					json.put(keyName, swt.getName());
+					json.put(keySitePath, swt.getSitePath());
+					json.put(keyPosX, swt.x);
+					json.put(keyPosY, swt.y);
+					json.put(keyPosZ, swt.z);
+					json.put(keyStateInt, swt.getStateInt());
+					json.put(keyValid, new Boolean(true));
+				  
+				} else {
+					//  json.put(path + "__validity", new Boolean(false));
+				}
+			  
+			} catch (Exception e) {
+				e.printStackTrace();
+				//  json.put(path + "__validity", new Boolean(false));
+			}    	  
+  	  
+			return json;
+	    }  	
+		
+		public JSONArray getThingArrayToJSON (Class<?> t) {
+			
+			JSONArray jsonArray = new JSONArray();
+			Set<Thing> set;
+			try {
+				set = m_siteService.getThingSet(t);
+				
+				for (Thing item: set) {
+					JSONObject obj = getThingToJSON(item);
+													
+					jsonArray.put(obj);
+				}
+				
+			} catch (SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				return null;
+			}						
+
+			return jsonArray;						
+		}
+	
+    public void getTimeDateJSON(JSONObject json) {	    		    	
+	    Date curDate = new Date();
+	    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 	    String time = format.format(curDate); 	 		  
 	    
 	    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
 	    String date = format2.format(curDate); 	  	    	  		    		    	
-		
+    	
 		//JSONObject json = new JSONObject();	
 		
-		json.put("time", "--");
-		json.put("date", "--");			
-		
-		// Floors
-		try {
-	
-			Set<String> floorPaths = m_siteService.getThingPathSet(Floor.class);						
-	
-			json.put("number_floors", String.format("%d", floorPaths.size()));
-			
-			int i = 0;
-			for (String item: floorPaths) {
-	
-				String id = "floorPath_" + i;					
-				json.put(id, item);
-				
-				i ++;
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_floors", String.format("0"));								
-			e.printStackTrace();
-		}	
-		
-		// Rooms			
-		try {
-	
-			Set<String> roomsPaths = m_siteService.getThingPathSet(Room.class);						
-	
-			json.put("number_rooms", String.format("%d", roomsPaths.size()));
-			
-			int i = 0;
-			for (String item: roomsPaths) {	
-				String id = "roomPath_" + i;					
-				json.put(id, item);
-				
-				i++;
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_rooms", String.format("0"));								
-			e.printStackTrace();
-		}		
-		
-		// TemperatureSensors			
-		try {
-	
-			Set<String> tempSensorsPaths = m_siteService.getThingPathSet(TemperatureSensor.class);						
-	
-			json.put("number_tempsensors", String.format("%d", tempSensorsPaths.size()));
-	
-			int i = 0;
-			for (String item: tempSensorsPaths) {													
-				json.put("tempSensorPath_" + i, item);
-	
-				i ++;
-				//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);					
-			}				
-		} catch (SiteException e) {
-			json.put("number_tempsensors", String.format("0"));								
-			e.printStackTrace();
-		}		
-					
-		// Switch			
-		try {
-			Set<String> switchPaths = m_siteService.getThingPathSet(Switch.class);						
-			json.put("number_switches", String.format("%d", switchPaths.size()));				
-							
-			int i = 0;
-			for (String item: switchPaths) {
-												
-				json.put("switchPath_" + i, item);
-	
-				i ++;
-				//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
-				
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_switches", String.format("0"));								
-			e.printStackTrace();
-		}
-		
-		// ContactSensor			
-		try {
-			Set<String> contactSensorPaths = m_siteService.getThingPathSet(ContactSensor.class);						
-			json.put("number_contactSensors", String.format("%d", contactSensorPaths.size()));				
-							
-			int i = 0;
-			for (String item: contactSensorPaths) {
-												
-				json.put("contactSensorPath_" + i, item);
-	
-				i ++;
-				//System.out.println("\n\n\n\n ------> CLOUD  <-----------------: " + i);
-				
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_contactSensors", String.format("0"));								
-			e.printStackTrace();
-		}
-	
-		// Doors			
-		try {
-			Set<String> doorsPaths = m_siteService.getThingPathSet(Door.class);						
-			json.put("number_doors", String.format("%d", doorsPaths.size()));
-			
-			int i = 0;
-			for (String item: doorsPaths) {	
-				String id = "doorPath_" + i;					
-				json.put(id, item);
-				
-				i++;
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_doors", String.format("0"));								
-			e.printStackTrace();
-		}	
-		
-		// Windows			
-		try {
-			Set<String> windowsPaths = m_siteService.getThingPathSet(Window.class);						
-			json.put("number_windows", String.format("%d", windowsPaths.size()));
-			
-			int i = 0;
-			for (String item: windowsPaths) {	
-				String id = "windowPath_" + i;					
-				json.put(id, item);
-				
-				i++;
-			}
-			
-		} catch (SiteException e) {
-			json.put("number_windows", String.format("0"));								
-			e.printStackTrace();
-		}				
-		
-		//System.out.println("\nCLOUD: " + wth.getWeatherSymbol() + " cloudPerc: " + m_meteo.getCloudsForecast());
-		
-				
+		json.put("time", time);
+		json.put("date", date);	
 		
 	//	return json;
-	}	
-	
-	public JSONObject getThingJSON (String path) {
-	  	  
-	  	  JSONObject json = new JSONObject();
-	  	  
-	  	  Thing thing;
-			  
-			  try {
-				  thing = m_siteService.getThing(path);			  			  
-				  
-				  if (thing instanceof Floor) {
-					  Floor floor = (Floor) thing;		
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", floor.getName());
-					  json.put(path + "__imagePath", floor.imagePath);
-					  json.put(path + "__dim_x", String.format("%.3f",  floor.dim_x));
-					  json.put(path + "__dim_y", String.format("%.3f",  floor.dim_y));				  				
-					  
-				  } else if (thing instanceof Room) {
-					  Room room = (Room) thing;		
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", room.getName());
-					  json.put(path + "__imagePath", room.imagePath);
-					  
-				  } else if (thing instanceof Door) {
-					  Door door = (Door) thing;
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", door.getName());
-					  json.put(path + "__imagePath_open", door.imagePath_open);
-					  json.put(path + "__imagePath_close", door.imagePath_close);
-					  json.put(path + "__x", String.format("%.3f", door.x));
-					  json.put(path + "__y", String.format("%.3f", door.y));
-					  json.put(path + "__z", String.format("%.3f", door.z));	
-					  json.put(path + "__open", new Boolean(m_siteService.isClosed(door)));
-					  json.put(path + "__lock", new Boolean(m_siteService.isLocked(door)));
-					  json.put(path + "__supplierName", door.supplier);
-					  
-					//  System.out.println("Door path:" + door.getSitePath());
-					  
-				  } else if (thing instanceof Window) {
-					  Window window = (Window) thing;
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", window.getName());
-					  json.put(path + "__imagePath_open", window.imagePath_open);
-					  json.put(path + "__imagePath_close", window.imagePath_close);
-					  json.put(path + "__x", String.format("%.3f", window.x));
-					  json.put(path + "__y", String.format("%.3f", window.y));
-					  json.put(path + "__z", String.format("%.3f", window.z));	
-					  json.put(path + "__open", new Boolean(m_siteService.isClosed(window)));
-					  json.put(path + "__lock", new Boolean(m_siteService.isLocked(window)));					  
-					  
-				  } else if (thing instanceof TemperatureSensor) {
-					  /*
-					  TemperatureSensor sensor = (TemperatureSensor) thing;
-					  Temperature temp = sensor.getTemperature();
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", sensor.getName());
-					  json.put(path + "__temperature", String.format("%.2f",  temp.getCelsius()));
-					  json.put(path + "__x", String.format("%.3f", sensor.x));
-					  json.put(path + "__y", String.format("%.3f", sensor.y));
-					  json.put(path + "__z", String.format("%.3f", sensor.z));
-					  */
-					  
-				  } else if (thing instanceof ContactSensor) {
-					  ContactSensor contact = (ContactSensor) thing;
-					  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", contact.getName());
-					  json.put(path + "__state_int", new Boolean(contact.getState()));
-					  json.put(path + "__x", String.format("%.3f", contact.x));
-					  json.put(path + "__y", String.format("%.3f", contact.y));
-					  json.put(path + "__z", String.format("%.3f", contact.z));				  
-					  
-				  } else if (thing instanceof Switch) {
-					  Switch swt = (Switch) thing;
-					  				  
-					  json.put(path + "__validity", new Boolean(true));
-					  json.put(path + "__name", swt.getName());
-					  json.put(path + "__state_int", new Integer(swt.retrieveStateInt()));
-					  json.put(path + "__x", String.format("%.3f", swt.x));
-					  json.put(path + "__y", String.format("%.3f", swt.y));
-					  json.put(path + "__z", String.format("%.3f", swt.z));
-					  
-				  } else {
-					  json.put(path + "__validity", new Boolean(false));
-				  }
-				  
-			  } catch (SiteException e) {
-				  e.printStackTrace();
-				  json.put(path + "__validity", new Boolean(false));
-			  }    	  
-	  	  
-			  return json;
-	    }  	
-		
-		public JSONObject getThingArrayJSON (Class<?> t) {
-	  	  
-	  	  JSONObject json = new JSONObject();	
-	  	  
-	  	  Set<String> paths;
-	  	  try {
-	  		  paths =m_siteService.getThingPathSet(t);
-	  		  json.put("Array_validity", new Boolean(true));
-	  		  
-	  	  } catch (SiteException e) {    		  
-	  		  json.put("Array_validity", new Boolean(false));
-	  		  e.printStackTrace();    		  
-	  		  return json;
-	  	  }				
-	  	  
-	  	  for (String path: paths) {
-	  		  JSONObject jsonItem = getThingJSON (path);
-	  		  
-	  		  if (jsonItem.length() > 0){    			  
-				      for(String key : JSONObject.getNames(jsonItem))
-				      {
-				    	  json.put(key, jsonItem.get(key));
-				      }
-	  		 }	      		  
-	  	  }
-	  	  
-	  	  return json; 
-	    }	
-		/*
-	    public JSONObject getTimeDateJSON() {	    		    	
-		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-		    String time = format.format(curDate); 	 		  
-		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
-		    String date = format2.format(curDate); 	  	    	  		    		    	
-	    	
-			JSONObject json = new JSONObject();	
-			
-			json.put("time", time);
-			json.put("date", date);	
-			
-			return json;
-	    } 	
-	    */
-	    public void getTimeDateJSON(JSONObject json) {	    		    	
-		    Date curDate = new Date();
-		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-		    String time = format.format(curDate); 	 		  
-		    
-		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
-		    String date = format2.format(curDate); 	  	    	  		    		    	
-	    	
-			//JSONObject json = new JSONObject();	
-			
-			json.put("time", time);
-			json.put("date", date);	
-			
-		//	return json;
-	    } 		    
+    } 		    
 	
 	public JSONObject command (JSONObject json) {
 		
@@ -380,10 +209,13 @@ public class JsonSiteMapping {
 						  
 					  } else if (command.equals("off")) {
 						  swt.setState(false);
+						  
+					  } else if (command.equals("update")){
+						  
 					  }
 
 					  jsonRet.put("return", new Boolean(true));
-					  jsonRet.put("state_int", new Integer(swt.retrieveStateInt()));
+					  jsonRet.put("state_int", new Integer(swt.getStateInt()));
 					  
 					  logger.info("Command to set:" );
 					  
@@ -401,164 +233,101 @@ public class JsonSiteMapping {
 			
 			jsonRet.put("return", new Boolean(true));
 			
-		} else if (id.equals("idSiteData")) {
-			
-			getSiteDataToJSON(jsonRet);
-			
-			jsonRet.put("return", new Boolean(true));
-			
 		} else if (id.equals("idFloorArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Floor.class);				
-												
-				jsonRet.put("idFloorArr", new JSONArray (set));
+			JSONArray jsonArr = getThingArrayToJSON (Floor.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idFloorArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-			//	logger.info("JsonXX: " + jsonRet.toString());
-				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}	
+			
+			logger.info("JsonXX: " + jsonRet.toString());	
 			
 		} else if (id.equals("idRoomArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Room.class);				
-												
-				jsonRet.put("idRoomArr", new JSONArray (set));
+			JSONArray jsonArr = getThingArrayToJSON (Room.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idRoomArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-			//	logger.info("JsonXX: " + jsonRet.toString());
-				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}					
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}	
+			
 		} else if (id.equals("idDoorArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Door.class);				
-												
-				jsonRet.put("idDoorArr", new JSONArray (set));
+			JSONArray jsonArr = getThingArrayToJSON (Door.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idDoorArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-				//logger.info("JsonXX: " + jsonRet.toString());
-				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}					
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}	
+			
 		} else if (id.equals("idWindowArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Window.class);				
-												
-				jsonRet.put("idWindowArr", new JSONArray (set));
+			JSONArray jsonArr = getThingArrayToJSON (Window.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idWindowArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-				//logger.info("JsonXX: " + jsonRet.toString());
-				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}					
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}				
+			
 		} else if (id.equals("idSwitchArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Switch.class);	
-				
-				logger.info("Number: " + set.size());
-											
-				jsonRet.put("idSwitchArr", new JSONArray (set));
-				/*
+			JSONArray jsonArr = getThingArrayToJSON (Switch.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idSwitchArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-				logger.info("JsonXX: " + jsonRet.toString());
-				*/
+			} else {
+				jsonRet.put("return", new Boolean(false));
 				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}					
+			}
+			
+			//logger.info("JsonXX: " + jsonRet.toString());		
+			
 		} else if (id.equals("idTempSensArr")) {
 			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(TemperatureSensor.class);	
-				
-				JSONArray ja = new JSONArray();
-						
-				for (Thing item: set) {
-					
-					TemperatureSensor  ts = (TemperatureSensor) item;
-
-					JSONObject obj = new JSONObject();
-					
-					obj.put("SitePath", ts.getSitePath());
-					obj.put("name", ts.getName());
-					
-					//logger.info("JsonOB: " + jobj.toString());
-													
-					ja.put(obj);
-					logger.info("JsonOB: " + item.getName());
-				}
-				
-				
-				jsonRet.put("idTempSensArr", ja);
+			JSONArray jsonArr = getThingArrayToJSON (TemperatureSensor.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idTempSensArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-				logger.info("JsonXX: " + jsonRet.toString());
+			} else {
+				jsonRet.put("return", new Boolean(false));
 				
-				/*
-				Door d = new Door();
-				TemperatureSensor ts = new TemperatureSensor();
-				TemperatureSensor  tv = set.
-				
-				JSONObject jobj = new JSONObject((Thing) set[0]);		
-				
-				logger.info("TS Number: " + set.size());
-											
-			//	jsonRet.put("idTempSensArr", new JSONArray (set));
-				
+			}
+			
+			//logger.info("JsonXX: " + jsonRet.toString());			
+		} else if (id.equals("idContactSensArr")) {
+			
+			JSONArray jsonArr = getThingArrayToJSON (ContactSensor.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idContactSensArr", jsonArr);
 				jsonRet.put("return", new Boolean(true));
 				
-				logger.info("JsonXX: " + jsonRet.toString());
-				*/
+			} else {
+				jsonRet.put("return", new Boolean(false));
 				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}					
+			}
+			
+			//logger.info("JsonXX: " + jsonRet.toString());			
 		}
-		
-		/*else if (id.equals("idSwitchArr")) {
-			
-			logger.info("Switch");
-			
-			try {
-				Set <Thing> set = m_siteService.getThingSet(Switch.class);		
-				
-				JSONArray jarr = new JSONArray (set);
-												
-			//	jsonRet.put("idSwitchArr", new JSONArray (set));
-				jsonRet.put("return", new Boolean(true));
-				
-				logger.info("JsonXX: " + jsonRet.toString());
-				
-			} catch (SiteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
-			
-		}
-		*/
-		return jsonRet;
-		
-	}
-	
-	
-	
-		
 
+		return jsonRet;		
+	}			
 }

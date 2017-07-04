@@ -47,6 +47,8 @@ public interface ISiteService {
 	
 	public Set<String> getThingPathSet (Class<?>  t) throws SiteException;
 	
+	public Set<Thing> getThingSet (Class<?>  t) throws SiteException;
+	
 	public Set<String> getThingChildrenPathSet (String parentPath, Class<?>  t) throws SiteException;
 	
 	public boolean isClosed (Thing m_thing) throws SiteException;

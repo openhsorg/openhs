@@ -80,11 +80,6 @@ public class MySiteServiceImpl implements ISiteService {
 			floor.setName("My first floor");
 			floor.setDimensions(22.450f, 13.700f);
 			addThing("floors/Floor1", floor);
-			
-			floor = new Floor();
-			floor.setName("My second floor");
-			floor.setDimensions(22.450f, 13.700f);
-			addThing("floors/Floor2", floor);
 
 			Room room = new Room();
 			room.setName("Outside");
@@ -542,6 +537,27 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return keySet;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThingSet(java.lang.Class)
+	 * Return: Set of all things og given type.
+	 */
+	public Set<Thing> getThingSet (Class<?>  t) throws SiteException {		
+		Set<Thing> keySet = new HashSet <Thing> ();
+		
+		Set<String> keySetAll = getThingPathSet(t);
+		
+		for (String item : keySetAll) {
+			
+			Thing thing = (Thing) getThing(item);													
+			
+			keySet.add(thing);															
+		}
+
+		return keySet;
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getChildThingsPaths(java.lang.String, java.lang.Class)

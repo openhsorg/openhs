@@ -21,11 +21,12 @@ module OhsSiteData {
     const idFloorArr = 'idFloorArr';
     const idThingCommand = 'idThingCommand';
     const idThingGet = 'idThingGet';
-    
+    /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while(new Date().getTime() < unixtime_ms + ms) {}
-    }      
+    }
+    */      
      
     export class SiteData {
 
@@ -54,23 +55,21 @@ module OhsSiteData {
             this.m_tempSensorArray = new Array<TemperatureSensor>(); 
             this.m_switchArray = new Array<Switch>();
             this.m_doorArray = new Array<Door>();
-            this.m_windowArray = new Array<Door>();
+            this.m_windowArray = new Array<Window>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
-                        
-            this.slowTimerGetDataEvent(1000);
-            //this.getServerData();            
-       //     this.fastTimerGetDataEvent(250);
             
-           // this.get_DateTime2();
-            
-
-            
-            //this.getObjectArray(idFloorArr);
-           // this.getObjectArray(idRoomArr);
-            // this.getObjectArray(idDoorArr);
-            // this.getObjectArray(idWindowArr);
+            //Initial load
+            this.getObjectArray(idFloorArr);            
+            this.getObjectArray(idRoomArr);
+            this.getObjectArray(idDoorArr);
+            this.getObjectArray(idWindowArr);
             this.getObjectArray(idTempSensArr);
-             //this.getObjectArray(idSwitchArr);
+            this.getObjectArray(idSwitchArr);
+            this.getObjectArray(idContactSensArr);
+           
+            //Timers
+            this.fastTimerGetDataEvent(500);            
+            this.slowTimerGetDataEvent(5000);            
         }
         
         private slowTimerGetDataEvent(step : number) {
@@ -89,37 +88,39 @@ module OhsSiteData {
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
         }       
         
-        public getSlowData () {
+        public getFastData () {
             
             //Date & Time
-            this.get_DateTime2();          
+            this.get_DateTime();  
             
+            //Switch 
+            this.getObjectArray(idSwitchArr);            
        }
         
-        public getFastData () {
+        public getSlowData () {
             
          //   this.get_DateTime();
             
             if (this.getCount == 0) {            
-                this.getFastData_TemperatureSensorArray();
+                this.getObjectArray(idFloorArr);
                                          
             } else if (this.getCount == 1) {
-                this.getFastData_ContactArray();
+                this.getObjectArray(idRoomArr);
                 
             } else if (this.getCount == 2) {
-                this.getFastData_SwitchArray();
+                this.getObjectArray(idDoorArr);
                 
             } else if (this.getCount == 3) {
-               // this.getFastData_DoorArray();
+               this.getObjectArray(idWindowArr);
                 
             } else if (this.getCount == 4) {
-               // this.getFastData_WindowArray();
+               this.getObjectArray(idSwitchArr);
                 
             } else if (this.getCount == 5) {
-           //     this.getFastData_RoomArray();
+               this.getObjectArray(idTempSensArr);
                 
             } else if (this.getCount == 6) {
-       //         this.getObjectArray(idFloorArr);
+               this.getObjectArray(idContactSensArr);
                 
             }
                         
@@ -132,23 +133,7 @@ module OhsSiteData {
          
         }
         
-        public get_DateTime2 (){
-                        /*
-            //Date & Time
-            var req = JSON.stringify({                             
-                idPost : idTimeDate           
-            });
-            
-         //   window.alert(req);
-            
-            var data: string = postAjax(url, req); 
-            
-            if (data != null) {         
-            
-                this.dateString = data['date'];
-                this.timeString = data['time'];                
-            }          
-                 */
+        public get_DateTime (){
             
             var js = JSON.stringify({
             idPost : idTimeDate
@@ -161,134 +146,8 @@ module OhsSiteData {
                 this.dateString = ret['date'];
                 this.timeString = ret['time'];             
             } 
-                       
-            
         }        
-        
-        public getFastData_TemperatureSensorArray (){
-                        
-            var req = JSON.stringify({                                 
-                idGet : idTempSensArr        
-            });
-            
-            var data: string = getAjax2(url, req); 
-            
-            if (data != null) {         
-                
-                var valid: boolean = JSON.parse(data['Array_validity']);
-                
-                if (valid) {                
-                    for (let id in this.m_tempSensorArray) {                    
-                        this.m_tempSensorArray[id].parseServerData(data);                    
-                    } 
-                }
-            }            
-        }
-        
-        public getFastData_ContactArray (){
-                        
-            var req = JSON.stringify({                                
-                idGet : idContactSensArr        
-            });
-            
-            var data: string = getAjax2(url, req); 
-            
-            if (data != null) {         
-                
-                var valid: boolean = JSON.parse(data['Array_validity']);
-                
-                if (valid) {                
-                    for (let id in this.m_contactSensorArray) {                    
-                        this.m_contactSensorArray[id].parseServerData(data);                    
-                    } 
-                }
-            }            
-        }        
-        
-        public getFastData_SwitchArray (){
-                        
-            var req = JSON.stringify({                                 
-                idGet : idSwitchArr         
-            });
-            
-            var data: string = getAjax2(url, req); 
-            
-            if (data != null) {         
-                            
-                var valid: boolean = JSON.parse(data['Array_validity']);
-            
-             //   window.alert("SwitchSensors");
-                
-                if (valid) {                
-                    for (let id in this.m_switchArray) {                    
-                        this.m_switchArray[id].parseServerData(data);                    
-                    } 
-                }
-            }            
-        } 
-        /*
-        public getFastData_DoorArray (){
-                        
-            var req = JSON.stringify({                                 
-                idGet : idDoorArr         
-            });
-            
-            var data: string = getAjax2(url, req); 
-            
-            if (data != null) {         
-                
-                var valid: boolean = JSON.parse(data['Array_validity']);
-                
-                if (valid) {                
-                    for (let id in this.m_doorArray) {                    
-                        this.m_doorArray[id].parseServerData(data);                    
-                    } 
-                }
-            }            
-        } 
-        */
-        /*
-        public getFastData_WindowArray (){
-                        
-            var req = JSON.stringify({                                 
-                idGet : idWindowArr         
-            });
-            
-            var data: string = getAjax2(url, req); 
-            
-            if (data != null) {         
-                
-                var valid: boolean = JSON.parse(data['Array_validity']);
-                
-                if (valid) {                
-                    for (let id in this.m_windowArray) {                    
-                        this.m_windowArray[id].parseServerData(data);                    
-                    } 
-                }
-            }            
-        } 
-        */
-        /*
-        public getFastData_RoomArray (){
-                        
-            var req = JSON.stringify({                                 
-                idGet : idRoomArr         
-            });
-            
-            var data: string = getAjax2(url, req); 
-
-            if (data != null) {         
-                var valid: boolean = JSON.parse(data['Array_validity']);
-                
-                if (valid) {                
-                    for (let id in this.m_roomArray) {                                 
-                        this.m_roomArray[id].parseServerData(data);       
-                   
-                    } 
-                }
-            }            
-        }  
-        */
+ 
         public getObjectArray (idObjArray:  string){
 
             var js = JSON.stringify({
@@ -311,8 +170,7 @@ module OhsSiteData {
                         
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
-                                                        
-                            //this.m_floorArray[i].setData(object);
+
                             this.m_floorArray[i].fillFromJSON(object);
                         }
                         
@@ -323,7 +181,6 @@ module OhsSiteData {
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
                                                         
-                            //this.m_floorArray[i].setData(object);
                             this.m_roomArray[i].fillFromJSON(object);
                         }
                     }  else if (idObjArray == idDoorArr) {
@@ -333,7 +190,6 @@ module OhsSiteData {
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
                                                         
-                            //this.m_floorArray[i].setData(object);
                             this.m_doorArray[i].fillFromJSON(object);
                         }
                     }  else if (idObjArray == idWindowArr) {
@@ -343,17 +199,15 @@ module OhsSiteData {
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
                                                         
-                            //this.m_floorArray[i].setData(object);
                             this.m_windowArray[i].fillFromJSON(object);
                         }
-                    }  else if (idObjArray == idSwitchArr) {
+                    }  else if (idObjArray == idSwitchArr) {                                               
                         
                         this.setNumber(parsedJSON.length, this.m_switchArray, Switch);
                         
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
-                                                        
-                            //this.m_floorArray[i].setData(object);
+                                 
                             this.m_switchArray[i].fillFromJSON(object);
                         }
                     }  else if (idObjArray == idTempSensArr) {
@@ -363,10 +217,18 @@ module OhsSiteData {
                         for (var i = 0; i < parsedJSON.length; i++) {                    
                             var object = parsedJSON[i];
                                                         
-                            //this.m_floorArray[i].setData(object);
                             this.m_tempSensorArray[i].fillFromJSON(object);
                         }
-                    }                                
+                    }    else if (idObjArray == idContactSensArr) {
+                        
+                        this.setNumber(parsedJSON.length, this.m_contactSensorArray, ContactSensor);
+                        
+                        for (var i = 0; i < parsedJSON.length; i++) {                    
+                            var object = parsedJSON[i];
+                                                        
+                            this.m_contactSensorArray[i].fillFromJSON(object);
+                        }
+                    }                              
                 }        
             }
         }         
@@ -562,34 +424,23 @@ module OhsSiteData {
                                
             }      
         }   
-/*
-        public postServerCommand (cmd: string) {            
-            var req: any = {
-                postId : 'GeneralCommand',
-                command: cmd                
-            }
-            
-            postAjax(servletUrl, req);
-        }    
-        */
-        /*
-        public postServerCommand (cmd: string) {            
-            var req: any = {
-                idPost : 'GeneralCommand'//,
-              //  command: cmd                
-            }
-        //    window.alert('aa');
-            postAjax(url, req);
-        }    
-        */      
+     
     }
     
     export class Thing {
         
         protected valid: boolean = false; //content of the forecast is valid        
         protected sitePath:  string = "*"; //OpenHS path     
+        public name: string = "no name";
+        
+        public posX:   number;
+        public posY:   number;
+        public posZ:   number;           
         
         constructor () {
+            this.posX = 0.0;
+            this.posY = 0.0;
+            this.posZ = 0.0;
         }
         
         public setSitePath (path: string) {
@@ -604,60 +455,32 @@ module OhsSiteData {
             return this.valid;
         } 
         
-        public getServerData () {
+        public update () {
+            
+        }   
+        
+        public updateDelayed (wait: number) {                    
+            window.setTimeout(() => this.update(), wait);                                               
         }          
-        
-        public getServerDataDelayed (wait: number) {                    
-            window.setTimeout(() => this.getServerData(), wait);         
-                                      
-        }         
-        
         
         fillFromJSON(json: any) {
 
-            for (var propName in json) {
+            for (var propName in json) {                                               
+                this[propName] = json[propName];
                 
-                window.alert(propName + json[propName] + ' to: ' + this[propName]);
-                
-                this[propName] = json[propName]
-            }
-        }         
+              //   window.alert(propName + ' json:' + json[propName] + ' to: ' + this[propName]);
+            }                      
+        }                     
     }
         
     export class Floor extends Thing {
         
         public imagePath: string = "/infores/servlets/kitchen/room_default.png";
         
-        public name:    string = 'no name';
         public dimX:   number = 0;
         public dimY:   number = 0;
 
-        public getServerData () {       
-             
-            var req = JSON.stringify({                 
-                orderId : "TempSensor",
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData(data);                    
-        }        
         
-        public parseServerData (data: any) {                   
-            if (data != null) {                
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-
-                if (this.valid) {
-                    this.name = data[this.sitePath + '__name'];
-                    this.imagePath = data[this.sitePath + '__imagePath'];                    
-                    this.dimX = parseFloat(data[this.sitePath + '__dim_x']);
-                    this.dimY = parseFloat(data[this.sitePath + '__dim_y']);     
-                    
-                 //   window.alert("x: " + this.dim_x + " ; y: " + this.dim_y);
-                }
-            }                            
-        }       
             
         
     }
@@ -665,75 +488,24 @@ module OhsSiteData {
     export class Room extends Thing{
         
         public imageBkgPath: string = "/infores/servlets/kitchen/room_default.png"; 
-        
-        public name: string = "no name :(";
-        
+                
         constructor () {
             super ();
                                     
         }        
-        
-        public getServerData () {       
-             
-            var req = JSON.stringify({                
-                orderId : "Room",
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData(data);                                 
-        }              
-        
-        public parseServerData (data: any) {                   
-            if (data != null) {                
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-
-                if (this.valid) {
-                    this.name = data[this.sitePath + '__name'];
-                    this.imageBkgPath = data[this.sitePath + '__imagePath'];
-                }
-            }                            
-        }         
+                       
     }    
     
     export class TemperatureSensor extends Thing {
         
         public temp:  number;        
-        public x:   number;
-        public y:   number;      
+ 
         
         constructor () { 
             super();           
-            this.x = 0;
-            this.y = 0;
+   
             this.temp = 0.0;
-        }             
-        
-        public getServerData () {       
-             
-            var req = JSON.stringify({                 
-                orderId : "TempSensor",
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData(data);                    
-        }        
-        
-        public parseServerData (data: any) {                   
-            if (data != null) {                
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-
-                if (this.valid) {
-                    this.x = parseFloat(data[this.sitePath + '__x']);
-                    this.y = parseFloat(data[this.sitePath + '__y']);
-                    //this.z = parseInt(data[this.sitePath + '__z']);
-                    this.temp = parseFloat(data[this.sitePath + '__temperature']);  
-                }
-            }                            
-        }          
+        }                     
     } 
     
     export class Supplier {
@@ -745,71 +517,22 @@ module OhsSiteData {
         public phone:  string = "unknown";
         public logo:  string = "unknown";
         
-        public getServerData () {       
-             /*
-            var req: any = {                
-                orderId : "Supplier",
-                name:   this.name                
-            } 
-          //  window.alert("****" + this.name);
-            var data: string = getAjax("kitchen", req); 
-            
-            this.parseServerData(data);    
-            */                                        
-        }       
-        /*
-        public parseServerData (data: any) {                               
-            if (data != null) {                
-                this.valid = JSON.parse(data['__validity']);
-
-                if (this.valid) {
-                    this.www = data['www'];
-                    this.address = data['address'];
-                    this.phone = data['phone'];
-                    this.logo = data['logo'];
-  
-                }
-            }                            
-        }         
-        */
+   
     }
     
     export class Switch extends Thing {
     
-        protected   stateInt:  number; //        
-        
-        public x:   number;
-        public y:   number;        
+        protected   stateInt:  number; //                     
         
         constructor () {     
             super ();       
-            this.x = 0;
-            this.y = 0;
             
             this.stateInt = 0;
         }    
 
         public getState () {
             return this.stateInt;
-        }
-        
-        protected getStateServer() {            
-            var js = JSON.stringify({
-            idGet : idThingGet,
-            path:   this.sitePath,
-            command: 'state_int' 
-            });                        
-            
-            var ret = postAjax(url, js);   
-            
-            if (JSON.parse(ret['return'])){
-                this.stateInt = parseInt(ret['state_int']);            
-            }                          
-        }
-        
-        public getServerDataDelayed (wait: number) {                    
-            window.setTimeout(() => this.getServerData(), wait);                                               
-        }           
+        }        
         
         public click () {                        
             if (this.getState() == 1 || this.getState() == 2) {
@@ -831,50 +554,50 @@ module OhsSiteData {
             if (JSON.parse(ret['return'])){
                 this.stateInt = parseInt(ret['state_int']);
                 
-              //  this.getServerDataDelayed (250);
+                this.updateDelayed(100);
             }                           
         }
         
         public off () {
             var js = JSON.stringify({
-            idPost : idThingCommand,
-            path:   this.sitePath,
-            command: 'off' 
+                idPost : idThingCommand,
+                path:   this.sitePath,
+                command: 'off' 
             });               
             
             var ret = postAjax(url, js);     
             
             if (JSON.parse(ret['return'])){
-                this.stateInt = parseInt(ret['state_int']);            
+                this.stateInt = parseInt(ret['state_int']);      
+            
+                this.updateDelayed (100);
             }
-        }                    
-       
-        public parseServerData (data: any) {                   
-            if (data != null) {
-                 this.valid = JSON.parse(data[this.sitePath + '__validity']);
-                //window.alert("valid: " + this.sitePath);
-                if (this.valid){                    
-                 
-                    this.stateInt = parseInt(data[this.sitePath + '__state_int']);
-                    this.x = parseFloat(data[this.sitePath + '__x']);
-                    this.y = parseFloat(data[this.sitePath + '__y']);
-                    //this.z = parseInt(data[this.sitePath + '__z']);
-                }                                
-            }                            
-        }        
+        }
+    
+        public update () {
+        
+            var js = JSON.stringify({
+                idPost : idThingCommand,
+                path:   this.sitePath,
+                command: 'update' 
+            });               
+            
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                this.stateInt = parseInt(ret['state_int']);      
+            }        
+        
+        }                                 
+    
     }  
     
     export class ContactSensor extends Thing {    
  
-        protected   state:  boolean; //        
-        
-        public x:   number;
-        public y:   number;        
+        protected   state:  boolean; //           
         
         constructor () {     
             super ();       
-            this.x = 0;
-            this.y = 0;
             
             this.state = false;
         }          
@@ -886,7 +609,7 @@ module OhsSiteData {
         public getState () {
             return this.state;
         }            
-        
+        /*
         public getServerData () {       
              
             var req = JSON.stringify({               
@@ -912,19 +635,16 @@ module OhsSiteData {
                 }                                
             }                            
         }        
+        */
     }       
     
     export class Door extends Thing {
-        
-        public name: string = "no name";
+                
         public image_open: string = "/infores/servlets/kitchen/room_default.png";
         public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
-        
-        public x:   number;
-        public y:   number;
         
         public supplier:  Supplier = new Supplier ();
         
@@ -933,8 +653,8 @@ module OhsSiteData {
             this.open = false;
             this.locked = false;
             
-            this.x = 0;
-            this.y = 0;
+            this.posX = 0;
+            this.posY = 0;
         } 
         
         public getState () {                                   
@@ -944,67 +664,22 @@ module OhsSiteData {
             
             return 2;                                    
         }
-        /*
-        public postServerClick () {            
-            var req: any = {
-                postId : "DoorD",
-                path:   this.sitePath                
-            }
-            
-            postAjax(servletUrl, req);
-        }                
-        */
-        public getServerData () {       
-             
-            var req = JSON.stringify({                 
-                orderId : "DoorD",
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData(data);                                            
-        }       
-        
-        public parseServerData (data: any) {                   
-            if (data != null) {                
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-
-                if (this.valid) {
-                    this.name = data[this.sitePath + '__name'];
-                    this.x = parseFloat(data[this.sitePath + '__x']);
-                    this.y = parseFloat(data[this.sitePath + '__y']);
-                    //this.z = parseFloat(data[this.sitePath + '__z']);
-                    this.open = JSON.parse(data[this.sitePath + '__open']);
-                    this.locked = JSON.parse(data[this.sitePath + '__lock']);  
-                    this.image_open = data[this.sitePath + '__imagePath_open'];
-                    this.image_close = data[this.sitePath + '__imagePath_close'];
-                    this.supplier.name = data[this.sitePath + '__supplierName']; 
-                   // window.alert("****" + this.supplier.name);     
-                }
-            }                            
-        }         
+               
     }    
     
     export class Window extends Thing {
     
-        public name: string = "no name";
         public image_open: string = "/infores/servlets/kitchen/room_default.png";
         public image_close: string = "/infores/servlets/kitchen/room_default.png"; 
         
         public open:       boolean; //Open
         public locked:     boolean; //Door lock
-        
-        public x:   number;
-        public y:   number;
-        
+          
         constructor () {
             super();
             this.open = false;
             this.locked = false;
-            
-            this.x = 0;
-            this.y = 0;
+
         } 
         
         public getState () {                                   
@@ -1013,65 +688,11 @@ module OhsSiteData {
             if (this.locked) return 3;
             
             return 2;                                    
-        }
-        /*
-        public postServerClick () {            
-            var req: any = {
-                postId : "Window",
-                path:   this.sitePath                
-            }
-            
-            postAjax(servletUrl, req);
-        }                
-        */
-        public getServerData () {       
-             
-            var req = JSON.stringify({                 
-                orderId : "Window",
-                path:   this.sitePath                
-            });
-            
-            var data: string = getAjax2(servletUrl, req); 
-            
-            this.parseServerData(data);
-            /*
-            if (data != null) {
-                this.valid = JSON.parse(data['validity']);
-                
-                if (this.valid){
-                    this.name = data['name'];
-                    this.x = parseInt(data['x_coordinate']);
-                    this.y = parseInt(data['y_coordinate']);
-                    this.open = JSON.parse(data['open']);
-                    this.locked = JSON.parse(data['lock']);  
-                    this.image_open = data['image_open'];
-                    this.image_close = data['image_close'];          
-                }                                
-            }      
-            */                                                 
-        }      
-        
-        public parseServerData (data: any) {                   
-            if (data != null) {                
-                this.valid = JSON.parse(data[this.sitePath + '__validity']);
-
-                if (this.valid) {
-                    this.name = data[this.sitePath + '__name'];
-                    this.x = parseFloat(data[this.sitePath + '__x']);
-                    this.y = parseFloat(data[this.sitePath + '__y']);
-                    //this.z = parseFloat(data[this.sitePath + '__z']);
-                    this.open = JSON.parse(data[this.sitePath + '__open']);
-                    this.locked = JSON.parse(data[this.sitePath + '__lock']);  
-                    this.image_open = data[this.sitePath + '__imagePath_open'];
-                    this.image_close = data[this.sitePath + '__imagePath_close'];    
-                }
-            }                            
-        }          
-        
+        }        
     }    
     
-    
-    function getAjax2(urlAdr: string, dataIn: string) {
+    /*
+    function getAjax(urlAdr: string, dataIn: string) {
        
         var result = null;
     
@@ -1097,7 +718,7 @@ module OhsSiteData {
     
         return result;    
     }     
-
+*/
     function postAjax(urlAdr: string, jsonDat: string) {
        
         var result = null;
