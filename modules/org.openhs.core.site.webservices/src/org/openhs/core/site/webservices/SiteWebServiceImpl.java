@@ -59,56 +59,7 @@ public class SiteWebServiceImpl implements ISiteWebService {
     		@QueryParam("idGet") String id,
     		@QueryParam("path") String path,
     		@QueryParam("command") String command) {
-        // Return some textual content
-   // 	JSONObject jsonRet = new JSONObject();
- //   	jsonRet.put("return", new Boolean(true));
-    	
-    //	logger.info("GET....>> " + js);  
-    	
-    //	JSONObject json = new JSONObject(js);
-   // 	String id = json.getString("idGet");
-    	/*
-    	
-    	logger.info("GET....>> " + js);    	    	
-    	
-    	if (id != null) {
-    		
-    		if (id.equals(idTimeDate)) {
-        		return jsonMap.getTimeDateJSON().toString();
-        		
-        	}
-  
-    		else if (id.equals(idSiteData)) {
-        		return jsonMap.getSiteDataToJSON().toString();
-        		
-        	} else if (id.equals(idContactSensArr)){
-        		return jsonMap.getThingArrayJSON(ContactSensor.class).toString();
-        		
-        	} else if (id.equals(idTempSensArr)){
-        		return jsonMap.getThingArrayJSON(TemperatureSensor.class).toString();
-        		
-        	} else if (id.equals(idSwitchArr)){
-        		return jsonMap.getThingArrayJSON(Switch.class).toString();
-        		
-        	} else if (id.equals(idDoorArr)){
-        		return jsonMap.getThingArrayJSON(Door.class).toString();
-        		
-        	} else if (id.equals(idWindowArr)){
-        		return jsonMap.getThingArrayJSON(Window.class).toString();
-        		
-        	} else if (id.equals(idRoomArr)){
-        		return jsonMap.getThingArrayJSON(Room.class).toString();
-        		
-        	} else if (id.equals(idFloorArr)){
-        		return jsonMap.getThingArrayJSON(Floor.class).toString();
-        		
-        	} else if (id.equals(idThingGet)){
-        		return jsonMap.getThingArrayJSON(Floor.class).toString();
-        		
-        	}
-    		
-    	}
-    	*/
+     
         return "Hello ohs_site_data web service!!!";
     }	      
     

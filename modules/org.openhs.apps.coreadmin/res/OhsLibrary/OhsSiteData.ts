@@ -23,6 +23,7 @@ module OhsSiteData {
     const idFloorArr = 'idFloorArr';
     const idThingCommand = 'idThingCommand';
     const idThingGet = 'idThingGet';
+    const idSiteUpdate = 'idSiteUpdate';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -37,6 +38,7 @@ module OhsSiteData {
         private slowTimerGetData;
         
         //---Site data---
+        public m_site:                  Site = null;
         public m_floorArray:            Array <Floor> = null;
         public m_roomArray:             Array <Room> = null;
         public m_tempSensorArray:       Array <TemperatureSensor> = null;
@@ -51,7 +53,8 @@ module OhsSiteData {
         public timeString: string = "---";
         public dateString: string = "---";
         
-        constructor () {            
+        constructor () { 
+            this.m_site = new Site();           
             this.m_floorArray = new Array<Floor>();
             this.m_roomArray = new Array<Room>(); 
             this.m_tempSensorArray = new Array<TemperatureSensor>(); 
@@ -60,14 +63,15 @@ module OhsSiteData {
             this.m_windowArray = new Array<Window>();
             this.m_contactSensorArray = new Array<ContactSensor>();    
             
-            //Initial load
-            this.getObjectArray(idFloorArr);            
-            this.getObjectArray(idRoomArr);
-            this.getObjectArray(idDoorArr);
-            this.getObjectArray(idWindowArr);
-            this.getObjectArray(idTempSensArr);
-            this.getObjectArray(idSwitchArr);
-            this.getObjectArray(idContactSensArr);
+            //Initial update
+            this.m_site.update();
+            this.updateObjectArray(idFloorArr);            
+            this.updateObjectArray(idRoomArr);
+            this.updateObjectArray(idDoorArr);
+            this.updateObjectArray(idWindowArr);
+            this.updateObjectArray(idTempSensArr);
+            this.updateObjectArray(idSwitchArr);
+            this.updateObjectArray(idContactSensArr);
            
             //Timers
             this.fastTimerGetDataEvent(500);            
@@ -76,7 +80,7 @@ module OhsSiteData {
         
         private slowTimerGetDataEvent(step : number) {
             
-           this.getSlowData();
+           this.updateSlowData();
                                                
            window.clearTimeout(this.slowTimerGetData);
            this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step); 
@@ -84,13 +88,13 @@ module OhsSiteData {
         
         private fastTimerGetDataEvent(step : number) {
             
-           this.getFastData();
+           this.updateFastData();
                                                
            window.clearTimeout(this.fastTimerGetData);
            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step); 
         }       
         
-        public getFastData () {
+        public updateFastData () {
             
             //Date & Time
             this.get_DateTime();  
@@ -99,34 +103,36 @@ module OhsSiteData {
         //    this.getObjectArray(idSwitchArr);            
        }
         
-        public getSlowData () {
+        public updateSlowData () {
             
          //   this.get_DateTime();
             
             if (this.getCount == 0) {            
-                this.getObjectArray(idFloorArr);
+                this.updateObjectArray(idFloorArr);
                                          
             } else if (this.getCount == 1) {
-                this.getObjectArray(idRoomArr);
+                this.updateObjectArray(idRoomArr);
                 
             } else if (this.getCount == 2) {
-                this.getObjectArray(idDoorArr);
+                this.updateObjectArray(idDoorArr);
                 
             } else if (this.getCount == 3) {
-               this.getObjectArray(idWindowArr);
+               this.updateObjectArray(idWindowArr);
                 
             } else if (this.getCount == 4) {
-               this.getObjectArray(idSwitchArr);
+               this.updateObjectArray(idSwitchArr);
                 
             } else if (this.getCount == 5) {
-               this.getObjectArray(idTempSensArr);
+               this.updateObjectArray(idTempSensArr);
                 
             } else if (this.getCount == 6) {
-               this.getObjectArray(idContactSensArr);
-                
+               this.updateObjectArray(idContactSensArr);
+                                
+            } else if (this.getCount == 7) {
+               this.m_site.update();
             }
                         
-            if (this.getCount == 6) {
+            if (this.getCount == 7) {
                 this.getCount = 0;
                 
             } else {
@@ -152,7 +158,7 @@ module OhsSiteData {
             }
         }        
  
-        public getObjectArray (idObjArray:  string){
+        public updateObjectArray (idObjArray:  string){
 
             var js = JSON.stringify({
             idPost : idObjArray
@@ -276,7 +282,25 @@ module OhsSiteData {
                      return !(thing.getSitePath().indexOf(filterPath) >= 0);                                              
                  });                               
              }
-        }        
+        }     
+        
+        public getSitePaths<T> (arg: Array<T>) {
+            
+            var sitePaths: Array <String> = new Array<String>();            
+                        
+            for (var i = 0; i < arg.length; i++) {
+                
+                var thing: Thing = <Thing> <any>arg[i];
+                
+                //var ss = new types();
+                
+                sitePaths.push(thing.getSitePath());
+                   
+                   
+            }            
+            
+            return sitePaths;
+        }
   
         public getParentPath (thing: Thing) {                        
             if (thing == null) {
@@ -354,83 +378,12 @@ module OhsSiteData {
             }               
         
             return null;
-        }
+        } 
         
-        /*
-        public getServerData () {       
-             
-            var req = JSON.stringify({                
-                idPost : idSiteData            
-            });
-            
-            var data: string = postAjax(url, req); 
-            
-            if (data != null) {
+        public getNumberFloors () {
+            return this.m_floorArray.length;
                 
-                this.dateString = data['date'];
-                this.timeString = data['time'];
-            
-                // Floors                  
-                this.setNumber(parseInt(data['number_floors']), this.m_floorArray, Floor);                                
-                                        
-                for (let id in this.m_floorArray) {                    
-                    this.m_floorArray[id].setSitePath(data['floorPath_' + id]);
-                }           
-                
-                // Rooms            
-                this.setNumber(parseInt(data['number_rooms']), this.m_roomArray, Room);
-                
-                for (var id = 0; id < this.m_roomArray.length; id ++) {                    
-                    this.m_roomArray[id].setSitePath(data['roomPath_' + id]);
-                }             
-                
-                // TempSensors                                             
-                this.setNumber(parseInt(data['number_tempsensors']), this.m_tempSensorArray, TemperatureSensor);
-                
-                for (let id in this.m_tempSensorArray) {                                
-                    this.m_tempSensorArray[id].setSitePath(data['tempSensorPath_' + id]);  
-                   // this.m_tempSensorArray[id].x = 6;                 
-                }     
-                
-                // Switches                                     
-                this.setNumber(parseInt(data['number_switches']), this.m_switchArray, Switch);
-                
-              //  window.alert("ns: " + this.m_switchArray.length);
-                
-                for (let id in this.m_switchArray) {                      
-                    this.m_switchArray[id].setSitePath(data['switchPath_' + id]);
-                } 
-                
-                // ContactSensors                                                     
-                this.setNumber(parseInt(data['number_contactSensors']), this.m_contactSensorArray, ContactSensor);
-                //window.alert("Num:" + parseInt(data['number_contactSensors']));
-                for (let id in this.m_contactSensorArray) {                      
-                    this.m_contactSensorArray[id].setSitePath(data['contactSensorPath_' + id]);                    
-                }
-                
-                // Door                                     
-                this.setNumber(parseInt(data['number_doors']), this.m_doorArray, Door);
-                            
-                for (let id in this.m_doorArray) {           
-                    this.m_doorArray[id].setSitePath(data['doorPath_' + id]);
-                    
-                //    window.alert("Path:" + this.m_doorArray[id].getSitePath());
-                }     
-                
-                // Window          
-                                           
-                this.setNumber(parseInt(data['number_windows']), this.m_windowArray, Window);
-                            
-                for (let id in this.m_windowArray) {           
-                    this.m_windowArray[id].setSitePath(data['windowPath_' + id]);
-                    
-                //    window.alert("Path:" + this.m_doorArray[id].getSitePath());
-                } 
-                               
-            }      
-        }   
-        */
-     
+        }
     }
     
     export class Thing {
@@ -478,6 +431,25 @@ module OhsSiteData {
             }                      
         }                     
     }
+    
+    export class Site extends Thing {
+        
+        public name: string = "no name";                
+        
+        public update () {       
+            var js = JSON.stringify({
+                idPost : idSiteUpdate
+            });               
+            
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['validity'])){
+                this.name = ret['name'];      
+            }                
+        }   
+                            
+        
+    }    
         
     export class Floor extends Thing {
         
@@ -485,9 +457,7 @@ module OhsSiteData {
         
         public dimX:   number = 0;
         public dimY:   number = 0;
-
-        
-            
+                    
         
     }
     
@@ -591,8 +561,7 @@ module OhsSiteData {
             
             if (JSON.parse(ret['return'])){
                 this.stateInt = parseInt(ret['state_int']);      
-            }        
-        
+            }                
         }                                 
     
     }  

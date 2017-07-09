@@ -13,6 +13,7 @@ import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Temperature;
@@ -34,12 +35,12 @@ public class JsonSiteMapping {
 		m_siteService = ser;
 	}
 	
-		public JSONObject getThingToJSON (Thing thing) {
+		public boolean getThingJSON (Thing thing, JSONObject json) {
 			
 			//These strings must reflect to TypeScript definitions of strings
 			final String keyName = "name";
 			final String keySitePath = "sitePath";
-			final String keyImagePath = "imagePath";
+		//	final String keyImagePath = "imagePath";
 			final String keyPosX = "posX";
 			final String keyPosY = "posY";
 			final String keyPosZ = "posZ";
@@ -49,11 +50,17 @@ public class JsonSiteMapping {
 			final String keyTemperature = "temperature";
 			final String keyValid = "valid";
 			
-			JSONObject json = new JSONObject();
+		//	JSONObject json = new JSONObject();
 			
 			try {
-				
-				if (thing instanceof Floor) {
+				if (thing instanceof Site) {
+					Site site = (Site) thing;	
+					
+					json.put(keyName, site.getName());
+					//json.put(keySitePath, site.getSitePath());
+					json.put(keyValid, new Boolean(true));
+
+				} else if (thing instanceof Floor) {
 					Floor floor = (Floor) thing;	
 					
 					json.put(keyName, floor.getName());
@@ -136,12 +143,13 @@ public class JsonSiteMapping {
 			} catch (Exception e) {
 				e.printStackTrace();
 				//  json.put(path + "__validity", new Boolean(false));
+				return false;
 			}    	  
   	  
-			return json;
+			return true;
 	    }  	
 		
-		public JSONArray getThingArrayToJSON (Class<?> t) {
+		public JSONArray getThingArrayJSON (Class<?> t) {
 			
 			JSONArray jsonArray = new JSONArray();
 			Set<Thing> set;
@@ -149,7 +157,16 @@ public class JsonSiteMapping {
 				set = m_siteService.getThingSet(t);
 				
 				for (Thing item: set) {
-					JSONObject obj = getThingToJSON(item);
+					JSONObject obj = new JSONObject ();
+					
+					boolean ret = getThingJSON(item, obj);
+					
+					if (ret) {
+						obj.put("validity", new Boolean(true));
+						
+					} else {
+						obj.put("validity", new Boolean(false));
+					}
 													
 					jsonArray.put(obj);
 				}
@@ -235,9 +252,22 @@ public class JsonSiteMapping {
 			
 			jsonRet.put("return", new Boolean(true));
 			
+		} else if (id.equals("idSiteUpdate")) {
+			
+			Site site = m_siteService.getSite();
+			
+			boolean ret = getThingJSON(site, jsonRet);
+			
+			if (ret) {
+				jsonRet.put("validity", new Boolean(true));
+				
+			} else {
+				jsonRet.put("validity", new Boolean(false));
+			}									
+			
 		} else if (id.equals("idFloorArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (Floor.class);
+			JSONArray jsonArr = getThingArrayJSON (Floor.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idFloorArr", jsonArr);
@@ -251,7 +281,7 @@ public class JsonSiteMapping {
 			
 		} else if (id.equals("idRoomArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (Room.class);
+			JSONArray jsonArr = getThingArrayJSON (Room.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idRoomArr", jsonArr);
@@ -261,9 +291,11 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(false));				
 			}	
 			
+			//logger.info("JsonXX: " + jsonRet.toString());
+			
 		} else if (id.equals("idDoorArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (Door.class);
+			JSONArray jsonArr = getThingArrayJSON (Door.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idDoorArr", jsonArr);
@@ -275,7 +307,7 @@ public class JsonSiteMapping {
 			
 		} else if (id.equals("idWindowArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (Window.class);
+			JSONArray jsonArr = getThingArrayJSON (Window.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idWindowArr", jsonArr);
@@ -287,7 +319,7 @@ public class JsonSiteMapping {
 			
 		} else if (id.equals("idSwitchArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (Switch.class);
+			JSONArray jsonArr = getThingArrayJSON (Switch.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idSwitchArr", jsonArr);
@@ -302,7 +334,7 @@ public class JsonSiteMapping {
 			
 		} else if (id.equals("idTempSensArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (TemperatureSensor.class);
+			JSONArray jsonArr = getThingArrayJSON (TemperatureSensor.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idTempSensArr", jsonArr);
@@ -316,7 +348,7 @@ public class JsonSiteMapping {
 			//logger.info("JsonXX: " + jsonRet.toString());			
 		} else if (id.equals("idContactSensArr")) {
 			
-			JSONArray jsonArr = getThingArrayToJSON (ContactSensor.class);
+			JSONArray jsonArr = getThingArrayJSON (ContactSensor.class);
 			
 			if (jsonArr != null) {
 				jsonRet.put("idContactSensArr", jsonArr);
@@ -326,8 +358,7 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(false));
 				
 			}
-			
-			//logger.info("JsonXX: " + jsonRet.toString());			
+				
 		}
 		
 		//logger.info("JsonXX: " + jsonRet.toString());

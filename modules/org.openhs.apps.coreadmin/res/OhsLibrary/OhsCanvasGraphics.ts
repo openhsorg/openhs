@@ -4,6 +4,7 @@
 
 module OhsCanvasGraphics {    
 
+//import SiteData =  OhsSiteData.SiteData;
 import Floor = OhsSiteData.Floor;
 import TemperatureSensor = OhsSiteData.TemperatureSensor;    
 import Door = OhsSiteData.Door;
@@ -15,13 +16,15 @@ import Thing = OhsSiteData.Thing;
     export class Graphics {
         
         private canvas:              HTMLCanvasElement;
-        public ctx:                  CanvasRenderingContext2D;                  
+        public ctx:                  CanvasRenderingContext2D;    
+      //  private m_siteData:             SiteData;              
         private timerUpdateGraphics;
         
         constructor (canvas: HTMLCanvasElement) {    
             this.canvas = canvas; 
             this.ctx = canvas.getContext("2d");    
             
+           // this.m_siteData = siteData;                        
         }
         
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(ctx: CanvasRenderingContext2D, rect: Rect): T ;}, ctx: CanvasRenderingContext2D, rect: Rect) {
@@ -66,6 +69,61 @@ import Thing = OhsSiteData.Thing;
             }            
             return null;
         }
+    }
+    
+    export class Point2D {
+        
+        public x:   number = 0.0;
+        public y:   number = 0.0;
+        
+        public constructor (x: number, y: number) {
+            this.x = x;
+            this.y = y;        
+        }      
+        
+        public setPoint (pt: Point2D) {
+            this.x = pt.x;
+            this.y = pt.y;
+            
+        }        
+        
+    }
+    
+    export class Triangle {
+                                       
+        public a: Point2D = new Point2D(0, 0);
+        public b: Point2D = new Point2D(0, 0);
+        public c: Point2D = new Point2D(0, 0);
+        
+        public fillColor = '#FFCC00';
+        public strokeColor = '#666666';
+        public widthLine = 0;
+        
+        setTriangle (a: Point2D, b: Point2D, c: Point2D) {
+            this.a.setPoint(a);
+            this.b.setPoint(b);
+            this.c.setPoint(c);                    
+        }    
+        
+        public paint(ctx: CanvasRenderingContext2D) {     
+               
+            ctx.beginPath();
+            
+            ctx.moveTo(this.a.x, this.a.y);
+            ctx.lineTo(this.b.x, this.b.y);
+            ctx.lineTo(this.c.x, this.c.y);
+            
+            ctx.closePath();            
+    
+            ctx.fillStyle = this.fillColor;
+            ctx.fill();     
+            
+            ctx.lineWidth = this.widthLine;
+            ctx.strokeStyle = this.strokeColor;
+            ctx.stroke();
+                 
+        }        
+        
     }
                 
     export class Rect {
@@ -522,6 +580,15 @@ import Thing = OhsSiteData.Thing;
         protected text:         string = '';
         
         protected border:       boolean = false;
+        
+        public setText (txt: String) {
+            this.text = txt.toString();
+            
+        }
+        
+        public getText () {
+            return this.text;
+        }
                 
         public paintText (ctx: CanvasRenderingContext2D, text: string){
             
@@ -1197,4 +1264,211 @@ import Thing = OhsSiteData.Thing;
              }           
         }
     }    
+    
+    export class DlgNumbers {
+        
+        protected m_rectRounded:    RectRounded     = new RectRounded ();
+        protected m_rectNumber:     Array<Rect>     = new Array<Rect>();
+        protected m_textNumbers:    TextSimple      = new TextSimple ();
+        
+        constructor () {     
+            this.setSize (9);     
+            
+            this.m_textNumbers.fontSize = 18;
+            this.m_textNumbers.fontFamily = "px sans-serif";
+            this.m_textNumbers.fontColor = '#196619';
+            this.m_textNumbers.textAlign = "left";
+            this.m_textNumbers.textBaseline = "middle";               
+                        
+        }
+        
+        public setSize (num: number) {
+            
+            this.m_rectNumber.length = 0;
+            
+            for (var i = 0; i < num; i++) {
+                this.m_rectNumber.push(new Rect());            
+            }        
+        }
+        
+        public getSize () {
+            return this.m_rectNumber.length;
+        
+        }
+        
+        public MouseUpHandler(mx: number, my: number) {
+            
+            var i = 1;
+            
+            for (let item of this.m_rectNumber) {
+                if (item.isClicked(mx, my)) {
+                    return i;                
+                }
+                
+                i++;
+            }            
+            
+            return 0;
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+            this.organize(x, y, width, height);
+            
+            this.m_rectRounded.paint(ctx);
+            
+            ctx.fillStyle = '#6666ff';
+            ctx.fill();              
+            
+            var i = 1;
+            
+            for (let item of this.m_rectNumber) {
+                
+                item.paint(ctx);                                       
+                
+                ctx.fillStyle = '#FFCC00';
+                ctx.fill();     
+                
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#666666';
+                ctx.stroke();  
+                
+                this.m_textNumbers.size(item.x + (item.w / 2) - 5, item.y + (item.h / 2) - 5, 50, 30);
+                this.m_textNumbers.paintText(ctx, '' + i);
+                
+                i ++;
+            }
+        
+        }                        
+        
+        public organize (x: number, y: number, width: number, height: number){
+            
+            var d = 20;
+            
+            //Rect rounded
+            this.m_rectRounded.size(x, y, d + (3 * (width + d)), d + (3 * (height + d))); 
+            this.m_rectRounded.radius = 10;                                               
+            
+            var i = 1;
+            var nColumn = 0;
+            var nRow = 0;                        
+            
+            for (let item of this.m_rectNumber) {
+                
+                item.size(x + d + (nColumn * (width + d)), y + d + (nRow * (height + d)), width, height);
+                                
+                if (nColumn == 2) {                     
+                    nColumn = 0;
+                    nRow ++;
+                                    
+                } else {                
+                    nColumn++;
+                }                
+            }
+        
+        }
+    }
+    
+    export class SymbolHome {
+        
+        public roofTriangle:        Triangle        = new Triangle();
+        protected m_rectFloorArray: Array<Rect>     = new Array<Rect>();
+        protected m_sitePathArray: Array<TextSimple>     = new Array<TextSimple>(); 
+        
+        constructor () {
+                                    
+        }
+        
+        public MouseUpHandler(mx: number, my: number) {
+            
+            for (let item of this.m_rectFloorArray) {
+                var i = 0;
+                if (item.isClicked(mx, my)){
+                 //   window.alert('it is' + this.m_sitePathArray[i].getText());
+                    return this.m_sitePathArray[i].getText();
+                }         
+                
+                i++;
+            }                     
+            
+            return null;
+        }
+    
+        public paint (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, m_floorArray: Array <Floor>) {
+            //x,y  left top corner
+            
+            //20% is roof
+            var roogHeight = 0.2 * height;                       
+            
+            this.roofTriangle.setTriangle(new Point2D(x + (width / 2), y), new Point2D(x, y + roogHeight), new Point2D(x + width, y + roogHeight));                                
+            this.roofTriangle.paint(ctx);    
+                        
+            //Number of floors
+            var nFloors = m_floorArray.length;
+                        
+            //Create rectangles...
+            var distance = 20.0;  // Distance between rectangles
+            
+            var rectHeight = ((height - roogHeight) / nFloors) - distance;
+            
+          //  window.alert(rectHeight);
+            
+            if (this.m_rectFloorArray.length > nFloors) {
+                this.m_rectFloorArray.length = nFloors;
+                
+            } else if (this.m_rectFloorArray.length < nFloors) {
+                for (var i = this.m_rectFloorArray.length; i < nFloors; i++) {
+                    this.m_rectFloorArray.push(new Rect ());
+                }
+            }
+            
+            var i = 0;
+            //Draw rectangles                
+            for (let item of this.m_rectFloorArray) {
+                
+                let cx = x;
+                let cy = (y + roogHeight + distance) + (i * (distance + rectHeight));
+                
+                item.size(cx, cy, width, rectHeight);                    
+                item.paint(ctx);                                       
+                
+                ctx.fillStyle = '#FFCC00';
+                ctx.fill();     
+                
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#666666';
+                ctx.stroke();                           
+                
+                i++;            
+            }
+            
+                        
+            if (this.m_sitePathArray.length > nFloors) {
+                this.m_sitePathArray.length = nFloors;
+                
+            } else if (this.m_sitePathArray.length < nFloors) {
+                for (var i = this.m_sitePathArray.length; i < nFloors; i++) {
+                    this.m_sitePathArray.push(new TextSimple ());
+                }
+            }
+                       
+            i = 0;
+            //Draw texts                
+            for (let item of this.m_sitePathArray) {
+                
+                item.fontSize = 18;
+                item.fontFamily = "px sans-serif";
+                item.fontColor = '#196619';
+                item.textAlign = "left";
+                item.textBaseline = "top";
+                
+                let cx = x;
+                let cy = ((y + roogHeight + distance) + (i * (distance + rectHeight))) + (rectHeight / 2);                    
+                
+                item.size(cx + 10, cy, 100, 60);
+                item.paintText(ctx, m_floorArray[i].getSitePath());
+                
+                i++;
+            }                                  
+        }        
+    }
 }

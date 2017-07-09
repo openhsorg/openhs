@@ -23,6 +23,9 @@ module AdminApp {
     import Graphics =           OhsCanvasGraphics.Graphics;
     import Mark =               OhsCanvasGraphics.Mark;
     import ImageButton =        OhsCanvasGraphics.ImageButton;
+    import SymbolHome =         OhsCanvasGraphics.SymbolHome;
+    import Point2D =            OhsCanvasGraphics.Point2D;
+    import DlgNumbers =         OhsCanvasGraphics.DlgNumbers;
 
     import SiteData =           OhsSiteData.SiteData;
     import Floor =              OhsSiteData.Floor;
@@ -33,52 +36,21 @@ module AdminApp {
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
     import Thing =              OhsSiteData.Thing;        
-    
-    const imagePadlockOpen          = '/infores/servlets/kitchen/symbol_padlock_on.png';
-    const imagePadlockOpenPushed    = '/infores/servlets/kitchen/symbol_padlock_on_pushed.png';
-    const imagePadlockOff           = '/infores/servlets/kitchen/symbol_padlock_off.png';
-    const imagePadlockOffPushed     = '/infores/servlets/kitchen/symbol_padlock_off_pushed.png';
-    const imageBkg1                 = '/infores/servlets/kitchen/bkg1.jpg';
-    const imageStopwatch            = '/infores/servlets/kitchen/symbol_stopwatch.png';
-    const imageStopwatchPushed      = '/infores/servlets/kitchen/symbol_stopwatch_pushed.png';
-    const imageDoor                 = '/infores/servlets/kitchen/symbol_door.png';
-    const imageDoorPushed           = '/infores/servlets/kitchen/symbol_door_pushed.png';
-    const imageBulbOn               = '/infores/servlets/kitchen/symbol_bulb_on.png';
-    const imageBulbOnPushed         = '/infores/servlets/kitchen/symbol_bulb_on_pushed.png';
-    const imageBulbOff              = '/infores/servlets/kitchen/symbol_bulb_off.png';
-    const imageBulbOffPushed        = '/infores/servlets/kitchen/symbol_bulb_off_pushed.png';
-    const symbol_settings           = '/infores/servlets/kitchen/symbol_settings.png';
-    const logo_htdvere              = '/infores/servlets/kitchen/logo_htdvere.png';
-    const symbol_callBack           = '/infores/servlets/kitchen/symbol_callBack.png';
-    const symbol_web                = '/infores/servlets/kitchen/symbol_web.png';
-   
-    
+
+    /*
     enum SwitchScreen {
-        Main,
-        Watch,    
-        Floor,
-        WeatherForecast,
-        Room,
-        DoorList,
-        DoorScreen
-    }          
-    
-    var imagePaths: Array <String> = [
-            "/infores/servlets/kitchen/sunny.png",        
-            "/infores/servlets/kitchen/partcloudy.png",        
-            "/infores/servlets/kitchen/cloudy.png",        
-            "/infores/servlets/kitchen/cloudRain.png",        
-            "/infores/servlets/kitchen/cloudStorm.png",        
-           "/infores/servlets/kitchen/cloudSnow.png"       
-    ];     
-        
+        Main,            
+        Floor,        
+        Room        
+    }
+    */          
+              
     const whiteColor        = "#FFFFFF";
     const blackColor        = "#000000";
     const borderColor       = "#C0C0C0";
     const secPtrColor       = "#CC0000";
     const textColor         = "#000000";
     const circleColor       = "#c0c0c0";
-  //  let fontSizeTempIn:     number = 140;
     let fontSizeTempOut:    number = 50;    
     let fontSizeWind:       number = 24;      
     let fontSizeHum:        number = 27;
@@ -90,7 +62,6 @@ module AdminApp {
         
         private canvas:             HTMLCanvasElement;
         public ctx:                 CanvasRenderingContext2D;  
-        private url:                string = "kitchen";
         
         // Data        
         public m_siteData:          SiteData = null; //general Site Data      
@@ -102,16 +73,15 @@ module AdminApp {
         
         // Screens
         private m_screenMain:       ScreenMain = null;                    
-        private m_room:             ScreenRoom = null;
-        private m_floor:            ScreenFloor =  null;
-
+        private m_screenRoom:             ScreenRoom = null;
+        private m_screenFloor:            ScreenFloor =  null;
                
         //Graphics
         private m_graphics: Graphics = null;        
         
         // Handlers
         private currPage: Screen = null;
-        private refreshRateMain: number = 5000; 
+       // private refreshRateMain: number = 5000; 
         
         constructor (canvas: HTMLCanvasElement) {  
         
@@ -126,8 +96,8 @@ module AdminApp {
             
             //---Screens---
             this.m_screenMain = new ScreenMain(this.m_siteData, this.m_graphics);
-            this.m_floor = new ScreenFloor(this.m_siteData, this.m_graphics);
-            this.m_room = new ScreenRoom(this.m_siteData, this.m_graphics);      
+           // this.m_screenFloor = new ScreenFloor(this.m_siteData, this.m_graphics);
+         //   this.m_screenRoom = new ScreenRoom(this.m_siteData, this.m_graphics);      
 
             //---Mouse Handler---
             var self = this;
@@ -136,7 +106,9 @@ module AdminApp {
             this.canvas.addEventListener('mousemove', function(event){self.MouseMoveHandler(event);}, false);                               
                           
             //---Set current displayed page---
-            this.openPage(this.m_screenMain, this.refreshRateMain);
+            //this.openPage(this.m_screenMain);
+            //this.SwitchPage(ScreenMain.name);
+            this.currPage = this.m_screenMain;
             
             requestAnimationFrame(()=>this.paint());      
 
@@ -188,14 +160,14 @@ module AdminApp {
             }            
         }        
         
-        private MouseDownHandler (event){                     
+        private MouseDownHandler (event){                  
             var mousePos = getMousePos(this.canvas, event); 
             /*
             * handling in current page...
             */
             if (this.currPage != null) {
                 var retVal = this.currPage.MouseDownHandler(mousePos.x, mousePos.y);
-            }            
+            }                            
         }
         
         private MouseUpHandler(event) {
@@ -205,21 +177,45 @@ module AdminApp {
             /*
             * handling in current page...
             */
+            var mouseRet: MouseReturn = null;
+            
+            if (this.currPage != null) {
+                mouseRet = this.currPage.MouseUpHandler(mousePos.x, mousePos.y);
+            }
+            
+            if (mouseRet != null) {
+                this.SwitchPage(mouseRet.nextScreen);
+                
+                
+            }
+            
+            /*
+            if (mouseRet != null) {
+                
+                window.alert('je to x:' + retVal.nextThingPath);
+                
+                //this.openPage(retVal);
+         //       this.openPage2(ScreenRoom.name);
+            }
+            */
+            
+            
+            /*
             var retVal = this.currPage.MouseUpHandler(mousePos.x, mousePos.y);
             
             if (retVal == null) {
                 return null;
             }
             
-            var refresh = this.refreshRateMain;
+         //   var refresh = this.refreshRateMain;
             var screen = null;
                                                
            // window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
                     
             if (retVal.nextScreen == SwitchScreen.Floor) {               
-                refresh = 1000;
-                screen = this.m_floor;
-                this.m_floor.setThing(<Thing>this.m_siteData.m_floorArray[0]);
+              //  refresh = 1000;
+                screen = this.m_screenFloor;
+                this.m_screenFloor.setThing(<Thing>this.m_siteData.m_floorArray[0]);
                 
               //  window.alert("floor");
                 
@@ -229,63 +225,82 @@ module AdminApp {
                 screen = this.m_screenMain;     
                 
             } else if (retVal.nextScreen == SwitchScreen.Room) {
-                refresh = 100;
-                screen = this.m_room;                
-                this.m_room.setThing(this.m_siteData.getThing(retVal.nextThingPath));
+  //              refresh = 100;
+                screen = this.m_screenRoom;                
+                this.m_screenRoom.setThing(this.m_siteData.getThing(retVal.nextThingPath));
                 
             }
             
       //      this.paint();
             
             // Switch screen
-            this.openPage(screen, refresh);
+            this.openPage(screen);
+            */
         }
         
-        private openPage(next: Screen, refreshRate: number) {                                 
+        private SwitchPage (page: string ) {
+                        
+            if (page == ScreenMain.name) {
+                this.currPage = this.m_screenMain;
+            
+            } else if (page == ScreenFloor.name) {
+                window.alert('Floor switch');
+                this.currPage = this.m_screenFloor;            
+            }
+                        
+        }
+        
+        private openPageold(next: Screen) {   
+        /*                              
             if (next != null) {
                 
-                next.prevPage = SwitchScreen.Main;
+                next.m_prevPage = SwitchScreen.Main;
                 
                 if (this.currPage != null) {                                                
                    //window.alert("curr page close");
                 //    this.currPage.close(); 
                     
                     if (this.currPage instanceof ScreenFloor) {
-                        next.prevPage = SwitchScreen.Floor;
+                        next.m_prevPage = SwitchScreen.Floor;
                        // window.alert("floor switch");
                         
                     }                                                                      
                 }             
  
                 this.currPage = next; //open(refreshRate);
+                this.currPage.updateData();
             }
+            */
         }                  
+    }
+    
+    class MouseReturn {
+        public nextScreen: string = '';
+        public nextSitePath: string = '';
+        
     }
     
     export class Screen {
             
+        protected mouseRet:           MouseReturn             = new MouseReturn ();
         protected m_siteData:         SiteData                = null;
         protected m_graphics:         Graphics                = null;
-        public prevPage:              SwitchScreen            = SwitchScreen.Main;
-        
-        private thing:                Thing                   = null;        
+        public    m_dlgNumbers:       DlgNumbers              = new DlgNumbers ();
+    //    public    m_prevPage:         SwitchScreen            = SwitchScreen.Main;
+           
         public wait:                  boolean                 = false;
-        
-        protected returnVal = {
+        /*
+        public returnVal = {
                 nextScreen: null,
                 nextThingPath: null                                 
             };          
-        
+        */
         constructor (m_siteData: SiteData, m_graphics: Graphics) {
             
             this.m_siteData = m_siteData;
             this.m_graphics = m_graphics;
         }
-        /*
-        protected CommandSchedule (cmd: number) {
-            window.setTimeout(() => this.CommandExecute(cmd), 1000); 
-        }
-        */
+  
         protected CommandExecute (cmd: number) {
             return null;
         }
@@ -303,6 +318,8 @@ module AdminApp {
         }        
         
         public paint (canvas: HTMLCanvasElement) {  
+        
+            this.paintDlgNumbers(canvas);
         }
 
         protected paintWait (canvas: HTMLCanvasElement) {    
@@ -332,87 +349,119 @@ module AdminApp {
             ctx.restore();   
         }
         
-        public setThing (thing: Thing){
-            this.thing = thing;
+        protected paintDlgNumbers (canvas: HTMLCanvasElement) {    
+        
+            const ctx = canvas.getContext('2d');
+            var width: number = canvas.width;
+            var height: number = canvas.height;
+            
+            this.m_dlgNumbers.paint(ctx, 100, 100, 20, 20);
+           
+            
+            /*
+            var rect: RectRounded = new RectRounded();            
+            var text: TextSimple = new TextSimple ();
+                                               
+            ctx.save();                        
+            rect.size((width / 2) - 100, (height / 2) - 25, 200, 60);
+            rect.rad(10);            
+            rect.paint(ctx);
+            ctx.fillStyle = "#b8b894";
+            ctx.lineWidth=2;
+            ctx.strokeStyle="gray";            
+            ctx.fill();
+            ctx.stroke();            
+            
+            text.size(rect.x + 5, rect.y + 5, 60, 30);
+            text.fontColor = "#1a75ff";
+            text.fontSize = 40;
+            text.paintText(ctx, 'Wait...');                       
+            
+            ctx.restore();   
+            */
+        }        
+        
+        //Called right away after entering page...       
+        public updateData () {
+            //your code        
         }
-        
-        public getThing () {
-            return this.thing;
-        }   
-        
-        public getThingPath () {
-            return this.thing.getSitePath();
-        }          
+         
     }
     
     export class ScreenMain extends Screen {                  
-        
-        //Data
-        
-        //Graphics       
-        private ButtonStopWatch:    ImageButton     = new ImageButton (imageStopwatch, imageStopwatchPushed);
-        private ButtonDoor:         ImageButton     = new ImageButton (imageDoor, imageDoorPushed);
-        private iconVoiceMessage:   ImageRect       = new ImageRect ();
-        private iconWind:           ImageRect       = new ImageRect ();
-        private iconWeather:        ImageRectArray  = new ImageRectArray ();
-        public tmpInText:           TextSimple      = new TextSimple ();
-        public tmpOutText:          TextSimple      = new TextSimple ();
+                
         public timeText:            TextSimple      = new TextSimple ();
-        public dateText:            TextSimple      = new TextSimple ();
-        public windText:            TextSimple      = new TextSimple ();
-        public tmpInGradeText:      TextSimple      = new TextSimple ();       
-
-        private appWatch:           boolean         = false;
+        public HouseNameText:       TextSimple      = new TextSimple ();
+        public textNumFloors:       TextSimple      = new TextSimple();        
+        public m_symbolHome:        SymbolHome      = new SymbolHome();     
         
+        protected enableDlgNumbers: boolean         = false;
+           
         constructor (m_siteData: SiteData, m_graphicsData: Graphics) {  
         
             super (m_siteData, m_graphicsData);
             
             //---Data---
-            this.iconWeather.setImages(imagePaths);
-            this.iconVoiceMessage.setImage('/infores/servlets/kitchen/voicemessage.png');
-            this.iconWind.setImage('/infores/servlets/kitchen/wind.png');
+            
+            //Time & Date
+            this.timeText.fontSize = 40;
+            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.timeText.fontColor = textColor;
+            this.timeText.textAlign = "right";
+            this.timeText.textBaseline = "middle";
+            
+            //House name
+            this.HouseNameText.fontSize = 40;
+            this.HouseNameText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.HouseNameText.fontColor = textColor;
+            this.HouseNameText.textAlign = "left";
+            this.HouseNameText.textBaseline = "middle";     
+            
+            //Text number floors
+            this.textNumFloors.fontSize = 18;
+            this.textNumFloors.fontFamily = "px sans-serif";
+            this.textNumFloors.fontColor = '#196619';
+            this.textNumFloors.textAlign = "left";
+            this.textNumFloors.textBaseline = "middle";              
            
         }
         
         MouseDownHandler(mx: number, my: number) {   
-            
-            if (!this.appWatch){
-                if (this.ButtonStopWatch.PushEvent(mx, my)){
-            
-                } else if (this.ButtonDoor.PushEvent(mx, my)) {
-                    
-                }
-            }
-  
+
             
         }
         
-        public MouseUpHandler(mx: number, my: number) {                    
- 
-           // var mousePos = getMousePos(this.canvas, event);
-       
-            
-            
-                if (this.ButtonStopWatch.UpEvent(mx, my)){
-                      //window.alert("clicked....");
-         //           this.stopWatch.start();
-                    this.appWatch = true;
-                  //  this.open(30);
-                    return null;
-                } else if (this.ButtonDoor.UpEvent(mx, my)) {                
-                    this.returnVal.nextScreen = SwitchScreen.DoorList;
-                    return this.returnVal;
+        public MouseUpHandler(mx: number, my: number) {     
+        
+            if (this.enableDlgNumbers) {
+                var n = this.m_dlgNumbers.MouseUpHandler(mx, my);
                 
-                } else if (this.tmpInText.isClicked(mx, my)) {
-                    this.returnVal.nextScreen = SwitchScreen.Floor;
-                    return this.returnVal;
+                if (n > 0 && n <= this.m_dlgNumbers.getSize()) {
+                    this.enableDlgNumbers = false;   
                     
-                } else if (this.iconWeather.isClicked(mx, my)) {
-                    this.returnVal.nextScreen = SwitchScreen.WeatherForecast;
-                    return this.returnVal;                                      
+                    //window.alert('clicked:' + n);
+                    //Set number floors...
+                    
+                    return null;
                 }
-           
+            }
+
+            var ret = this.m_symbolHome.MouseUpHandler(mx, my);
+            
+            if (ret != null) {                                
+                
+                this.mouseRet.nextScreen = ScreenFloor.name;
+                this.mouseRet.nextSitePath = ret;
+                
+                return this.mouseRet;            
+            }       
+            
+            if (this.textNumFloors.isClicked(mx, my)) {
+              //  window.alert('changing num floors...');
+                
+                this.enableDlgNumbers = true;
+            
+            }
             
             return null;
         }
@@ -434,16 +483,27 @@ module AdminApp {
             ctx.stroke();           
             ctx.closePath();
             ctx.restore(); 
-                        
+                            
             //Time          
-            this.timeText.fontSize = 40;
-            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.timeText.fontColor = textColor;
-            this.timeText.textAlign = "right";
-            this.timeText.textBaseline = "middle";   
             this.timeText.size(canvas.width - 260, 2, 250, 65);        
-            this.timeText.paintText(ctx, this.m_siteData.timeString);                
+            this.timeText.paintText(ctx, this.m_siteData.timeString);  
+            
+            //House name  
+            this.HouseNameText.size(30 , 2, 250, 65);        
+            this.HouseNameText.paintText(ctx, this.m_siteData.m_site.name);  
+
+            //house symbol
+            this.m_symbolHome.paint(ctx, 200, 100, 400, 300, this.m_siteData.m_floorArray);       
+            
+            //Text num floors
+            this.textNumFloors.size(10, 300, 100, 60);
+            this.textNumFloors.paintText(ctx, 'Number floors is ' + this.m_siteData.m_floorArray.length);       
+            
+            if (this.enableDlgNumbers) {
+                this.m_dlgNumbers.paint(ctx, 100, 100, 60, 60);
+            }
         }
+
     }
        
     
@@ -463,10 +523,10 @@ module AdminApp {
         public m_switchMarks:           Array<SwitchMark>           = new Array<SwitchMark>();              // Switch marks
         public m_contactSensorsMarks:   Array<ContactSensorMark>    = new Array<ContactSensorMark>();       // Switch marks
         private perc:                   number                      = 0.8;
-        protected btnLock:              ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
-        protected btnUnLock:            ImageButton                 = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);        
-        protected btnSwitchOff:         ImageButton                 = new ImageButton(imageBulbOff, imageBulbOffPushed);
-        protected btnSwitchOn:          ImageButton                 = new ImageButton(imageBulbOn, imageBulbOnPushed);        
+    //    protected btnLock:              ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
+     //   protected btnUnLock:            ImageButton                 = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);        
+    //    protected btnSwitchOff:         ImageButton                 = new ImageButton(imageBulbOff, imageBulbOffPushed);
+    //    protected btnSwitchOn:          ImageButton                 = new ImageButton(imageBulbOn, imageBulbOnPushed);        
            
         
         constructor (siteData:  SiteData, m_graphics: Graphics) {                
@@ -483,7 +543,7 @@ module AdminApp {
         }  
         
         public setThing(thing: Thing){
-            
+            /*
             var oldThing: Thing = super.getThing(); 
             
             super.setThing(thing);
@@ -546,11 +606,12 @@ module AdminApp {
                         this.m_contactSensorsMarks[id].setThing(<Thing>m_contactSensorArray2[id]);                        
                     }                     
                 }                               
-            }            
+            }  
+            */          
         }   
         
         MouseDownHandler(mx: number, my: number) { 
-            
+            /*
             if (this.btnLock.PushEvent(mx, my)){
             
             } else if (this.btnUnLock.PushEvent(mx, my)){
@@ -560,11 +621,12 @@ module AdminApp {
             }else if (this.btnSwitchOff.PushEvent(mx, my)) {
                 
             }
+            */
         }        
     
         MouseUpHandler(mx: number, my: number) { 
          
-            
+            /*
             if (this.btnLock.UpEvent(mx, my)){                
       //          this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
          //       this.m_siteData.getFastData_DoorArray();                                 
@@ -584,20 +646,17 @@ module AdminApp {
            //     this.m_siteData.getFastData_SwitchArray();                   
                 return null;
             }              
+            */
             
+            /*
             var returnVal = {
                 nextScreen: SwitchScreen.Main,
                 nextThingPath: null                                        
-            };               
+            };
+                           
 
            this.returnVal.nextScreen = SwitchScreen.Main;
-        
-           for (let id in this.m_doorMarks) {
-               if (this.m_doorMarks[id].isClicked(mx, my)) {
-                   this.returnVal.nextScreen = SwitchScreen.DoorScreen;
-                   this.returnVal.nextThingPath = this.m_doorMarks[id].getThing().getSitePath();
-                   }
-           }
+    
             
            for (let id in this.m_tempMarks) {
                if (this.m_tempMarks[id].isClicked(mx, my)) {
@@ -613,12 +672,7 @@ module AdminApp {
                 var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
                 
                 switchSensor.click();
-                   /*
-                switchSensor.postServerClick();           
-                switchSensor.getServerData();
-                switchSensor.getServerDataDelayed(100);
-             //   this.paint();
-                   */
+              
                 this.returnVal.nextScreen = null;    
                    return this.returnVal;                     
                    
@@ -636,6 +690,7 @@ module AdminApp {
            }              
             
            return this.returnVal;
+            */
         }    
         
         public paint(canvas: HTMLCanvasElement) {
@@ -650,7 +705,7 @@ module AdminApp {
             
             var scaleX: number = 0.0;
             var scaleY: number = 0.0;
-            
+            /*
             var thing: Thing = this.getThing();
                         
             if ((thing != null)) {
@@ -668,16 +723,12 @@ module AdminApp {
                     }                               
                 }
             }                    
-            
+            */
             ctx.clearRect(0, 0, width, height);
             
             //Draw image...
             this.imgFloor2.paint(ctx);
-            /*       
-            ctx.save();            
-            ctx.drawImage(this.imgFloor, 0, 0, width, height);
-            ctx.restore();        
-  */
+
            //    window.alert("" + scaleX + "" + scaleY + " marks:" +  this.m_doorMarks.length);
             
             //Doors...            
@@ -707,19 +758,7 @@ module AdminApp {
             for (let id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }    
-            
-            //Buttons            
-            this.btnSwitchOn.size((width) * 0.61, height - 75, 60, 60);
-            this.btnSwitchOn.paint(ctx);            
-            
-            this.btnSwitchOff.size((width) * 0.69, height - 75, 60, 60);
-            this.btnSwitchOff.paint(ctx);            
-            
-            this.btnLock.size((width) * 0.77, height - 75, 60, 60);
-            this.btnLock.paint(ctx);
-            
-            this.btnUnLock.size((width) * 0.85, height - 75, 60, 60);
-            this.btnUnLock.paint(ctx);             
+              
         }                             
     }    
         
@@ -739,8 +778,8 @@ module AdminApp {
         
         MouseUpHandler(mx: number, my: number) {                                           
                        
-            this.returnVal.nextScreen = SwitchScreen.Floor;
-            
+       //     this.returnVal.nextScreen = SwitchScreen.Floor;
+            /*
             for (let id in this.m_doorMarks) {
                if (this.m_doorMarks[id].isClicked(mx, my)) {
                    this.returnVal.nextScreen = SwitchScreen.DoorScreen;
@@ -748,7 +787,8 @@ module AdminApp {
                    return this.returnVal;
                }
            }
-            
+            */
+            /*
            for (let id in this.m_tempMarks) {
                if (this.m_tempMarks[id].isClicked(mx, my)) {
                    this.returnVal.nextScreen = null;
@@ -770,10 +810,11 @@ module AdminApp {
            }                         
 
             return this.returnVal;
+            */
         }       
         
         public setThing(thing: Thing){
-            
+            /*
             var oldThing: Thing = super.getThing(); 
             
             super.setThing(thing);
@@ -786,19 +827,7 @@ module AdminApp {
                     var room: Room = <Room> thing;
                     
                     //Images
-                    /*
-                    var img: ImageRect = this.m_graphics.getFilteredImage(this.m_imgRoom2Array, room.imageBkgPath);
-                    
-                    if (img == null) {
-                        img = new ImageRect (room.imageBkgPath);
-             //           img.size(0, 0, this.width, this.height);
-                        this.m_imgRoom2Array.push(img);                        
-                        this.m_imgRoom2 = img;
-                      //  window.alert('nnnnn');
-                    } else {
-                        this.m_imgRoom2 = img;
-                    }                                        
-                          */             
+                   
                     //Doors
                     var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
                     
@@ -826,7 +855,8 @@ module AdminApp {
                         this.m_switchMarks[id].setThing(<Thing> m_switchArray[id]);                        
                     }                                          
                 }                               
-            }            
+            }  
+            */          
         }         
         
         public paint(canvas: HTMLCanvasElement) {
@@ -836,7 +866,7 @@ module AdminApp {
             var height: number = canvas.height;
             
             ctx.clearRect(0, 0, width, height);
-            
+            /*
             var room: Room = <Room> this.getThing();
             
             if (room) {
@@ -846,6 +876,7 @@ module AdminApp {
                 this.m_imgRoom.paint(ctx);
                 
             }
+            */
             
             /*
             if (this.m_imgRoom2 != null){
@@ -880,14 +911,14 @@ module AdminApp {
         }             
     } 
     
-    
+    /*
     class retV {
         
-        public cname: any = null;
+        public name: any = null;
         public path: string = null;
         
     }
-     
+     */
     //Function to get the mouse position
     function getMousePos(canvas, event) {
     

@@ -12,21 +12,9 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 
-public class Site {
+public class Site extends Thing {
 
 	private static String id = "My First Crazy Site :):)";
-	
-	/*
-	 * Floors
-	 */
-//	public TreeMap<String, Floor> floors = 
-//            new TreeMap<String, Floor>();	
-	
-	/*
-	 * Rooms
-	 */
-//	public TreeMap<String, Room> rooms = 
-//            new TreeMap<String, Room>();	
 	
 	/*
 	 * String:  sitePath, Object: any thing...
@@ -60,6 +48,10 @@ public class Site {
 		devicesOhs.put("cc", new TemperatureSensor());
 	}
 	*/
+	public Site () {
+		this.name = "My First Crazy Site :):)";
+		
+	}
 	
 	public String getId ()
 	{
