@@ -63,28 +63,28 @@ public class KitchenServlet extends HttpServlet {
 	    		//	jsonString = json.toString();
 	    			
 	    		} else if (value.toString().contains("TimeDate")) {
-	    			jsonString =  this.JSON_TimeDateToString();
+	    		//	jsonString =  this.JSON_TimeDateToString();
 	    			
 	    		} else if (value.toString().contains("TempSensors")){ 	    			
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(TemperatureSensor.class);
+	    		//	jsonString =  this.m_infostation.JSON_ThingArrayToString(TemperatureSensor.class);
 		    				    		
 	    		} else if (value.toString().contains("ContactSensors")){ 	    			
 	    			//jsonString =  this.m_infostation.JSON_ThingArrayToString(ContactSensor.class);	    			
 	    		
 	    		} else if (value.toString().contains("SwitchSensors")){ 	    			
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Switch.class);	    				    			
+	    	//		jsonString =  this.m_infostation.JSON_ThingArrayToString(Switch.class);	    				    			
 	    		
 	    		}  else if (value.toString().contains("DoorArray")){ 	    			
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Door.class);	    				    			
+	    	//		jsonString =  this.m_infostation.JSON_ThingArrayToString(Door.class);	    				    			
 	    		
 	    		} else if (value.toString().contains("WindowArray")){ 	    			
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Window.class);	    				    			
+	    	//		jsonString =  this.m_infostation.JSON_ThingArrayToString(Window.class);	    				    			
 	    		
 	    		} else if (value.toString().contains("RoomArray")){ 	
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Room.class);	    				    			
+	    	//		jsonString =  this.m_infostation.JSON_ThingArrayToString(Room.class);	    				    			
 	    		
 	    		} else if (value.toString().contains("FloorArray")){ 	
-	    			jsonString =  this.m_infostation.JSON_ThingArrayToString(Floor.class);	    				    			
+	    	//		jsonString =  this.m_infostation.JSON_ThingArrayToString(Floor.class);	    				    			
 	    		
 	    		}  else if (value.toString().contains("WeatherCurrent")) {	
 	    			JSONObject json = getCurWeatherToJSON();
@@ -124,7 +124,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    //				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}
 	    			
 	    			
@@ -133,7 +133,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    	//			jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}		    		
 	    			
 		    	} else if (value.toString().equals("TempSensor")) {
@@ -141,7 +141,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    		//		jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}
 	    			
 		    	} else if (value.toString().equals("Room")) {
@@ -149,7 +149,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    		//		jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}
 																				
 		        } else if (value.toString().equals("DoorD")) {
@@ -157,7 +157,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    	//			jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}		        		
 					
 				} else if (value.toString().equals("Window")) {
@@ -165,7 +165,7 @@ public class KitchenServlet extends HttpServlet {
 	    			String path = request.getParameter("path");
 	    			
 	    			if (path != null) {	    			
-	    				jsonString = this.m_infostation.JSON_ThingToString(path.toString());
+	    	//			jsonString = this.m_infostation.JSON_ThingToString(path.toString());
 	    			}								    			    		
 				} else if (value.toString().equals("Supplier")) {
 					/*

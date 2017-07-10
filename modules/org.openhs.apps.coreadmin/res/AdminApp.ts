@@ -185,57 +185,8 @@ module AdminApp {
             
             if (mouseRet != null) {
                 this.SwitchPage(mouseRet.nextScreen);
-                
-                
-            }
-            
-            /*
-            if (mouseRet != null) {
-                
-                window.alert('je to x:' + retVal.nextThingPath);
-                
-                //this.openPage(retVal);
-         //       this.openPage2(ScreenRoom.name);
-            }
-            */
-            
-            
-            /*
-            var retVal = this.currPage.MouseUpHandler(mousePos.x, mousePos.y);
-            
-            if (retVal == null) {
-                return null;
-            }
-            
-         //   var refresh = this.refreshRateMain;
-            var screen = null;
-                                               
-           // window.alert(">>>" + retVal.nextScreen + "\n\n>>>" + retVal.nextThingPath);
-                    
-            if (retVal.nextScreen == SwitchScreen.Floor) {               
-              //  refresh = 1000;
-                screen = this.m_screenFloor;
-                this.m_screenFloor.setThing(<Thing>this.m_siteData.m_floorArray[0]);
-                
-              //  window.alert("floor");
-                
-                // window.alert("path:   " + this.m_siteData.m_floorArray[0].getSitePath() + " dx: " + this.m_siteData.m_floorArray[0].dim_x + " dy: " + this.m_siteData.m_floorArray[0].dim_y);
-                
-            } else if (retVal.nextScreen == SwitchScreen.Main) {
-                screen = this.m_screenMain;     
-                
-            } else if (retVal.nextScreen == SwitchScreen.Room) {
-  //              refresh = 100;
-                screen = this.m_screenRoom;                
-                this.m_screenRoom.setThing(this.m_siteData.getThing(retVal.nextThingPath));
-                
-            }
-            
-      //      this.paint();
-            
-            // Switch screen
-            this.openPage(screen);
-            */
+                                
+            }            
         }
         
         private SwitchPage (page: string ) {
@@ -282,7 +233,7 @@ module AdminApp {
     
     export class Screen {
             
-        protected mouseRet:           MouseReturn             = new MouseReturn ();
+       // protected mouseRet:           MouseReturn             = new MouseReturn ();
         protected m_siteData:         SiteData                = null;
         protected m_graphics:         Graphics                = null;
         public    m_dlgNumbers:       DlgNumbers              = new DlgNumbers ();
@@ -433,13 +384,15 @@ module AdminApp {
         
         public MouseUpHandler(mx: number, my: number) {     
         
+            var mouseRet: MouseReturn = new MouseReturn ();
+        
             if (this.enableDlgNumbers) {
                 var n = this.m_dlgNumbers.MouseUpHandler(mx, my);
                 
-                if (n > 0 && n <= this.m_dlgNumbers.getSize()) {
+                if (n != -1) {
                     this.enableDlgNumbers = false;   
                     
-                    //window.alert('clicked:' + n);
+                    window.alert('Set number of floors: ' + n);
                     //Set number floors...
                     
                     return null;
@@ -448,19 +401,18 @@ module AdminApp {
 
             var ret = this.m_symbolHome.MouseUpHandler(mx, my);
             
-            if (ret != null) {                                
+            if (ret != null) {            
+                                            
+                mouseRet.nextScreen = ScreenFloor.name;
+                mouseRet.nextSitePath = ret;
                 
-                this.mouseRet.nextScreen = ScreenFloor.name;
-                this.mouseRet.nextSitePath = ret;
-                
-                return this.mouseRet;            
+                return mouseRet;            
             }       
             
             if (this.textNumFloors.isClicked(mx, my)) {
               //  window.alert('changing num floors...');
                 
-                this.enableDlgNumbers = true;
-            
+                this.enableDlgNumbers = true;            
             }
             
             return null;
@@ -505,11 +457,7 @@ module AdminApp {
         }
 
     }
-       
-    
-    
-        
-        
+
     class ScreenFloor extends Screen {
         
         protected thingPath:            string                      = "";

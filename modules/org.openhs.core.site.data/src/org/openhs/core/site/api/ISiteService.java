@@ -38,6 +38,8 @@ public interface ISiteService {
 	public Set<String> getChildren (String sitePath) throws SiteException;  
 	
 	public int getNumberThings (String sitePath) throws SiteException;
+	
+	public String getDevicePath (String sitePath);
 
 	boolean setSite (Site siteIn);
 	
@@ -55,10 +57,10 @@ public interface ISiteService {
 	
 	public boolean isLocked (Thing m_thing) throws SiteException;
 	
-	public JSONObject getThingJSON (String path);
+	//public JSONObject getThingJSON (String path);
 
-	public JSONObject getThingArrayJSON (Class<?> t);
+	//public JSONObject getThingArrayJSON (Class<?> t);
 	
-	public JSONObject getTimeDateJSON();
+	//public JSONObject getTimeDateJSON();
 
 }

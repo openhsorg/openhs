@@ -27,27 +27,7 @@ public class Site extends Thing {
 	 */
 	public TreeMap<String, String> devPaths = 
             new TreeMap<String, String>();	
-	
-	/*
-	 * Filtered floors...  TODO
-	 * String: sitePaths to only Rooms...
-	 */
-	//public ArrayList<String> floorPaths = 
-          //  new ArrayList<String>();		
-	
-	
-	/*
-	 * Filtered rooms... TODO
-	 * String: sitePaths to only Rooms...
-	 */
-	//public ArrayList<String> roomPaths = 
-    //        new ArrayList<String>();		
-	
-	/*
-	Site () {
-		devicesOhs.put("cc", new TemperatureSensor());
-	}
-	*/
+
 	public Site () {
 		this.name = "My First Crazy Site :):)";
 		

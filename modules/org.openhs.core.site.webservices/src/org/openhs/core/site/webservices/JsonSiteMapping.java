@@ -172,7 +172,6 @@ public class JsonSiteMapping {
 				}
 				
 			} catch (SiteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				
 				return null;
@@ -277,7 +276,7 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(false));				
 			}	
 			
-//			logger.info("JsonXX: " + jsonRet.toString());	
+			logger.info("JsonXX: " + jsonRet.toString());	
 			
 		} else if (id.equals("idRoomArr")) {
 			

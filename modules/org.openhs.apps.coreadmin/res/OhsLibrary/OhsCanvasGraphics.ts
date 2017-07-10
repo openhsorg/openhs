@@ -1308,7 +1308,7 @@ import Thing = OhsSiteData.Thing;
                 i++;
             }            
             
-            return 0;
+            return -1;
         }
         
         public paint (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {

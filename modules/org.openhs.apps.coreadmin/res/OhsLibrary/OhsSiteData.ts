@@ -97,7 +97,7 @@ module OhsSiteData {
         public updateFastData () {
             
             //Date & Time
-            this.get_DateTime();  
+            this.updateDateTime();  
             
             //Switch 
         //    this.getObjectArray(idSwitchArr);            
@@ -140,7 +140,7 @@ module OhsSiteData {
             }         
         }
         
-        public get_DateTime (){
+        public updateDateTime (){
             
             var js = JSON.stringify({
             idPost : idTimeDate

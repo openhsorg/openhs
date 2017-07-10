@@ -432,9 +432,11 @@ public class Infostation implements IInfostation {
 		  return json;
       }  
       */
+      /*
       public String JSON_ThingToString (String path) {
     	  return m_siteService.getThingJSON(path).toString();
       }
+      */
       /*
       public JSONObject JSON_ThingArray (Class<?> t) {
     	  
@@ -465,9 +467,11 @@ public class Infostation implements IInfostation {
     	  return json; 
       }           
         */ 
+      /*
       public String JSON_ThingArrayToString (Class<?> t) {
     	  return m_siteService.getThingArrayJSON(t).toString();
       }
+      */
       /*
       public String JSON_Supplier (String name) {
     	  

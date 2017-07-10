@@ -72,6 +72,11 @@ public class MySiteServiceImpl implements ISiteService {
 		loadData();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#buildHouse()
+	 * Function: Create simple example house structure.
+	 */
 	@Override
 	public void buildHouse() {
 
@@ -79,7 +84,7 @@ public class MySiteServiceImpl implements ISiteService {
 			Floor floor = new Floor();
 			floor.setName("My first floor");
 			floor.setDimensions(22.450f, 13.700f);
-			addThing("floors/Floor1", floor);
+			addThing("floors/Floor1", floor);		
 
 			Room room = new Room();
 			room.setName("Outside");
@@ -374,6 +379,11 @@ public class MySiteServiceImpl implements ISiteService {
 		ss.setId(newID);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addThing(java.lang.String, org.openhs.core.commons.Thing)
+	 * Adds new thing.
+	 */
 	public boolean addThing (String sitePath, Thing thing){
 		
 		if (ss.things.get(sitePath) == null) {
@@ -386,6 +396,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return false;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addThing(java.lang.String, java.lang.String, org.openhs.core.commons.Thing)
+	 * Add new thing + pairs with device name.
+	 */
 	public boolean addThing (String sitePath, String devicePath, Thing thing){
 		
 		if (addThing(sitePath, thing)) {			
@@ -397,6 +412,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return false;
 	}	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThing(java.lang.String)
+	 * Get thing by site path.
+	 */
 	public Thing getThing (String sitePath) throws SiteException {		
 
 		Thing obj = ss.things.get(sitePath);
@@ -408,6 +428,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return obj;
 	}	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThingDevice(java.lang.String)
+	 * Get thing by device path.
+	 */
 	public Thing getThingDevice (String devicePath) throws SiteException {
 				
 		String sitePath = ss.devPaths.get(devicePath);
@@ -419,12 +444,12 @@ public class MySiteServiceImpl implements ISiteService {
 		return getThing(sitePath);
 		
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#setThingDevice(java.lang.String, org.openhs.core.commons.Thing)
 	 * string devicePath must exists, then this replaces in datastructure the object...
-	 */
-	
+	 */	
 	public boolean setThingDevice (String devicePath, Thing device) throws SiteException {
 		
 		String sitePath = ss.devPaths.get(devicePath);
@@ -448,8 +473,7 @@ public class MySiteServiceImpl implements ISiteService {
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getChildren(java.lang.String)
 	 * Returns list of sitePaths, children of included sitePath item.  Only first level of children.
-	 */
-	
+	 */	
 	public Set<String> getChildren (String sitePath) throws SiteException {
 		
 		// Divide
@@ -476,7 +500,6 @@ public class MySiteServiceImpl implements ISiteService {
 					String[] partsItem = item.split(delim);
 					for (String str : partsItem) {
 						if (str.equals("")) {
-							System.out.println("\n\n eeeee");
 							throw new SiteException("keyPath contaims empty strings...");
 						}
 					}
@@ -491,13 +514,22 @@ public class MySiteServiceImpl implements ISiteService {
 		return keySet;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getNumberThings(java.lang.String)
+	 */
 	public int getNumberThings (String sitePath) throws SiteException {
 				
 		Set<String> set = getChildren (sitePath);
 		
 		return set.size();				
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getDevicePath(java.lang.String)
+	 * Returns device path of thing specified by sitePath.
+	 */
 	public String getDevicePath (String sitePath) {
 		
 		Set <String> devicePaths = ss.devPaths.keySet();
@@ -584,6 +616,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return keySet;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getSite()
+	 * Returns site object.
+	 */
 	public Site getSite() {
 		return ss;
 	}
@@ -617,8 +654,7 @@ public class MySiteServiceImpl implements ISiteService {
 					state = false;
 					break;
 				}
-			}		
-			
+			}					
 			return state;			
 		}
 		
@@ -1185,7 +1221,7 @@ public class MySiteServiceImpl implements ISiteService {
 			buildHouse(); // build some house....
 		}
 	}
-	
+	/*
 	public JSONObject getThingJSON (String path) {
   	  
   	  JSONObject json = new JSONObject();
@@ -1327,5 +1363,5 @@ public class MySiteServiceImpl implements ISiteService {
 		
 		return json;
     } 	
-
+*/
 }
