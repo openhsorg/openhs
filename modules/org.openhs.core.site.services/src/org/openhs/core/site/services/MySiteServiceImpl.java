@@ -8,8 +8,12 @@
 
 package org.openhs.core.site.services;
 
+import java.awt.List;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -410,7 +414,33 @@ public class MySiteServiceImpl implements ISiteService {
 		}
 
 		return false;
-	}	
+	}
+	
+	public boolean removeThing(String sitePath) {
+		
+	//	logger.info("****Command:" + sitePath);
+		
+		if (ss.things.remove(sitePath) != null) {			
+			//Remove also device path connection			
+			/*
+			Set<String> keySetAll = ss.devPaths.keySet();
+			
+			for (String item : keySetAll) {	
+				
+				String path = ss.devPaths.get(item);
+				
+				if (path.equals(sitePath)) {
+					ss.devPaths.remove(item);
+					
+					return true;
+				}
+			}
+				*/		
+			return true;
+		}
+				
+		return false;
+	}
 	
 	/*
 	 * (non-Javadoc)
@@ -524,6 +554,51 @@ public class MySiteServiceImpl implements ISiteService {
 		
 		return set.size();				
 	}
+	
+	public boolean setNumberThings (int number, Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		Set<String> set = getThingPathSet (t);
+		
+		if (number > set.size()) {
+			//Add items
+			
+			for (int i = set.size(); i <= number; i++) {	
+												
+				String className = "org.openhs.core.commons.Floor";
+				Thing object = (Thing) Class.forName(className).newInstance();					
+								
+/*				Class<?> c = Class.forName(t.getName());					
+				Constructor<?> cons = c.getConstructor(t);
+				Object object = cons.newInstance();
+				*/
+				
+			//	String sitePath = "";
+				
+				if (object instanceof Floor) {
+										
+					
+				}
+				
+				addThing("floors/Floor" + i , (Thing) object);
+
+			}
+			
+			
+		} else if (number < set.size()) {
+			//Remove items
+			ArrayList<String> setList = new ArrayList<String>(set);
+			
+			logger.info("\n\nJE TO:" + number + "  AND:" + set.size());
+			
+			for (int i = number; i < set.size(); i++) {
+				removeThing(setList.get(i));
+			}
+								
+		}
+		
+		return true;				
+	}	
+	
 
 	/*
 	 * (non-Javadoc)

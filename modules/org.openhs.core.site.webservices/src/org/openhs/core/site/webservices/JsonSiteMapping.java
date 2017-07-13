@@ -1,5 +1,6 @@
 package org.openhs.core.site.webservices;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -244,6 +245,28 @@ public class JsonSiteMapping {
 				  jsonRet.put("return", new Boolean(false));
 			  } 
 
+			
+		} else if (id.equals("idSetFloors")) {
+			
+			int n = json.getInt("nmb");
+			
+			boolean ret = false;
+			
+			try {
+				ret = m_siteService.setNumberThings(n, Floor.class);
+			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(true));
+			
+			logger.info("***WWWWWWWWW:" + n);
 			
 		} else if (id.equals("idTimeDate")) {
 			

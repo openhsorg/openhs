@@ -10,6 +10,7 @@ package org.openhs.core.site.api;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.Thing;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -28,6 +29,8 @@ public interface ISiteService {
 	public boolean addThing (String sitePath, Thing thing);
 	
 	public boolean addThing (String sitePath, String devicePath, Thing thing);
+	
+	public boolean setNumberThings (int number, Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 	
 	public Thing getThing (String sitePath) throws SiteException;
 	

@@ -270,7 +270,7 @@ module AdminApp {
         
         public paint (canvas: HTMLCanvasElement) {  
         
-            this.paintDlgNumbers(canvas);
+           // this.paintDlgNumbers(canvas);
         }
 
         protected paintWait (canvas: HTMLCanvasElement) {    
@@ -299,7 +299,7 @@ module AdminApp {
             
             ctx.restore();   
         }
-        
+        /*
         protected paintDlgNumbers (canvas: HTMLCanvasElement) {    
         
             const ctx = canvas.getContext('2d');
@@ -307,31 +307,9 @@ module AdminApp {
             var height: number = canvas.height;
             
             this.m_dlgNumbers.paint(ctx, 100, 100, 20, 20);
-           
-            
-            /*
-            var rect: RectRounded = new RectRounded();            
-            var text: TextSimple = new TextSimple ();
-                                               
-            ctx.save();                        
-            rect.size((width / 2) - 100, (height / 2) - 25, 200, 60);
-            rect.rad(10);            
-            rect.paint(ctx);
-            ctx.fillStyle = "#b8b894";
-            ctx.lineWidth=2;
-            ctx.strokeStyle="gray";            
-            ctx.fill();
-            ctx.stroke();            
-            
-            text.size(rect.x + 5, rect.y + 5, 60, 30);
-            text.fontColor = "#1a75ff";
-            text.fontSize = 40;
-            text.paintText(ctx, 'Wait...');                       
-            
-            ctx.restore();   
-            */
+
         }        
-        
+*/        
         //Called right away after entering page...       
         public updateData () {
             //your code        
@@ -392,8 +370,9 @@ module AdminApp {
                 if (n != -1) {
                     this.enableDlgNumbers = false;   
                     
-                    window.alert('Set number of floors: ' + n);
+                  //  window.alert('Set number of floors: ' + n);
                     //Set number floors...
+                    this.m_siteData.setNumberFloors(n);
                     
                     return null;
                 }
