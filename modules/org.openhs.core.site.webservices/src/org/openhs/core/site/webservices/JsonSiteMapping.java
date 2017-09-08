@@ -206,7 +206,7 @@ public class JsonSiteMapping {
 		JSONObject jsonRet = new JSONObject ();
 	//	jsonRet.put("return", new Boolean(false));
 		
-		//logger.info("POST2....>> " + json.toString());
+	//	logger.info("POST2....>> " + json.toString());
 		
 		if (id.equals("idThingCommand")) {
 			
@@ -267,6 +267,26 @@ public class JsonSiteMapping {
 			jsonRet.put("return", new Boolean(true));
 			
 			logger.info("***WWWWWWWWW:" + n);
+			
+		} else if (id.equals("idAddFloor")) {
+			
+			boolean ret = false;
+			
+			try {
+				ret = m_siteService.addNextThing(Floor.class);				
+			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(true));
+			
+			//logger.info("***Added floor");
 			
 		} else if (id.equals("idTimeDate")) {
 			

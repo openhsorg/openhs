@@ -597,6 +597,33 @@ public class MySiteServiceImpl implements ISiteService {
 		}
 		
 		return true;				
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addNextThing(java.lang.Class)
+	 * Creates next class...
+	 */
+	public boolean addNextThing (Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		//Prepare new path
+		
+		String path = "sss";
+		
+		Set<String> set = getThingPathSet (t);
+		
+		int n = set.size() + 1;
+								
+		String className = t.getName(); //"org.openhs.core.commons.Floor";
+		Thing object = (Thing) Class.forName(className).newInstance();
+		
+		if (className.contains("Floor")) {
+			path = "floors/Floor" + "_" + n; 				
+		}
+		
+		this.addThing(path, object);		
+				
+		return true;				
 	}	
 	
 

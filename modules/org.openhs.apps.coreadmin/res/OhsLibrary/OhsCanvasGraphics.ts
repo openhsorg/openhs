@@ -1383,7 +1383,7 @@ import Thing = OhsSiteData.Thing;
             for (let item of this.m_rectFloorArray) {
                 var i = 0;
                 if (item.isClicked(mx, my)){
-                 //   window.alert('it is' + this.m_sitePathArray[i].getText());
+                    window.alert('it is' + this.m_sitePathArray[i].getText());
                     return this.m_sitePathArray[i].getText();
                 }         
                 

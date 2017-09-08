@@ -30,6 +30,8 @@ public interface ISiteService {
 	
 	public boolean addThing (String sitePath, String devicePath, Thing thing);
 	
+	public boolean addNextThing (Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+	
 	public boolean setNumberThings (int number, Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 	
 	public Thing getThing (String sitePath) throws SiteException;

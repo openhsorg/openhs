@@ -55,7 +55,11 @@ module AdminApp {
     let fontSizeWind:       number = 24;      
     let fontSizeHum:        number = 27;
     let fontSizeTime:       number = fontSizeTempOut;
-    let fontSizeDate:       number = fontSizeWind;         
+    let fontSizeDate:       number = fontSizeWind;        
+    
+    const imagePadlockOff           = '/adminres/images/symbol_padlock_off.png';
+    const imagePadlockOffPushed     = '/adminres/images/symbol_padlock_off_pushed.png';
+
     
     
     export class Admin {
@@ -72,7 +76,7 @@ module AdminApp {
       //  private timerLoadGraphics;
         
         // Screens
-        private m_screenMain:       ScreenMain = null;                    
+        private m_screenMain:             ScreenMain = null;                    
         private m_screenRoom:             ScreenRoom = null;
         private m_screenFloor:            ScreenFloor =  null;
                
@@ -96,7 +100,7 @@ module AdminApp {
             
             //---Screens---
             this.m_screenMain = new ScreenMain(this.m_siteData, this.m_graphics);
-           // this.m_screenFloor = new ScreenFloor(this.m_siteData, this.m_graphics);
+            this.m_screenFloor = new ScreenFloor(this.m_siteData, this.m_graphics);
          //   this.m_screenRoom = new ScreenRoom(this.m_siteData, this.m_graphics);      
 
             //---Mouse Handler---
@@ -144,7 +148,6 @@ module AdminApp {
                 /////****************
            }            
       
-
           requestAnimationFrame(()=>this.paint());            
             
         }
@@ -184,19 +187,20 @@ module AdminApp {
             }
             
             if (mouseRet != null) {
-                this.SwitchPage(mouseRet.nextScreen);
+                this.SwitchPage(mouseRet.nextScreen, mouseRet.nextSitePath);
                                 
             }            
         }
         
-        private SwitchPage (page: string ) {
+        private SwitchPage (page: string, thingPath: string) {
                         
             if (page == ScreenMain.name) {
                 this.currPage = this.m_screenMain;
             
             } else if (page == ScreenFloor.name) {
-                window.alert('Floor switch');
-                this.currPage = this.m_screenFloor;            
+                
+                this.currPage = this.m_screenFloor; 
+                this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);           
             }
                         
         }
@@ -237,15 +241,11 @@ module AdminApp {
         protected m_siteData:         SiteData                = null;
         protected m_graphics:         Graphics                = null;
         public    m_dlgNumbers:       DlgNumbers              = new DlgNumbers ();
-    //    public    m_prevPage:         SwitchScreen            = SwitchScreen.Main;
+        public    m_thingPtr:         Thing                   = null;
+
            
         public wait:                  boolean                 = false;
-        /*
-        public returnVal = {
-                nextScreen: null,
-                nextThingPath: null                                 
-            };          
-        */
+    
         constructor (m_siteData: SiteData, m_graphics: Graphics) {
             
             this.m_siteData = m_siteData;
@@ -323,6 +323,7 @@ module AdminApp {
         public HouseNameText:       TextSimple      = new TextSimple ();
         public textNumFloors:       TextSimple      = new TextSimple();        
         public m_symbolHome:        SymbolHome      = new SymbolHome();     
+        protected btnDelete:            ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
         
         protected enableDlgNumbers: boolean         = false;
            
@@ -380,7 +381,9 @@ module AdminApp {
 
             var ret = this.m_symbolHome.MouseUpHandler(mx, my);
             
-            if (ret != null) {            
+            if (ret != null) {     
+            
+                //window.alert('ret: ' + ret);
                                             
                 mouseRet.nextScreen = ScreenFloor.name;
                 mouseRet.nextSitePath = ret;
@@ -393,6 +396,19 @@ module AdminApp {
                 
                 this.enableDlgNumbers = true;            
             }
+            
+            if (this.btnDelete.isClicked(mx, my)){                 
+                
+                // window.alert('Add floor');
+                
+                 this.m_siteData.addFloor();
+                
+                //mouseRet.nextScreen = ScreenMain.name;
+                //mouseRet.nextSitePath = null;
+                
+                return null;                  
+                
+            }            
             
             return null;
         }
@@ -433,6 +449,10 @@ module AdminApp {
             if (this.enableDlgNumbers) {
                 this.m_dlgNumbers.paint(ctx, 100, 100, 60, 60);
             }
+            
+            //Add next floor
+            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
+            this.btnDelete.paint(ctx);            
         }
 
     }
@@ -441,32 +461,37 @@ module AdminApp {
         
         protected thingPath:            string                      = "";
         protected imgFloor2:            ImageRect                   = new ImageRect();
-        private imgFloor:               HTMLImageElement            = null;        
-        private imgFloorLoaded:         boolean                     = false;        
-        private txtNumRooms:            TextSimple                  = new TextSimple ();
+        //private imgFloor:               HTMLImageElement            = null;        
+       // private imgFloorLoaded:         boolean                     = false;        
+        private txtThingPath:            TextSimple                  = new TextSimple ();
         public m_doorMarks:             Array<DoorMark>             = new Array<DoorMark>();                // Doors marks
         public m_windowMarks:           Array<WindowMark>           = new Array<WindowMark>();              // Window marks
         public m_tempMarks:             Array<TempMark>             = new Array<TempMark>();                // Temp marks
         public m_switchMarks:           Array<SwitchMark>           = new Array<SwitchMark>();              // Switch marks
         public m_contactSensorsMarks:   Array<ContactSensorMark>    = new Array<ContactSensorMark>();       // Switch marks
-        private perc:                   number                      = 0.8;
-    //    protected btnLock:              ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
-     //   protected btnUnLock:            ImageButton                 = new ImageButton(imagePadlockOpen, imagePadlockOpenPushed);        
-    //    protected btnSwitchOff:         ImageButton                 = new ImageButton(imageBulbOff, imageBulbOffPushed);
-    //    protected btnSwitchOn:          ImageButton                 = new ImageButton(imageBulbOn, imageBulbOnPushed);        
-           
+        private perc:                   number                      = 0.8;  
+        public timeText:                TextSimple                  = new TextSimple ();
+        
+        protected btnDelete:            ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
         
         constructor (siteData:  SiteData, m_graphics: Graphics) {                
             super (siteData, m_graphics);
-
+/*
             this.imgFloor = new Image();
             this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";                     
             this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
-         
-            this.txtNumRooms.size (0, 0, 250, 100);
-            this.txtNumRooms.textAlign = "left";
-            this.txtNumRooms.textBaseline = "middle";
-            this.txtNumRooms.fontSize = 40;       
+         */
+            this.txtThingPath.size (0, 0, 250, 100);
+            this.txtThingPath.textAlign = "left";
+            this.txtThingPath.textBaseline = "middle";
+            this.txtThingPath.fontSize = 40;       
+            
+            //Time & Date
+            this.timeText.fontSize = 40;
+            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.timeText.fontColor = textColor;
+            this.timeText.textAlign = "right";
+            this.timeText.textBaseline = "middle";            
         }  
         
         public setThing(thing: Thing){
@@ -551,15 +576,31 @@ module AdminApp {
             */
         }        
     
-        MouseUpHandler(mx: number, my: number) { 
+        MouseUpHandler(mx: number, my: number) {                    
          
-            /*
-            if (this.btnLock.UpEvent(mx, my)){                
-      //          this.m_siteData.postServerCommand('AllDoorSwitchesOn');  
-         //       this.m_siteData.getFastData_DoorArray();                                 
-                return null; 
+            var mouseRet: MouseReturn = new MouseReturn ();
+           
+           // window.alert('go back...!!!');
+            
+            if (this.btnDelete.isClicked(mx, my)){                 
+                                                
+                if (confirm('Do you want to delete this floor???')) {
+                    
+                   
+                    
+                    mouseRet.nextScreen = ScreenMain.name;
+                    mouseRet.nextSitePath = null;
                 
-            } else if (this.btnUnLock.UpEvent(mx, my)){                
+                    return mouseRet;       
+                
+                } else {
+                    
+                    return null;
+                }
+
+            }
+            /*
+            else if (this.btnUnLock.UpEvent(mx, my)){                
            //     this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
            //     this.m_siteData.getFastData_DoorArray();                   
                 return null;
@@ -621,17 +662,36 @@ module AdminApp {
         }    
         
         public paint(canvas: HTMLCanvasElement) {
+                                    
+           // window.alert('Floor switch *');
             
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
             var height: number = canvas.height;
             
-            //Picture percentage
-            this.imgFloor2.size(0, 0, canvas.width, canvas.height);
-            this.imgFloor2.scaleSize(0.8);
+            ctx.clearRect(0, 0, width, height);
+
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();           
+            ctx.closePath();
+            ctx.restore(); 
+                            
+            //Time          
+            this.timeText.size(canvas.width - 260, 2, 250, 65);        
+            this.timeText.paintText(ctx, this.m_siteData.timeString);  
             
-            var scaleX: number = 0.0;
-            var scaleY: number = 0.0;
+            //Name of floor          
+            this.txtThingPath.size(30, 20, 250, 65);        
+            this.txtThingPath.paintText(ctx, this.m_thingPtr.getSitePath());     
+            
+            //Delete this floor
+            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
+            this.btnDelete.paint(ctx);
             /*
             var thing: Thing = this.getThing();
                         
@@ -651,6 +711,7 @@ module AdminApp {
                 }
             }                    
             */
+            /*
             ctx.clearRect(0, 0, width, height);
             
             //Draw image...
@@ -685,6 +746,7 @@ module AdminApp {
             for (let id in this.m_contactSensorsMarks) {
                 this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
             }    
+            */
               
         }                             
     }    

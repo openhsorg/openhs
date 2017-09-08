@@ -25,6 +25,7 @@ module OhsSiteData {
     const idThingGet = 'idThingGet';
     const idSiteUpdate = 'idSiteUpdate';
     const idSetFloors = 'idSetFloors';
+    const idAddFloor = 'idAddFloor';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -386,13 +387,14 @@ module OhsSiteData {
                 
         }
         
-        public setNumberFloors(n: number) {            
+        public setNumberFloors(n: number) {   
+                 
             var js = JSON.stringify({
                 idPost : idSetFloors,
                 nmb:   n
             });               
             
-           // window.alert('***');
+            //window.alert('***');
             
             var ret = postAjax(url, js);     
             
@@ -407,6 +409,28 @@ module OhsSiteData {
             }            
         
         }
+        
+        public addFloor() {   
+                 
+            var js = JSON.stringify({
+                idPost : idAddFloor
+            });               
+            
+          //  window.alert('**af*');
+            
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                /*
+                this.stateInt = parseInt(ret['state_int']);      
+            
+                this.updateDelayed (100);
+                */
+                
+                this.updateObjectArray(idFloorArr);   
+            }            
+        
+        }        
     }
     
     export class Thing {
