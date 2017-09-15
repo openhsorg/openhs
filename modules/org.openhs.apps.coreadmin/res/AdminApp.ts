@@ -383,7 +383,7 @@ module AdminApp {
             
             if (ret != null) {     
             
-                //window.alert('ret: ' + ret);
+           //     window.alert('ret: ' + ret);
                                             
                 mouseRet.nextScreen = ScreenFloor.name;
                 mouseRet.nextSitePath = ret;
@@ -399,7 +399,7 @@ module AdminApp {
             
             if (this.btnDelete.isClicked(mx, my)){                 
                 
-                // window.alert('Add floor');
+                 //window.alert('Add floor');
                 
                  this.m_siteData.addFloor();
                 
@@ -584,9 +584,9 @@ module AdminApp {
             
             if (this.btnDelete.isClicked(mx, my)){                 
                                                 
-                if (confirm('Do you want to delete this floor???')) {
+                if (confirm('Do you want to delete this floor???')) {                                       
                     
-                   
+                    this.m_siteData.deleteFloor(this.m_thingPtr.getSitePath());
                     
                     mouseRet.nextScreen = ScreenMain.name;
                     mouseRet.nextSitePath = null;
@@ -599,66 +599,12 @@ module AdminApp {
                 }
 
             }
-            /*
-            else if (this.btnUnLock.UpEvent(mx, my)){                
-           //     this.m_siteData.postServerCommand('AllDoorSwitchesOff');  
-           //     this.m_siteData.getFastData_DoorArray();                   
-                return null;
-                
-            } else if (this.btnSwitchOn.UpEvent(mx, my)){                
-          //      this.m_siteData.postServerCommand('AllRoomSwitchesOn');  
-          //      this.m_siteData.getFastData_SwitchArray();                   
-                return null;
-            } else if (this.btnSwitchOff.UpEvent(mx, my)){                
-           //     this.m_siteData.postServerCommand('AllRoomSwitchesOff'); 
-           //     this.m_siteData.getFastData_SwitchArray();                   
-                return null;
-            }              
-            */
+          
+            mouseRet.nextScreen = ScreenMain.name;
+            mouseRet.nextSitePath = null;
+        
+            return mouseRet;                
             
-            /*
-            var returnVal = {
-                nextScreen: SwitchScreen.Main,
-                nextThingPath: null                                        
-            };
-                           
-
-           this.returnVal.nextScreen = SwitchScreen.Main;
-    
-            
-           for (let id in this.m_tempMarks) {
-               if (this.m_tempMarks[id].isClicked(mx, my)) {
-                   this.returnVal.nextScreen = SwitchScreen.Room;
-                   
-                   this.returnVal.nextThingPath = this.m_siteData.getParentPath(this.m_tempMarks[id].getThing());
-              }
-           }   
-            
-           for (let id in this.m_switchMarks) {
-               if (this.m_switchMarks[id].isClicked(mx, my)) {
-                  
-                var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
-                
-                switchSensor.click();
-              
-                this.returnVal.nextScreen = null;    
-                   return this.returnVal;                     
-                   
-              }               
-           }    
-            
-           for (let id in this.m_contactSensorsMarks) {
-               if (this.m_contactSensorsMarks[id].isClicked(mx, my)) {
-                   this.returnVal.nextScreen = null;
-                   
-                 //  window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getSitePath());
-                   
-                   //this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
-              }
-           }              
-            
-           return this.returnVal;
-            */
         }    
         
         public paint(canvas: HTMLCanvasElement) {

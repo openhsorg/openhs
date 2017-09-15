@@ -1380,10 +1380,13 @@ import Thing = OhsSiteData.Thing;
         
         public MouseUpHandler(mx: number, my: number) {
             
+            var i = 0;
+            
             for (let item of this.m_rectFloorArray) {
-                var i = 0;
+                                
                 if (item.isClicked(mx, my)){
-                    window.alert('it is' + this.m_sitePathArray[i].getText());
+                    
+                  //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
                     return this.m_sitePathArray[i].getText();
                 }         
                 

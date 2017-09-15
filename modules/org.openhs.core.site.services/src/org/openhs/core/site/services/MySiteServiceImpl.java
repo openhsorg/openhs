@@ -621,9 +621,11 @@ public class MySiteServiceImpl implements ISiteService {
 			path = "floors/Floor" + "_" + n; 				
 		}
 		
-		this.addThing(path, object);		
+		logger.info("--------->:" + path);
+		
+		boolean ret = this.addThing(path, object);		
 				
-		return true;				
+		return ret;				
 	}	
 	
 

@@ -26,6 +26,7 @@ module OhsSiteData {
     const idSiteUpdate = 'idSiteUpdate';
     const idSetFloors = 'idSetFloors';
     const idAddFloor = 'idAddFloor';
+    const idDeleteFloor = 'idDeleteFloor';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -415,21 +416,28 @@ module OhsSiteData {
             var js = JSON.stringify({
                 idPost : idAddFloor
             });               
-            
-          //  window.alert('**af*');
-            
+
             var ret = postAjax(url, js);     
             
             if (JSON.parse(ret['return'])){
-                /*
-                this.stateInt = parseInt(ret['state_int']);      
-            
-                this.updateDelayed (100);
-                */
                 
                 this.updateObjectArray(idFloorArr);   
-            }            
+            }                    
+        }    
         
+        public deleteFloor(floorPath : string) {   
+                 
+            var js = JSON.stringify({
+                idPost : idDeleteFloor,
+                sitePath  : floorPath
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                
+                this.updateObjectArray(idFloorArr);   
+            }                    
         }        
     }
     

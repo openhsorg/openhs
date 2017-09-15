@@ -288,7 +288,31 @@ public class JsonSiteMapping {
 			
 			//logger.info("***Added floor");
 			
-		} else if (id.equals("idTimeDate")) {
+		}  else if (id.equals("idDeleteFloor")) {
+			
+			boolean ret = false;
+			
+			String sitePath = json.getString("sitePath");
+			
+			logger.info("***removed: " + sitePath);
+								
+			//try {
+				ret = m_siteService.removeThing(sitePath);	
+		//	} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+		//			| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
+				// TODO Auto-generated catch block
+		//		e.printStackTrace();
+		//	}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(true));
+			
+			//logger.info("***Added floor");
+			
+		}else if (id.equals("idTimeDate")) {
 			
 			getTimeDateJSON(jsonRet);
 			
