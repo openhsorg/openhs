@@ -11,20 +11,62 @@ import Door = OhsSiteData.Door;
 import Window = OhsSiteData.Window;
 import Switch = OhsSiteData.Switch;
 import ContactSensor = OhsSiteData.ContactSensor;
-import Thing = OhsSiteData.Thing;     
+import Thing = OhsSiteData.Thing;    
+    
+const imageDestroy       = '/adminres/images/destroy.png';    
     
     export class Graphics {
         
         private canvas:              HTMLCanvasElement;
-        public ctx:                  CanvasRenderingContext2D;    
-      //  private m_siteData:             SiteData;              
+        public ctx:                  CanvasRenderingContext2D;           
         private timerUpdateGraphics;
+        
+        public textA:            TextSimple      = new TextSimple();
+        public textB:            TextSimple      = new TextSimple();
+        public textC:            TextSimple      = new TextSimple();
+        public textD:            TextSimple      = new TextSimple();
+        public textE:            TextSimple      = new TextSimple();    
+        
         
         constructor (canvas: HTMLCanvasElement) {    
             this.canvas = canvas; 
             this.ctx = canvas.getContext("2d");    
             
+            this.setTextTempate ();
+            
            // this.m_siteData = siteData;                        
+        }
+        
+        public setTextTempate () {
+            
+            //Text A
+            this.textA.fontSize = 24;
+            this.textA.fontFamily = "px Tahoma, sans-serif";
+            this.textA.fontColor = '#00adc1';
+            this.textA.textAlign = "left";
+            this.textA.textBaseline = "middle";  
+            
+            //Text B
+            this.textB.fontSize = 40;
+            this.textB.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.textB.fontColor = '#000000';
+            this.textB.textAlign = "right";
+            this.textB.textBaseline = "middle";        
+            
+            //Text C
+            this.textC.fontSize = 20;
+            this.textC.fontFamily = "px Tahoma, sans-serif";
+            this.textC.fontColor = '#00adc1';
+            this.textC.textAlign = "left";
+            this.textC.textBaseline = "middle";         
+            
+            //Text D
+            this.textD.fontSize = 15;
+            this.textD.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.textD.fontColor = '#000000';
+            this.textD.textAlign = "left";
+            this.textD.textBaseline = "middle";               
+        
         }
         
         public setNumber<T>(num:  number, arg: Array<T>, types: { new(ctx: CanvasRenderingContext2D, rect: Rect): T ;}, ctx: CanvasRenderingContext2D, rect: Rect) {
@@ -638,6 +680,16 @@ import Thing = OhsSiteData.Thing;
                 ctx.stroke();                   
                 ctx.restore();
              }                          
+        }
+        
+        public copyStyle (origin: TextSimple){
+            
+            this.fontSize = origin.fontSize; 
+            this.fontColor = origin.fontColor;
+            this.fontFamily = origin.fontFamily;
+            this.textAlign = origin.textAlign;
+            this.textBaseline = origin.textBaseline;
+            this.bold = origin.bold; 
         }
 
     }
@@ -1265,6 +1317,49 @@ import Thing = OhsSiteData.Thing;
         }
     }    
     
+    export class NumberMark extends Rect {
+                       
+        protected colorInside           :string             = '#a6a6a6';
+        protected colorText             :string             = '#ffffff';       
+        public numberText               :TextSimple         = new TextSimple (); 
+        
+        public center (cx: number, cy: number, w: number, h: number) {                        
+            super.size(cx - (w /2 ), cy - (h / 2), w, h);
+        }        
+        
+        public paintNum (ctx: CanvasRenderingContext2D, num: number) {    
+        
+            if (num <= 0) {
+                this.colorInside = '#a6a6a6';
+            } else {
+                this.colorInside = '#003399';
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();            
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = this.colorInside;
+            ctx.stroke();
+            ctx.restore();    
+            
+            //Number
+            //Time       
+            this.numberText.fontSize = 22;
+            this.numberText.fontFamily = "px Tahoma, sans-serif";
+            this.numberText.fontColor = this.colorText;
+            this.numberText.textAlign = "left";
+            this.numberText.textBaseline = "middle";  
+            this.numberText.size(this.x + (this.w / 2) - 6, this.y + (this.h / 2) - 6, 10, 10);        
+            this.numberText.paintText(ctx, num.toString());              
+                                       
+        }        
+
+    }     
+    
     export class DlgNumbers {
         
         protected m_rectRounded:    RectRounded     = new RectRounded ();
@@ -1368,110 +1463,5 @@ import Thing = OhsSiteData.Thing;
         }
     }
     
-    export class SymbolHome {
-        
-        public roofTriangle:        Triangle        = new Triangle();
-        protected m_rectFloorArray: Array<Rect>     = new Array<Rect>();
-        protected m_sitePathArray: Array<TextSimple>     = new Array<TextSimple>(); 
-        
-        constructor () {
-                                    
-        }
-        
-        public MouseUpHandler(mx: number, my: number) {
-            
-            var i = 0;
-            
-            for (let item of this.m_rectFloorArray) {
-                                
-                if (item.isClicked(mx, my)){
-                    
-                  //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
-                    return this.m_sitePathArray[i].getText();
-                }         
-                
-                i++;
-            }                     
-            
-            return null;
-        }
     
-        public paint (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, m_floorArray: Array <Floor>) {
-            //x,y  left top corner
-            
-            //20% is roof
-            var roogHeight = 0.2 * height;                       
-            
-            this.roofTriangle.setTriangle(new Point2D(x + (width / 2), y), new Point2D(x, y + roogHeight), new Point2D(x + width, y + roogHeight));                                
-            this.roofTriangle.paint(ctx);    
-                        
-            //Number of floors
-            var nFloors = m_floorArray.length;
-                        
-            //Create rectangles...
-            var distance = 20.0;  // Distance between rectangles
-            
-            var rectHeight = ((height - roogHeight) / nFloors) - distance;
-            
-          //  window.alert(rectHeight);
-            
-            if (this.m_rectFloorArray.length > nFloors) {
-                this.m_rectFloorArray.length = nFloors;
-                
-            } else if (this.m_rectFloorArray.length < nFloors) {
-                for (var i = this.m_rectFloorArray.length; i < nFloors; i++) {
-                    this.m_rectFloorArray.push(new Rect ());
-                }
-            }
-            
-            var i = 0;
-            //Draw rectangles                
-            for (let item of this.m_rectFloorArray) {
-                
-                let cx = x;
-                let cy = (y + roogHeight + distance) + (i * (distance + rectHeight));
-                
-                item.size(cx, cy, width, rectHeight);                    
-                item.paint(ctx);                                       
-                
-                ctx.fillStyle = '#FFCC00';
-                ctx.fill();     
-                
-                ctx.lineWidth = 6;
-                ctx.strokeStyle = '#666666';
-                ctx.stroke();                           
-                
-                i++;            
-            }
-            
-                        
-            if (this.m_sitePathArray.length > nFloors) {
-                this.m_sitePathArray.length = nFloors;
-                
-            } else if (this.m_sitePathArray.length < nFloors) {
-                for (var i = this.m_sitePathArray.length; i < nFloors; i++) {
-                    this.m_sitePathArray.push(new TextSimple ());
-                }
-            }
-                       
-            i = 0;
-            //Draw texts                
-            for (let item of this.m_sitePathArray) {
-                
-                item.fontSize = 18;
-                item.fontFamily = "px sans-serif";
-                item.fontColor = '#196619';
-                item.textAlign = "left";
-                item.textBaseline = "top";
-                
-                let cx = x;
-                let cy = ((y + roogHeight + distance) + (i * (distance + rectHeight))) + (rectHeight / 2);                    
-                
-                item.size(cx + 10, cy, 100, 60);
-                item.paintText(ctx, m_floorArray[i].getSitePath());
-                
-                i++;
-            }                                  
-        }        
-    }
 }

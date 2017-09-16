@@ -27,6 +27,8 @@ module OhsSiteData {
     const idSetFloors = 'idSetFloors';
     const idAddFloor = 'idAddFloor';
     const idDeleteFloor = 'idDeleteFloor';
+    const idDeleteThing = 'idDeleteThing';
+    const idAddThing = 'idAddThing';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -133,9 +135,14 @@ module OhsSiteData {
                                 
             } else if (this.getCount == 7) {
                this.m_site.update();
+                
+            } else if (this.getCount == 8) {
+                
+                //Filter arrays
+                
             }
                         
-            if (this.getCount == 7) {
+            if (this.getCount == 8) {
                 this.getCount = 0;
                 
             } else {
@@ -439,17 +446,66 @@ module OhsSiteData {
                 this.updateObjectArray(idFloorArr);   
             }                    
         }        
+        
+        public deleteThing(thing : Thing) {   
+        
+            var idType : string  = idRoomArr; 
+                        
+            if (thing instanceof Floor) {
+                idType = idFloorArr;
+                            
+            } else if (thing instanceof Room) {
+                idType = idRoomArr;
+            }
+                 
+            var js = JSON.stringify({
+                idPost : idDeleteThing,
+                sitePath  : thing.getSitePath()
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                
+                this.updateObjectArray(idType);   
+            }                    
+        }   
+        
+        public addThing(thingName : string) {   
+        
+            var idType : string  = idRoomArr; 
+                        
+            if (thingName == Floor.name) {
+                idType = idFloorArr;
+                            
+            } else if (thingName == Room.name) {
+                idType = idRoomArr;
+            }
+                 
+            var js = JSON.stringify({
+                idPost : idAddThing,
+                thingType  : thingName
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                
+                this.updateObjectArray(idType);   
+            }                    
+        }         
     }
     
     export class Thing {
         
-        protected valid: boolean = false; //content of the forecast is valid        
-        protected sitePath:  string = "*"; //OpenHS path     
-        public name: string = "no name";
+        protected valid:        boolean = false; //content of the forecast is valid        
+        protected sitePath:     string = "*"; //OpenHS path
+        protected devicePath:   string = "*"; //OpenHS path          
+        public name:            string = "no name";
         
-        public posX:   number;
-        public posY:   number;
-        public posZ:   number;           
+        public posX:            number;
+        public posY:            number;
+        public posZ:            number;           
         
         constructor () {
             this.posX = 0.0;
@@ -464,6 +520,14 @@ module OhsSiteData {
         public getSitePath() {
             return this.sitePath;
         }
+        
+        public getDevicePath() {
+            return this.devicePath;
+        }   
+        
+        public setDevicePath (path: string) {
+            this.devicePath = path;
+        }         
         
         public isValid() {
             return this.valid;
@@ -482,7 +546,7 @@ module OhsSiteData {
             for (var propName in json) {                                               
                 this[propName] = json[propName];
                 
-              //   window.alert(propName + ' json:' + json[propName] + ' to: ' + this[propName]);
+               //  window.alert(propName + ' json:' + json[propName] + ' to: ' + this[propName]);
             }                      
         }                     
     }
@@ -512,6 +576,9 @@ module OhsSiteData {
         
         public dimX:   number = 0;
         public dimY:   number = 0;
+        
+        //Rooms belongs to this floor...
+        public m_roomArray:             Array <Room> = null;
                     
         
     }

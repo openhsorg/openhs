@@ -7,21 +7,19 @@
 /// <reference path='OhsLibrary/OhsSiteData.ts'/>
 var AdminApp;
 (function (AdminApp) {
+    var Rect = OhsCanvasGraphics.Rect;
+    var Triangle = OhsCanvasGraphics.Triangle;
     var RectRounded = OhsCanvasGraphics.RectRounded;
     var ImageRect = OhsCanvasGraphics.ImageRect;
     var TextSimple = OhsCanvasGraphics.TextSimple;
     var Graphics = OhsCanvasGraphics.Graphics;
     var ImageButton = OhsCanvasGraphics.ImageButton;
-    var SymbolHome = OhsCanvasGraphics.SymbolHome;
+    var Point2D = OhsCanvasGraphics.Point2D;
     var DlgNumbers = OhsCanvasGraphics.DlgNumbers;
+    var NumberMark = OhsCanvasGraphics.NumberMark;
     var SiteData = OhsSiteData.SiteData;
-    /*
-    enum SwitchScreen {
-        Main,
-        Floor,
-        Room
-    }
-    */
+    var Floor = OhsSiteData.Floor;
+    var Room = OhsSiteData.Room;
     const whiteColor = "#FFFFFF";
     const blackColor = "#000000";
     const borderColor = "#C0C0C0";
@@ -33,8 +31,18 @@ var AdminApp;
     let fontSizeHum = 27;
     let fontSizeTime = fontSizeTempOut;
     let fontSizeDate = fontSizeWind;
-    const imagePadlockOff = '/adminres/images/symbol_padlock_off.png';
-    const imagePadlockOffPushed = '/adminres/images/symbol_padlock_off_pushed.png';
+    const imageAdd = '/adminres/images/add.png';
+    const imageDestroy = '/adminres/images/destroy.png';
+    const imagePadlockOff = '/adminres/images/add.png';
+    const imagePadlockOffPushed = '/adminres/images/add.png';
+    const imageLeave = '/adminres/images/leave.png';
+    const imageFloor = '/adminres/images/floor.png';
+    const imageBkg = '/adminres/images/config_bkg.png';
+    const imageTempIcon = '/adminres/images/tempIcon.png';
+    const imageDoorIcon = '/adminres/images/doorIcon.png';
+    const imageSwitchIcon = '/adminres/images/switchIcon.png';
+    const imageRoomIcon = '/adminres/images/roomIcon.png';
+    const imageFloorIcon = '/adminres/images/floorIcon.png';
     class Admin {
         // private refreshRateMain: number = 5000; 
         constructor(canvas) {
@@ -47,7 +55,9 @@ var AdminApp;
             // Screens
             this.m_screenMain = null;
             this.m_screenRoom = null;
-            this.m_screenFloor = null;
+            this.m_screenFloors = null;
+            this.m_screenRooms = null;
+            this.m_screenList = null;
             //Graphics
             this.m_graphics = null;
             // Handlers
@@ -60,7 +70,9 @@ var AdminApp;
             this.m_graphics = new Graphics(this.canvas);
             //---Screens---
             this.m_screenMain = new ScreenMain(this.m_siteData, this.m_graphics);
-            this.m_screenFloor = new ScreenFloor(this.m_siteData, this.m_graphics);
+            this.m_screenFloors = new ScreenFloors(this.m_siteData, this.m_graphics);
+            this.m_screenRooms = new ScreenRooms(this.m_siteData, this.m_graphics);
+            this.m_screenList = new ScreenList(this.m_siteData, this.m_graphics);
             //   this.m_screenRoom = new ScreenRoom(this.m_siteData, this.m_graphics);      
             //---Mouse Handler---
             var self = this;
@@ -131,32 +143,16 @@ var AdminApp;
             if (page == ScreenMain.name) {
                 this.currPage = this.m_screenMain;
             }
-            else if (page == ScreenFloor.name) {
-                this.currPage = this.m_screenFloor;
-                this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);
+            else if (page == ScreenFloors.name) {
+                this.currPage = this.m_screenFloors;
             }
-        }
-        openPageold(next) {
-            /*
-                if (next != null) {
-                    
-                    next.m_prevPage = SwitchScreen.Main;
-                    
-                    if (this.currPage != null) {
-                       //window.alert("curr page close");
-                    //    this.currPage.close();
-                        
-                        if (this.currPage instanceof ScreenFloor) {
-                            next.m_prevPage = SwitchScreen.Floor;
-                           // window.alert("floor switch");
-                            
-                        }
-                    }
-     
-                    this.currPage = next; //open(refreshRate);
-                    this.currPage.updateData();
-                }
-                */
+            else if (page == ScreenRooms.name) {
+                this.currPage = this.m_screenRooms;
+            }
+            else if (page == ScreenList.name) {
+                this.currPage = this.m_screenList;
+                this.currPage.className = thingPath;
+            }
         }
     }
     AdminApp.Admin = Admin;
@@ -168,6 +164,7 @@ var AdminApp;
     }
     class Screen {
         constructor(m_siteData, m_graphics) {
+            this.className = "";
             // protected mouseRet:           MouseReturn             = new MouseReturn ();
             this.m_siteData = null;
             this.m_graphics = null;
@@ -231,65 +228,393 @@ var AdminApp;
     }
     AdminApp.Screen = Screen;
     class ScreenMain extends Screen {
+        //protected enableDlgNumbers: boolean         = false;
         constructor(m_siteData, m_graphicsData) {
             super(m_siteData, m_graphicsData);
             this.timeText = new TextSimple();
             this.HouseNameText = new TextSimple();
-            this.textNumFloors = new TextSimple();
-            this.m_symbolHome = new SymbolHome();
-            this.btnDelete = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
-            this.enableDlgNumbers = false;
-            //---Data---
-            //Time & Date
-            this.timeText.fontSize = 40;
-            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.timeText.fontColor = textColor;
-            this.timeText.textAlign = "right";
-            this.timeText.textBaseline = "middle";
-            //House name
-            this.HouseNameText.fontSize = 40;
-            this.HouseNameText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.HouseNameText.fontColor = textColor;
-            this.HouseNameText.textAlign = "left";
-            this.HouseNameText.textBaseline = "middle";
-            //Text number floors
-            this.textNumFloors.fontSize = 18;
-            this.textNumFloors.fontFamily = "px sans-serif";
-            this.textNumFloors.fontColor = '#196619';
-            this.textNumFloors.textAlign = "left";
-            this.textNumFloors.textBaseline = "middle";
+            this.imgBkg = new ImageRect();
+            this.btnDoor = new ImageButton(imageDoorIcon, imageDoorIcon);
+            this.btnTemp = new ImageButton(imageTempIcon, imageTempIcon);
+            this.btnSwitch = new ImageButton(imageSwitchIcon, imageSwitchIcon);
+            this.btnFloor = new ImageButton(imageFloorIcon, imageFloorIcon);
+            this.btnRoom = new ImageButton(imageRoomIcon, imageRoomIcon);
+            this.numInDoor = new NumberMark();
+            this.numNewDoor = new NumberMark();
+            this.numInTemp = new NumberMark();
+            this.numNewTemp = new NumberMark();
+            this.numInSwitch = new NumberMark();
+            this.numNewSwitch = new NumberMark();
+            this.numInRoom = new NumberMark();
+            this.numNewRoom = new NumberMark();
+            this.numInFloor = new NumberMark();
+            this.numNewFloor = new NumberMark();
+            this.imgBkg.setImage(imageBkg);
+            //this.m_symbolHome      = new SymbolHome(m_siteData);                     
         }
         MouseDownHandler(mx, my) {
         }
         MouseUpHandler(mx, my) {
             var mouseRet = new MouseReturn();
+            if (this.btnTemp.isClicked(mx, my)) {
+                //    window.alert('temp clicked......');
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'TemperatureSensor';
+            }
+            else if (this.btnSwitch.isClicked(mx, my)) {
+                //    window.alert('temp clicked......');
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'Switch';
+            }
+            else if (this.btnDoor.isClicked(mx, my)) {
+                //    window.alert('temp clicked......');
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'Door';
+            }
+            else if (this.btnRoom.isClicked(mx, my)) {
+                mouseRet.nextScreen = ScreenRooms.name;
+            }
+            else if (this.btnFloor.isClicked(mx, my)) {
+                //    window.alert('temp clicked......');
+                mouseRet.nextScreen = ScreenFloors.name;
+            }
+            /*
             if (this.enableDlgNumbers) {
                 var n = this.m_dlgNumbers.MouseUpHandler(mx, my);
+                
                 if (n != -1) {
                     this.enableDlgNumbers = false;
-                    //  window.alert('Set number of floors: ' + n);
+                    
+                  //  window.alert('Set number of floors: ' + n);
                     //Set number floors...
                     this.m_siteData.setNumberFloors(n);
+                    
                     return null;
                 }
             }
-            var ret = this.m_symbolHome.MouseUpHandler(mx, my);
-            if (ret != null) {
-                //window.alert('ret: ' + ret);
-                mouseRet.nextScreen = ScreenFloor.name;
-                mouseRet.nextSitePath = ret;
-                return mouseRet;
+
+            var retHome = this.m_symbolHome.MouseUpHandler(mx, my);
+            
+            if (retHome != null) {
+            
+                    if (retHome.command == 'jumpIn') {
+                        mouseRet.nextScreen = ScreenFloor.name;
+                        mouseRet.nextSitePath = retHome.path;
+                
+                        return mouseRet;
+                    } else if (retHome.command == 'delete') {
+                        //window.alert('Delete: ' + retHome.path);
+                        if (confirm('Do you want to delete this floor???')) {
+                            
+                            this.m_siteData.deleteFloor(retHome.path);
+                        
+                            return null;
+                        
+                        } else {
+                            
+                            return null;
+                        }
+                    }
             }
+            
             if (this.textNumFloors.isClicked(mx, my)) {
-                //  window.alert('changing num floors...');
+              //  window.alert('changing num floors...');
+                
                 this.enableDlgNumbers = true;
             }
-            if (this.btnDelete.isClicked(mx, my)) {
-                // window.alert('Add floor');
-                this.m_siteData.addFloor();
-                //mouseRet.nextScreen = ScreenMain.name;
-                //mouseRet.nextSitePath = null;
+            
+            if (this.btnAdd.isClicked(mx, my)){
+                
+                 if (this.m_siteData.m_floorArray.length >= 3) {
+                     window.alert('Maximum is 3 floors...');
+                 
+                 } else {
+                     this.m_siteData.addFloor();
+                     
+                 }
+                
                 return null;
+            }
+            */
+            return mouseRet;
+        }
+        paint(canvas) {
+            const ctx = canvas.getContext('2d');
+            var width = canvas.width;
+            var height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            //Image Bkg
+            this.imgBkg.size(20, 20, 600, 500);
+            this.imgBkg.paint(ctx);
+            //Time       
+            this.timeText.copyStyle(this.m_graphics.textB);
+            this.timeText.size(canvas.width - 260, 2, 250, 65);
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+            //Icons...
+            this.btnTemp.size(50, 50, 120, 120);
+            this.btnTemp.paint(ctx);
+            this.btnSwitch.size(200, 50, 120, 120);
+            this.btnSwitch.paint(ctx);
+            this.btnDoor.size(350, 50, 120, 120);
+            this.btnDoor.paint(ctx);
+            this.btnRoom.size(50, 200, 120, 120);
+            this.btnRoom.paint(ctx);
+            this.btnFloor.size(200, 200, 120, 120);
+            this.btnFloor.paint(ctx);
+            //Marks numbers
+            this.numInTemp.center(50 + 120, 50 + 120, 50, 50);
+            this.numInTemp.paintNum(ctx, this.m_siteData.m_tempSensorArray.length);
+            this.numInSwitch.center(200 + 120, 50 + 120, 50, 50);
+            this.numInSwitch.paintNum(ctx, this.m_siteData.m_switchArray.length);
+            this.numInDoor.center(350 + 120, 50 + 120, 50, 50);
+            this.numInDoor.paintNum(ctx, this.m_siteData.m_doorArray.length);
+            this.numInRoom.center(50 + 120, 200 + 120, 50, 50);
+            this.numInRoom.paintNum(ctx, this.m_siteData.m_roomArray.length);
+            this.numInFloor.center(200 + 120, 200 + 120, 50, 50);
+            this.numInFloor.paintNum(ctx, this.m_siteData.m_floorArray.length);
+            /*
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+                            
+            //Time
+            this.timeText.copyStyle(this.m_graphics.textB);
+            this.timeText.size(canvas.width - 260, 2, 250, 65);
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            
+            //House name
+            this.HouseNameText.copyStyle(this.m_graphics.textA);
+            this.HouseNameText.size(30 , 2, 250, 65);
+            this.HouseNameText.paintText(ctx, this.m_siteData.m_site.name);
+
+            //house symbol
+            this.m_symbolHome.paint(ctx, 200, 100, 400, 300);
+            
+            //Text num floors
+            this.textNumFloors.copyStyle(this.m_graphics.textA);
+            this.textNumFloors.size((width * 0.5) + 200, height - 120, 100, 60);
+            this.textNumFloors.paintText(ctx, this.m_siteData.m_floorArray.length + ' floors...');
+
+            //Add next floor
+            this.btnAdd.size((width * 0.5) + 120, height - 120, 60, 60);
+            this.btnAdd.paint(ctx);
+            */
+        }
+    }
+    AdminApp.ScreenMain = ScreenMain;
+    class ScreenList extends Screen {
+        constructor(siteData, m_graphics) {
+            super(siteData, m_graphics);
+            this.thingPath = "";
+            this.txtThingPath = new TextSimple();
+            this.timeText = new TextSimple();
+            this.listText = new TextSimple();
+            this.imgFloor = new ImageRect();
+            this.btnAdd = new ImageButton(imageAdd, imageAdd);
+            this.textNumRooms = new TextSimple();
+            //Filtered things...
+            this.m_roomArray = null;
+            this.btnLeave = new ImageButton(imageLeave, imageLeave);
+        }
+        MouseDownHandler(mx, my) {
+        }
+        MouseUpHandler(mx, my) {
+            var mouseRet = new MouseReturn();
+            // window.alert('go back...!!!');
+            if (this.btnLeave.isClicked(mx, my)) {
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+            }
+            return mouseRet;
+        }
+        paint(canvas) {
+            //window.alert('Floor switch *');
+            //var dy = 30;
+            const ctx = canvas.getContext('2d');
+            var width = canvas.width;
+            var height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);
+            this.timeText.size(canvas.width - 260, 2, 250, 65);
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
+            if (this.className == 'TemperatureSensor') {
+                this.listText.copyStyle(this.m_graphics.textA);
+                this.listText.size(30, 10, 250, 65);
+                this.listText.paintText(ctx, this.className);
+                var i = 1;
+                var dy = -30;
+                for (let item of this.m_siteData.m_tempSensorArray) {
+                    dy = dy + 90;
+                    this.listText.copyStyle(this.m_graphics.textC);
+                    this.listText.size(30, dy, 250, 65);
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);
+                    this.listText.paintText(ctx, '[ ' + item.getSitePath() + ' ]');
+                    this.listText.size(30, dy + 45, 250, 65);
+                    this.listText.paintText(ctx, '[ ' + item.getDevicePath() + ' ]');
+                    this.listText.size(30, dy + 65, 250, 65);
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);
+                    i++;
+                }
+            }
+            else if (this.className == 'Switch') {
+                this.listText.copyStyle(this.m_graphics.textA);
+                this.listText.size(30, 10, 250, 65);
+                this.listText.paintText(ctx, this.className);
+                var i = 1;
+                var dy = -30;
+                for (let item of this.m_siteData.m_switchArray) {
+                    dy = dy + 90;
+                    this.listText.copyStyle(this.m_graphics.textC);
+                    this.listText.size(30, dy, 250, 65);
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());
+                    this.listText.size(30, dy + 45, 250, 65);
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());
+                    this.listText.size(30, dy + 65, 250, 65);
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);
+                    i++;
+                }
+            }
+            else if (this.className == 'Door') {
+                this.listText.copyStyle(this.m_graphics.textA);
+                this.listText.size(30, 10, 250, 65);
+                this.listText.paintText(ctx, this.className);
+                var i = 1;
+                var dy = -30;
+                for (let item of this.m_siteData.m_doorArray) {
+                    dy = dy + 90;
+                    this.listText.copyStyle(this.m_graphics.textC);
+                    this.listText.size(30, dy, 250, 65);
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());
+                    //  this.listText.size(30, dy + 45, 250, 65);         
+                    //  this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());                          
+                    this.listText.size(30, dy + 45, 250, 65);
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);
+                    i++;
+                }
+            }
+            else if (this.className == 'Room') {
+                this.listText.copyStyle(this.m_graphics.textA);
+                this.listText.size(30, 10, 250, 65);
+                this.listText.paintText(ctx, this.className);
+                var i = 1;
+                var dy = -30;
+                for (let item of this.m_siteData.m_roomArray) {
+                    dy = dy + 90;
+                    this.listText.copyStyle(this.m_graphics.textC);
+                    this.listText.size(30, dy, 250, 65);
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());
+                    /*
+                    this.listText.size(30, dy + 45, 250, 65);
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());
+
+                    this.listText.size(30, dy + 65, 250, 65);
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);
+                    */
+                    i++;
+                }
+            }
+            else if (this.className == 'Floor') {
+                this.listText.copyStyle(this.m_graphics.textA);
+                this.listText.size(30, 10, 250, 65);
+                this.listText.paintText(ctx, this.className);
+                var i = 1;
+                var dy = -30;
+                for (let item of this.m_siteData.m_floorArray) {
+                    dy = dy + 90;
+                    this.listText.copyStyle(this.m_graphics.textC);
+                    this.listText.size(30, dy, 250, 65);
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());
+                    /*
+                    this.listText.size(30, dy + 45, 250, 65);
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());
+
+                    this.listText.size(30, dy + 65, 250, 65);
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);
+                    */
+                    i++;
+                }
+            }
+        }
+    }
+    class ScreenFloors extends Screen {
+        constructor(siteData, m_graphics) {
+            super(siteData, m_graphics);
+            this.timeText = new TextSimple();
+            this.listText = new TextSimple();
+            this.numFloorsText = new TextSimple();
+            this.imgFloor = new ImageRect();
+            this.btnAdd = new ImageButton(imageAdd, imageAdd);
+            this.m_delBtnArray = new Array();
+            this.btnLeave = new ImageButton(imageLeave, imageLeave);
+        }
+        MouseDownHandler(mx, my) {
+        }
+        MouseUpHandler(mx, my) {
+            var mouseRet = new MouseReturn();
+            // window.alert('go back...!!!');
+            if (this.btnLeave.isClicked(mx, my)) {
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+                return mouseRet;
+            }
+            else if (this.btnAdd.isClicked(mx, my)) {
+                if (this.m_siteData.m_floorArray.length >= 3) {
+                    window.alert('Maximum is 3 floors...');
+                }
+                else {
+                    this.m_siteData.addThing(Floor.name);
+                }
+                return null;
+            }
+            // delete floor
+            var i = 0;
+            for (let item of this.m_delBtnArray) {
+                if (item.isClicked(mx, my)) {
+                    this.m_siteData.deleteThing(this.m_siteData.m_floorArray[i]);
+                }
+                i++;
             }
             return null;
         }
@@ -307,210 +632,162 @@ var AdminApp;
             ctx.stroke();
             ctx.closePath();
             ctx.restore();
-            //Time          
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);
             this.timeText.size(canvas.width - 260, 2, 250, 65);
             this.timeText.paintText(ctx, this.m_siteData.timeString);
-            //House name  
-            this.HouseNameText.size(30, 2, 250, 65);
-            this.HouseNameText.paintText(ctx, this.m_siteData.m_site.name);
-            //house symbol
-            this.m_symbolHome.paint(ctx, 200, 100, 400, 300, this.m_siteData.m_floorArray);
-            //Text num floors
-            this.textNumFloors.size(10, 300, 100, 60);
-            this.textNumFloors.paintText(ctx, 'Number floors is ' + this.m_siteData.m_floorArray.length);
-            if (this.enableDlgNumbers) {
-                this.m_dlgNumbers.paint(ctx, 100, 100, 60, 60);
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
+            //Add floor
+            this.btnAdd.size(30, height - 75, 60, 60);
+            this.btnAdd.paint(ctx);
+            //Num floors        
+            this.numFloorsText.copyStyle(this.m_graphics.textA);
+            this.numFloorsText.size(100, height - 75, 250, 65);
+            this.numFloorsText.paintText(ctx, 'Number floors: ' + this.m_siteData.m_floorArray.length);
+            this.listText.copyStyle(this.m_graphics.textA);
+            this.listText.size(30, 10, 250, 65);
+            this.listText.paintText(ctx, this.className);
+            var i = 1;
+            var dy = -30;
+            for (let item of this.m_siteData.m_floorArray) {
+                dy = dy + 90;
+                this.listText.copyStyle(this.m_graphics.textC);
+                this.listText.size(30, dy, 250, 65);
+                this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                this.listText.copyStyle(this.m_graphics.textD);
+                this.listText.size(30, dy + 25, 250, 65);
+                this.listText.paintText(ctx, 'Site Path:[ ' + item.getSitePath() + ' ]');
+                //delete buttons                
+                if (this.m_delBtnArray.length < i) {
+                    this.m_delBtnArray.push(new ImageButton(imageDestroy, imageDestroy));
+                }
+                let btn = this.m_delBtnArray[i - 1];
+                btn.size(350, dy + 20, 60, 60);
+                btn.paint(ctx);
+                i++;
             }
-            //Add next floor
-            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
-            this.btnDelete.paint(ctx);
         }
     }
-    AdminApp.ScreenMain = ScreenMain;
-    class ScreenFloor extends Screen {
+    class ScreenRooms extends Screen {
         constructor(siteData, m_graphics) {
             super(siteData, m_graphics);
-            this.thingPath = "";
-            this.imgFloor2 = new ImageRect();
-            //private imgFloor:               HTMLImageElement            = null;        
-            // private imgFloorLoaded:         boolean                     = false;        
-            this.txtThingPath = new TextSimple();
-            this.m_doorMarks = new Array(); // Doors marks
-            this.m_windowMarks = new Array(); // Window marks
-            this.m_tempMarks = new Array(); // Temp marks
-            this.m_switchMarks = new Array(); // Switch marks
-            this.m_contactSensorsMarks = new Array(); // Switch marks
-            this.perc = 0.8;
             this.timeText = new TextSimple();
-            this.btnDelete = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
-            /*
-                        this.imgFloor = new Image();
-                        this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";
-                        this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
-                     */
-            this.txtThingPath.size(0, 0, 250, 100);
-            this.txtThingPath.textAlign = "left";
-            this.txtThingPath.textBaseline = "middle";
-            this.txtThingPath.fontSize = 40;
-            //Time & Date
-            this.timeText.fontSize = 40;
-            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.timeText.fontColor = textColor;
-            this.timeText.textAlign = "right";
-            this.timeText.textBaseline = "middle";
-        }
-        setThing(thing) {
-            /*
-            var oldThing: Thing = super.getThing();
-            
-            super.setThing(thing);
-            
-            //update other data
-            if (thing != oldThing) {
-                
-                if (thing instanceof Floor) {
-                    
-                    //Doors
-                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(m_doorArray.length, this.m_doorMarks, DoorMark);
-                    
-                    for (let id in this.m_doorMarks) {
-                        this.m_doorMarks[id].setThing(<Thing>m_doorArray[id]);
-                    }
-                    
-                    //Windows
-                    var m_windowArray: Array<Window> = this.m_siteData.getFilteredThings(this.m_siteData.m_windowArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(m_windowArray.length, this.m_windowMarks, WindowMark);
-                    
-                    for (let id in this.m_windowMarks) {
-                        this.m_windowMarks[id].setThing(<Thing>m_windowArray[id]);
-                    }
-                    
-                    //Temperature Sensors
-                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(temps.length, this.m_tempMarks, TempMark);
-                    
-                    for (let id in this.m_tempMarks) {
-                        this.m_tempMarks[id].setThing(<Thing>temps[id]);
-                    }
-                    
-                    //Switch
-                    
-                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getSitePath());
-                 //   window.alert('Switch marks:' + m_switchArray.length + ' : ' + thing.getSitePath() + " :sa: " + this.m_siteData.m_switchArray.length);
-                    var m_switchArray2: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
-                    var m_switchArray3: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
-                    
-                    //window.alert('Switch marks:' + m_switchArray.length + ' : ' + m_switchArray2.length + ' : ' + m_switchArray3.length + " :switches: " + this.m_siteData.m_switchArray.length + " :path: " + thing.getSitePath() + " :nFloors:" + this.m_siteData.m_floorArray.length);
-                    
-                    this.m_graphics.setNumber3(m_switchArray3.length, this.m_switchMarks, SwitchMark);
-                    
-                    for (let id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(<Thing>m_switchArray3[id]);
-                    }
-                    
-                    //Contact Sensor
-                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getSitePath());
-                    var m_contactSensorArray2: Array<ContactSensor> = this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
-                    m_contactSensorArray2= this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
-                    
-                    this.m_graphics.setNumber3(m_contactSensorArray2.length, this.m_contactSensorsMarks, ContactSensorMark);
-                    
-                    for (let id in this.m_contactSensorsMarks) {
-                        this.m_contactSensorsMarks[id].setThing(<Thing>m_contactSensorArray2[id]);
-                    }
-                }
-            }
-            */
+            this.listText = new TextSimple();
+            this.numFloorsText = new TextSimple();
+            this.imgFloor = new ImageRect();
+            this.btnAdd = new ImageButton(imageAdd, imageAdd);
+            this.m_delBtnArray = new Array();
+            this.btnLeave = new ImageButton(imageLeave, imageLeave);
         }
         MouseDownHandler(mx, my) {
-            /*
-            if (this.btnLock.PushEvent(mx, my)){
-            
-            } else if (this.btnUnLock.PushEvent(mx, my)){
-            
-            } else if (this.btnSwitchOn.PushEvent(mx, my)) {
-                
-            }else if (this.btnSwitchOff.PushEvent(mx, my)) {
-                
-            }
-            */
         }
         MouseUpHandler(mx, my) {
             var mouseRet = new MouseReturn();
             // window.alert('go back...!!!');
-            if (this.btnDelete.isClicked(mx, my)) {
-                if (confirm('Do you want to delete this floor???')) {
-                    mouseRet.nextScreen = ScreenMain.name;
-                    mouseRet.nextSitePath = null;
-                    return mouseRet;
+            if (this.btnLeave.isClicked(mx, my)) {
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+                return mouseRet;
+            }
+            else if (this.btnAdd.isClicked(mx, my)) {
+                if (this.m_siteData.m_roomArray.length >= 4) {
+                    window.alert('Maximum is 4 rooms...');
                 }
                 else {
-                    return null;
+                    this.m_siteData.addThing(Room.name);
                 }
-            }
-            /*
-            else if (this.btnUnLock.UpEvent(mx, my)){
-           //     this.m_siteData.postServerCommand('AllDoorSwitchesOff');
-           //     this.m_siteData.getFastData_DoorArray();
-                return null;
-                
-            } else if (this.btnSwitchOn.UpEvent(mx, my)){
-          //      this.m_siteData.postServerCommand('AllRoomSwitchesOn');
-          //      this.m_siteData.getFastData_SwitchArray();
-                return null;
-            } else if (this.btnSwitchOff.UpEvent(mx, my)){
-           //     this.m_siteData.postServerCommand('AllRoomSwitchesOff');
-           //     this.m_siteData.getFastData_SwitchArray();
                 return null;
             }
-            */
-            /*
-            var returnVal = {
-                nextScreen: SwitchScreen.Main,
-                nextThingPath: null
-            };
-                           
-
-           this.returnVal.nextScreen = SwitchScreen.Main;
-    
-            
-           for (let id in this.m_tempMarks) {
-               if (this.m_tempMarks[id].isClicked(mx, my)) {
-                   this.returnVal.nextScreen = SwitchScreen.Room;
-                   
-                   this.returnVal.nextThingPath = this.m_siteData.getParentPath(this.m_tempMarks[id].getThing());
-              }
-           }
-            
-           for (let id in this.m_switchMarks) {
-               if (this.m_switchMarks[id].isClicked(mx, my)) {
-                  
-                var switchSensor: Switch = this.m_switchMarks[id].getSwitchThing();
-                
-                switchSensor.click();
-              
-                this.returnVal.nextScreen = null;
-                   return this.returnVal;
-                   
-              }
-           }
-            
-           for (let id in this.m_contactSensorsMarks) {
-               if (this.m_contactSensorsMarks[id].isClicked(mx, my)) {
-                   this.returnVal.nextScreen = null;
-                   
-                 //  window.alert("Clicked, SitePath: " + this.m_contactSensorsMarks[id].getThing().getSitePath());
-                   
-                   //this.returnVal.nextThingPath = this.siteData.getParentPath(this.m_tempMarks[id].getThing());
-              }
-           }
-            
-           return this.returnVal;
-            */
+            // delete floor
+            var i = 0;
+            for (let item of this.m_delBtnArray) {
+                if (item.isClicked(mx, my)) {
+                    this.m_siteData.deleteThing(this.m_siteData.m_roomArray[i]);
+                }
+                i++;
+            }
+            return null;
+        }
+        paint(canvas) {
+            const ctx = canvas.getContext('2d');
+            var width = canvas.width;
+            var height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);
+            this.timeText.size(canvas.width - 260, 2, 250, 65);
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
+            //Add floor
+            this.btnAdd.size(30, height - 75, 60, 60);
+            this.btnAdd.paint(ctx);
+            //Num floors        
+            this.numFloorsText.copyStyle(this.m_graphics.textA);
+            this.numFloorsText.size(100, height - 75, 250, 65);
+            this.numFloorsText.paintText(ctx, 'Number rooms: ' + this.m_siteData.m_roomArray.length);
+            this.listText.copyStyle(this.m_graphics.textA);
+            this.listText.size(30, 10, 250, 65);
+            this.listText.paintText(ctx, this.className);
+            var i = 1;
+            var dy = -30;
+            for (let item of this.m_siteData.m_roomArray) {
+                dy = dy + 90;
+                this.listText.copyStyle(this.m_graphics.textC);
+                this.listText.size(30, dy, 250, 65);
+                this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                this.listText.copyStyle(this.m_graphics.textD);
+                this.listText.size(30, dy + 25, 250, 65);
+                this.listText.paintText(ctx, 'Site Path:[ ' + item.getSitePath() + ' ]');
+                //delete buttons                
+                if (this.m_delBtnArray.length < i) {
+                    this.m_delBtnArray.push(new ImageButton(imageDestroy, imageDestroy));
+                }
+                let btn = this.m_delBtnArray[i - 1];
+                btn.size(350, dy + 20, 60, 60);
+                btn.paint(ctx);
+                i++;
+            }
+        }
+    }
+    class ScreenFloorOld extends Screen {
+        constructor(siteData, m_graphics) {
+            super(siteData, m_graphics);
+            this.thingPath = "";
+            this.txtThingPath = new TextSimple();
+            this.timeText = new TextSimple();
+            this.imgFloor = new ImageRect();
+            this.btnAdd = new ImageButton(imageAdd, imageAdd);
+            this.textNumRooms = new TextSimple();
+            //Filtered things...
+            this.m_roomArray = null;
+            //   protected btnDelete:            ImageButton                 = new ImageButton(imageDestroy, imageDestroy);
+            this.btnLeave = new ImageButton(imageLeave, imageLeave);
+            //   var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
+            this.imgFloor.setImage(imageFloor);
+        }
+        MouseDownHandler(mx, my) {
+        }
+        MouseUpHandler(mx, my) {
+            var mouseRet = new MouseReturn();
+            // window.alert('go back...!!!');
+            if (this.btnLeave.isClicked(mx, my)) {
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+            }
+            return mouseRet;
         }
         paint(canvas) {
             // window.alert('Floor switch *');
@@ -527,70 +804,27 @@ var AdminApp;
             ctx.stroke();
             ctx.closePath();
             ctx.restore();
-            //Time          
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);
             this.timeText.size(canvas.width - 260, 2, 250, 65);
             this.timeText.paintText(ctx, this.m_siteData.timeString);
-            //Name of floor          
-            this.txtThingPath.size(30, 20, 250, 65);
+            //Name of floor    
+            this.txtThingPath.copyStyle(this.m_graphics.textA);
+            this.txtThingPath.size(30, 2, 250, 65);
             this.txtThingPath.paintText(ctx, this.m_thingPtr.getSitePath());
-            //Delete this floor
-            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
-            this.btnDelete.paint(ctx);
-            /*
-            var thing: Thing = this.getThing();
-                        
-            if ((thing != null)) {
-                
-                if (thing instanceof Floor) {
-                    
-                    var floor: Floor = <Floor> thing;
-                                    
-                    if (floor.dimX != 0) {
-                        scaleX = this.imgFloor2.w / (floor.dimX);
-                    }
-                    
-                    if (floor.dimY != 0) {
-                        scaleY = this.imgFloor2.h / (floor.dimY);
-                    }
-                }
-            }
-            */
-            /*
-            ctx.clearRect(0, 0, width, height);
-            
-            //Draw image...
-            this.imgFloor2.paint(ctx);
-
-           //    window.alert("" + scaleX + "" + scaleY + " marks:" +  this.m_doorMarks.length);
-            
-            //Doors...
-            for (let id in this.m_doorMarks) {
-                 //  window.alert("" + scaleX + " " + scaleY);
-                this.m_doorMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            
-            //Windows...
-            for (let id in this.m_windowMarks) {
-                this.m_windowMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            
-            //Temperature sensors
-            for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            
-            //window.alert("Switch marks: " + this.m_switchMarks.length);
-            
-            //m_switchArray
-            for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            
-            //Contact sensors
-            for (let id in this.m_contactSensorsMarks) {
-                this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            */
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
+            //Image floor
+            this.imgFloor.size(0, 50, 600, 500);
+            this.imgFloor.paint(ctx);
+            //Add next room
+            this.btnAdd.size((width * 0.5) + 120, height - 120, 60, 60);
+            this.btnAdd.paint(ctx);
+            //Text num floors
+            this.textNumRooms.copyStyle(this.m_graphics.textA);
+            this.textNumRooms.size((width * 0.5) + 200, height - 120, 100, 60);
+            this.textNumRooms.paintText(ctx, this.m_siteData.m_roomArray.length + ' rooms...');
         }
     }
     class ScreenRoom extends Screen {
@@ -730,14 +964,97 @@ var AdminApp;
             }
         }
     }
-    /*
-    class retV {
-        
-        public name: any = null;
-        public path: string = null;
-        
+    class SymbolHome {
+        constructor(m_siteData) {
+            this.m_siteData = null;
+            this.roofTriangle = new Triangle();
+            this.m_rectFloorArray = new Array();
+            this.m_delBtnArray = new Array();
+            this.m_siteData = m_siteData;
+        }
+        MouseUpHandler(mx, my) {
+            var i = 0;
+            for (let item of this.m_rectFloorArray) {
+                if (item.isClicked(mx, my)) {
+                    //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
+                    return {
+                        path: this.m_siteData.m_floorArray[i].getSitePath(),
+                        command: 'jumpIn'
+                    };
+                }
+                i++;
+            }
+            i = 0;
+            for (let item of this.m_delBtnArray) {
+                if (item.isClicked(mx, my)) {
+                    //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
+                    return {
+                        path: this.m_siteData.m_floorArray[i].getSitePath(),
+                        command: 'delete'
+                    };
+                }
+                i++;
+            }
+            return null;
+        }
+        paint(ctx, x, y, width, height) {
+            //x,y  left top corner
+            // this.m_floorArray = m_floorArray;
+            //20% is roof
+            var roogHeight = 0.2 * height;
+            this.roofTriangle.setTriangle(new Point2D(x + (width / 2), y), new Point2D(x, y + roogHeight), new Point2D(x + width, y + roogHeight));
+            this.roofTriangle.paint(ctx);
+            //Number of floors
+            var nFloors = this.m_rectFloorArray.length;
+            //Create rectangles...
+            var distance = 20.0; // Distance between rectangles
+            var rectHeight = ((height - roogHeight) / nFloors) - distance;
+            var i = 0;
+            //Draw rectangles  & Del buttons   
+            for (let item of this.m_siteData.m_floorArray) {
+                if (this.m_rectFloorArray.length < i + 1) {
+                    this.m_rectFloorArray.push(new Rect());
+                }
+                if (this.m_delBtnArray.length < i + 1) {
+                    this.m_delBtnArray.push(new ImageButton(imageDestroy, imageDestroy));
+                }
+                let rc = this.m_rectFloorArray[i];
+                let btn = this.m_delBtnArray[i];
+                let cx = x;
+                let cy = (y + roogHeight + distance) + (i * (distance + rectHeight));
+                rc.size(cx, cy, width, rectHeight);
+                rc.paint(ctx);
+                ctx.fillStyle = '#FFCC00';
+                ctx.fill();
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#666666';
+                ctx.stroke();
+                btn.size(cx + width + 10, cy, 60, 60);
+                btn.paint(ctx);
+                i++;
+            }
+            i = 0;
+            //Draw texts    
+            for (let item of this.m_siteData.m_floorArray) {
+                let txtName = new TextSimple();
+                let txtPath = new TextSimple();
+                txtName.fontSize = 18;
+                txtName.fontFamily = "px sans-serif";
+                txtName.fontColor = '#196619';
+                txtName.textAlign = "left";
+                txtName.textBaseline = "top";
+                txtPath.copyStyle(txtName);
+                let cx = x;
+                let cy = ((y + roogHeight + distance) + (i * (distance + rectHeight))) + (rectHeight / 2);
+                txtName.size(cx + 150, cy, 100, 60);
+                txtName.paintText(ctx, item.name);
+                txtPath.size(cx + 10, cy, 100, 60);
+                txtPath.paintText(ctx, item.getSitePath());
+                i++;
+            }
+        }
     }
-     */
+    AdminApp.SymbolHome = SymbolHome;
     //Function to get the mouse position
     function getMousePos(canvas, event) {
         var rect = canvas.getBoundingClientRect();
@@ -746,38 +1063,6 @@ var AdminApp;
             y: event.clientY - rect.top
         };
     }
-    /*
-function getAjax2(urlAdr: string, id: string) {
-       
-    var result = null;
-    
-    $.ajaxSetup ({
-    // Disable caching of AJAX responses
-    cache: false
-    });
-            
-    $.ajax({async: false, url: urlAdr, data: {orderId: id}, dataType: "json", success: function(data) {
-        
-        result = data;
-                                      
-        }});
-    
-    return result;
-    }
-    
-function postAjax2(urlAdr: string, id: string, dataPost: string) {
-       
-    var result = null;
-            
-    $.ajax({async: false, type: "POST", url: urlAdr, data: {postId: id, dataId: dataPost}, dataType: "json", success: function(response) {
-        
-        result = response;
-                                      
-        }});
-    
-    return result;
-    }
-    */
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while (new Date().getTime() < unixtime_ms + ms) { }

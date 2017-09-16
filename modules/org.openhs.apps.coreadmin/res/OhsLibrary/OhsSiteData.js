@@ -25,6 +25,9 @@ var OhsSiteData;
     const idSiteUpdate = 'idSiteUpdate';
     const idSetFloors = 'idSetFloors';
     const idAddFloor = 'idAddFloor';
+    const idDeleteFloor = 'idDeleteFloor';
+    const idDeleteThing = 'idDeleteThing';
+    const idAddThing = 'idAddThing';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -109,7 +112,9 @@ var OhsSiteData;
             else if (this.getCount == 7) {
                 this.m_site.update();
             }
-            if (this.getCount == 7) {
+            else if (this.getCount == 8) {
+            }
+            if (this.getCount == 8) {
                 this.getCount = 0;
             }
             else {
@@ -315,15 +320,53 @@ var OhsSiteData;
             var js = JSON.stringify({
                 idPost: idAddFloor
             });
-            //  window.alert('**af*');
             var ret = postAjax(url, js);
             if (JSON.parse(ret['return'])) {
-                /*
-                this.stateInt = parseInt(ret['state_int']);
-            
-                this.updateDelayed (100);
-                */
                 this.updateObjectArray(idFloorArr);
+            }
+        }
+        deleteFloor(floorPath) {
+            var js = JSON.stringify({
+                idPost: idDeleteFloor,
+                sitePath: floorPath
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                this.updateObjectArray(idFloorArr);
+            }
+        }
+        deleteThing(thing) {
+            var idType = idRoomArr;
+            if (thing instanceof Floor) {
+                idType = idFloorArr;
+            }
+            else if (thing instanceof Room) {
+                idType = idRoomArr;
+            }
+            var js = JSON.stringify({
+                idPost: idDeleteThing,
+                sitePath: thing.getSitePath()
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                this.updateObjectArray(idType);
+            }
+        }
+        addThing(thingName) {
+            var idType = idRoomArr;
+            if (thingName == Floor.name) {
+                idType = idFloorArr;
+            }
+            else if (thingName == Room.name) {
+                idType = idRoomArr;
+            }
+            var js = JSON.stringify({
+                idPost: idAddThing,
+                thingType: thingName
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                this.updateObjectArray(idType);
             }
         }
     }
@@ -331,7 +374,8 @@ var OhsSiteData;
     class Thing {
         constructor() {
             this.valid = false; //content of the forecast is valid        
-            this.sitePath = "*"; //OpenHS path     
+            this.sitePath = "*"; //OpenHS path
+            this.devicePath = "*"; //OpenHS path          
             this.name = "no name";
             this.posX = 0.0;
             this.posY = 0.0;
@@ -342,6 +386,12 @@ var OhsSiteData;
         }
         getSitePath() {
             return this.sitePath;
+        }
+        getDevicePath() {
+            return this.devicePath;
+        }
+        setDevicePath(path) {
+            this.devicePath = path;
         }
         isValid() {
             return this.valid;
@@ -380,6 +430,8 @@ var OhsSiteData;
             this.imagePath = "/infores/servlets/kitchen/room_default.png";
             this.dimX = 0;
             this.dimY = 0;
+            //Rooms belongs to this floor...
+            this.m_roomArray = null;
         }
     }
     OhsSiteData.Floor = Floor;

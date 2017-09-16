@@ -10,6 +10,7 @@
 module AdminApp {        
 
     import Rect =               OhsCanvasGraphics.Rect;
+    import Triangle =           OhsCanvasGraphics.Triangle;
     import RectRounded =        OhsCanvasGraphics.RectRounded;
     import ImageRect =          OhsCanvasGraphics.ImageRect;
     import TextSimple =         OhsCanvasGraphics.TextSimple;    
@@ -23,9 +24,9 @@ module AdminApp {
     import Graphics =           OhsCanvasGraphics.Graphics;
     import Mark =               OhsCanvasGraphics.Mark;
     import ImageButton =        OhsCanvasGraphics.ImageButton;
-    import SymbolHome =         OhsCanvasGraphics.SymbolHome;
     import Point2D =            OhsCanvasGraphics.Point2D;
     import DlgNumbers =         OhsCanvasGraphics.DlgNumbers;
+    import NumberMark =         OhsCanvasGraphics.NumberMark;
 
     import SiteData =           OhsSiteData.SiteData;
     import Floor =              OhsSiteData.Floor;
@@ -35,15 +36,7 @@ module AdminApp {
     import Window =             OhsSiteData.Window;
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
-    import Thing =              OhsSiteData.Thing;        
-
-    /*
-    enum SwitchScreen {
-        Main,            
-        Floor,        
-        Room        
-    }
-    */          
+    import Thing =              OhsSiteData.Thing;               
               
     const whiteColor        = "#FFFFFF";
     const blackColor        = "#000000";
@@ -57,9 +50,18 @@ module AdminApp {
     let fontSizeTime:       number = fontSizeTempOut;
     let fontSizeDate:       number = fontSizeWind;        
     
-    const imagePadlockOff           = '/adminres/images/symbol_padlock_off.png';
-    const imagePadlockOffPushed     = '/adminres/images/symbol_padlock_off_pushed.png';
-
+    const imageAdd           = '/adminres/images/add.png';
+    const imageDestroy       = '/adminres/images/destroy.png';
+    const imagePadlockOff           = '/adminres/images/add.png';
+    const imagePadlockOffPushed     = '/adminres/images/add.png';
+    const imageLeave            = '/adminres/images/leave.png';
+    const imageFloor            = '/adminres/images/floor.png';
+    const imageBkg            = '/adminres/images/config_bkg.png';
+    const imageTempIcon          = '/adminres/images/tempIcon.png';
+    const imageDoorIcon          = '/adminres/images/doorIcon.png';
+    const imageSwitchIcon          = '/adminres/images/switchIcon.png';
+    const imageRoomIcon          = '/adminres/images/roomIcon.png';
+    const imageFloorIcon          = '/adminres/images/floorIcon.png';
     
     
     export class Admin {
@@ -78,7 +80,9 @@ module AdminApp {
         // Screens
         private m_screenMain:             ScreenMain = null;                    
         private m_screenRoom:             ScreenRoom = null;
-        private m_screenFloor:            ScreenFloor =  null;
+        private m_screenFloors:           ScreenFloors =  null;
+        private m_screenRooms:            ScreenRooms =  null;
+        private m_screenList:             ScreenList = null;
                
         //Graphics
         private m_graphics: Graphics = null;        
@@ -100,7 +104,9 @@ module AdminApp {
             
             //---Screens---
             this.m_screenMain = new ScreenMain(this.m_siteData, this.m_graphics);
-            this.m_screenFloor = new ScreenFloor(this.m_siteData, this.m_graphics);
+            this.m_screenFloors = new ScreenFloors(this.m_siteData, this.m_graphics);
+            this.m_screenRooms = new ScreenRooms(this.m_siteData, this.m_graphics);
+            this.m_screenList = new ScreenList(this.m_siteData, this.m_graphics);
          //   this.m_screenRoom = new ScreenRoom(this.m_siteData, this.m_graphics);      
 
             //---Mouse Handler---
@@ -197,36 +203,25 @@ module AdminApp {
             if (page == ScreenMain.name) {
                 this.currPage = this.m_screenMain;
             
-            } else if (page == ScreenFloor.name) {
+            } else if (page == ScreenFloors.name) {
                 
-                this.currPage = this.m_screenFloor; 
-                this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);           
+                this.currPage = this.m_screenFloors; 
+             //   this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);    
+                       
+            } else if (page == ScreenRooms.name) {
+                
+                this.currPage = this.m_screenRooms; 
+             //   this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);    
+                       
+            }  else if (page == ScreenList.name) {
+                                                 
+                this.currPage = this.m_screenList;
+                this.currPage.className = thingPath;
+               // this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);           
             }
                         
         }
-        
-        private openPageold(next: Screen) {   
-        /*                              
-            if (next != null) {
-                
-                next.m_prevPage = SwitchScreen.Main;
-                
-                if (this.currPage != null) {                                                
-                   //window.alert("curr page close");
-                //    this.currPage.close(); 
-                    
-                    if (this.currPage instanceof ScreenFloor) {
-                        next.m_prevPage = SwitchScreen.Floor;
-                       // window.alert("floor switch");
-                        
-                    }                                                                      
-                }             
- 
-                this.currPage = next; //open(refreshRate);
-                this.currPage.updateData();
-            }
-            */
-        }                  
+                 
     }
     
     class MouseReturn {
@@ -237,6 +232,7 @@ module AdminApp {
     
     export class Screen {
             
+        public  className:              string                      = "";     
        // protected mouseRet:           MouseReturn             = new MouseReturn ();
         protected m_siteData:         SiteData                = null;
         protected m_graphics:         Graphics                = null;
@@ -319,52 +315,78 @@ module AdminApp {
     
     export class ScreenMain extends Screen {                  
                 
-        public timeText:            TextSimple      = new TextSimple ();
-        public HouseNameText:       TextSimple      = new TextSimple ();
-        public textNumFloors:       TextSimple      = new TextSimple();        
-        public m_symbolHome:        SymbolHome      = new SymbolHome();     
-        protected btnDelete:            ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
+        public timeText:            TextSimple     = new TextSimple ();
+        public HouseNameText:       TextSimple     = new TextSimple ();                  
+        public imgBkg:              ImageRect      = new ImageRect ();
+        protected btnDoor:          ImageButton    = new ImageButton(imageDoorIcon, imageDoorIcon);
+        protected btnTemp:          ImageButton    = new ImageButton(imageTempIcon, imageTempIcon);
+        protected btnSwitch:        ImageButton    = new ImageButton(imageSwitchIcon, imageSwitchIcon);
+        protected btnFloor:         ImageButton    = new ImageButton(imageFloorIcon, imageFloorIcon);
+        protected btnRoom:          ImageButton    = new ImageButton(imageRoomIcon, imageRoomIcon);
         
-        protected enableDlgNumbers: boolean         = false;
+        protected numInDoor:        NumberMark     = new NumberMark();
+        protected numNewDoor:       NumberMark     = new NumberMark();
+        protected numInTemp:        NumberMark     = new NumberMark();
+        protected numNewTemp:       NumberMark     = new NumberMark();
+        protected numInSwitch:      NumberMark     = new NumberMark();
+        protected numNewSwitch:     NumberMark     = new NumberMark();
+        protected numInRoom:        NumberMark     = new NumberMark();
+        protected numNewRoom:       NumberMark     = new NumberMark();        
+        protected numInFloor:       NumberMark     = new NumberMark();
+        protected numNewFloor:      NumberMark     = new NumberMark();  
+        
+        //protected enableDlgNumbers: boolean         = false;
            
         constructor (m_siteData: SiteData, m_graphicsData: Graphics) {  
         
             super (m_siteData, m_graphicsData);
             
-            //---Data---
+            this.imgBkg.setImage(imageBkg);  
             
-            //Time & Date
-            this.timeText.fontSize = 40;
-            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.timeText.fontColor = textColor;
-            this.timeText.textAlign = "right";
-            this.timeText.textBaseline = "middle";
-            
-            //House name
-            this.HouseNameText.fontSize = 40;
-            this.HouseNameText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.HouseNameText.fontColor = textColor;
-            this.HouseNameText.textAlign = "left";
-            this.HouseNameText.textBaseline = "middle";     
-            
-            //Text number floors
-            this.textNumFloors.fontSize = 18;
-            this.textNumFloors.fontFamily = "px sans-serif";
-            this.textNumFloors.fontColor = '#196619';
-            this.textNumFloors.textAlign = "left";
-            this.textNumFloors.textBaseline = "middle";              
-           
+            //this.m_symbolHome      = new SymbolHome(m_siteData);                     
         }
         
         MouseDownHandler(mx: number, my: number) {   
-
             
         }
         
         public MouseUpHandler(mx: number, my: number) {     
-        
+       
             var mouseRet: MouseReturn = new MouseReturn ();
-        
+            
+            if (this.btnTemp.isClicked(mx, my)) {
+            //    window.alert('temp clicked......');
+                
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'TemperatureSensor';      
+                                
+            } else if (this.btnSwitch.isClicked(mx, my)) {
+            //    window.alert('temp clicked......');
+                
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'Switch';        
+                              
+            } else if (this.btnDoor.isClicked(mx, my)) {
+            //    window.alert('temp clicked......');
+                
+                mouseRet.nextScreen = ScreenList.name;
+                mouseRet.nextSitePath = 'Door';       
+                               
+            } else if (this.btnRoom.isClicked(mx, my)) {                            
+                mouseRet.nextScreen = ScreenRooms.name;                   
+                                 
+            } else if (this.btnFloor.isClicked(mx, my)) {
+            //    window.alert('temp clicked......');
+                
+                mouseRet.nextScreen = ScreenFloors.name;
+               // mouseRet.nextSitePath = 'Floor';                      
+            }
+       
+       
+       
+       
+            
+            /*
             if (this.enableDlgNumbers) {
                 var n = this.m_dlgNumbers.MouseUpHandler(mx, my);
                 
@@ -379,16 +401,28 @@ module AdminApp {
                 }
             }
 
-            var ret = this.m_symbolHome.MouseUpHandler(mx, my);
+            var retHome = this.m_symbolHome.MouseUpHandler(mx, my);
             
-            if (ret != null) {     
+            if (retHome != null) {     
             
-           //     window.alert('ret: ' + ret);
-                                            
-                mouseRet.nextScreen = ScreenFloor.name;
-                mouseRet.nextSitePath = ret;
+                    if (retHome.command == 'jumpIn') {                                                       
+                        mouseRet.nextScreen = ScreenFloor.name;
+                        mouseRet.nextSitePath = retHome.path;
                 
-                return mouseRet;            
+                        return mouseRet;
+                    } else if (retHome.command == 'delete') {
+                        //window.alert('Delete: ' + retHome.path);                        
+                        if (confirm('Do you want to delete this floor???')) {                                       
+                            
+                            this.m_siteData.deleteFloor(retHome.path);
+                        
+                            return null;       
+                        
+                        } else {
+                            
+                            return null;
+                        }                        
+                    }                          
             }       
             
             if (this.textNumFloors.isClicked(mx, my)) {
@@ -397,23 +431,164 @@ module AdminApp {
                 this.enableDlgNumbers = true;            
             }
             
-            if (this.btnDelete.isClicked(mx, my)){                 
+            if (this.btnAdd.isClicked(mx, my)){                 
                 
-                 //window.alert('Add floor');
+                 if (this.m_siteData.m_floorArray.length >= 3) {                     
+                     window.alert('Maximum is 3 floors...');
+                 
+                 } else {
+                     this.m_siteData.addFloor();
+                     
+                 }
                 
-                 this.m_siteData.addFloor();
-                
-                //mouseRet.nextScreen = ScreenMain.name;
-                //mouseRet.nextSitePath = null;
-                
-                return null;                  
-                
+                return null;                                  
             }            
-            
-            return null;
+            */
+            return mouseRet;
         }
                 
         public paint (canvas: HTMLCanvasElement) {
+            
+            const ctx = canvas.getContext('2d');
+            var width: number = canvas.width;
+            var height: number = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            //Image Bkg
+            this.imgBkg.size(20, 20, 600, 500);
+            this.imgBkg.paint(ctx);  
+            
+            //Time       
+            this.timeText.copyStyle(this.m_graphics.textB);   
+            this.timeText.size(canvas.width - 260, 2, 250, 65);        
+            this.timeText.paintText(ctx, this.m_siteData.timeString);  
+            
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();           
+            ctx.closePath();
+            ctx.restore();      
+            
+            //Icons...
+            this.btnTemp.size(50, 50, 120, 120);
+            this.btnTemp.paint(ctx);               
+            
+            this.btnSwitch.size(200, 50, 120, 120);
+            this.btnSwitch.paint(ctx);   
+            
+            this.btnDoor.size(350, 50, 120, 120);
+            this.btnDoor.paint(ctx);            
+            
+            this.btnRoom.size(50, 200, 120, 120);
+            this.btnRoom.paint(ctx);               
+            
+            this.btnFloor.size(200, 200, 120, 120);
+            this.btnFloor.paint(ctx);              
+            
+            //Marks numbers
+            this.numInTemp.center(50 + 120, 50 + 120, 50, 50);
+            this.numInTemp.paintNum(ctx, this.m_siteData.m_tempSensorArray.length);
+            
+            this.numInSwitch.center(200 + 120, 50 + 120, 50, 50);
+            this.numInSwitch.paintNum(ctx, this.m_siteData.m_switchArray.length);            
+                        
+            this.numInDoor.center(350 + 120, 50 + 120, 50, 50);
+            this.numInDoor.paintNum(ctx, this.m_siteData.m_doorArray.length);
+            
+            this.numInRoom.center(50 + 120, 200 + 120, 50, 50);
+            this.numInRoom.paintNum(ctx, this.m_siteData.m_roomArray.length);  
+            
+            this.numInFloor.center(200 + 120, 200 + 120, 50, 50);
+            this.numInFloor.paintNum(ctx, this.m_siteData.m_floorArray.length);               
+            
+            /*
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();           
+            ctx.closePath();
+            ctx.restore(); 
+                            
+            //Time       
+            this.timeText.copyStyle(this.m_graphics.textB);   
+            this.timeText.size(canvas.width - 260, 2, 250, 65);        
+            this.timeText.paintText(ctx, this.m_siteData.timeString);  
+            
+            //House name
+            this.HouseNameText.copyStyle(this.m_graphics.textA);  
+            this.HouseNameText.size(30 , 2, 250, 65);        
+            this.HouseNameText.paintText(ctx, this.m_siteData.m_site.name);  
+
+            //house symbol
+            this.m_symbolHome.paint(ctx, 200, 100, 400, 300);       
+            
+            //Text num floors
+            this.textNumFloors.copyStyle(this.m_graphics.textA);
+            this.textNumFloors.size((width * 0.5) + 200, height - 120, 100, 60);
+            this.textNumFloors.paintText(ctx, this.m_siteData.m_floorArray.length + ' floors...');       
+
+            //Add next floor
+            this.btnAdd.size((width * 0.5) + 120, height - 120, 60, 60);
+            this.btnAdd.paint(ctx);      
+            */      
+        }
+
+    }
+    
+    class ScreenList extends Screen {
+        
+                  
+        protected thingPath:            string                      = "";
+        private txtThingPath:           TextSimple                  = new TextSimple ();
+        public timeText:                TextSimple                  = new TextSimple ();
+        public listText:                TextSimple                  = new TextSimple ();
+        
+        public imgFloor:                ImageRect                   = new ImageRect ();
+        protected btnAdd:               ImageButton                 = new ImageButton(imageAdd, imageAdd);
+        public textNumRooms:            TextSimple                  = new TextSimple();    
+        
+        //Filtered things...
+        protected m_roomArray:          Array<Room>                 = null;
+        protected btnLeave:             ImageButton                 = new ImageButton(imageLeave, imageLeave);
+        
+        constructor (siteData:  SiteData, m_graphics: Graphics) {                
+            super (siteData, m_graphics);
+           
+        }  
+             
+        
+        MouseDownHandler(mx: number, my: number) { 
+
+        }        
+    
+        MouseUpHandler(mx: number, my: number) {                    
+         
+            var mouseRet: MouseReturn = new MouseReturn ();
+           
+           // window.alert('go back...!!!');
+            
+            if (this.btnLeave.isClicked(mx, my)){       
+            
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+            }
+        
+            return mouseRet;                            
+        }    
+        
+        public paint(canvas: HTMLCanvasElement) {
+                                    
+            //window.alert('Floor switch *');
+            
+            //var dy = 30;
             
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
@@ -431,149 +606,182 @@ module AdminApp {
             ctx.closePath();
             ctx.restore(); 
                             
-            //Time          
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);  
             this.timeText.size(canvas.width - 260, 2, 250, 65);        
-            this.timeText.paintText(ctx, this.m_siteData.timeString);  
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
             
-            //House name  
-            this.HouseNameText.size(30 , 2, 250, 65);        
-            this.HouseNameText.paintText(ctx, this.m_siteData.m_site.name);  
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
+  
+            
+            if (this.className == 'TemperatureSensor') {
+                
+                this.listText.copyStyle(this.m_graphics.textA);                  
+                this.listText.size(30, 10, 250, 65);        
+                this.listText.paintText(ctx, this.className);                   
+                                                
+                var i = 1;
+                var dy = -30;
+                
+                for (let item of this.m_siteData.m_tempSensorArray) {
+                            
+                    dy = dy + 90;
+                                       
+                    this.listText.copyStyle(this.m_graphics.textC);  
+                    this.listText.size(30, dy, 250, 65);        
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);         
+                    this.listText.paintText(ctx, '[ ' + item.getSitePath() + ' ]');      
+                    
+                    this.listText.size(30, dy + 45, 250, 65);         
+                    this.listText.paintText(ctx, '[ ' + item.getDevicePath()+ ' ]');                          
 
-            //house symbol
-            this.m_symbolHome.paint(ctx, 200, 100, 400, 300, this.m_siteData.m_floorArray);       
-            
-            //Text num floors
-            this.textNumFloors.size(10, 300, 100, 60);
-            this.textNumFloors.paintText(ctx, 'Number floors is ' + this.m_siteData.m_floorArray.length);       
-            
-            if (this.enableDlgNumbers) {
-                this.m_dlgNumbers.paint(ctx, 100, 100, 60, 60);
-            }
-            
-            //Add next floor
-            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
-            this.btnDelete.paint(ctx);            
-        }
+                    this.listText.size(30, dy + 65, 250, 65);         
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);                      
+                    
+                    i ++;
+                }
+            } else if (this.className == 'Switch') {
+                
+                this.listText.copyStyle(this.m_graphics.textA);                  
+                this.listText.size(30, 10, 250, 65);        
+                this.listText.paintText(ctx, this.className);                   
+                                                
+                var i = 1;
+                var dy = -30;
+                
+                for (let item of this.m_siteData.m_switchArray) {
+                            
+                    dy = dy + 90;
+                                       
+                    this.listText.copyStyle(this.m_graphics.textC);  
+                    this.listText.size(30, dy, 250, 65);        
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);         
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());      
+                    
+                    this.listText.size(30, dy + 45, 250, 65);         
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());                          
 
-    }
+                    this.listText.size(30, dy + 65, 250, 65);         
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);                      
+                    
+                    i ++;
+                }                
+            } else if (this.className == 'Door') {
+                
+                this.listText.copyStyle(this.m_graphics.textA);                  
+                this.listText.size(30, 10, 250, 65);        
+                this.listText.paintText(ctx, this.className);                   
+                                                
+                var i = 1;
+                var dy = -30;
+                
+                for (let item of this.m_siteData.m_doorArray) {
+                            
+                    dy = dy + 90;
+                                       
+                    this.listText.copyStyle(this.m_graphics.textC);  
+                    this.listText.size(30, dy, 250, 65);        
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);         
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());      
+                    
+                  //  this.listText.size(30, dy + 45, 250, 65);         
+                  //  this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());                          
 
-    class ScreenFloor extends Screen {
-        
-        protected thingPath:            string                      = "";
-        protected imgFloor2:            ImageRect                   = new ImageRect();
-        //private imgFloor:               HTMLImageElement            = null;        
-       // private imgFloorLoaded:         boolean                     = false;        
-        private txtThingPath:            TextSimple                  = new TextSimple ();
-        public m_doorMarks:             Array<DoorMark>             = new Array<DoorMark>();                // Doors marks
-        public m_windowMarks:           Array<WindowMark>           = new Array<WindowMark>();              // Window marks
-        public m_tempMarks:             Array<TempMark>             = new Array<TempMark>();                // Temp marks
-        public m_switchMarks:           Array<SwitchMark>           = new Array<SwitchMark>();              // Switch marks
-        public m_contactSensorsMarks:   Array<ContactSensorMark>    = new Array<ContactSensorMark>();       // Switch marks
-        private perc:                   number                      = 0.8;  
+                    this.listText.size(30, dy + 45, 250, 65);         
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);                      
+                    
+                    i ++;
+                }                
+            } else if (this.className == 'Room') {
+                
+                this.listText.copyStyle(this.m_graphics.textA);                  
+                this.listText.size(30, 10, 250, 65);        
+                this.listText.paintText(ctx, this.className);                   
+                                                
+                var i = 1;
+                var dy = -30;
+                
+                for (let item of this.m_siteData.m_roomArray) {
+                            
+                    dy = dy + 90;
+                                       
+                   this.listText.copyStyle(this.m_graphics.textC);  
+                    this.listText.size(30, dy, 250, 65);        
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);         
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());      
+                    /*
+                    this.listText.size(30, dy + 45, 250, 65);         
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());                          
+
+                    this.listText.size(30, dy + 65, 250, 65);         
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);                      
+                    */
+                    i ++;
+                }                
+            } else if (this.className == 'Floor') {
+                
+                this.listText.copyStyle(this.m_graphics.textA);                  
+                this.listText.size(30, 10, 250, 65);        
+                this.listText.paintText(ctx, this.className);                   
+                                                
+                var i = 1;
+                var dy = -30;
+                
+                for (let item of this.m_siteData.m_floorArray) {
+                            
+                    dy = dy + 90;
+                                       
+                   this.listText.copyStyle(this.m_graphics.textC);  
+                    this.listText.size(30, dy, 250, 65);        
+                    this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                    
+                    this.listText.copyStyle(this.m_graphics.textD);
+                    this.listText.size(30, dy + 25, 250, 65);         
+                    this.listText.paintText(ctx, 'Site Path: ' + item.getSitePath());      
+                    /*
+                    this.listText.size(30, dy + 45, 250, 65);         
+                    this.listText.paintText(ctx, 'Device Path: ' + item.getDevicePath());                          
+
+                    this.listText.size(30, dy + 65, 250, 65);         
+                    this.listText.paintText(ctx, 'Position in floor: x:' + item.posX + '; y:' + item.posY + '; z:' + item.posZ);                      
+                    */
+                    i ++;
+                }                
+            }    
+        }       
+    } 
+    
+    class ScreenFloors extends Screen {
+
         public timeText:                TextSimple                  = new TextSimple ();
-        
-        protected btnDelete:            ImageButton                 = new ImageButton(imagePadlockOff, imagePadlockOffPushed);
+        public listText:                TextSimple                  = new TextSimple ();
+        public numFloorsText:           TextSimple                   = new TextSimple ();         
+        public imgFloor:                ImageRect                   = new ImageRect ();
+        protected btnAdd:               ImageButton                 = new ImageButton(imageAdd, imageAdd);
+        protected m_delBtnArray:        Array<ImageButton>          = new Array<ImageButton>();         
+        protected btnLeave:             ImageButton                 = new ImageButton(imageLeave, imageLeave);
         
         constructor (siteData:  SiteData, m_graphics: Graphics) {                
             super (siteData, m_graphics);
-/*
-            this.imgFloor = new Image();
-            this.imgFloor.src="/infores/servlets/kitchen/floor1.jpg";                     
-            this.imgFloor2.setImage('/infores/servlets/kitchen/floor1.jpg');
-         */
-            this.txtThingPath.size (0, 0, 250, 100);
-            this.txtThingPath.textAlign = "left";
-            this.txtThingPath.textBaseline = "middle";
-            this.txtThingPath.fontSize = 40;       
-            
-            //Time & Date
-            this.timeText.fontSize = 40;
-            this.timeText.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
-            this.timeText.fontColor = textColor;
-            this.timeText.textAlign = "right";
-            this.timeText.textBaseline = "middle";            
-        }  
-        
-        public setThing(thing: Thing){
-            /*
-            var oldThing: Thing = super.getThing(); 
-            
-            super.setThing(thing);
-            
-            //update other data
-            if (thing != oldThing) {
-                
-                if (thing instanceof Floor) {                    
-                    
-                    //Doors
-                    var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(m_doorArray.length, this.m_doorMarks, DoorMark);
-                    
-                    for (let id in this.m_doorMarks) {
-                        this.m_doorMarks[id].setThing(<Thing>m_doorArray[id]);     
-                    }
-                    
-                    //Windows
-                    var m_windowArray: Array<Window> = this.m_siteData.getFilteredThings(this.m_siteData.m_windowArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(m_windowArray.length, this.m_windowMarks, WindowMark);
-                    
-                    for (let id in this.m_windowMarks) {
-                        this.m_windowMarks[id].setThing(<Thing>m_windowArray[id]);     
-                    }                    
-                    
-                    //Temperature Sensors
-                    var temps: Array<TemperatureSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_tempSensorArray, thing.getSitePath());
-                    
-                    this.m_graphics.setNumber3(temps.length, this.m_tempMarks, TempMark);
-                    
-                    for (let id in this.m_tempMarks) {
-                        this.m_tempMarks[id].setThing(<Thing>temps[id]);                        
-                    }                    
-                    
-                    //Switch                                       
-                    
-                    var m_switchArray: Array<Switch> = this.m_siteData.getFilteredThings(this.m_siteData.m_switchArray, thing.getSitePath());
-                 //   window.alert('Switch marks:' + m_switchArray.length + ' : ' + thing.getSitePath() + " :sa: " + this.m_siteData.m_switchArray.length);
-                    var m_switchArray2: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray, 'doors');
-                    var m_switchArray3: Array<Switch> = this.m_siteData.getFilteredThingsNoContains(m_switchArray2, 'windows');
-                    
-                    //window.alert('Switch marks:' + m_switchArray.length + ' : ' + m_switchArray2.length + ' : ' + m_switchArray3.length + " :switches: " + this.m_siteData.m_switchArray.length + " :path: " + thing.getSitePath() + " :nFloors:" + this.m_siteData.m_floorArray.length);
-                    
-                    this.m_graphics.setNumber3(m_switchArray3.length, this.m_switchMarks, SwitchMark);
-                    
-                    for (let id in this.m_switchMarks) {
-                        this.m_switchMarks[id].setThing(<Thing>m_switchArray3[id]);                        
-                    }   
-                    
-                    //Contact Sensor
-                    var m_contactSensorArray: Array<ContactSensor> = this.m_siteData.getFilteredThings(this.m_siteData.m_contactSensorArray, thing.getSitePath());
-                    var m_contactSensorArray2: Array<ContactSensor> = this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray, 'doors');
-                    m_contactSensorArray2= this.m_siteData.getFilteredThingsNoContains(m_contactSensorArray2, 'windows');
-                    
-                    this.m_graphics.setNumber3(m_contactSensorArray2.length, this.m_contactSensorsMarks, ContactSensorMark);
-                    
-                    for (let id in this.m_contactSensorsMarks) {
-                        this.m_contactSensorsMarks[id].setThing(<Thing>m_contactSensorArray2[id]);                        
-                    }                     
-                }                               
-            }  
-            */          
-        }   
+           
+        }               
         
         MouseDownHandler(mx: number, my: number) { 
-            /*
-            if (this.btnLock.PushEvent(mx, my)){
-            
-            } else if (this.btnUnLock.PushEvent(mx, my)){
-            
-            } else if (this.btnSwitchOn.PushEvent(mx, my)) {
-                
-            }else if (this.btnSwitchOff.PushEvent(mx, my)) {
-                
-            }
-            */
+
         }        
     
         MouseUpHandler(mx: number, my: number) {                    
@@ -582,29 +790,290 @@ module AdminApp {
            
            // window.alert('go back...!!!');
             
-            if (this.btnDelete.isClicked(mx, my)){                 
-                                                
-                if (confirm('Do you want to delete this floor???')) {                                       
-                    
-                    this.m_siteData.deleteFloor(this.m_thingPtr.getSitePath());
-                    
-                    mouseRet.nextScreen = ScreenMain.name;
-                    mouseRet.nextSitePath = null;
-                
-                    return mouseRet;       
-                
-                } else {
-                    
-                    return null;
-                }
-
-            }
-          
-            mouseRet.nextScreen = ScreenMain.name;
-            mouseRet.nextSitePath = null;
-        
-            return mouseRet;                
+            if (this.btnLeave.isClicked(mx, my)){       
             
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+                
+                return mouseRet;
+                
+            } else if (this.btnAdd.isClicked(mx, my)){       
+            
+                if (this.m_siteData.m_floorArray.length >= 3) {                     
+                    window.alert('Maximum is 3 floors...');
+                 
+                } else {
+                    this.m_siteData.addThing(Floor.name);
+                     
+                }
+                
+                return null;
+            }
+            
+            // delete floor
+            var i = 0;
+               
+            for (let item of this.m_delBtnArray) {
+                                
+                if (item.isClicked(mx, my)){                    
+                    
+                    this.m_siteData.deleteThing(this.m_siteData.m_floorArray[i]);
+                }         
+                
+                i++;
+            }                         
+        
+            return null;                            
+        }    
+        
+        public paint(canvas: HTMLCanvasElement) {
+            
+            const ctx = canvas.getContext('2d');
+            var width: number = canvas.width;
+            var height: number = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();           
+            ctx.closePath();
+            ctx.restore(); 
+                            
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);  
+            this.timeText.size(canvas.width - 260, 2, 250, 65);        
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);        
+            
+            //Add floor
+            this.btnAdd.size(30, height - 75, 60, 60);
+            this.btnAdd.paint(ctx);       
+            
+            //Num floors        
+            this.numFloorsText.copyStyle(this.m_graphics.textA);  
+            this.numFloorsText.size(100, height - 75, 250, 65);        
+            this.numFloorsText.paintText(ctx, 'Number floors: ' + this.m_siteData.m_floorArray.length);            
+                
+            this.listText.copyStyle(this.m_graphics.textA);                  
+            this.listText.size(30, 10, 250, 65);        
+            this.listText.paintText(ctx, this.className);                   
+                                            
+            var i = 1;
+            var dy = -30;
+            
+            for (let item of this.m_siteData.m_floorArray) {
+                                       
+                dy = dy + 90;
+                                   
+                this.listText.copyStyle(this.m_graphics.textC);  
+                this.listText.size(30, dy, 250, 65);        
+                this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                
+                this.listText.copyStyle(this.m_graphics.textD);
+                this.listText.size(30, dy + 25, 250, 65);         
+                this.listText.paintText(ctx, 'Site Path:[ ' + item.getSitePath() + ' ]');      
+              
+                //delete buttons                
+                if (this.m_delBtnArray.length < i) {
+                    this.m_delBtnArray.push(new ImageButton (imageDestroy, imageDestroy));                
+                }   
+                
+                let btn = this.m_delBtnArray[i - 1];
+                
+                btn.size(350, dy + 20, 60, 60);
+                btn.paint(ctx);     
+                
+                i ++;
+                
+            }                              
+        }       
+    }       
+    
+    class ScreenRooms extends Screen {
+
+        public timeText:                TextSimple                  = new TextSimple ();
+        public listText:                TextSimple                  = new TextSimple ();
+        public numFloorsText:           TextSimple                   = new TextSimple ();         
+        public imgFloor:                ImageRect                   = new ImageRect ();
+        protected btnAdd:               ImageButton                 = new ImageButton(imageAdd, imageAdd);
+        protected m_delBtnArray:        Array<ImageButton>          = new Array<ImageButton>();         
+        protected btnLeave:             ImageButton                 = new ImageButton(imageLeave, imageLeave);
+        
+        constructor (siteData:  SiteData, m_graphics: Graphics) {                
+            super (siteData, m_graphics);
+           
+        }               
+        
+        MouseDownHandler(mx: number, my: number) { 
+
+        }        
+    
+        MouseUpHandler(mx: number, my: number) {                    
+         
+            var mouseRet: MouseReturn = new MouseReturn ();
+           
+           // window.alert('go back...!!!');
+            
+            if (this.btnLeave.isClicked(mx, my)){       
+            
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+                
+                return mouseRet;
+                
+            } else if (this.btnAdd.isClicked(mx, my)){       
+            
+                if (this.m_siteData.m_roomArray.length >= 4) {                     
+                    window.alert('Maximum is 4 rooms...');
+                 
+                } else {
+                    this.m_siteData.addThing(Room.name);
+                     
+                }
+                
+                return null;
+            }
+            
+            // delete floor
+            var i = 0;
+               
+            for (let item of this.m_delBtnArray) {
+                                
+                if (item.isClicked(mx, my)){                
+                    
+                    this.m_siteData.deleteThing(this.m_siteData.m_roomArray[i]);
+                }         
+                
+                i++;
+            }                         
+        
+            return null;                            
+        }    
+        
+        public paint(canvas: HTMLCanvasElement) {
+            
+            const ctx = canvas.getContext('2d');
+            var width: number = canvas.width;
+            var height: number = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            //Border
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();           
+            ctx.closePath();
+            ctx.restore(); 
+                            
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);  
+            this.timeText.size(canvas.width - 260, 2, 250, 65);        
+            this.timeText.paintText(ctx, this.m_siteData.timeString);
+            
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);        
+            
+            //Add floor
+            this.btnAdd.size(30, height - 75, 60, 60);
+            this.btnAdd.paint(ctx);       
+            
+            //Num floors        
+            this.numFloorsText.copyStyle(this.m_graphics.textA);  
+            this.numFloorsText.size(100, height - 75, 250, 65);        
+            this.numFloorsText.paintText(ctx, 'Number rooms: ' + this.m_siteData.m_roomArray.length);            
+                
+            this.listText.copyStyle(this.m_graphics.textA);                  
+            this.listText.size(30, 10, 250, 65);        
+            this.listText.paintText(ctx, this.className);                   
+                                            
+            var i = 1;
+            var dy = -30;
+            
+            for (let item of this.m_siteData.m_roomArray) {
+                                       
+                dy = dy + 90;
+                                   
+                this.listText.copyStyle(this.m_graphics.textC);  
+                this.listText.size(30, dy, 250, 65);        
+                this.listText.paintText(ctx, i.toString() + '.  ' + item.name);
+                
+                this.listText.copyStyle(this.m_graphics.textD);
+                this.listText.size(30, dy + 25, 250, 65);         
+                this.listText.paintText(ctx, 'Site Path:[ ' + item.getSitePath() + ' ]');      
+              
+                //delete buttons                
+                if (this.m_delBtnArray.length < i) {
+                    this.m_delBtnArray.push(new ImageButton (imageDestroy, imageDestroy));                
+                }   
+                
+                let btn = this.m_delBtnArray[i - 1];
+                
+                btn.size(350, dy + 20, 60, 60);
+                btn.paint(ctx);     
+                
+                i ++;
+                
+            }                              
+        }       
+    }       
+    
+
+    class ScreenFloorOld extends Screen {
+        
+        protected thingPath:            string                      = "";
+        private txtThingPath:           TextSimple                  = new TextSimple ();
+        public timeText:                TextSimple                  = new TextSimple ();
+        public imgFloor:                ImageRect                   = new ImageRect ();
+        protected btnAdd:               ImageButton                 = new ImageButton(imageAdd, imageAdd);
+        public textNumRooms:            TextSimple                  = new TextSimple();    
+        
+        //Filtered things...
+        protected m_roomArray:          Array<Room>                 = null;
+        
+        
+     //   protected btnDelete:            ImageButton                 = new ImageButton(imageDestroy, imageDestroy);
+        protected btnLeave:            ImageButton                  = new ImageButton(imageLeave, imageLeave);
+        
+        constructor (siteData:  SiteData, m_graphics: Graphics) {                
+            super (siteData, m_graphics);
+            
+         //   var m_doorArray: Array<Door> = this.m_siteData.getFilteredThings(this.m_siteData.m_doorArray, thing.getSitePath());
+            
+            this.imgFloor.setImage(imageFloor);  
+           
+        }  
+        
+     
+        
+        MouseDownHandler(mx: number, my: number) { 
+
+        }        
+    
+        MouseUpHandler(mx: number, my: number) {                    
+         
+            var mouseRet: MouseReturn = new MouseReturn ();
+           
+           // window.alert('go back...!!!');
+            
+            if (this.btnLeave.isClicked(mx, my)){       
+            
+                mouseRet.nextScreen = ScreenMain.name;
+                mouseRet.nextSitePath = null;
+            }
+        
+            return mouseRet;                            
         }    
         
         public paint(canvas: HTMLCanvasElement) {
@@ -627,73 +1096,33 @@ module AdminApp {
             ctx.closePath();
             ctx.restore(); 
                             
-            //Time          
+            //Time        
+            this.timeText.copyStyle(this.m_graphics.textB);  
             this.timeText.size(canvas.width - 260, 2, 250, 65);        
             this.timeText.paintText(ctx, this.m_siteData.timeString);  
             
-            //Name of floor          
-            this.txtThingPath.size(30, 20, 250, 65);        
+            //Name of floor    
+            this.txtThingPath.copyStyle(this.m_graphics.textA);        
+            this.txtThingPath.size(30, 2, 250, 65);        
             this.txtThingPath.paintText(ctx, this.m_thingPtr.getSitePath());     
             
-            //Delete this floor
-            this.btnDelete.size((width) * 0.77, height - 75, 60, 60);
-            this.btnDelete.paint(ctx);
-            /*
-            var thing: Thing = this.getThing();
-                        
-            if ((thing != null)) {
-                
-                if (thing instanceof Floor) {
-                    
-                    var floor: Floor = <Floor> thing;
-                                    
-                    if (floor.dimX != 0) {
-                        scaleX = this.imgFloor2.w / (floor.dimX); 
-                    }
-                    
-                    if (floor.dimY != 0) {
-                        scaleY = this.imgFloor2.h / (floor.dimY); 
-                    }                               
-                }
-            }                    
-            */
-            /*
-            ctx.clearRect(0, 0, width, height);
+            //Leave page
+            this.btnLeave.size((width) - 80, height - 75, 60, 60);
+            this.btnLeave.paint(ctx);
             
-            //Draw image...
-            this.imgFloor2.paint(ctx);
-
-           //    window.alert("" + scaleX + "" + scaleY + " marks:" +  this.m_doorMarks.length);
+            //Image floor
+            this.imgFloor.size(0, 50, 600, 500);
+            this.imgFloor.paint(ctx);
             
-            //Doors...            
-            for (let id in this.m_doorMarks) {
-                 //  window.alert("" + scaleX + " " + scaleY);
-                this.m_doorMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
+            //Add next room
+            this.btnAdd.size((width * 0.5) + 120, height - 120, 60, 60);
+            this.btnAdd.paint(ctx);   
             
-            //Windows...            
-            for (let id in this.m_windowMarks) {
-                this.m_windowMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }            
+            //Text num floors
+            this.textNumRooms.copyStyle(this.m_graphics.textA);
+            this.textNumRooms.size((width * 0.5) + 200, height - 120, 100, 60);
+            this.textNumRooms.paintText(ctx, this.m_siteData.m_roomArray.length + ' rooms...');               
             
-            //Temperature sensors
-            for (let id in this.m_tempMarks) {
-                this.m_tempMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }
-            
-            //window.alert("Switch marks: " + this.m_switchMarks.length);
-            
-            //m_switchArray
-            for (let id in this.m_switchMarks) {
-                this.m_switchMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }   
-            
-            //Contact sensors
-            for (let id in this.m_contactSensorsMarks) {
-                this.m_contactSensorsMarks[id].paintByThing(ctx, this.imgFloor2.x, this.imgFloor2.y, scaleX, scaleY);
-            }    
-            */
-              
         }                             
     }    
         
@@ -846,14 +1275,140 @@ module AdminApp {
         }             
     } 
     
-    /*
-    class retV {
+    export class SymbolHome {
         
-        public name: any = null;
-        public path: string = null;
+        protected m_siteData:               SiteData = null;
+        public roofTriangle:                Triangle = new Triangle();
+        protected m_rectFloorArray:         Array<Rect> = new Array<Rect>();
+        protected m_delBtnArray:            Array<ImageButton> = new Array<ImageButton>();
+                
+        constructor (m_siteData: SiteData) {
+            this.m_siteData = m_siteData;
+                                    
+        }
         
-    }
-     */
+        public MouseUpHandler(mx: number, my: number) {
+            
+            var i = 0;
+            
+            for (let item of this.m_rectFloorArray) {
+                                
+                if (item.isClicked(mx, my)){
+                    
+                  //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
+                    return {
+                        path: this.m_siteData.m_floorArray[i].getSitePath(),
+                        command: 'jumpIn'
+                    }
+                }         
+                
+                i++;
+            } 
+                
+               
+            i = 0;
+               
+            for (let item of this.m_delBtnArray) {
+                                
+                if (item.isClicked(mx, my)){
+                    
+                  //  window.alert('it is' + this.m_sitePathArray[i].getText() + ' n:' + i);
+                    return {
+                        path: this.m_siteData.m_floorArray[i].getSitePath(),
+                        command: 'delete'
+                    }
+                }         
+                
+                i++;
+            }                
+
+            return null;
+        }
+    
+        public paint (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+            //x,y  left top corner
+           // this.m_floorArray = m_floorArray;
+            //20% is roof
+            var roogHeight = 0.2 * height;                       
+            
+            this.roofTriangle.setTriangle(new Point2D(x + (width / 2), y), new Point2D(x, y + roogHeight), new Point2D(x + width, y + roogHeight));                                
+            this.roofTriangle.paint(ctx);    
+                        
+            //Number of floors
+            var nFloors = this.m_rectFloorArray.length;
+                        
+            //Create rectangles...
+            var distance = 20.0;  // Distance between rectangles
+            
+            var rectHeight = ((height - roogHeight) / nFloors) - distance;        
+            
+            var i = 0;
+            //Draw rectangles  & Del buttons   
+            for (let item of this.m_siteData.m_floorArray) {
+                
+                if (this.m_rectFloorArray.length < i + 1) {
+                    this.m_rectFloorArray.push(new Rect ());                
+                }
+                
+                if (this.m_delBtnArray.length < i + 1) {
+                    this.m_delBtnArray.push(new ImageButton (imageDestroy, imageDestroy));                
+                }                
+                
+                let rc = this.m_rectFloorArray[i];
+                let btn = this.m_delBtnArray[i];
+                               
+                let cx = x;
+                let cy = (y + roogHeight + distance) + (i * (distance + rectHeight));
+                
+                rc.size(cx, cy, width, rectHeight);                    
+                rc.paint(ctx);                                       
+                
+                ctx.fillStyle = '#FFCC00';
+                ctx.fill();     
+                
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#666666';
+                ctx.stroke();        
+                
+                btn.size(cx + width + 10, cy, 60, 60);
+                btn.paint(ctx);                 
+                
+                i++;  
+            }
+                       
+            
+            i = 0;
+            //Draw texts    
+            for (let item of this.m_siteData.m_floorArray) {                                
+                
+                let txtName: TextSimple     = new TextSimple(); 
+                let txtPath: TextSimple     = new TextSimple(); 
+                
+                txtName.fontSize = 18;
+                txtName.fontFamily = "px sans-serif";
+                txtName.fontColor = '#196619';
+                txtName.textAlign = "left";
+                txtName.textBaseline = "top";
+                
+                txtPath.copyStyle(txtName);
+                
+                let cx = x;
+                let cy = ((y + roogHeight + distance) + (i * (distance + rectHeight))) + (rectHeight / 2);                    
+                
+                txtName.size(cx + 150, cy, 100, 60);
+                txtName.paintText(ctx, item.name);
+                
+                txtPath.size(cx + 10, cy, 100, 60);
+                txtPath.paintText(ctx, item.getSitePath());                
+                
+                i++;
+            }    
+                    
+        }        
+    }     
+    
+    
+
     //Function to get the mouse position
     function getMousePos(canvas, event) {
     
@@ -864,38 +1419,7 @@ module AdminApp {
             y: event.clientY - rect.top
         };
     }
-        /*
-    function getAjax2(urlAdr: string, id: string) {
-           
-        var result = null;
-        
-        $.ajaxSetup ({
-        // Disable caching of AJAX responses
-        cache: false
-        });
-                
-        $.ajax({async: false, url: urlAdr, data: {orderId: id}, dataType: "json", success: function(data) {
-            
-            result = data;
-                                          
-            }});
-        
-        return result;    
-        }    
-        
-    function postAjax2(urlAdr: string, id: string, dataPost: string) {
-           
-        var result = null;
-                
-        $.ajax({async: false, type: "POST", url: urlAdr, data: {postId: id, dataId: dataPost}, dataType: "json", success: function(response) {
-            
-            result = response;
-                                          
-            }});
-        
-        return result;    
-        }     
-        */
+       
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
         while(new Date().getTime() < unixtime_ms + ms) {}

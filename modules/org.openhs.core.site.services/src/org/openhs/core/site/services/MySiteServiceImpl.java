@@ -606,24 +606,47 @@ public class MySiteServiceImpl implements ISiteService {
 	 */
 	public boolean addNextThing (Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
-		//Prepare new path
-		
-		String path = "sss";
-		
 		Set<String> set = getThingPathSet (t);
-		
-		int n = set.size() + 1;
 								
 		String className = t.getName(); //"org.openhs.core.commons.Floor";
 		Thing object = (Thing) Class.forName(className).newInstance();
 		
-		if (className.contains("Floor")) {
-			path = "floors/Floor" + "_" + n; 				
+		String basePath = "";
+		String baseName = "";
+		String newPath = "";
+		String newName = "";				
+				
+		if (t == Floor.class) {
+			basePath = "floors/";
+			baseName = "Floor";
+			
+		} else if (t == Room.class) {
+			basePath = "rooms/";
+			baseName = "Room";
 		}
+
+		int n = 0;
 		
-		logger.info("--------->:" + path);
+		do {
 		
-		boolean ret = this.addThing(path, object);		
+			n++;
+			
+			newName = baseName + "_" + n;
+			newPath = basePath + baseName + "_" + n;
+			
+		} while (ss.things.get(newPath) != null);
+		
+		logger.info("--------->:" + newPath);
+		
+		boolean ret = this.addThing(newPath, object);		
+		
+		if (ret) {
+			Thing newThing = getThing(newPath);
+			
+			if (newThing != null) {			
+				newThing.setName(newName);
+			}
+		}
 				
 		return ret;				
 	}	

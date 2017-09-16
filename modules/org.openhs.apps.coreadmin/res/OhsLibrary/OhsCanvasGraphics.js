@@ -7,11 +7,44 @@ var OhsCanvasGraphics;
     var Window = OhsSiteData.Window;
     var Switch = OhsSiteData.Switch;
     var ContactSensor = OhsSiteData.ContactSensor;
+    const imageDestroy = '/adminres/images/destroy.png';
     class Graphics {
         constructor(canvas) {
+            this.textA = new TextSimple();
+            this.textB = new TextSimple();
+            this.textC = new TextSimple();
+            this.textD = new TextSimple();
+            this.textE = new TextSimple();
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
+            this.setTextTempate();
             // this.m_siteData = siteData;                        
+        }
+        setTextTempate() {
+            //Text A
+            this.textA.fontSize = 24;
+            this.textA.fontFamily = "px Tahoma, sans-serif";
+            this.textA.fontColor = '#00adc1';
+            this.textA.textAlign = "left";
+            this.textA.textBaseline = "middle";
+            //Text B
+            this.textB.fontSize = 40;
+            this.textB.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.textB.fontColor = '#000000';
+            this.textB.textAlign = "right";
+            this.textB.textBaseline = "middle";
+            //Text C
+            this.textC.fontSize = 20;
+            this.textC.fontFamily = "px Tahoma, sans-serif";
+            this.textC.fontColor = '#00adc1';
+            this.textC.textAlign = "left";
+            this.textC.textBaseline = "middle";
+            //Text D
+            this.textD.fontSize = 15;
+            this.textD.fontFamily = "px Lucida Sans Unicode, Lucida Grande, sans-serif";
+            this.textD.fontColor = '#000000';
+            this.textD.textAlign = "left";
+            this.textD.textBaseline = "middle";
         }
         setNumber(num, arg, types, ctx, rect) {
             if (num > arg.length) {
@@ -529,6 +562,14 @@ var OhsCanvasGraphics;
                 ctx.restore();
             }
         }
+        copyStyle(origin) {
+            this.fontSize = origin.fontSize;
+            this.fontColor = origin.fontColor;
+            this.fontFamily = origin.fontFamily;
+            this.textAlign = origin.textAlign;
+            this.textBaseline = origin.textBaseline;
+            this.bold = origin.bold;
+        }
     }
     OhsCanvasGraphics.TextSimple = TextSimple;
     class Mark extends Rect {
@@ -1030,6 +1071,45 @@ var OhsCanvasGraphics;
         }
     }
     OhsCanvasGraphics.ContactSensorMark = ContactSensorMark;
+    class NumberMark extends Rect {
+        constructor(...args) {
+            super(...args);
+            this.colorInside = '#a6a6a6';
+            this.colorText = '#ffffff';
+            this.numberText = new TextSimple();
+        }
+        center(cx, cy, w, h) {
+            super.size(cx - (w / 2), cy - (h / 2), w, h);
+        }
+        paintNum(ctx, num) {
+            if (num <= 0) {
+                this.colorInside = '#a6a6a6';
+            }
+            else {
+                this.colorInside = '#003399';
+            }
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x + (this.w / 2), this.y + (this.h / 2), this.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = this.colorInside;
+            ctx.stroke();
+            ctx.restore();
+            //Number
+            //Time       
+            this.numberText.fontSize = 22;
+            this.numberText.fontFamily = "px Tahoma, sans-serif";
+            this.numberText.fontColor = this.colorText;
+            this.numberText.textAlign = "left";
+            this.numberText.textBaseline = "middle";
+            this.numberText.size(this.x + (this.w / 2) - 6, this.y + (this.h / 2) - 6, 10, 10);
+            this.numberText.paintText(ctx, num.toString());
+        }
+    }
+    OhsCanvasGraphics.NumberMark = NumberMark;
     class DlgNumbers {
         constructor() {
             this.m_rectRounded = new RectRounded();
@@ -1100,80 +1180,4 @@ var OhsCanvasGraphics;
         }
     }
     OhsCanvasGraphics.DlgNumbers = DlgNumbers;
-    class SymbolHome {
-        constructor() {
-            this.roofTriangle = new Triangle();
-            this.m_rectFloorArray = new Array();
-            this.m_sitePathArray = new Array();
-        }
-        MouseUpHandler(mx, my) {
-            for (let item of this.m_rectFloorArray) {
-                var i = 0;
-                if (item.isClicked(mx, my)) {
-                    window.alert('it is' + this.m_sitePathArray[i].getText());
-                    return this.m_sitePathArray[i].getText();
-                }
-                i++;
-            }
-            return null;
-        }
-        paint(ctx, x, y, width, height, m_floorArray) {
-            //x,y  left top corner
-            //20% is roof
-            var roogHeight = 0.2 * height;
-            this.roofTriangle.setTriangle(new Point2D(x + (width / 2), y), new Point2D(x, y + roogHeight), new Point2D(x + width, y + roogHeight));
-            this.roofTriangle.paint(ctx);
-            //Number of floors
-            var nFloors = m_floorArray.length;
-            //Create rectangles...
-            var distance = 20.0; // Distance between rectangles
-            var rectHeight = ((height - roogHeight) / nFloors) - distance;
-            //  window.alert(rectHeight);
-            if (this.m_rectFloorArray.length > nFloors) {
-                this.m_rectFloorArray.length = nFloors;
-            }
-            else if (this.m_rectFloorArray.length < nFloors) {
-                for (var i = this.m_rectFloorArray.length; i < nFloors; i++) {
-                    this.m_rectFloorArray.push(new Rect());
-                }
-            }
-            var i = 0;
-            //Draw rectangles                
-            for (let item of this.m_rectFloorArray) {
-                let cx = x;
-                let cy = (y + roogHeight + distance) + (i * (distance + rectHeight));
-                item.size(cx, cy, width, rectHeight);
-                item.paint(ctx);
-                ctx.fillStyle = '#FFCC00';
-                ctx.fill();
-                ctx.lineWidth = 6;
-                ctx.strokeStyle = '#666666';
-                ctx.stroke();
-                i++;
-            }
-            if (this.m_sitePathArray.length > nFloors) {
-                this.m_sitePathArray.length = nFloors;
-            }
-            else if (this.m_sitePathArray.length < nFloors) {
-                for (var i = this.m_sitePathArray.length; i < nFloors; i++) {
-                    this.m_sitePathArray.push(new TextSimple());
-                }
-            }
-            i = 0;
-            //Draw texts                
-            for (let item of this.m_sitePathArray) {
-                item.fontSize = 18;
-                item.fontFamily = "px sans-serif";
-                item.fontColor = '#196619';
-                item.textAlign = "left";
-                item.textBaseline = "top";
-                let cx = x;
-                let cy = ((y + roogHeight + distance) + (i * (distance + rectHeight))) + (rectHeight / 2);
-                item.size(cx + 10, cy, 100, 60);
-                item.paintText(ctx, m_floorArray[i].getSitePath());
-                i++;
-            }
-        }
-    }
-    OhsCanvasGraphics.SymbolHome = SymbolHome;
 })(OhsCanvasGraphics || (OhsCanvasGraphics = {}));

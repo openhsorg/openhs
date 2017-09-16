@@ -41,6 +41,7 @@ public class JsonSiteMapping {
 			//These strings must reflect to TypeScript definitions of strings
 			final String keyName = "name";
 			final String keySitePath = "sitePath";
+			final String keyDevicePath = "devicePath";
 		//	final String keyImagePath = "imagePath";
 			final String keyPosX = "posX";
 			final String keyPosY = "posY";
@@ -66,6 +67,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, floor.getName());
 					json.put(keySitePath, floor.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(floor.getSitePath()));
 				//	json.put(keyImagePath, floor.getSitePath());
 					json.put(keyPosX, floor.x);
 					json.put(keyPosY, floor.y);
@@ -79,6 +81,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, room.getName());
 					json.put(keySitePath, room.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(room.getSitePath()));
 					json.put(keyPosX, room.x);
 					json.put(keyPosY, room.y);
 					json.put(keyPosZ, room.z);	
@@ -89,6 +92,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, door.getName());
 					json.put(keySitePath, door.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(door.getSitePath()));
 					json.put(keyPosX, door.x);
 					json.put(keyPosY, door.y);
 					json.put(keyPosZ, door.z);	
@@ -99,6 +103,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, window.getName());
 					json.put(keySitePath, window.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(window.getSitePath()));
 					json.put(keyPosX, window.x);
 					json.put(keyPosY, window.y);
 					json.put(keyPosZ, window.z);	
@@ -110,6 +115,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, ts.getName());
 					json.put(keySitePath, ts.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(ts.getSitePath()));
 					json.put(keyPosX, ts.x);
 					json.put(keyPosY, ts.y);
 					json.put(keyPosZ, ts.z);
@@ -121,6 +127,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, contact.getName());
 					json.put(keySitePath, contact.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(contact.getSitePath()));
 					json.put(keyPosX, contact.x);
 					json.put(keyPosY, contact.y);
 					json.put(keyPosZ, contact.z);	
@@ -131,6 +138,7 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, swt.getName());
 					json.put(keySitePath, swt.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(swt.getSitePath()));
 					json.put(keyPosX, swt.x);
 					json.put(keyPosY, swt.y);
 					json.put(keyPosZ, swt.z);
@@ -312,7 +320,62 @@ public class JsonSiteMapping {
 			
 			//logger.info("***Added floor");
 			
-		}else if (id.equals("idTimeDate")) {
+		} else if (id.equals("idDeleteThing")) {
+			
+			boolean ret = false;
+			
+			String sitePath = json.getString("sitePath");
+			
+			logger.info("***removed: " + sitePath);
+								
+			//try {
+				ret = m_siteService.removeThing(sitePath);	
+		//	} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+		//			| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
+				// TODO Auto-generated catch block
+		//		e.printStackTrace();
+		//	}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(true));
+			
+			//logger.info("***Added floor");
+			
+		} else if (id.equals("idAddThing")) {
+			
+			boolean ret = false;
+			
+			String thingType = json.getString("thingType");
+			
+			Class<?>  t = null;
+			
+			if (thingType.equals("Floor")) {				
+				t = Floor.class;
+				
+			} else if (thingType.equals("Room")) {
+				t = Room.class;
+			}
+			
+			try {
+				ret = m_siteService.addNextThing(t);				
+			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(true));
+			
+			//logger.info("***Added floor");
+			
+		} else if (id.equals("idTimeDate")) {
 			
 			getTimeDateJSON(jsonRet);
 			
