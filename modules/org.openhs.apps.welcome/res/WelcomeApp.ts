@@ -8,51 +8,11 @@
 
 module WelcomeApp {        
 
-    import Rect =               OhsCanvasGraphics.Rect;
-    import Triangle =           OhsCanvasGraphics.Triangle;
-    import RectRounded =        OhsCanvasGraphics.RectRounded;
     import ImageRect =          OhsCanvasGraphics.ImageRect;
     import TextSimple =         OhsCanvasGraphics.TextSimple;    
-    import TempMark =           OhsCanvasGraphics.TempMark;    
-    import SwitchMark =         OhsCanvasGraphics.SwitchMark;
-    import SwitchLockMark =     OhsCanvasGraphics.SwitchLockMark;        
-    import ContactSensorMark =  OhsCanvasGraphics.ContactSensorMark;
-    import DoorMark =           OhsCanvasGraphics.DoorMark;
-    import WindowMark =         OhsCanvasGraphics.WindowMark;
     import ImageRectArray =     OhsCanvasGraphics.ImageRectArray;
     import Graphics =           OhsCanvasGraphics.Graphics;
-    import Mark =               OhsCanvasGraphics.Mark;
-    import ImageButton =        OhsCanvasGraphics.ImageButton;
-    import Point2D =            OhsCanvasGraphics.Point2D;
-    import DlgNumbers =         OhsCanvasGraphics.DlgNumbers;
-    import NumberMark =         OhsCanvasGraphics.NumberMark;
-             
-              
-    const whiteColor        = "#FFFFFF";
-    const blackColor        = "#000000";
-    const borderColor       = "#C0C0C0";
-    const secPtrColor       = "#CC0000";
-    const textColor         = "#000000";
-    const circleColor       = "#c0c0c0";
-    let fontSizeTempOut:    number = 50;    
-    let fontSizeWind:       number = 24;      
-    let fontSizeHum:        number = 27;
-    let fontSizeTime:       number = fontSizeTempOut;
-    let fontSizeDate:       number = fontSizeWind;        
-    /*
-    const imageAdd           = '/wres/images/add.png';
-    const imageDestroy       = '/wres/images/destroy.png';
-    const imagePadlockOff           = '/wres/images/add.png';
-    const imagePadlockOffPushed     = '/wres/images/add.png';
-    const imageLeave            = '/wres/images/leave.png';
-    const imageFloor            = '/wres/images/floor.png';
-    const imageBkg            = '/wres/images/config_bkg.png';
-    const imageTempIcon          = '/wres/images/tempIcon.png';
-    const imageDoorIcon          = '/wres/images/doorIcon.png';
-    const imageSwitchIcon          = '/wres/images/switchIcon.png';
-    const imageRoomIcon          = '/wres/images/roomIcon.png';
-    const imageFloorIcon          = '/wres/images/floorIcon.png';
-    */
+    import ImageButton =        OhsCanvasGraphics.ImageButton; 
     
     export class Welcome {
         
@@ -60,18 +20,9 @@ module WelcomeApp {
         public ctx:                 CanvasRenderingContext2D;  
         private url:                String;
         private urlRes:             String;
-        
-        // Data        
-        //public m_siteData:          SiteData = null; //general Site Data      
-        
-        // Timers
-      //  private timerData;
-     //   private timerPaint;
-      //  private timerLoadGraphics;
-        
+
         // Screens
         private m_screenMain:             ScreenMain = null;                    
-
                
         //Graphics
         private m_graphics: Graphics = null;        
@@ -85,21 +36,12 @@ module WelcomeApp {
             this.ctx = canvas.getContext("2d");  
             this.url = '/' + url;
             this.urlRes = '/' + urlRes;    
-            
-            //window.alert('url:' + this.url + "   urlRes:" + this.urlRes);
-            
-            //---Data---
-           // this.m_siteData = new SiteData ();
-            
+
             //---Graphics---
             this.m_graphics = new Graphics(this.canvas);                  
             
             //---Screens---
-            this.m_screenMain = new ScreenMain(this.m_graphics, this.url, this.urlRes);                        
-        //    this.m_screenFloors = new ScreenFloors(this.m_siteData, this.m_graphics);
-        //    this.m_screenRooms = new ScreenRooms(this.m_siteData, this.m_graphics);
-        //    this.m_screenList = new ScreenList(this.m_siteData, this.m_graphics);
-         //   this.m_screenRoom = new ScreenRoom(this.m_siteData, this.m_graphics);      
+            this.m_screenMain = new ScreenMain(this.m_graphics, this.url, this.urlRes);                         
 
             //---Mouse Handler---
             var self = this;
@@ -108,12 +50,9 @@ module WelcomeApp {
             this.canvas.addEventListener('mousemove', function(event){self.MouseMoveHandler(event);}, false);                               
                           
             //---Set current displayed page---
-            //this.openPage(this.m_screenMain);
-            //this.SwitchPage(ScreenMain.name);
             this.currPage = this.m_screenMain;
             
             requestAnimationFrame(()=>this.paint());      
-
         }
         
         public paint () {
@@ -151,8 +90,7 @@ module WelcomeApp {
         }
         
         private MouseMoveHandler (event){
-           var mousePos = getMousePos(this.canvas, event);                           
-            
+           var mousePos = getMousePos(this.canvas, event);                                       
             /*
             * handling in current page...
             */
@@ -185,35 +123,10 @@ module WelcomeApp {
             }
             
             if (mouseRet != null) {
-                this.SwitchPage(mouseRet.nextScreen, mouseRet.nextSitePath);
+                //this.SwitchPage(mouseRet.nextScreen, mouseRet.nextSitePath);
                                 
             }            
-        }
-        
-        private SwitchPage (page: string, thingPath: string) {
-                /*        
-            if (page == ScreenMain.name) {
-                this.currPage = this.m_screenMain;
-            
-            } else if (page == ScreenFloors.name) {
-                
-                this.currPage = this.m_screenFloors; 
-             //   this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);    
-                       
-            } else if (page == ScreenRooms.name) {
-                
-                this.currPage = this.m_screenRooms; 
-             //   this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);    
-                       
-            }  else if (page == ScreenList.name) {
-                                                 
-                this.currPage = this.m_screenList;
-                this.currPage.className = thingPath;
-               // this.currPage.m_thingPtr = this.m_siteData.getThing(thingPath);           
-            }
-                      */  
-        }
-                 
+        }                 
     }
     
     class MouseReturn {
@@ -228,7 +141,6 @@ module WelcomeApp {
        // protected mouseRet:           MouseReturn             = new MouseReturn ();
     
         protected m_graphics:         Graphics                = null;
-        public    m_dlgNumbers:       DlgNumbers              = new DlgNumbers ();
         
         public url:                String = '';
         public urlRes:             String = '';        
@@ -266,32 +178,7 @@ module WelcomeApp {
            // this.paintDlgNumbers(canvas);
         }
 
-        protected paintWait (canvas: HTMLCanvasElement) {    
-        
-            const ctx = canvas.getContext('2d');
-            var width: number = canvas.width;
-            var height: number = canvas.height;                 
-           
-            var rect: RectRounded = new RectRounded();            
-            var text: TextSimple = new TextSimple ();
-                                               
-            ctx.save();                        
-            rect.size((width / 2) - 100, (height / 2) - 25, 200, 60);
-            rect.rad(10);            
-            rect.paint(ctx);
-            ctx.fillStyle = "#b8b894";
-            ctx.lineWidth=2;
-            ctx.strokeStyle="gray";            
-            ctx.fill();
-            ctx.stroke();            
-            
-            text.size(rect.x + 5, rect.y + 5, 60, 30);
-            text.fontColor = "#1a75ff";
-            text.fontSize = 40;
-            text.paintText(ctx, 'Wait...');                       
-            
-            ctx.restore();   
-        }
+
         /*
         protected paintDlgNumbers (canvas: HTMLCanvasElement) {    
         
@@ -320,20 +207,6 @@ module WelcomeApp {
         protected btnKitchen       :ImageButton;
         protected btnClock         :ImageButton;
         protected btnMeteo         :ImageButton;
-
-        /*
-        protected numInDoor:        NumberMark     = new NumberMark();
-        protected numNewDoor:       NumberMark     = new NumberMark();
-        protected numInTemp:        NumberMark     = new NumberMark();
-        protected numNewTemp:       NumberMark     = new NumberMark();
-        protected numInSwitch:      NumberMark     = new NumberMark();
-        protected numNewSwitch:     NumberMark     = new NumberMark();
-        protected numInRoom:        NumberMark     = new NumberMark();
-        protected numNewRoom:       NumberMark     = new NumberMark();        
-        protected numInFloor:       NumberMark     = new NumberMark();
-        protected numNewFloor:      NumberMark     = new NumberMark();  
-        */
-        //protected enableDlgNumbers: boolean         = false;
            
         constructor (m_graphicsData: Graphics, url: String, urlRes: String) {          
             super (m_graphicsData, url, urlRes);
@@ -344,8 +217,7 @@ module WelcomeApp {
             this.btnKitchen = new ImageButton(urlRes + '/images/kitchen.png', urlRes + '/images/kitchen.png');
             this.btnClock = new ImageButton(urlRes + '/images/clock.png', urlRes + '/images/clock.png');
             this.btnMeteo = new ImageButton(urlRes + '/images/meteo.png', urlRes + '/images/meteo.png');
-            
-            //this.m_symbolHome      = new SymbolHome(m_siteData);                     
+                  
         }
         
         MouseDownHandler(mx: number, my: number) {   
@@ -407,24 +279,9 @@ module WelcomeApp {
             
             this.btnMeteo.size(((width - 100) / 2), ((height - 100) /2) + 180, 100, 100);
             this.btnMeteo.paint(ctx);                  
-            
-            /*
-            this.btnSwitch.size(200, 50, 120, 120);
-            this.btnSwitch.paint(ctx);   
-            
-            this.btnDoor.size(350, 50, 120, 120);
-            this.btnDoor.paint(ctx);            
-            
-            this.btnRoom.size(50, 200, 120, 120);
-            this.btnRoom.paint(ctx);               
-            
-            this.btnFloor.size(200, 200, 120, 120);
-            this.btnFloor.paint(ctx);              
-              */
-        }
 
-    }
-    
+        }
+    }    
 
     //Function to get the mouse position
     function getMousePos(canvas, event) {
@@ -442,7 +299,7 @@ module WelcomeApp {
         while(new Date().getTime() < unixtime_ms + ms) {}
     }        
 
-} // end module KitchenInfoStation
+}
 
 
 
