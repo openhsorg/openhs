@@ -358,7 +358,7 @@ module AdminApp {
             //    window.alert('temp clicked......');
                 
                 mouseRet.nextScreen = ScreenList.name;
-                mouseRet.nextSitePath = 'TemperatureSensor';      
+                mouseRet.nextSitePath = 'TemperatureSensor';     
                                 
             } else if (this.btnSwitch.isClicked(mx, my)) {
             //    window.alert('temp clicked......');
