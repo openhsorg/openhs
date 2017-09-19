@@ -7,7 +7,6 @@ var OhsCanvasGraphics;
     var Window = OhsSiteData.Window;
     var Switch = OhsSiteData.Switch;
     var ContactSensor = OhsSiteData.ContactSensor;
-    const imageDestroy = '/adminres/images/destroy.png';
     class Graphics {
         constructor(canvas) {
             this.textA = new TextSimple();

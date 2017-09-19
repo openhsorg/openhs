@@ -51,6 +51,7 @@ public class Admin extends HttpServlet {
     	out.println("<meta http-equiv='content-type' content='text/html; charset=UTF8'>");
 
     	out.println("<script src='adminres/OhsLibrary/jquery-3.1.1.min.js'></script>");
+    	out.println("<script src='adminres/OhsLibrary/CanvasGraphicsUI.js'></script>");
     	out.println("<link href='adminres/OhsLibrary/styles.css' rel='stylesheet' type='text/css'>");
     	    	
     	out.print("</head>");    		    	
@@ -64,7 +65,8 @@ public class Admin extends HttpServlet {
     	out.println("</canvas>");
     	
     	out.println("<script src='adminres/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");    	
-    	out.println("<script src='adminres/OhsLibrary/OhsCanvasGraphics.js' charset='utf-8'></script>");
+    	//out.println("<script src='adminres/OhsLibrary/OhsCanvasGraphics.js' charset='utf-8'></script>");
+    	//out.println("<script src='adminres/OhsLibrary/CanvasGraphicsUI.js' charset='utf-8'></script>");
     	out.println("<script src='adminres/AdminApp.js' charset='utf-8'></script>");
     	
     	out.println("<script type='text/javascript'>");

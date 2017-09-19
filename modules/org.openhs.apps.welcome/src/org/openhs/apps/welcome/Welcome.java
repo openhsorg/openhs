@@ -65,7 +65,8 @@ public class Welcome extends HttpServlet {
     	out.println("Error: Your browser does not support the HTML canvas element.");
     	out.println("</canvas>");
     	
-    	out.println("<script src='" + urlRes + "/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");    	
+    	out.println("<script src='" + urlRes + "/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");
+    	out.println("<script src='" + urlRes + "/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>"); 
     	out.println("<script src='" + urlRes + "/OhsLibrary/OhsCanvasGraphics.js' charset='utf-8'></script>");
     	out.println("<script src='" + urlRes + "/WelcomeApp.js' charset='utf-8'></script>");
     	

@@ -13,8 +13,6 @@ import Switch = OhsSiteData.Switch;
 import ContactSensor = OhsSiteData.ContactSensor;
 import Thing = OhsSiteData.Thing;    
     
-const imageDestroy       = '/adminres/images/destroy.png';    
-    
     export class Graphics {
         
         private canvas:              HTMLCanvasElement;
@@ -127,8 +125,7 @@ const imageDestroy       = '/adminres/images/destroy.png';
             this.x = pt.x;
             this.y = pt.y;
             
-        }        
-        
+        }                
     }
     
     export class Triangle {
