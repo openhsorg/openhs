@@ -201,52 +201,39 @@ module CanvasGraphicsUI {
                 ctx.closePath();
                 ctx.restore();  
             }            
-        }
-        
-/*
-        public PushEvent (x: number, y: number) {
-        
-            if (this.rect.isClicked(x, y)) {
-                this.push = true;
-                
-                return true;
-            }
-            
-            return false;
-        }   
-
-        public UpEvent(x: number, y: number) {
-            
-            if (this.push) {          
-            
-             //   window.setTimeout(() => this.closeEvent(ctx), 50);
-                 this.push = false;
-                return true;
-            }
-            
-            return false;
-        
-        }       
-        
-        public getState () {
-            return this.push;               
-            
-        }
-        */
-        
+        }        
     }         
     
+      
     
     export class MessageBox extends Item {
+        
+        protected radius:   number = 4;
          
-         constructor () {
-             super ();
+        constructor () {
+            super ();
          
-         }
+        }
+        
         public paint (ctx: CanvasRenderingContext2D){
-            
-            super.paint(ctx);
-                       
+                                    
+            //super.paint(ctx);
+            ctx.save();
+            ctx.beginPath();                        
+            ctx.moveTo(this.rect.x + this.radius, this.rect.y);
+            ctx.lineTo(this.rect.x + this.rect.w - this.radius, this.rect.y);
+            ctx.quadraticCurveTo(this.rect.x + this.rect.w, this.rect.y, this.rect.x + this.rect.w, this.rect.y + this.radius);
+            ctx.lineTo(this.rect.x + this.rect.w, this.rect.y + this.rect.h - this.radius);
+            ctx.quadraticCurveTo(this.rect.x + this.rect.w, this.rect.y + this.rect.h, this.rect.x + this.rect.w - this.radius, this.rect.y + this.rect.h);
+            ctx.lineTo(this.rect.x + this.radius, this.rect.y + this.rect.h);
+            ctx.quadraticCurveTo(this.rect.x, this.rect.y + this.rect.h, this.rect.x, this.rect.y + this.rect.h - this.radius);
+            ctx.lineTo(this.rect.x, this.rect.y + this.radius);
+            ctx.quadraticCurveTo(this.rect.x, this.rect.y, this.rect.x + this.radius, this.rect.y);
+            ctx.closePath();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue'; 
+            ctx.stroke();    
+            ctx.restore();                                  
         }                 
      }
         
@@ -334,6 +321,59 @@ module CanvasGraphicsUI {
             this.bold = origin.bold; 
         }
 
+    }    
+    
+  
+    export class NumberRounded extends TextSimple {
+        
+        
+        protected colorInside           :string             = '#a6a6a6';
+        protected colorText             :string             = '#ffffff';       
+        public num                      :number             = 0;
+        
+        constructor () {
+            super('', 0,0,0,0);  
+            
+            this.fontSize = 26;
+            this.fontFamily = "px Tahoma, sans-serif";
+            this.fontColor = this.colorText;
+            this.textAlign = "center";
+            this.textBaseline = "middle";  
+            this.bold = true;
+        }
+        
+        public center (cx: number, cy: number, w: number, h: number) {                        
+            this.rect.size(cx - (w /2 ), cy - (h / 2), w, h);
+        }              
+        
+        public SetNumber (num: number) {
+            this.num = num;
+            
+            this.setText(this.num.toString());            
+        }
+        
+        public paint (ctx: CanvasRenderingContext2D) {            
+            
+            if (this.num <= 0) {
+                this.colorInside = '#a6a6a6';
+            } else {
+                this.colorInside = '#003399';
+            }
+            
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();            
+            ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = this.colorInside;
+            ctx.stroke();
+            ctx.restore();    
+            
+            super.paint(ctx);
+        }
+        
     }    
     
     export class Button extends Item {
@@ -472,14 +512,32 @@ module CanvasGraphicsUI {
    
     export class Screen {
 
-        public m_item:            Array <Item> = null;
+        public m_item:              Array <Item> =              null;
+        private canvas:             HTMLCanvasElement =         null;   
+        
+        private message:            boolean = false;
+        private msg:                MessageBox = new MessageBox ();
     
-        constructor () {
+        constructor (canvas: HTMLCanvasElement) {
+            
+            this.canvas = canvas;
             this.m_item = new Array<Item>();
         }
         
         public add (item: Item) {
             this.m_item.push(item);        
+        }
+        
+        public SetCanvas (canvas: HTMLCanvasElement) {
+            this.canvas = canvas;
+        
+        }
+        
+        public GetSize(){            
+            return {
+                    width: this.canvas.width,
+                    height: this.canvas.height
+                    };
         }
  
         
@@ -511,17 +569,21 @@ module CanvasGraphicsUI {
             }     
                    
             return null;
-        }        
+        }   
         
-        public paint (canvas: HTMLCanvasElement) {          
-            const ctx = canvas.getContext('2d');
-            var width: number = canvas.width;
-            var height: number = canvas.height;    
+        public MessagBox(text: String, type: number) {
+            
+            this.message = true;
+            
+        }
+        
+        public paint () {          
+            const ctx = this.canvas.getContext('2d');
+            var width: number = this.canvas.width;
+            var height: number = this.canvas.height;    
             
             ctx.clearRect(0, 0, width, height);
-            
-           //
-            
+
             for (let item of this.m_item) {
                 item.paint(ctx);                            
             }
@@ -532,7 +594,7 @@ module CanvasGraphicsUI {
         
         public m_screens:           Array <Screen>;// = new Array<Screen>();      
         private canvas:             HTMLCanvasElement;
-        private ctx:                CanvasRenderingContext2D;  
+        private ctx:                CanvasRenderingContext2D;          
         
         //Pointer to current screen...
         public m_curScreen:         Screen = null;
@@ -580,7 +642,7 @@ module CanvasGraphicsUI {
                 /////****************                
                 
             } else {
-                this.m_curScreen.paint(this.canvas);      
+                this.m_curScreen.paint();      
             }
             
             requestAnimationFrame(()=>this.paint());  
@@ -613,6 +675,9 @@ module CanvasGraphicsUI {
         }
                       
         public addItem (screen: Screen) {
+            
+           // screen.SetCanvas(this.canvas);
+                        
             this.m_screens.push(screen);            
         }
         

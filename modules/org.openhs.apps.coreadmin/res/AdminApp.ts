@@ -13,6 +13,7 @@ module AdminApp {
     import Screen =             CanvasGraphicsUI.Screen;
     import TextSimple =         CanvasGraphicsUI.TextSimple;
     import ImageButton =        CanvasGraphicsUI.ImageButton;
+    import NumberRounded =      CanvasGraphicsUI.NumberRounded;
 
     import SiteData =           OhsSiteData.SiteData;
     import Floor =              OhsSiteData.Floor;
@@ -23,36 +24,12 @@ module AdminApp {
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
     import Thing =              OhsSiteData.Thing;               
-  /*            
-    const whiteColor        = "#FFFFFF";
-    const blackColor        = "#000000";
-    const borderColor       = "#C0C0C0";
-    const secPtrColor       = "#CC0000";
-    const textColor         = "#000000";
-    const circleColor       = "#c0c0c0";
-    let fontSizeTempOut:    number = 50;    
-    let fontSizeWind:       number = 24;      
-    let fontSizeHum:        number = 27;
-    let fontSizeTime:       number = fontSizeTempOut;
-    let fontSizeDate:       number = fontSizeWind;        
-    */
-    /*
-    const imageAdd           = '/adminres/images/add.png';
-    const imageDestroy       = '/adminres/images/destroy.png';
-    const imagePadlockOff           = '/adminres/images/add.png';
-    const imagePadlockOffPushed     = '/adminres/images/add.png';
-    const imageLeave            = '/adminres/images/leave.png';
-    const imageFloor            = '/adminres/images/floor.png';
-    const imageBkg            = '/adminres/images/config_bkg.png';
-    const imageTempIcon          = '/adminres/images/tempIcon.png';
-    const imageDoorIcon          = '/adminres/images/doorIcon.png';
-    const imageSwitchIcon          = '/adminres/images/switchIcon.png';
-    const imageRoomIcon          = '/adminres/images/roomIcon.png';
-    const imageFloorIcon          = '/adminres/images/floorIcon.png';
-    */
     
-    const iconTemp          = '/adminres/images/tempIcon.png';  
-    const iconSwitch        = '/adminres/images/switchIcon.png';  
+    const iconTemp =          '/adminres/images/tempIcon.png';  
+    const iconSwitch =        '/adminres/images/switchIcon.png';
+    const iconFloor =         '/adminres/images/floorIcon.png';
+    const iconDoor =          '/adminres/images/doorIcon.png';
+    const iconRoom =          '/adminres/images/roomIcon.png';       
     
     export class Admin {
         
@@ -79,7 +56,7 @@ module AdminApp {
             this.m_siteData = new SiteData ();
 
             //Create screens...
-            this.m_screenMain = new ScreenMain(this.m_siteData);
+            this.m_screenMain = new ScreenMain(this.m_siteData, canvas);
             this.addItem(this.m_screenMain);                  
             
             //Set current screen...
@@ -97,9 +74,11 @@ module AdminApp {
         //Icons
         protected btnTemp:          ImageButton;
         protected btnSwitch:        ImageButton;
+        protected icons:            Array <ImageButton>;
+        protected nums:             Array <NumberRounded>;
         
-        constructor (siteData: SiteData) {
-            super();        
+        constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
+            super(canvas);        
             
             this.m_siteData = siteData;            
             this.buildLayout();
@@ -108,32 +87,86 @@ module AdminApp {
         public buildLayout () {
                         
             //Time
-            this.m_textTime = new TextSimple('Time', 550, 30, 250, 100);
+            this.m_textTime = new TextSimple('Time', 750, 30, 250, 100);
             this.add(this.m_textTime);          
             
             //Icons
-            this.btnTemp = new ImageButton(iconTemp, iconTemp, 30, 30, 150, 150);
-            this.add(this.btnTemp);
+            this.icons = new Array <ImageButton> ();
+            this.icons.push(new ImageButton(iconTemp, iconTemp, 30, 30, 150, 150));
+            this.icons.push(new ImageButton(iconSwitch, iconSwitch, 200, 30, 150, 150));
+            this.icons.push(new ImageButton(iconDoor, iconDoor, 400, 30, 150, 150));
+            this.icons.push(new ImageButton(iconRoom, iconRoom, 400, 30, 150, 150));
+            this.icons.push(new ImageButton(iconFloor, iconFloor, 400, 30, 150, 150));
+                                         
+            for (let icon of this.icons) {
+                this.add(icon);
+            }
             
-            this.btnSwitch = new ImageButton(iconSwitch, iconSwitch, 200, 30, 150, 150);
-            this.add(this.btnSwitch);            
+            //Nums Rounded
+            this.nums = new Array <NumberRounded> ();
+            this.nums.push(new NumberRounded());
+            this.nums.push(new NumberRounded());
+            this.nums.push(new NumberRounded());
+            this.nums.push(new NumberRounded());
+            this.nums.push(new NumberRounded());
+                                         
+            for (let num of this.nums) {
+                this.add(num);
+            }            
+            
+            
+            this.IconMatrix (this.GetSize().width - 150, this.GetSize().height, 4, 3, 150, 150);
+            
+        }
+        
+        //Arange icons to rectangle...
+        public IconMatrix (w: number, h: number, numX: number, numY: number, iconSizeX: number, iconSizeY: number) {
+            
+            var dx = (w - (numX * iconSizeX)) / (numX + 1);
+            var dy = (h - (numY * iconSizeY)) / (numY + 1); 
+            
+            var id = 0;
+            
+            for (var i = 1; i <= numY; i++) {
+                for (var j = 1; j <= numX; j++) {
+                    
+                    var dxa = (j * dx) + ((j - 1) * iconSizeX);
+                    var dya = (i * dy) + ((i - 1) * iconSizeY);
+                    
+                    if (this.icons.length > id) {
+                        this.icons[id].Size(dxa, dya, 150, 150);
+                    }
+                    
+                    if (this.nums.length > id) {
+                        this.nums[id].center(dxa + 150 - 5, dya + 150 - 5, 50, 50);
+                    }                    
+                    
+                    id ++;                    
+                }                            
+            }                    
         }
 
         
-        public paint (canvas: HTMLCanvasElement) {          
+        public paint () {          
             
             //Update data....
             this.m_textTime.setText(this.m_siteData.timeString);
             
+            //Numbers
+            this.nums[0].SetNumber(this.m_siteData.m_tempSensorArray.length);
+            this.nums[1].SetNumber(this.m_siteData.m_switchArray.length);
+            this.nums[2].SetNumber(this.m_siteData.m_doorArray.length);
+            this.nums[3].SetNumber(this.m_siteData.m_roomArray.length);
+            this.nums[4].SetNumber(this.m_siteData.m_floorArray.length);
+            
             //Redraw...
-            super.paint(canvas);                       
+            super.paint();                       
         }   
         
         public MouseDownHandler(x: number, y: number) {
             var ret = super.MouseDownHandler(x, y);
             
-            //Analyse click..
-            
+            //Analyse click..            
             if (ret == null) {
                 return null;
             }
@@ -141,8 +174,12 @@ module AdminApp {
             if (ret == this.m_textTime) {
                 window.alert('Clicked time...!');
                 
-            } else if (ret == this.btnTemp){
+            } else if (ret == this.icons[0]){
                 window.alert('Clicked temp...!');
+                
+            } else if (ret == this.icons[1]){
+                window.alert('Clicked switch...!');
+                
             }
             
             return null;
