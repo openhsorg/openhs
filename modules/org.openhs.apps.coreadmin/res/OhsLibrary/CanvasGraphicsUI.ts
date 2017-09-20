@@ -533,7 +533,7 @@ module CanvasGraphicsUI {
         protected row_height            :number             = 25;
         
         protected selRow                :number             = 0;
-        public selectedRow           :number             = 0;
+        public selectedRow              :number             = 0;
         
         constructor () {
             super();
@@ -563,12 +563,12 @@ module CanvasGraphicsUI {
                 if (item.rect.isClicked(x, y)) {
                     this.selRow = i;
                     
-                    return null;
+                    return <Item>item;
                 }
                 i ++;                                       
             }     
                    
-            return null;
+            return <Item> this;
         }          
         
         public MouseDownHandler(x: number, y: number) {                        
@@ -584,12 +584,12 @@ module CanvasGraphicsUI {
                     
                    
                     
-                    return null;
+                    return <Item>item;
                 }
                 i ++;                                       
             }     
                    
-            return null;
+            return <Item> this;
         }          
         
         
@@ -609,20 +609,14 @@ module CanvasGraphicsUI {
             this.add(new TextSimple (txt, 0, 0, 10, 10));
         }
         
-        public IsInside(txt: String) {
-            for (let item of this.m_items) {
-                var txtItem = item.getText();
-                
-                //window.alert('*******' + txt + '****' + txtItem);
-                if (txtItem === txt){
-                  //  window.alert('*******' + txt + '****' + txtItem);
-                     return true;
-                }                                
-            }    
-            
-            return false;
+        public setText (txt: String, n: number) {
+            if (this.m_items.length < n + 1) {
+                this.addEntry(txt);            
+            } else {
+                this.m_items[n].setText(txt);            
+            }
         }
-        
+
         protected order (high: number) {
                                
             var space_vertical = 2;
@@ -635,12 +629,9 @@ module CanvasGraphicsUI {
                 item.Move(this.rect.x + space_left, this.rect.y + space_vertical + (i * (high + space_vertical)));
                                 
                 i ++;
-            }
-                        
+            }                        
         }
-        
-                        
-        
+                                        
         public paint (ctx: CanvasRenderingContext2D) {            
             
             if (this.num <= 0) {

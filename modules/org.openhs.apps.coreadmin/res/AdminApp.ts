@@ -31,7 +31,7 @@ module AdminApp {
     const iconFloor =         '/adminres/images/floorIcon.png';
     const iconDoor =          '/adminres/images/doorIcon.png';
     const iconRoom =          '/adminres/images/roomIcon.png';    
-    const iconLeave =          '/adminres/images/leave.png';      
+    const iconLeave =         '/adminres/images/leave.png';      
     
     export class Admin {
         
@@ -267,14 +267,7 @@ module AdminApp {
         
         //List box
         public m_list:              ListBox;
-        
-        //Icons
-        /*
-        protected btnTemp:          ImageButton;
-        protected btnSwitch:        ImageButton;
-        protected icons:            Array <ImageButton>;
-        protected nums:             Array <NumberRounded>;
-        */
+ 
         constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
             super(canvas);        
             
@@ -310,51 +303,24 @@ module AdminApp {
             this.add(this.m_list);
             this.m_list.Size(20, 100, 360, 350);
             
-            /*
-            //Icons
-            this.icons = new Array <ImageButton> ();
-            this.icons.push(new ImageButton(iconTemp, iconTemp, 30, 30, 150, 150));
-            this.icons.push(new ImageButton(iconSwitch, iconSwitch, 200, 30, 150, 150));
-            this.icons.push(new ImageButton(iconDoor, iconDoor, 400, 30, 150, 150));
-            this.icons.push(new ImageButton(iconRoom, iconRoom, 400, 30, 150, 150));
-            this.icons.push(new ImageButton(iconFloor, iconFloor, 400, 30, 150, 150));
-                                         
-            for (let icon of this.icons) {
-                this.add(icon);
-            }
-            */
-            /*
-            //Nums Rounded
-            this.nums = new Array <NumberRounded> ();
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-                                         
-            for (let num of this.nums) {
-                this.add(num);
-            }            
-            */
-            
-       //     this.IconMatrix (this.GetSize().width - 150, this.GetSize().height, 4, 3, 150, 150);
-            
         }
-  
-        
+          
         public paint () {          
             
             //Update data....
             this.m_textTime.setText(this.m_siteData.timeString);
             
-            for (var item of this.m_siteData.m_tempSensorArray) {
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_tempSensorArray) {                
                 var txt = item.getSitePath();
                 
-                if (!this.m_list.IsInside(txt)) {
-                    this.m_list.addEntry(txt);
-                }                                                
+                this.m_list.setText(txt, i);
+                
+                i ++;
             }
             
+            //Text details:
             if (this.m_list.selectedRow != 0) {
                 this.m_textSel.setText('Selected:' + this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1].getSitePath());
             }
@@ -369,21 +335,7 @@ module AdminApp {
             */
             //Redraw...
             super.paint();                       
-        }   
-        /*
-        public MouseDownHandler(x: number, y: number) {
-            var ret = super.MouseDownHandler(x, y);
-            
-            //Analyse click..            
-            if (ret == null) {
-                return null;
-            }
-
-            return null;
-        }             
-        
-        */
-        
+        }           
     }    
      
 } 
