@@ -120,7 +120,7 @@ module CanvasGraphicsUI {
     export class Item {
         
         //Basic Rectangle...
-        protected rect:     Rect = new Rect ();
+        public rect:     Rect = new Rect ();
         
         constructor () {
         }
@@ -137,11 +137,19 @@ module CanvasGraphicsUI {
         }        
         
         public MouseUpHandler(x: number, y: number) {
-            return null;
+            if (this.rect.isClicked(x, y)) {
+                return this;
+            } else {
+                return null;
+            }
         }
         
         public MouseMoveHandler(x: number, y: number) {
-            return null;
+            if (this.rect.isClicked(x, y)) {
+                return this;
+            } else {
+                return null;
+            }
         }       
         
         public Move (x: number, y: number) {
@@ -246,7 +254,7 @@ module CanvasGraphicsUI {
         public textBaseline:    string = "middle"; 
         public bold:            boolean = false;   
                         
-        protected text:         String;
+        public text:         String;
         
         protected border:       boolean = false;
         
@@ -298,17 +306,20 @@ module CanvasGraphicsUI {
             ctx.textAlign = this.textAlign;
             ctx.textBaseline = this.textBaseline;
             ctx.fillStyle = this.fontColor;                                  
-            ctx.fillText(this.text.toString(), x, y);
-            ctx.restore();   
+            ctx.fillText(this.text.toString(), x, y);                                  
+            ctx.restore();
+                     
             
-            if (this.border){
+       //     if (this.border){
+                /*
                 ctx.save();
                 super.paint(ctx);
                 ctx.lineWidth = 2;
                 ctx.strokeStyle = 'blue'; 
-                ctx.stroke();                   
+                ctx.stroke();         
                 ctx.restore();
-             }                          
+            */
+           //  }                          
         }
         
         public copyStyle (origin: TextSimple){
@@ -375,6 +386,8 @@ module CanvasGraphicsUI {
         }
         
     }    
+    
+    
     
     export class Button extends Item {
         
@@ -510,10 +523,217 @@ module CanvasGraphicsUI {
     
     }     
    
+    export class ListBox extends Item {
+        
+        protected m_items:              Array<TextSimple>;
+        protected colorInside           :string             = '#a6a6a6';
+        protected colorText             :string             = '#ffffff';       
+        public num                      :number             = 0;
+        
+        protected row_height            :number             = 25;
+        
+        protected selRow                :number             = 0;
+        public selectedRow           :number             = 0;
+        
+        constructor () {
+            super();
+            
+            this.m_items = new Array<TextSimple>();
+            /*
+            super('', 0,0,0,0);  
+            
+            this.fontSize = 26;
+            this.fontFamily = "px Tahoma, sans-serif";
+            this.fontColor = this.colorText;
+            this.textAlign = "center";
+            this.textBaseline = "middle";  
+            this.bold = true;
+            */
+        }
+        
+        public MouseMoveHandler(x: number, y: number) {     
+        
+            if (super.MouseMoveHandler(x, y) != this) return null;
+            
+            var i = 1;
+            
+            this.selRow = 0;
+            
+            for (let item of this.m_items) {
+                if (item.rect.isClicked(x, y)) {
+                    this.selRow = i;
+                    
+                    return null;
+                }
+                i ++;                                       
+            }     
+                   
+            return null;
+        }          
+        
+        public MouseDownHandler(x: number, y: number) {                        
+            if (super.MouseDownHandler(x, y) != this) return null;
+           
+            var i = 1;
+            
+           // this.selectedRow = 0;
+            
+            for (let item of this.m_items) {
+                if (item.rect.isClicked(x, y)) {
+                    this.selectedRow = i;
+                    
+                   
+                    
+                    return null;
+                }
+                i ++;                                       
+            }     
+                   
+            return null;
+        }          
+        
+        
+        public add(item: TextSimple) {
+            this.m_items.push(item);      
+            
+            item.fontSize = 14;
+            item.fontFamily = "px Tahoma, sans-serif";
+            item.fontColor = '#009ccc';
+            item.textAlign = "left";
+            item.textBaseline = "middle";  
+            item.bold = false;       
+                 
+        }
+                
+        public addEntry (txt: String) {
+            this.add(new TextSimple (txt, 0, 0, 10, 10));
+        }
+        
+        public IsInside(txt: String) {
+            for (let item of this.m_items) {
+                var txtItem = item.getText();
+                
+                //window.alert('*******' + txt + '****' + txtItem);
+                if (txtItem === txt){
+                  //  window.alert('*******' + txt + '****' + txtItem);
+                     return true;
+                }                                
+            }    
+            
+            return false;
+        }
+        
+        protected order (high: number) {
+                               
+            var space_vertical = 2;
+            var space_left = 2;
+            var i = 0;
+                        
+            for (let item of this.m_items) {
+                
+                item.Size(this.rect.x + space_left, this.rect.y, this.rect.w - (2 * space_left), high);
+                item.Move(this.rect.x + space_left, this.rect.y + space_vertical + (i * (high + space_vertical)));
+                                
+                i ++;
+            }
+                        
+        }
+        
+                        
+        
+        public paint (ctx: CanvasRenderingContext2D) {            
+            
+            if (this.num <= 0) {
+                this.colorInside = '#a6a6a6';
+            } else {
+                this.colorInside = '#003399';
+            }
+            
+            //Background
+        //    ctx.restore();
+            ctx.beginPath();            
+            this.rect.paint(ctx);
+            ctx.fillStyle = 'white';
+            ctx.fill();            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = this.colorInside;
+            ctx.stroke();
+            ctx.closePath(); 
+        //    ctx.restore();      
+            
+            //Stroke to rectangle
+            
+            ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            ctx.stroke();
+            ctx.clip();       
+              
+            ctx.save();
+            
+            //Draw Items
+            this.order(30);
+            
+            var i = 1;
+            var cc = 0;
+            
+            for (let item of this.m_items) {                
+                               
+                ctx.beginPath();
+              
+                if (cc == 0) {                    
+                    ctx.fillStyle = '#e6f9ff';
+                } else {
+                    ctx.fillStyle = '#ccf3ff';
+                }     
+                
+                if(this.selectedRow == i) {
+                    ctx.fillStyle = '#c180ff';
+                }
+                
+                if (this.selRow == i) {
+                    ctx.fillStyle = '#dab3ff';
+                }
+                
+                ctx.rect(item.rect.x, item.rect.y, item.rect.w, item.rect.h);
+                ctx.fill();
+
+                ctx.closePath();
+                
+            //      ctx.save();               
+                
+                
+                item.paint(ctx);
+            //    ctx.save();
+                
+              //   ctx.closePath();
+                
+                if (cc == 0) cc ++;
+                else cc = 0;
+                
+                i++;
+           
+            }     
+            
+             ctx.restore();
+            /*
+            //Basic shape
+            ctx.save();
+            ctx.beginPath();            
+            ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colorInside;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = this.colorInside;
+            ctx.stroke();
+            ctx.restore();    
+            */
+            super.paint(ctx);
+        }        
+    }      
+    
     export class Screen {
 
-        public m_item:              Array <Item> =              null;
-        private canvas:             HTMLCanvasElement =         null;   
+        public m_item:             Array <Item> =              null;
+        public canvas:             HTMLCanvasElement =         null;   
         
         private message:            boolean = false;
         private msg:                MessageBox = new MessageBox ();
@@ -583,10 +803,14 @@ module CanvasGraphicsUI {
             var height: number = this.canvas.height;    
             
             ctx.clearRect(0, 0, width, height);
+            
+            ctx.save();
 
             for (let item of this.m_item) {
                 item.paint(ctx);                            
             }
+            
+            ctx.restore();
         }         
     }   
     
@@ -649,28 +873,28 @@ module CanvasGraphicsUI {
             
        }  
         
-        private MouseMoveHandler (event){
+        public MouseMoveHandler (event){
            var mousePos = getMousePos(this.canvas, event);  
                                      
             if (this.m_curScreen != null) {                
-                this.m_curScreen.MouseMoveHandler(mousePos.x, mousePos.y);
+                return this.m_curScreen.MouseMoveHandler(mousePos.x, mousePos.y);
             } 
         }        
         
-        private MouseDownHandler (event){                  
+        public MouseDownHandler (event){                  
             var mousePos = getMousePos(this.canvas, event); 
             
             if (this.m_curScreen != null) {                
-                this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
-            }                        
+                return this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
+            }  
+                        
         }
         
-        private MouseUpHandler(event) {
-            
+        public MouseUpHandler(event) {            
             var mousePos = getMousePos(this.canvas, event);                           
             
             if (this.m_curScreen != null) {                
-                this.m_curScreen.MouseUpHandler(mousePos.x, mousePos.y);
+                return this.m_curScreen.MouseUpHandler(mousePos.x, mousePos.y);
             } 
         }
                       
