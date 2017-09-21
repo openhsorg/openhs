@@ -15,6 +15,7 @@ module AdminApp {
     import ImageButton =        CanvasGraphicsUI.ImageButton;
     import NumberRounded =      CanvasGraphicsUI.NumberRounded;
     import ListBox =            CanvasGraphicsUI.ListBox;
+    import PropertyBox =        CanvasGraphicsUI.PropertyBox;
 
     import SiteData =           OhsSiteData.SiteData;
     import Floor =              OhsSiteData.Floor;
@@ -148,8 +149,7 @@ module AdminApp {
             for (let num of this.nums) {
                 this.add(num);
             }            
-            
-            
+                        
             this.IconMatrix (this.GetSize().width - 150, this.GetSize().height, 4, 3, 150, 150);
             
         }
@@ -182,7 +182,8 @@ module AdminApp {
         }
 
         
-        public paint () {      
+        protected updateData () {
+            super.updateData();      
         /*
             const ctx = this.canvas.getContext('2d');
             ctx.rect(50,20,200,120);
@@ -200,30 +201,12 @@ module AdminApp {
             this.nums[4].SetNumber(this.m_siteData.m_floorArray.length);
             
             //Redraw...
-            super.paint();                       
+          //  super.paint();                       
         }   
-        
+        /*
         public MouseDownHandler(x: number, y: number) {
             var ret = super.MouseDownHandler(x, y);
-            /*
-            //Analyse click..            
-            if (ret == null) {
-                return null;
-            }
-                      
-            if (ret == this.m_textTime) {
-                window.alert('Clicked time...!');
-                
-            } else if (ret == this.icons[0]){
-         //       window.alert('Clicked temp...!');
-         //       this.m_curScreen = this.m_screenMain;   
-             //   return ScreenTemps.name;
-                                
-            } else if (ret == this.icons[1]){
-                window.alert('Clicked switch...!');
-                
-            }
-            */
+
             return ret;
         }                     
     
@@ -250,7 +233,8 @@ module AdminApp {
             
             return ret;
 
-        }          
+        }   
+        */       
     }
     
     export class ScreenTemps extends Screen {
@@ -260,13 +244,15 @@ module AdminApp {
         //Texts
         protected m_textTime:       TextSimple = null;
         protected m_textTitle:      TextSimple = null;
-        protected m_textSel:        TextSimple = null;
         
         //Buttons
         public btnLeave:            ImageButton;
         
-        //List box
+        //List box - sensors
         public m_list:              ListBox;
+        
+        //Property box - data
+        public m_propData:          PropertyBox;        
  
         constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
             super(canvas);        
@@ -274,37 +260,62 @@ module AdminApp {
             this.m_siteData = siteData;            
             this.buildLayout();
        }
+
         
         public buildLayout () {
-                        
+   
             //Time
             this.m_textTime = new TextSimple('Time', 750, 10, 250, 100);
             this.add(this.m_textTime);          
             
             this.m_textTitle = new TextSimple('Temperature Sensors...', 20, 20, 250, 40);
-            this.add(this.m_textTitle);   
-            
-            this.m_textSel = new TextSimple('', 400, 60, 250, 100);
-            this.add(this.m_textSel);         
-            
-            this.m_textSel.fontSize = 14;
-            this.m_textSel.fontFamily = "px Tahoma, sans-serif";
-            this.m_textSel.fontColor = '#009ccc';
-            this.m_textSel.textAlign = "left";
-            this.m_textSel.textBaseline = "middle";  
-            this.m_textSel.bold = false;     
-            
+            this.add(this.m_textTitle);  
+    
             //Leave button
-            this.btnLeave = new ImageButton(iconLeave, iconLeave, 750, 380, 80, 80);
+            this.btnLeave = new ImageButton(iconLeave, iconLeave, 750, 450, 80, 80);
             this.add(this.btnLeave);
             
-            //ListBox
+            //ListBox Select
             this.m_list = new ListBox();
             this.add(this.m_list);
-            this.m_list.Size(20, 100, 360, 350);
+            this.m_list.Size(20, 100, 200, 350);  
+            this.m_list.selectedRow = 0;
+            
+            //Property box
+            this.m_propData = new PropertyBox();
+            this.add(this.m_propData);
+            this.m_propData.Size(230, 100, 600, 350);                   
+        }
+        
+        protected updateData() {            
+            super.updateData();
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_tempSensorArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }
+            
             
         }
-          
+          /*
         public paint () {          
             
             //Update data....
@@ -313,29 +324,27 @@ module AdminApp {
             var i = 0;
             
             for (var item of this.m_siteData.m_tempSensorArray) {                
-                var txt = item.getSitePath();
+                var txt = item.name;
                 
-                this.m_list.setText(txt, i);
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
                 i ++;
             }
             
             //Text details:
             if (this.m_list.selectedRow != 0) {
-                this.m_textSel.setText('Selected:' + this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1].getSitePath());
+                
+                let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
             }
-            
-            /*
-            //Numbers
-            this.nums[0].SetNumber(this.m_siteData.m_tempSensorArray.length);
-            this.nums[1].SetNumber(this.m_siteData.m_switchArray.length);
-            this.nums[2].SetNumber(this.m_siteData.m_doorArray.length);
-            this.nums[3].SetNumber(this.m_siteData.m_roomArray.length);
-            this.nums[4].SetNumber(this.m_siteData.m_floorArray.length);
-            */
+
             //Redraw...
             super.paint();                       
-        }           
+        }       
+        */    
     }    
      
 } 

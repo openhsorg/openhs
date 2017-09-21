@@ -525,12 +525,15 @@ module CanvasGraphicsUI {
    
     export class ListBox extends Item {
         
-        protected m_items:              Array<TextSimple>;
-        protected colorInside           :string             = '#a6a6a6';
-        protected colorText             :string             = '#ffffff';       
+        protected m_items               :Array<TextSimple>;
+        protected colorBkg              :string             = '#ffffff';
+        public colorBorder              :string             = '#a6a6a6';
+        public colorText                :string             = '#ffffff';
+        public fontSize                 :number             = 20;
+        public bold                     :boolean            = false;                  
         public num                      :number             = 0;
         
-        protected row_height            :number             = 25;
+        protected row_height            :number             = 40;
         
         protected selRow                :number             = 0;
         public selectedRow              :number             = 0;
@@ -539,16 +542,6 @@ module CanvasGraphicsUI {
             super();
             
             this.m_items = new Array<TextSimple>();
-            /*
-            super('', 0,0,0,0);  
-            
-            this.fontSize = 26;
-            this.fontFamily = "px Tahoma, sans-serif";
-            this.fontColor = this.colorText;
-            this.textAlign = "center";
-            this.textBaseline = "middle";  
-            this.bold = true;
-            */
         }
         
         public MouseMoveHandler(x: number, y: number) {     
@@ -596,13 +589,12 @@ module CanvasGraphicsUI {
         public add(item: TextSimple) {
             this.m_items.push(item);      
             
-            item.fontSize = 14;
+            item.fontSize = this.fontSize;
             item.fontFamily = "px Tahoma, sans-serif";
             item.fontColor = '#009ccc';
             item.textAlign = "left";
             item.textBaseline = "middle";  
-            item.bold = false;       
-                 
+            item.bold = this.bold;                        
         }
                 
         public addEntry (txt: String) {
@@ -617,8 +609,9 @@ module CanvasGraphicsUI {
             }
         }
 
-        protected order (high: number) {
+        public order () {
                                
+            var high = this.row_height;
             var space_vertical = 2;
             var space_left = 2;
             var i = 0;
@@ -634,20 +627,22 @@ module CanvasGraphicsUI {
                                         
         public paint (ctx: CanvasRenderingContext2D) {            
             
-            if (this.num <= 0) {
-                this.colorInside = '#a6a6a6';
-            } else {
-                this.colorInside = '#003399';
-            }
-            
+
+            ctx.save();
             //Background
         //    ctx.restore();
             ctx.beginPath();            
             this.rect.paint(ctx);
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = this.colorBkg;
             ctx.fill();            
             ctx.lineWidth = 2;
-            ctx.strokeStyle = this.colorInside;
+           
+            if (this.colorBorder === '') {  
+                ctx.strokeStyle = this.colorBkg;
+            } else {               
+                ctx.strokeStyle = this.colorBorder;
+            }
+        
             ctx.stroke();
             ctx.closePath(); 
         //    ctx.restore();      
@@ -658,10 +653,10 @@ module CanvasGraphicsUI {
             ctx.stroke();
             ctx.clip();       
               
-            ctx.save();
+       //     ctx.save();
             
             //Draw Items
-            this.order(30);
+            this.order();
             
             var i = 1;
             var cc = 0;
@@ -719,7 +714,102 @@ module CanvasGraphicsUI {
             */
             super.paint(ctx);
         }        
-    }      
+    }  
+    
+    export class PropertyBox extends Item {
+        
+        public m_props:                 ListBox;
+        public m_data:                  ListBox;
+        
+        protected colorBkg              :string             = '#ffffff';
+        public colorBorder              :string             = '#a6a6a6';        
+        
+        constructor () {
+            super();
+            
+            this.m_props = new ListBox();
+            this.m_data = new ListBox();
+            
+            //Set style...
+            this.m_props.fontSize = 20;
+            this.m_props.colorBorder = '';
+            this.m_props.bold = false;
+            
+            this.m_data.fontSize = 16;
+            this.m_data.colorBorder = '';
+            this.m_data.bold = false;
+            
+        }
+        
+        public MouseMoveHandler(x: number, y: number) {             
+            if (super.MouseMoveHandler(x, y) != this) return null;
+                        
+                   
+            return <Item> this;
+        }          
+        
+        public MouseDownHandler(x: number, y: number) {                        
+            if (super.MouseDownHandler(x, y) != this) return null;
+ 
+                   
+            return <Item> this;
+        }          
+           
+        public addEntry (txtProp: String, txtData:  String) {
+            this.m_props.addEntry(txtProp);
+            this.m_data.addEntry(txtData);
+        }
+        
+        public setText (txtProp: String, txtData: String, n: number) {
+            this.m_props.setText(txtProp, n);
+            this.m_data.setText(txtData, n);
+        }
+                
+        protected order () {
+            
+            var widthPropPerc = 0.25; //percentage of property field
+            var gapX = 4; //left/right gap
+            var gapY = 4; //top/bottom gap
+            var widthProp = (this.rect.w - (3 * gapX)) * widthPropPerc;
+            var widthData = (this.rect.w - (3 * gapX)) - widthProp;
+            
+            this.m_props.Size(this.rect.x + gapX, this.rect.y + gapY, widthProp, this.rect.h - (2 * gapY));
+            this.m_data.Size(this.rect.x + gapX + widthProp + gapX, this.rect.y + gapY, widthData, this.rect.h - (2 * gapY));
+            
+            this.m_props.order();
+            this.m_data.order();
+                
+        }
+                                        
+        public paint (ctx: CanvasRenderingContext2D) {            
+            
+            this.order();
+            
+            ctx.save();
+            ctx.beginPath();            
+            this.rect.paint(ctx);
+            ctx.fillStyle = this.colorBkg;
+            ctx.fill();            
+            ctx.lineWidth = 2;
+           
+            if (this.colorBorder === '') {  
+                ctx.strokeStyle = this.colorBkg;
+            } else {               
+                ctx.strokeStyle = this.colorBorder;
+            }
+        
+            ctx.stroke();
+            ctx.closePath(); 
+            ctx.restore();
+            
+            //ctx.save();
+            this.m_props.paint(ctx);
+            this.m_data.paint(ctx);
+          //  ctx.restore();
+         
+            super.paint(ctx);
+        }        
+    }       
     
     export class Screen {
 
@@ -788,7 +878,16 @@ module CanvasGraphicsUI {
             
         }
         
+        protected updateData() {
+            //Any routines updating data...            
+        }
+        
         public paint () {          
+            
+            //Update data first
+            this.updateData();
+            
+            //Paint
             const ctx = this.canvas.getContext('2d');
             var width: number = this.canvas.width;
             var height: number = this.canvas.height;    
