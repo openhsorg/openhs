@@ -122,6 +122,8 @@ module CanvasGraphicsUI {
         //Basic Rectangle...
         public rect:     Rect = new Rect ();
         
+        public canvas:              HTMLCanvasElement =         null;   
+        
         constructor () {
         }
         
@@ -137,7 +139,7 @@ module CanvasGraphicsUI {
         }        
         
         public MouseUpHandler(x: number, y: number) {
-            if (this.rect.isClicked(x, y)) {
+            if (this.rect.isClicked(x, y)) {                                                
                 return this;
             } else {
                 return null;
@@ -162,7 +164,8 @@ module CanvasGraphicsUI {
             this.rect.y = y;
             this.rect.w = w;
             this.rect.h = h;
-        }                               
+        }     
+        
     }
     
   export class ImageButton extends Item {
@@ -258,6 +261,10 @@ module CanvasGraphicsUI {
         
         protected border:       boolean = false;
         
+        public editable:       boolean = true;
+        
+     //   protected ipt: any = null;
+        
         constructor (txt: String, x: number, y: number, w: number, h: number){
             super ();
             
@@ -275,9 +282,29 @@ module CanvasGraphicsUI {
         public getText () {
             return this.text;
         }
-                                
-        public paint (ctx: CanvasRenderingContext2D) {    
+        
+        public MouseUpHandler(x: number, y: number) {
+            if (super.MouseUpHandler(x, y) == null) return null;
+
             
+            if (this.editable) {
+                this.input();
+            }
+            
+            return <Item> this;
+        } 
+        /*
+        public MouseDownHandler(x: number, y: number) {
+            if (super.MouseDownHandler(x, y) == null) return null;
+
+       //     this.input();
+            
+            return <Item> this;
+        }        
+          */         
+                                
+        public paint (ctx: CanvasRenderingContext2D) {
+                                                
             var x: number = this.rect.x;
             var y: number = this.rect.y;
             var align: String = this.textAlign.toString();
@@ -299,7 +326,7 @@ module CanvasGraphicsUI {
             
             if (this.bold) {
                 boldString = 'bold ';
-           }
+            }
             
             ctx.save();
             ctx.font = boldString + this.fontSize + this.fontFamily;
@@ -308,18 +335,7 @@ module CanvasGraphicsUI {
             ctx.fillStyle = this.fontColor;                                  
             ctx.fillText(this.text.toString(), x, y);                                  
             ctx.restore();
-                     
-            
-       //     if (this.border){
-                /*
-                ctx.save();
-                super.paint(ctx);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'blue'; 
-                ctx.stroke();         
-                ctx.restore();
-            */
-           //  }                          
+                          
         }
         
         public copyStyle (origin: TextSimple){
@@ -331,7 +347,73 @@ module CanvasGraphicsUI {
             this.textBaseline = origin.textBaseline;
             this.bold = origin.bold; 
         }
+        
+        public clicker (e) {
+                    
+            var keyCode = e.keyCode;
+            if (keyCode === 13) {
+                
+              //  window.alert('*');
+                
+               // this.deleteInput();
+                
+                var input = document.getElementById('abcd');
+            
+                if (input != null) {
+                    document.body.removeChild(input);
+                }                 
+            } else if (keyCode === 27) {
+            
+                var input = document.getElementById('abcd');
+            
+                if (input != null) {
+                    document.body.removeChild(input);
+                }                  
+            }                        
+        }      
+        
+        public deleteInput () {
+                        
+            var input = document.getElementById('abcd');
+        
+            if (input != null) {
+                document.body.removeChild(input);
+            }                          
+        }
+        
+        public input() {
+            
+        //    this.deleteInput();
+           /* 
+            
+            if (this.canvas == null) {
+                window.alert('canvas null...');
+            }
+            */
+            var r = this.canvas.getBoundingClientRect();
+            
+            var input = document.createElement('input');
+             
+            input.id = 'abcd';
+            input.type = 'text';
+            input.style.position = 'fixed';            
+            input.style.left = (r.left + this.rect.x).toString() + 'px';
+            input.style.top = (r.top + this.rect.y).toString() + 'px';
+            input.style.height = (this.rect.h).toString() + 'px';
+            input.style.width = (this.rect.w).toString() + 'px';
+            
+           
+            
+            input.value = this.text.toString();
+            
+           
 
+            input.onkeydown = this.clicker;
+
+            document.body.appendChild(input);
+        
+            input.focus();           
+        }         
     }    
     
   
@@ -538,6 +620,9 @@ module CanvasGraphicsUI {
         protected selRow                :number             = 0;
         public selectedRow              :number             = 0;
         
+        protected editable :            boolean             = false;
+        protected selectable :          boolean             = true;
+        
         constructor () {
             super();
             
@@ -554,7 +639,10 @@ module CanvasGraphicsUI {
             
             for (let item of this.m_items) {
                 if (item.rect.isClicked(x, y)) {
-                    this.selRow = i;
+                    
+                    if (this.selectable) {
+                        this.selRow = i;
+                    }                       
                     
                     return <Item>item;
                 }
@@ -571,11 +659,17 @@ module CanvasGraphicsUI {
             
            // this.selectedRow = 0;
             
+                        
+            if (this.canvas == null) {
+                window.alert('canvas null...');
+            }
+            
             for (let item of this.m_items) {
-                if (item.rect.isClicked(x, y)) {
-                    this.selectedRow = i;
-                    
-                   
+                if (item.MouseDownHandler(x, y) == item){
+
+                    if (this.selectable) {
+                        this.selectedRow = i;
+                    }                                      
                     
                     return <Item>item;
                 }
@@ -583,18 +677,42 @@ module CanvasGraphicsUI {
             }     
                    
             return <Item> this;
-        }          
+        }  
+        
+        public MouseUpHandler(x: number, y: number) {                        
+            if (super.MouseUpHandler(x, y) != this) return null;
+           
+            var i = 1;
+           
+           // this.selectedRow = 0;
+                       
+            
+            for (let item of this.m_items) {
+                if (item.MouseUpHandler(x, y) == item){                                       
+                    
+                    return <Item>item;
+                }
+                i ++;                                       
+            }     
+                   
+            return <Item> this;
+        }         
         
         
         public add(item: TextSimple) {
-            this.m_items.push(item);      
+                            
+            item.canvas = this.canvas;
             
             item.fontSize = this.fontSize;
             item.fontFamily = "px Tahoma, sans-serif";
             item.fontColor = '#009ccc';
             item.textAlign = "left";
             item.textBaseline = "middle";  
-            item.bold = this.bold;                        
+            item.bold = this.bold;       
+            
+            item.editable = this.editable;
+            
+            this.m_items.push(item);  
         }
                 
         public addEntry (txt: String) {
@@ -608,6 +726,18 @@ module CanvasGraphicsUI {
                 this.m_items[n].setText(txt);            
             }
         }
+        
+        public setEditable(editable : boolean) {            
+            this.editable = editable;
+            
+            for (let item of this.m_items) {
+                item.editable = editable;               
+            }        
+        }
+        
+        public setSelectable(selectable : boolean) {            
+            this.selectable = selectable;      
+        }        
 
         public order () {
                                
@@ -627,10 +757,7 @@ module CanvasGraphicsUI {
                                         
         public paint (ctx: CanvasRenderingContext2D) {            
             
-
             ctx.save();
-            //Background
-        //    ctx.restore();
             ctx.beginPath();            
             this.rect.paint(ctx);
             ctx.fillStyle = this.colorBkg;
@@ -645,16 +772,11 @@ module CanvasGraphicsUI {
         
             ctx.stroke();
             ctx.closePath(); 
-        //    ctx.restore();      
-            
-            //Stroke to rectangle
             
             ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
             ctx.stroke();
             ctx.clip();       
-              
-       //     ctx.save();
-            
+
             //Draw Items
             this.order();
             
@@ -683,35 +805,17 @@ module CanvasGraphicsUI {
                 ctx.fill();
 
                 ctx.closePath();
-                
-            //      ctx.save();               
-                
-                
+
                 item.paint(ctx);
-            //    ctx.save();
-                
-              //   ctx.closePath();
                 
                 if (cc == 0) cc ++;
                 else cc = 0;
                 
-                i++;
-           
+                i++;           
             }     
             
-             ctx.restore();
-            /*
-            //Basic shape
-            ctx.save();
-            ctx.beginPath();            
-            ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), this.rect.w / 2, 0, 2 * Math.PI, false);
-            ctx.fillStyle = this.colorInside;
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = this.colorInside;
-            ctx.stroke();
-            ctx.restore();    
-            */
+            ctx.restore();
+
             super.paint(ctx);
         }        
     }  
@@ -734,10 +838,14 @@ module CanvasGraphicsUI {
             this.m_props.fontSize = 20;
             this.m_props.colorBorder = '';
             this.m_props.bold = false;
+            this.m_props.setEditable(false);
+            this.m_props.setSelectable(false);            
             
             this.m_data.fontSize = 16;
             this.m_data.colorBorder = '';
             this.m_data.bold = false;
+            this.m_data.setEditable(true);
+            this.m_data.setSelectable(false);
             
         }
         
@@ -750,14 +858,35 @@ module CanvasGraphicsUI {
         
         public MouseDownHandler(x: number, y: number) {                        
             if (super.MouseDownHandler(x, y) != this) return null;
- 
+            
+            
+            if (this.canvas == null) {
+                window.alert('canvas null...');
+            }            
+            
+            this.m_props.MouseDownHandler(x, y);
+            this.m_data.MouseDownHandler(x, y);
+                   
+            return <Item> this;
+        }    
+        
+        public MouseUpHandler(x: number, y: number) {                        
+            if (super.MouseUpHandler(x, y) != this) return null;
+                        
+            this.m_props.MouseUpHandler(x, y);
+            this.m_data.MouseUpHandler(x, y);
                    
             return <Item> this;
         }          
            
         public addEntry (txtProp: String, txtData:  String) {
+            
+            this.m_props.canvas = this.canvas;
+            this.m_data.canvas = this.canvas;            
+            
             this.m_props.addEntry(txtProp);
             this.m_data.addEntry(txtData);
+            
         }
         
         public setText (txtProp: String, txtData: String, n: number) {
@@ -813,8 +942,8 @@ module CanvasGraphicsUI {
     
     export class Screen {
 
-        public m_item:             Array <Item> =              null;
-        public canvas:             HTMLCanvasElement =         null;   
+        public m_item:              Array <Item> =              null;
+        public canvas:              HTMLCanvasElement =         null;   
         
         private message:            boolean = false;
         private msg:                MessageBox = new MessageBox ();
@@ -826,7 +955,10 @@ module CanvasGraphicsUI {
         }
         
         public add (item: Item) {
-            this.m_item.push(item);        
+            
+            item.canvas = this.canvas;
+   
+            this.m_item.push(item);                    
         }
         
         public SetCanvas (canvas: HTMLCanvasElement) {

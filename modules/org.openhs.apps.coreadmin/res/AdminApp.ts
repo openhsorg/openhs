@@ -97,8 +97,8 @@ module AdminApp {
              
             if (ret != null) {                            
                 if (ret == this.m_screenMain.icons[0]) {
-                      this.SwitchScreen(this.m_screenTemps);                    
-                                        
+                      this.SwitchScreen(this.m_screenTemps);         
+                                                            
                 } else if (ret == this.m_screenTemps.btnLeave) {
                       this.SwitchScreen(this.m_screenMain);
                     
@@ -287,7 +287,7 @@ module AdminApp {
             this.m_list = new ListBox();
             this.add(this.m_list);
             this.m_list.Size(20, 100, 200, 350);  
-            this.m_list.selectedRow = 0;
+            this.m_list.selectedRow = 0;         
             
             //Property box
             this.m_propData = new PropertyBox();
@@ -323,7 +323,7 @@ module AdminApp {
                 
                 this.m_propData.setText("Name:", item.name, 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+                this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
         }                 
     } //class end
@@ -355,7 +355,7 @@ module AdminApp {
                 
                 this.m_propData.setText("Name:", item.name, 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+                this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
         }                 
     } //class end    
@@ -387,7 +387,7 @@ module AdminApp {
                 
                 this.m_propData.setText("Name:", item.name, 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+              //  this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
         }                 
     } //class end   
@@ -419,7 +419,7 @@ module AdminApp {
                 
                 this.m_propData.setText("Name:", item.name, 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            //    this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
         }                 
     } //class end  
@@ -452,7 +452,7 @@ module AdminApp {
                 
                 this.m_propData.setText("Name:", item.name, 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+               // this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
         }                 
     } //class end     
