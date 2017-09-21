@@ -52,6 +52,10 @@ module AdminApp {
         //Screen pointers...             
         private m_screenMain:            ScreenMain = null;
         private m_screenTemps:           ScreenTemps = null;
+        private m_screenSwitches:        ScreenSwitches = null;
+        private m_screenDoors:           ScreenDoors = null;
+        private m_screenRooms:           ScreenRooms = null;
+        private m_screenFloors:          ScreenFloors = null;
 
         constructor (canvas: HTMLCanvasElement) {                                    
             super(canvas);          
@@ -64,7 +68,19 @@ module AdminApp {
             this.addItem(this.m_screenMain);    
             
             this.m_screenTemps = new ScreenTemps(this.m_siteData, canvas);
-            this.addItem(this.m_screenTemps);                   
+            this.addItem(this.m_screenTemps);      
+            
+            this.m_screenSwitches = new ScreenSwitches(this.m_siteData, canvas);
+            this.addItem(this.m_screenSwitches);              
+            
+            this.m_screenDoors = new ScreenDoors(this.m_siteData, canvas);
+            this.addItem(this.m_screenDoors);      
+            
+            this.m_screenRooms = new ScreenRooms(this.m_siteData, canvas);
+            this.addItem(this.m_screenRooms);  
+            
+            this.m_screenFloors = new ScreenFloors(this.m_siteData, canvas);
+            this.addItem(this.m_screenFloors);                
             
             //Set current screen...
             this.m_curScreen = this.m_screenMain;                  
@@ -78,15 +94,39 @@ module AdminApp {
         
         public MouseUpHandler(event) {            
              var ret = super.MouseUpHandler(event);                     
-            
+             
             if (ret != null) {                            
                 if (ret == this.m_screenMain.icons[0]) {
-                      this.SwitchScreen(this.m_screenTemps);
-                    
+                      this.SwitchScreen(this.m_screenTemps);                    
+                                        
                 } else if (ret == this.m_screenTemps.btnLeave) {
                       this.SwitchScreen(this.m_screenMain);
                     
-                }                                           
+                } else if (ret == this.m_screenMain.icons[1]) {
+                      this.SwitchScreen(this.m_screenSwitches);
+                    
+                } else if (ret == this.m_screenSwitches.btnLeave) {
+                      this.SwitchScreen(this.m_screenMain);
+                    
+                } else if (ret == this.m_screenMain.icons[2]) {
+                      this.SwitchScreen(this.m_screenDoors);
+                    
+                } else if (ret == this.m_screenDoors.btnLeave) {
+                      this.SwitchScreen(this.m_screenMain);
+                    
+                } else if (ret == this.m_screenMain.icons[3]) {
+                      this.SwitchScreen(this.m_screenRooms);
+                    
+                } else if (ret == this.m_screenRooms.btnLeave) {
+                      this.SwitchScreen(this.m_screenMain);
+                    
+                } else if (ret == this.m_screenMain.icons[4]) {
+                      this.SwitchScreen(this.m_screenFloors);
+                    
+                } else if (ret == this.m_screenFloors.btnLeave) {
+                      this.SwitchScreen(this.m_screenMain);
+                    
+                }                                                
             }  
             
             return null;
@@ -202,42 +242,10 @@ module AdminApp {
             
             //Redraw...
           //  super.paint();                       
-        }   
-        /*
-        public MouseDownHandler(x: number, y: number) {
-            var ret = super.MouseDownHandler(x, y);
-
-            return ret;
-        }                     
+        }         
+    } //class end
     
-        public MouseUpHandler(x: number, y: number) {        
-             var ret = super.MouseUpHandler(x, y);
-            
-            //Analyse click..            
-            if (ret == null) {
-                return null;
-            }
-                      
-            if (ret == this.m_textTime) {
-                window.alert('Clicked time...!');
-                
-            } else if (ret == this.icons[0]){
-         //       window.alert('Clicked temp...!');
-         //       this.m_curScreen = this.m_screenMain;   
-             //   return ScreenTemps.name;
-                                
-            } else if (ret == this.icons[1]){
-                window.alert('Clicked switch...!');
-                
-            }
-            
-            return ret;
-
-        }   
-        */       
-    }
-    
-    export class ScreenTemps extends Screen {
+    export class ScreenThings extends Screen {
         
         public m_siteData:          SiteData = null;  
         
@@ -268,7 +276,7 @@ module AdminApp {
             this.m_textTime = new TextSimple('Time', 750, 10, 250, 100);
             this.add(this.m_textTime);          
             
-            this.m_textTitle = new TextSimple('Temperature Sensors...', 20, 20, 250, 40);
+            this.m_textTitle = new TextSimple('', 20, 20, 250, 40);
             this.add(this.m_textTitle);  
     
             //Leave button
@@ -285,68 +293,169 @@ module AdminApp {
             this.m_propData = new PropertyBox();
             this.add(this.m_propData);
             this.m_propData.Size(230, 100, 600, 350);                   
-        }
-        
-        protected updateData() {            
-            super.updateData();
-
-            //Update data....
-            this.m_textTime.setText(this.m_siteData.timeString);
-            
-            var i = 0;
-            
-            for (var item of this.m_siteData.m_tempSensorArray) {                
-                var txt = item.name;
-                
-                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
-                
-                i ++;
-            }
-            
-            //Text details:
-            if (this.m_list.selectedRow != 0) {
-                
-                let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
-                
-                this.m_propData.setText("Name:", item.name, 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
-            }
-            
-            
-        }
-          /*
-        public paint () {          
-            
-            //Update data....
-            this.m_textTime.setText(this.m_siteData.timeString);
-            
-            var i = 0;
-            
-            for (var item of this.m_siteData.m_tempSensorArray) {                
-                var txt = item.name;
-                
-                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
-                
-                i ++;
-            }
-            
-            //Text details:
-            if (this.m_list.selectedRow != 0) {
-                
-                let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
-                
-                this.m_propData.setText("Name:", item.name, 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
-            }
-
-            //Redraw...
-            super.paint();                       
-        }       
-        */    
-    }    
+        }                        
+    }//class end   
      
+    export class ScreenTemps extends ScreenThings {        
+        
+        protected updateData() {                                
+            super.updateData();
+            
+            this.m_textTitle.setText('Temperature sensors');
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_tempSensorArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }                        
+        }                 
+    } //class end
+    
+    export class ScreenSwitches extends ScreenThings {        
+        
+        protected updateData() {                                
+            super.updateData();
+            
+            this.m_textTitle.setText('Switches');
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_switchArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_switchArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }                        
+        }                 
+    } //class end    
+    
+    export class ScreenDoors extends ScreenThings {        
+        
+        protected updateData() {                                
+            super.updateData();
+            
+            this.m_textTitle.setText('Doors');
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_doorArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_doorArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }                        
+        }                 
+    } //class end   
+    
+    export class ScreenRooms extends ScreenThings {        
+        
+        protected updateData() {                                
+            super.updateData();
+            
+            this.m_textTitle.setText('Rooms');
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_roomArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_roomArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }                        
+        }                 
+    } //class end  
+    
+    
+    export class ScreenFloors extends ScreenThings {        
+        
+        protected updateData() {                                
+            super.updateData();
+            
+            this.m_textTitle.setText('Floors');
+
+            //Update data....
+            this.m_textTime.setText(this.m_siteData.timeString);
+            
+            var i = 0;
+            
+            for (var item of this.m_siteData.m_floorArray) {                
+                var txt = item.name;
+                
+                this.m_list.setText((i + 1).toString() + '. ' + txt, i);
+                
+                i ++;
+            }
+            
+            //Text details:
+            if (this.m_list.selectedRow != 0) {
+                
+                let item = this.m_siteData.m_floorArray[this.m_list.selectedRow - 1];
+                
+                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
+                this.m_propData.setText("Device Path:", item.getSitePath(), 2); 
+            }                        
+        }                 
+    } //class end     
 } 
 
 
