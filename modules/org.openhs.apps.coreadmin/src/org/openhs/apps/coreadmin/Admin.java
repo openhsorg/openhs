@@ -53,8 +53,10 @@ public class Admin extends HttpServlet {
     	out.println("<script src='adminres/OhsLibrary/jquery-3.1.1.min.js'></script>");
     	out.println("<script src='adminres/OhsLibrary/CanvasGraphicsUI.js'></script>");
     	out.println("<link href='adminres/OhsLibrary/styles.css' rel='stylesheet' type='text/css'>");
-    	out.println("<link href='c:/Users/E454551/node_modules/sweetalert/src/sweetalert.css' rel='stylesheet' />");
-    	out.println("<script src='c:/Users/E454551/node_modules/sweetalert/dist/sweetalert.min.js'></script>");
+    	
+    	out.println("<script src='adminres/sweetalert2/dist/sweetalert2.min.js'></script>");
+        out.println("<link rel='stylesheet' href='adminres/sweetalert2/dist/sweetalert2.min.css'>");
+        out.println("<script src='https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js'></script>");
     	    	
     	out.print("</head>");    		    	
     	out.println("<body>");
@@ -66,7 +68,8 @@ public class Admin extends HttpServlet {
     	out.println("Error: Your browser does not support the HTML canvas element.");
     	out.println("</canvas>");
     	
-    	out.println("<script src='adminres/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");    	
+    	out.println("<script src='adminres/OhsLibrary/OhsSiteData.js' charset='utf-8'></script>");
+    	
     	//out.println("<script src='adminres/OhsLibrary/OhsCanvasGraphics.js' charset='utf-8'></script>");
     	//out.println("<script src='adminres/OhsLibrary/CanvasGraphicsUI.js' charset='utf-8'></script>");
     	out.println("<script src='adminres/AdminApp.js' charset='utf-8'></script>");

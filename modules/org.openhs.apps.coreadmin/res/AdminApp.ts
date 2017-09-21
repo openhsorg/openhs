@@ -8,9 +8,12 @@
 /// <reference path='OhsLibrary/CanvasGraphicsUI.ts'/>
 
 
-module AdminApp {
+import swal from 'sweetalert2';
+ 
 
-   // import * as swal from 'sweetalert';
+module AdminApp {
+    
+    declare var swal: any;
     
     import Frame =              CanvasGraphicsUI.Frame;
     import Screen =             CanvasGraphicsUI.Screen;
@@ -28,7 +31,9 @@ module AdminApp {
     import Window =             OhsSiteData.Window;
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
-    import Thing =              OhsSiteData.Thing;               
+    import Thing =              OhsSiteData.Thing;             
+    
+    
     
     const iconTemp =          '/adminres/images/tempIcon.png';  
     const iconSwitch =        '/adminres/images/switchIcon.png';
@@ -44,6 +49,14 @@ module AdminApp {
         
         constructor (canvas: HTMLCanvasElement) {                  
             this.m_frame = new FrameMain(canvas);
+            /*
+            swal({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  type: 'error',
+  confirmButtonText: 'Cool'
+})
+            */
         }                              
     }
     
@@ -100,7 +113,20 @@ module AdminApp {
              
             if (ret != null) {                            
                 if (ret == this.m_screenMain.icons[0]) {
-                      this.SwitchScreen(this.m_screenTemps);
+                     // this.SwitchScreen(this.m_screenTemps);
+                    
+                   
+          //          swal('Hello world!');
+                    
+                    
+                                swal({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  type: 'error',
+  confirmButtonText: 'Cool'
+});
+                    
+                  //  window.alert('***');
                     /*
                     var txt = window.prompt("Please enter","defaultText");
                     
