@@ -263,6 +263,8 @@ module CanvasGraphicsUI {
         
         public editable:       boolean = true;
         
+        public inp: HTMLInputElement = null;
+        
      //   protected ipt: any = null;
         
         constructor (txt: String, x: number, y: number, w: number, h: number){
@@ -352,19 +354,20 @@ module CanvasGraphicsUI {
                     
             var keyCode = e.keyCode;
             if (keyCode === 13) {
-                
-              //  window.alert('*');
-                
-               // this.deleteInput();
-                
-                var input = document.getElementById('abcd');
+                                                
+                var input = <HTMLInputElement>document.getElementById('abcd');
             
-                if (input != null) {
+                if (input != null) {                    
+                    //this.text = input.value.toString();
+                    
+                    window.alert('msg: ' + input.value.toString());
+                    
                     document.body.removeChild(input);
+                                        
                 }                 
             } else if (keyCode === 27) {
             
-                var input = document.getElementById('abcd');
+                var input = <HTMLInputElement>document.getElementById('abcd');
             
                 if (input != null) {
                     document.body.removeChild(input);
@@ -392,7 +395,7 @@ module CanvasGraphicsUI {
             */
             var r = this.canvas.getBoundingClientRect();
             
-            var input = document.createElement('input');
+            var input: HTMLInputElement = document.createElement('input');
              
             input.id = 'abcd';
             input.type = 'text';
@@ -400,19 +403,17 @@ module CanvasGraphicsUI {
             input.style.left = (r.left + this.rect.x).toString() + 'px';
             input.style.top = (r.top + this.rect.y).toString() + 'px';
             input.style.height = (this.rect.h).toString() + 'px';
-            input.style.width = (this.rect.w).toString() + 'px';
-            
-           
+            input.style.width = (this.rect.w).toString() + 'px';                       
             
             input.value = this.text.toString();
-            
-           
-
+                         
             input.onkeydown = this.clicker;
 
             document.body.appendChild(input);
         
-            input.focus();           
+            input.focus();
+            
+            this.inp = input;
         }         
     }    
     
@@ -620,7 +621,7 @@ module CanvasGraphicsUI {
         protected selRow                :number             = 0;
         public selectedRow              :number             = 0;
         
-        protected editable :            boolean             = false;
+        protected editable :            boolean             = true;
         protected selectable :          boolean             = true;
         
         constructor () {
@@ -1058,6 +1059,9 @@ module CanvasGraphicsUI {
             this.canvas.addEventListener('mousedown', function(event){self.MouseDownHandler(event);}, false);                      
             this.canvas.addEventListener('mouseup', function(event){self.MouseUpHandler(event);}, false);
             this.canvas.addEventListener('mousemove', function(event){self.MouseMoveHandler(event);}, false);                               
+            window.addEventListener('keydown', function(event){self.KeyDownHandler(event);}, false);
+            
+         //    document.addEventListener("keydown", () => this.KeyDownHandler);
             
             requestAnimationFrame(()=>this.paint());   
                         
@@ -1094,7 +1098,7 @@ module CanvasGraphicsUI {
             requestAnimationFrame(()=>this.paint());  
             
        }  
-        
+                
         public MouseMoveHandler (event){
            var mousePos = getMousePos(this.canvas, event);  
                                      
@@ -1119,6 +1123,18 @@ module CanvasGraphicsUI {
                 return this.m_curScreen.MouseUpHandler(mousePos.x, mousePos.y);
             } 
         }
+        
+        public KeyDownHandler (event) {
+            
+                  
+            var keyCode = event.keyCode;
+            
+            if (keyCode == 13) {
+                window.alert('*kd');                
+            }
+                
+              //  window.alert('*');                    
+        }        
                       
         public addItem (screen: Screen) {
             

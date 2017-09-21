@@ -7,7 +7,10 @@
 /// <reference path='OhsLibrary/OhsSiteData.ts'/>
 /// <reference path='OhsLibrary/CanvasGraphicsUI.ts'/>
 
+
 module AdminApp {
+
+   // import * as swal from 'sweetalert';
     
     import Frame =              CanvasGraphicsUI.Frame;
     import Screen =             CanvasGraphicsUI.Screen;
@@ -97,7 +100,16 @@ module AdminApp {
              
             if (ret != null) {                            
                 if (ret == this.m_screenMain.icons[0]) {
-                      this.SwitchScreen(this.m_screenTemps);         
+                      this.SwitchScreen(this.m_screenTemps);
+                    /*
+                    var txt = window.prompt("Please enter","defaultText");
+                    
+if (txt == null || txt == "") {
+    window.alert("User cancelled the prompt.");
+} else {
+    window.alert(txt);
+}
+                    */
                                                             
                 } else if (ret == this.m_screenTemps.btnLeave) {
                       this.SwitchScreen(this.m_screenMain);

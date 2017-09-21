@@ -53,6 +53,8 @@ public class Admin extends HttpServlet {
     	out.println("<script src='adminres/OhsLibrary/jquery-3.1.1.min.js'></script>");
     	out.println("<script src='adminres/OhsLibrary/CanvasGraphicsUI.js'></script>");
     	out.println("<link href='adminres/OhsLibrary/styles.css' rel='stylesheet' type='text/css'>");
+    	out.println("<link href='c:/Users/E454551/node_modules/sweetalert/src/sweetalert.css' rel='stylesheet' />");
+    	out.println("<script src='c:/Users/E454551/node_modules/sweetalert/dist/sweetalert.min.js'></script>");
     	    	
     	out.print("</head>");    		    	
     	out.println("<body>");
