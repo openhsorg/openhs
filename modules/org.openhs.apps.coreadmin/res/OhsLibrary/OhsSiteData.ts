@@ -22,13 +22,14 @@ module OhsSiteData {
     const idRoomArr = 'idRoomArr';
     const idFloorArr = 'idFloorArr';
     const idThingCommand = 'idThingCommand';
-    const idThingGet = 'idThingGet';
+    const idThingUpdate = 'idThingUpdate';
     const idSiteUpdate = 'idSiteUpdate';
     const idSetFloors = 'idSetFloors';
     const idAddFloor = 'idAddFloor';
     const idDeleteFloor = 'idDeleteFloor';
     const idDeleteThing = 'idDeleteThing';
     const idAddThing = 'idAddThing';
+    const idSetName = 'idSetName';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -496,12 +497,20 @@ module OhsSiteData {
         }         
     }
     
+    /**
+     * Basic object...
+     * 
+     * Commands:
+     * 1. update - means get data from server...
+     * 2. set    - means post data to server...  
+     * 3. get    - means read local data from object...
+     */
     export class Thing {
         
         protected valid:        boolean = false; //content of the forecast is valid        
         protected sitePath:     string = "*"; //OpenHS path
         protected devicePath:   string = "*"; //OpenHS path          
-        public name:            string = "no name";
+        protected name:         string = "no name";
         
         public posX:            number;
         public posY:            number;
@@ -514,8 +523,9 @@ module OhsSiteData {
         }
         
         public setSitePath (path: string) {
-            this.sitePath = path;
+            //this.sitePath = path;
         }   
+        
         
         public getSitePath() {
             return this.sitePath;
@@ -525,16 +535,56 @@ module OhsSiteData {
             return this.devicePath;
         }   
         
+        public getName() {
+            return this.name;
+        }
+        
+        public setName(name : String) {
+            var js = JSON.stringify({
+                idPost : idSetName,
+                sitePath  : this.sitePath,
+                idString   : name
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){                
+                
+                return true;                
+             //   this.updateObjectArray(idFloorArr);   
+            } else {
+                return false;                
+            }
+        }        
+        
+        /*
         public setDevicePath (path: string) {
             this.devicePath = path;
         }         
-        
+        */
         public isValid() {
             return this.valid;
         } 
         
-        public update () {
+        public update () {     
+                            
+            var js = JSON.stringify({
+                idPost : idThingUpdate,
+                sitePath  : this.sitePath
+            });               
+                    
+            var ret = postAjax(url, js);     
+       
+            if (JSON.parse(ret['return'])){    
             
+                this.fillFromJSON(ret);
+                                                
+             //   return true;                
+             //   this.updateObjectArray(idFloorArr);   
+            } else {
+            //    return false;       
+                       
+            }                             
         }   
         
         public updateDelayed (wait: number) {                    
@@ -548,7 +598,22 @@ module OhsSiteData {
                 
                //  window.alert(propName + ' json:' + json[propName] + ' to: ' + this[propName]);
             }                      
-        }                     
+        }
+        /*
+        public updateSitePath() {   
+                 
+            var js = JSON.stringify({
+                idPost : idAddFloor
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){
+                
+                this.updateObjectArray(idFloorArr);   
+            }                    
+        }         
+        */
     }
     
     export class Site extends Thing {

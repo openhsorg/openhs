@@ -375,6 +375,37 @@ public class JsonSiteMapping {
 			
 			//logger.info("***Added floor");
 			
+		} else if (id.equals("idSetName")) {
+			
+			String sitePath = json.getString("sitePath");
+			String newName = json.getString("idString");
+			
+			boolean ret = false;
+			
+			Thing thing = null;
+			
+			try {
+				thing = m_siteService.getThing(sitePath);
+			} catch (SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if (thing != null && !newName.equals("")) {
+				thing.setName(newName);
+				ret = true;
+			} else {
+				ret = false;						
+			}
+			
+			//String nFloors = json.getString("path");
+			
+			//getTimeDateJSON(jsonRet);
+			
+			jsonRet.put("return", new Boolean(ret));
+			
+			logger.info("***NAME***:" + newName + "    ...ret: " + ret);
+			
 		} else if (id.equals("idTimeDate")) {
 			
 			getTimeDateJSON(jsonRet);
@@ -393,6 +424,29 @@ public class JsonSiteMapping {
 			} else {
 				jsonRet.put("validity", new Boolean(false));
 			}									
+			
+		} else if (id.equals("idThingUpdate")) {
+			
+			String sitePath = json.getString("sitePath");
+			
+			boolean ret = false;
+			
+			Thing thing = null;
+			
+			try {
+				thing = m_siteService.getThing(sitePath);
+			} catch (SiteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}								
+			
+			if (thing != null) {
+				
+				ret = getThingJSON(thing, jsonRet);				
+				//logger.info("***PATH***:" + sitePath + "  ret: " + ret);
+			}
+
+			jsonRet.put("return", new Boolean(ret));								
 			
 		} else if (id.equals("idFloorArr")) {
 			

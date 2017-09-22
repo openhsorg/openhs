@@ -113,21 +113,21 @@ module CanvasGraphicsUI {
                 ctx.closePath();
             }              
         }
-    }    
-
-    
+    }           
       
     export class Item {
         
         //Basic Rectangle...
         public rect:     Rect = new Rect ();
         
-        public canvas:              HTMLCanvasElement =         null;   
+        //public canvas:              HTMLCanvasElement =         null;   
+        protected ctx :                CanvasRenderingContext2D; 
         
-        constructor () {
+        constructor (ctx : CanvasRenderingContext2D) {
+            this.ctx = ctx;
         }
         
-        public paint (ctx: CanvasRenderingContext2D){                       
+        public paint (){                       
         }  
         
         public MouseDownHandler(x: number, y: number) {
@@ -179,8 +179,8 @@ module CanvasGraphicsUI {
         protected int = null;
         
         
-        constructor (imgSrc: string, imgPush: string, x: number, y: number, w: number, h: number) {
-            super();            
+        constructor (ctx : CanvasRenderingContext2D, imgSrc: string, imgPush: string, x: number, y: number, w: number, h: number) {
+            super(ctx);            
 
             this.img.src = imgSrc;                          
             this.imgPush.src = imgPush;                                            
@@ -190,7 +190,9 @@ module CanvasGraphicsUI {
 
         }    
         
-        public paint (ctx: CanvasRenderingContext2D){
+        public paint (){
+            
+            const ctx = this.ctx;
 
             ctx.save();
 
@@ -221,12 +223,13 @@ module CanvasGraphicsUI {
         
         protected radius:   number = 4;
          
-        constructor () {
-            super ();
-         
+        constructor (ctx : CanvasRenderingContext2D) {
+            super (ctx);         
         }
         
-        public paint (ctx: CanvasRenderingContext2D){
+        public paint (){
+            
+            const ctx = this.ctx;
                                     
             //super.paint(ctx);
             ctx.save();
@@ -267,8 +270,8 @@ module CanvasGraphicsUI {
         
      //   protected ipt: any = null;
         
-        constructor (txt: String, x: number, y: number, w: number, h: number){
-            super ();
+        constructor (ctx : CanvasRenderingContext2D, txt: String, x: number, y: number, w: number, h: number){
+            super (ctx);
             
             this.text = txt;
             this.rect.x = x;
@@ -305,8 +308,10 @@ module CanvasGraphicsUI {
         }        
           */         
                                 
-        public paint (ctx: CanvasRenderingContext2D) {
-                                                
+        public paint () {
+                      
+            const ctx = this.ctx;
+            
             var x: number = this.rect.x;
             var y: number = this.rect.y;
             var align: String = this.textAlign.toString();
@@ -387,12 +392,7 @@ module CanvasGraphicsUI {
         public input() {
             
         //    this.deleteInput();
-           /* 
-            
-            if (this.canvas == null) {
-                window.alert('canvas null...');
-            }
-            */
+ /*
             var r = this.canvas.getBoundingClientRect();
             
             var input: HTMLInputElement = document.createElement('input');
@@ -414,6 +414,7 @@ module CanvasGraphicsUI {
             input.focus();
             
             this.inp = input;
+            */
         }         
     }    
     
@@ -425,8 +426,8 @@ module CanvasGraphicsUI {
         protected colorText             :string             = '#ffffff';       
         public num                      :number             = 0;
         
-        constructor () {
-            super('', 0,0,0,0);  
+        constructor (ctx : CanvasRenderingContext2D) {
+            super(ctx, '', 0, 0, 0, 0);  
             
             this.fontSize = 26;
             this.fontFamily = "px Tahoma, sans-serif";
@@ -446,7 +447,9 @@ module CanvasGraphicsUI {
             this.setText(this.num.toString());            
         }
         
-        public paint (ctx: CanvasRenderingContext2D) {            
+        public paint () {      
+        
+            const ctx = this.ctx;
             
             if (this.num <= 0) {
                 this.colorInside = '#a6a6a6';
@@ -465,7 +468,7 @@ module CanvasGraphicsUI {
             ctx.stroke();
             ctx.restore();    
             
-            super.paint(ctx);
+            super.paint();
         }
         
     }    
@@ -476,13 +479,13 @@ module CanvasGraphicsUI {
         
         public text:    TextSimple;
         
-        constructor (txt: String) {
-            super ();
+        constructor (ctx : CanvasRenderingContext2D, txt: String) {
+            super (ctx);
             
-             this.text = new TextSimple (txt, 30, 30, 250, 100);
+             this.text = new TextSimple (ctx, txt, 30, 30, 250, 100);
         }
         
-        public paint (ctx: CanvasRenderingContext2D){                       
+        public paint (){                       
         }  
         
         public MouseDownHandler(x: number, y: number) {
@@ -504,14 +507,14 @@ module CanvasGraphicsUI {
         private img:                HTMLImageElement    = new Image();
         private imgPush:            HTMLImageElement    = new Image();
         
-        constructor (imgSrc: string, imgPush: string) {            
-            super ('');
+        constructor (ctx : CanvasRenderingContext2D, imgSrc: string, imgPush: string) {            
+            super (ctx, '');
             
             this.img.src = imgSrc;                          
             this.imgPush.src = imgPush;   
         }
         
-        public paint (ctx: CanvasRenderingContext2D){  
+        public paint (){  
                              
         }  
         
@@ -538,8 +541,8 @@ module CanvasGraphicsUI {
         protected rectClicked  :Rect                = null;
         private radius: number = 0;
         
-        constructor () {
-            super();            
+        constructor (ctx : CanvasRenderingContext2D) {
+            super(ctx);            
             
             this.img = new Image();                                   
         }
@@ -557,11 +560,12 @@ module CanvasGraphicsUI {
             }        
         }
                                 
-        public paint (ctx: CanvasRenderingContext2D){
+        public paint (){
 
+            const ctx = this.ctx;
             ctx.save();
             
-            super.paint(ctx);
+            super.paint();
             if (this.radius != 0) {                
                 ctx.clip();
             }
@@ -608,7 +612,7 @@ module CanvasGraphicsUI {
    
     export class ListBox extends Item {
         
-        protected m_items               :Array<TextSimple>;
+        public m_items               :Array<TextSimple>;
         protected colorBkg              :string             = '#ffffff';
         public colorBorder              :string             = '#a6a6a6';
         public colorText                :string             = '#ffffff';
@@ -624,8 +628,8 @@ module CanvasGraphicsUI {
         protected editable :            boolean             = true;
         protected selectable :          boolean             = true;
         
-        constructor () {
-            super();
+        constructor (ctx : CanvasRenderingContext2D) {
+            super(ctx);
             
             this.m_items = new Array<TextSimple>();
         }
@@ -659,12 +663,7 @@ module CanvasGraphicsUI {
             var i = 1;
             
            // this.selectedRow = 0;
-            
-                        
-            if (this.canvas == null) {
-                window.alert('canvas null...');
-            }
-            
+
             for (let item of this.m_items) {
                 if (item.MouseDownHandler(x, y) == item){
 
@@ -672,7 +671,7 @@ module CanvasGraphicsUI {
                         this.selectedRow = i;
                     }                                      
                     
-                    return <Item>item;
+                    return <Item> item;
                 }
                 i ++;                                       
             }     
@@ -702,7 +701,7 @@ module CanvasGraphicsUI {
         
         public add(item: TextSimple) {
                             
-            item.canvas = this.canvas;
+         //   item.canvas = this.canvas;
             
             item.fontSize = this.fontSize;
             item.fontFamily = "px Tahoma, sans-serif";
@@ -717,7 +716,7 @@ module CanvasGraphicsUI {
         }
                 
         public addEntry (txt: String) {
-            this.add(new TextSimple (txt, 0, 0, 10, 10));
+            this.add(new TextSimple (this.ctx, txt, 0, 0, 10, 10));
         }
         
         public setText (txt: String, n: number) {
@@ -756,7 +755,9 @@ module CanvasGraphicsUI {
             }                        
         }
                                         
-        public paint (ctx: CanvasRenderingContext2D) {            
+        public paint () {            
+            
+            const ctx = this.ctx;
             
             ctx.save();
             ctx.beginPath();            
@@ -807,7 +808,7 @@ module CanvasGraphicsUI {
 
                 ctx.closePath();
 
-                item.paint(ctx);
+                item.paint();
                 
                 if (cc == 0) cc ++;
                 else cc = 0;
@@ -817,7 +818,7 @@ module CanvasGraphicsUI {
             
             ctx.restore();
 
-            super.paint(ctx);
+            super.paint();
         }        
     }  
     
@@ -829,11 +830,11 @@ module CanvasGraphicsUI {
         protected colorBkg              :string             = '#ffffff';
         public colorBorder              :string             = '#a6a6a6';        
         
-        constructor () {
-            super();
+        constructor (ctx : CanvasRenderingContext2D) {
+            super(ctx);
             
-            this.m_props = new ListBox();
-            this.m_data = new ListBox();
+            this.m_props = new ListBox(this.ctx);
+            this.m_data = new ListBox(this.ctx);
             
             //Set style...
             this.m_props.fontSize = 20;
@@ -860,13 +861,17 @@ module CanvasGraphicsUI {
         public MouseDownHandler(x: number, y: number) {                        
             if (super.MouseDownHandler(x, y) != this) return null;
             
-            
+            /*
             if (this.canvas == null) {
                 window.alert('canvas null...');
-            }            
+            }   
+            */         
             
-            this.m_props.MouseDownHandler(x, y);
-            this.m_data.MouseDownHandler(x, y);
+            var ret = this.m_props.MouseDownHandler(x, y);            
+            if (ret != null) return ret;
+            
+            ret = this.m_data.MouseDownHandler(x, y);
+            if (ret != null) return ret;
                    
             return <Item> this;
         }    
@@ -874,16 +879,19 @@ module CanvasGraphicsUI {
         public MouseUpHandler(x: number, y: number) {                        
             if (super.MouseUpHandler(x, y) != this) return null;
                         
-            this.m_props.MouseUpHandler(x, y);
-            this.m_data.MouseUpHandler(x, y);
+            var ret = this.m_props.MouseUpHandler(x, y);
+            if (ret != null) return ret;
+            
+            var ret = this.m_data.MouseUpHandler(x, y);
+            if (ret != null) return ret;
                    
             return <Item> this;
         }          
            
         public addEntry (txtProp: String, txtData:  String) {
             
-            this.m_props.canvas = this.canvas;
-            this.m_data.canvas = this.canvas;            
+      //      this.m_props.canvas = this.canvas;
+        //    this.m_data.canvas = this.canvas;            
             
             this.m_props.addEntry(txtProp);
             this.m_data.addEntry(txtData);
@@ -911,7 +919,9 @@ module CanvasGraphicsUI {
                 
         }
                                         
-        public paint (ctx: CanvasRenderingContext2D) {            
+        public paint () {
+            
+            const ctx = this.ctx;
             
             this.order();
             
@@ -933,40 +943,42 @@ module CanvasGraphicsUI {
             ctx.restore();
             
             //ctx.save();
-            this.m_props.paint(ctx);
-            this.m_data.paint(ctx);
+            this.m_props.paint();
+            this.m_data.paint();
           //  ctx.restore();
          
-            super.paint(ctx);
+            super.paint();
         }        
     }       
     
-    export class Screen {
+    export class Screen{
 
         public m_item:              Array <Item> =              null;
         public canvas:              HTMLCanvasElement =         null;   
+        protected  ctx :               CanvasRenderingContext2D =  null;
         
         private message:            boolean = false;
-        private msg:                MessageBox = new MessageBox ();
+     //   private msg:                MessageBox = new MessageBox ();
     
         constructor (canvas: HTMLCanvasElement) {
             
             this.canvas = canvas;
+            this.ctx = this.canvas.getContext('2d');
             this.m_item = new Array<Item>();
         }
         
         public add (item: Item) {
             
-            item.canvas = this.canvas;
+           // item.canvas = this.canvas;
    
             this.m_item.push(item);                    
         }
-        
+        /*
         public SetCanvas (canvas: HTMLCanvasElement) {
             this.canvas = canvas;
         
         }
-        
+        */
         public GetSize(){            
             return {
                     width: this.canvas.width,
@@ -1030,7 +1042,7 @@ module CanvasGraphicsUI {
             ctx.save();
 
             for (let item of this.m_item) {
-                item.paint(ctx);                            
+                item.paint();                            
             }
             
             ctx.restore();
@@ -1059,7 +1071,7 @@ module CanvasGraphicsUI {
             this.canvas.addEventListener('mousedown', function(event){self.MouseDownHandler(event);}, false);                      
             this.canvas.addEventListener('mouseup', function(event){self.MouseUpHandler(event);}, false);
             this.canvas.addEventListener('mousemove', function(event){self.MouseMoveHandler(event);}, false);                               
-            window.addEventListener('keydown', function(event){self.KeyDownHandler(event);}, false);
+           // window.addEventListener('keydown', function(event){self.KeyDownHandler(event);}, false);
             
          //    document.addEventListener("keydown", () => this.KeyDownHandler);
             
@@ -1123,19 +1135,19 @@ module CanvasGraphicsUI {
                 return this.m_curScreen.MouseUpHandler(mousePos.x, mousePos.y);
             } 
         }
-        
+        /*
         public KeyDownHandler (event) {
             
                   
             var keyCode = event.keyCode;
             
             if (keyCode == 13) {
-                window.alert('*kd');                
+             //   window.alert('*kd');                
             }
                 
               //  window.alert('*');                    
         }        
-                      
+                 */     
         public addItem (screen: Screen) {
             
            // screen.SetCanvas(this.canvas);

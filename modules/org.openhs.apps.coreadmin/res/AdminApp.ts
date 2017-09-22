@@ -113,30 +113,8 @@ module AdminApp {
              
             if (ret != null) {                            
                 if (ret == this.m_screenMain.icons[0]) {
-                     // this.SwitchScreen(this.m_screenTemps);
-                    
-                //    window.alert('***');
-          //          swal('Hello world!');
-                    
-                    
-                                swal({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  type: 'error',
-  confirmButtonText: 'Cool'
-});
-                    
-                   
-                    /*
-                    var txt = window.prompt("Please enter","defaultText");
-                    
-if (txt == null || txt == "") {
-    window.alert("User cancelled the prompt.");
-} else {
-    window.alert(txt);
-}
-                    */
-                                                            
+                      this.SwitchScreen(this.m_screenTemps);  
+                                                                                                 
                 } else if (ret == this.m_screenTemps.btnLeave) {
                       this.SwitchScreen(this.m_screenMain);
                     
@@ -201,16 +179,16 @@ if (txt == null || txt == "") {
         public buildLayout () {
                         
             //Time
-            this.m_textTime = new TextSimple('Time', 750, 10, 250, 100);
+            this.m_textTime = new TextSimple(this.ctx, 'Time', 750, 10, 250, 100);
             this.add(this.m_textTime);          
             
             //Icons
             this.icons = new Array <ImageButton> ();
-            this.icons.push(new ImageButton(iconTemp, iconTemp, 30, 30, 150, 150));
-            this.icons.push(new ImageButton(iconSwitch, iconSwitch, 200, 30, 150, 150));
-            this.icons.push(new ImageButton(iconDoor, iconDoor, 400, 30, 150, 150));
-            this.icons.push(new ImageButton(iconRoom, iconRoom, 400, 30, 150, 150));
-            this.icons.push(new ImageButton(iconFloor, iconFloor, 400, 30, 150, 150));
+            this.icons.push(new ImageButton(this.ctx, iconTemp, iconTemp, 30, 30, 150, 150));
+            this.icons.push(new ImageButton(this.ctx, iconSwitch, iconSwitch, 200, 30, 150, 150));
+            this.icons.push(new ImageButton(this.ctx, iconDoor, iconDoor, 400, 30, 150, 150));
+            this.icons.push(new ImageButton(this.ctx, iconRoom, iconRoom, 400, 30, 150, 150));
+            this.icons.push(new ImageButton(this.ctx, iconFloor, iconFloor, 400, 30, 150, 150));
                                          
             for (let icon of this.icons) {
                 this.add(icon);
@@ -218,11 +196,11 @@ if (txt == null || txt == "") {
             
             //Nums Rounded
             this.nums = new Array <NumberRounded> ();
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
-            this.nums.push(new NumberRounded());
+            this.nums.push(new NumberRounded(this.ctx));
+            this.nums.push(new NumberRounded(this.ctx));
+            this.nums.push(new NumberRounded(this.ctx));
+            this.nums.push(new NumberRounded(this.ctx));
+            this.nums.push(new NumberRounded(this.ctx));
                                          
             for (let num of this.nums) {
                 this.add(num);
@@ -311,30 +289,64 @@ if (txt == null || txt == "") {
         public buildLayout () {
    
             //Time
-            this.m_textTime = new TextSimple('Time', 750, 10, 250, 100);
+            this.m_textTime = new TextSimple(this.ctx, 'Time', 750, 10, 250, 100);
             this.add(this.m_textTime);          
             
-            this.m_textTitle = new TextSimple('', 20, 20, 250, 40);
+            this.m_textTitle = new TextSimple(this.ctx, '', 20, 20, 250, 40);
             this.add(this.m_textTitle);  
     
             //Leave button
-            this.btnLeave = new ImageButton(iconLeave, iconLeave, 750, 450, 80, 80);
+            this.btnLeave = new ImageButton(this.ctx, iconLeave, iconLeave, 750, 450, 80, 80);
             this.add(this.btnLeave);
             
             //ListBox Select
-            this.m_list = new ListBox();
+            this.m_list = new ListBox(this.ctx);
             this.add(this.m_list);
             this.m_list.Size(20, 100, 200, 350);  
             this.m_list.selectedRow = 0;         
             
             //Property box
-            this.m_propData = new PropertyBox();
+            this.m_propData = new PropertyBox(this.ctx);
             this.add(this.m_propData);
             this.m_propData.Size(230, 100, 600, 350);                   
-        }                        
+        }        
+        
+        public changeDlg (thing: Thing, dataName: String, data: String) {
+                        
+            var o = this;
+                                    
+            swal({
+                  title: dataName,
+                  input: 'text',
+                  inputValue: data,
+                  inputPlaceholder: 'Please enter new ' + dataName,
+                  showCancelButton: true,
+                  inputValidator: function (value) {
+                    return new Promise(function (resolve, reject) {
+                      if (value) {
+                        resolve()
+                      } else {
+                        reject('You need to write something!')
+                      }
+                    })
+                  }
+                }).then(function (name) {
+                    
+                    o.SetData(thing, dataName, name);                                                                   
+             });                
+        }       
+        
+        public SetData(thing: Thing, dataName: String, data: String) {
+            
+        }        
+        
     }//class end   
      
-    export class ScreenTemps extends ScreenThings {        
+    export class ScreenTemps extends ScreenThings {   
+    
+        public strName :            String = 'Name';
+        public strSitePath :        String = 'Site Path';
+        public strDevicePath :      String = 'Device Path';
         
         protected updateData() {                                
             super.updateData();
@@ -347,7 +359,7 @@ if (txt == null || txt == "") {
             var i = 0;
             
             for (var item of this.m_siteData.m_tempSensorArray) {                
-                var txt = item.name;
+                var txt = item.getName();
                 
                 this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
@@ -359,11 +371,68 @@ if (txt == null || txt == "") {
                 
                 let item = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.name, 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
+                this.m_propData.setText(this.strName + ':', item.getName(), 0);
+                this.m_propData.setText(this.strSitePath, item.getSitePath(), 1);
+                this.m_propData.setText(this.strDevicePath, item.getDevicePath(), 2); 
             }                        
-        }                 
+        }         
+        
+        public MouseUpHandler(x: number, y: number) {
+            var ret = super.MouseUpHandler(x, y);            
+            if (ret == null) return ret;
+            
+            var thing: Thing = null;
+            
+            if (this.m_list.selectedRow >= 1){
+                thing = this.m_siteData.m_tempSensorArray[this.m_list.selectedRow - 1];
+            } 
+            
+            if (ret == this.m_propData.m_data.m_items[0]) {                                                           
+                this.changeDlg (thing, this.strName, this.m_propData.m_data.m_items[0].getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
+                this.changeDlg (thing, this.strSitePath, this.m_propData.m_data.m_items[1].getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
+                this.changeDlg (thing, this.strDevicePath, this.m_propData.m_data.m_items[2].getText());
+                
+            }
+            
+            return ret;            
+        }
+        
+      
+        
+        public SetData(thing: Thing, dataName: String, data: String) {
+            
+            if (thing != null) {
+                
+                if (thing instanceof TemperatureSensor) {
+                    
+                    var ret = thing.setName(data);
+                    
+                    var tp = 'success';
+                    
+                    if (ret) {
+                        thing.update();
+                    } else {
+                        tp = 'error';
+                    }
+                                   
+                              swal({
+                    type: tp,
+                    title: 'Changed...' + data
+                  })                
+                }
+                
+                
+            }
+        
+           //   window.alert('Changing name...' + nameP + '  ..to:' + data);
+            
+
+        }
+        
     } //class end
     
     export class ScreenSwitches extends ScreenThings {        
@@ -379,7 +448,7 @@ if (txt == null || txt == "") {
             var i = 0;
             
             for (var item of this.m_siteData.m_switchArray) {                
-                var txt = item.name;
+                var txt = item.getName();
                 
                 this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
@@ -391,7 +460,7 @@ if (txt == null || txt == "") {
                 
                 let item = this.m_siteData.m_switchArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Name:", item.getName(), 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
                 this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
@@ -411,7 +480,7 @@ if (txt == null || txt == "") {
             var i = 0;
             
             for (var item of this.m_siteData.m_doorArray) {                
-                var txt = item.name;
+                var txt = item.getName();
                 
                 this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
@@ -423,7 +492,7 @@ if (txt == null || txt == "") {
                 
                 let item = this.m_siteData.m_doorArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Name:", item.getName(), 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
               //  this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
@@ -443,7 +512,7 @@ if (txt == null || txt == "") {
             var i = 0;
             
             for (var item of this.m_siteData.m_roomArray) {                
-                var txt = item.name;
+                var txt = item.getName();
                 
                 this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
@@ -455,7 +524,7 @@ if (txt == null || txt == "") {
                 
                 let item = this.m_siteData.m_roomArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Name:", item.getName(), 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
             //    this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
@@ -476,7 +545,7 @@ if (txt == null || txt == "") {
             var i = 0;
             
             for (var item of this.m_siteData.m_floorArray) {                
-                var txt = item.name;
+                var txt = item.getName();
                 
                 this.m_list.setText((i + 1).toString() + '. ' + txt, i);
                 
@@ -488,7 +557,7 @@ if (txt == null || txt == "") {
                 
                 let item = this.m_siteData.m_floorArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.name, 0);
+                this.m_propData.setText("Name:", item.getName(), 0);
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
                // this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
