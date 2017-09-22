@@ -115,7 +115,7 @@ module AdminApp {
                 if (ret == this.m_screenMain.icons[0]) {
                      // this.SwitchScreen(this.m_screenTemps);
                     
-                   
+                //    window.alert('***');
           //          swal('Hello world!');
                     
                     
@@ -126,7 +126,7 @@ module AdminApp {
   confirmButtonText: 'Cool'
 });
                     
-                  //  window.alert('***');
+                   
                     /*
                     var txt = window.prompt("Please enter","defaultText");
                     
