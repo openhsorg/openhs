@@ -402,6 +402,54 @@ public class MySiteServiceImpl implements ISiteService {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#renameSitePath(java.lang.String, java.lang.String)
+	 * Rename Site Path...
+	 */
+	public boolean renameSitePath (String sitePathOld, String sitePathNew) throws SiteException {
+		
+		Thing thing = ss.things.get(sitePathOld);
+		
+		if (thing != null) {						 			
+			thing.setSitePath(sitePathNew);
+			ss.things.put(sitePathNew, thing);
+			ss.things.remove(sitePathOld);
+			
+			String devPath = getDevicePath (sitePathOld);
+			
+			if (!devPath.equals("")){
+				
+				ss.devPaths.put(devPath, sitePathNew);								
+			}
+						
+			return true;
+		}
+
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#renameDevicePath(java.lang.String, java.lang.String)
+	 * Rename Device path...
+	 */
+	public boolean renameDevicePath (String sitePath, String devicePathNew){
+		
+		String devicePathOld = getDevicePath (sitePath);
+		//String sitePath = ss.devPaths.get(devicePathOld);
+		
+		if (!devicePathOld.equals("")) {
+			
+			ss.devPaths.put(devicePathNew, sitePath);
+			ss.devPaths.remove(devicePathOld);
+						
+			return true;
+		}
+
+		return false;
+	}	
+	
+	/*
+	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#addThing(java.lang.String, java.lang.String, org.openhs.core.commons.Thing)
 	 * Add new thing + pairs with device name.
 	 */

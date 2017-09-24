@@ -30,6 +30,8 @@ module OhsSiteData {
     const idDeleteThing = 'idDeleteThing';
     const idAddThing = 'idAddThing';
     const idSetName = 'idSetName';
+    const idSetSitePath = 'idSetSitePath';
+    const idSetDevicePath = 'idSetDevicePath';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -502,8 +504,8 @@ module OhsSiteData {
      * 
      * Commands:
      * 1. update - means get data from server...
-     * 2. set    - means post data to server...  
-     * 3. get    - means read local data from object...
+     * 2. set    - means post data to server or set to object...  
+     * 3. get    - means read local data from object only...
      */
     export class Thing {
         
@@ -522,9 +524,9 @@ module OhsSiteData {
             this.posZ = 0.0;
         }
         
-        public setSitePath (path: string) {
+     //   public setSitePath (path: string) {
             //this.sitePath = path;
-        }   
+   //     }   
         
         
         public getSitePath() {
@@ -548,20 +550,48 @@ module OhsSiteData {
 
             var ret = postAjax(url, js);     
             
-            if (JSON.parse(ret['return'])){                
-                
+            if (JSON.parse(ret['return'])){                                
                 return true;                
-             //   this.updateObjectArray(idFloorArr);   
+
             } else {
                 return false;                
             }
-        }        
+        }  
         
-        /*
-        public setDevicePath (path: string) {
-            this.devicePath = path;
-        }         
-        */
+        public setSitePath(sitePathNew : String) {
+            var js = JSON.stringify({
+                idPost : idSetSitePath,
+                sitePath  : this.sitePath,
+                idString   : sitePathNew
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){                                
+                return true;                
+             
+            } else {
+                return false;                
+            }
+        } 
+        
+        public setDevicePath(siteDevicePathNew : String) {
+            var js = JSON.stringify({
+                idPost : idSetDevicePath,
+                sitePath  : this.sitePath,
+                idString   : siteDevicePathNew
+            });               
+
+            var ret = postAjax(url, js);     
+            
+            if (JSON.parse(ret['return'])){                                
+                return true;                
+             
+            } else {
+                return false;                
+            }
+        } 
+
         public isValid() {
             return this.valid;
         } 
@@ -575,14 +605,10 @@ module OhsSiteData {
                     
             var ret = postAjax(url, js);     
        
-            if (JSON.parse(ret['return'])){    
-            
+            if (JSON.parse(ret['return'])){                
                 this.fillFromJSON(ret);
-                                                
-             //   return true;                
-             //   this.updateObjectArray(idFloorArr);   
-            } else {
-            //    return false;       
+
+            } else {      
                        
             }                             
         }   
@@ -595,25 +621,8 @@ module OhsSiteData {
 
             for (var propName in json) {                                               
                 this[propName] = json[propName];
-                
-               //  window.alert(propName + ' json:' + json[propName] + ' to: ' + this[propName]);
             }                      
         }
-        /*
-        public updateSitePath() {   
-                 
-            var js = JSON.stringify({
-                idPost : idAddFloor
-            });               
-
-            var ret = postAjax(url, js);     
-            
-            if (JSON.parse(ret['return'])){
-                
-                this.updateObjectArray(idFloorArr);   
-            }                    
-        }         
-        */
     }
     
     export class Site extends Thing {
@@ -630,9 +639,7 @@ module OhsSiteData {
             if (JSON.parse(ret['validity'])){
                 this.name = ret['name'];      
             }                
-        }   
-                            
-        
+        }                                       
     }    
         
     export class Floor extends Thing {
@@ -643,8 +650,7 @@ module OhsSiteData {
         public dimY:   number = 0;
         
         //Rooms belongs to this floor...
-        public m_roomArray:             Array <Room> = null;
-                    
+        public m_roomArray:             Array <Room> = null;                    
         
     }
     
@@ -655,8 +661,7 @@ module OhsSiteData {
         constructor () {
             super ();
                                     
-        }        
-                       
+        }                               
     }    
     
     export class TemperatureSensor extends Thing {
@@ -736,7 +741,7 @@ module OhsSiteData {
                 this.updateDelayed (100);
             }
         }
-    
+    /*
         public update () {       
             var js = JSON.stringify({
                 idPost : idThingCommand,
@@ -750,7 +755,7 @@ module OhsSiteData {
                 this.stateInt = parseInt(ret['state_int']);      
             }                
         }                                 
-    
+    */
     }  
     
     export class ContactSensor extends Thing {    

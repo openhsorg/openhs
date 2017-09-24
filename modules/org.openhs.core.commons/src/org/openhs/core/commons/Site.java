@@ -29,8 +29,7 @@ public class Site extends Thing {
             new TreeMap<String, String>();	
 
 	public Site () {
-		this.name = "My First Crazy Site :):)";
-		
+		this.name = "My First Crazy Site :):)";		
 	}
 	
 	public String getId ()

@@ -216,40 +216,7 @@ module CanvasGraphicsUI {
             }            
         }        
     }         
-    
-      
-    
-    export class MessageBox extends Item {
-        
-        protected radius:   number = 4;
-         
-        constructor (ctx : CanvasRenderingContext2D) {
-            super (ctx);         
-        }
-        
-        public paint (){
-            
-            const ctx = this.ctx;
-                                    
-            //super.paint(ctx);
-            ctx.save();
-            ctx.beginPath();                        
-            ctx.moveTo(this.rect.x + this.radius, this.rect.y);
-            ctx.lineTo(this.rect.x + this.rect.w - this.radius, this.rect.y);
-            ctx.quadraticCurveTo(this.rect.x + this.rect.w, this.rect.y, this.rect.x + this.rect.w, this.rect.y + this.radius);
-            ctx.lineTo(this.rect.x + this.rect.w, this.rect.y + this.rect.h - this.radius);
-            ctx.quadraticCurveTo(this.rect.x + this.rect.w, this.rect.y + this.rect.h, this.rect.x + this.rect.w - this.radius, this.rect.y + this.rect.h);
-            ctx.lineTo(this.rect.x + this.radius, this.rect.y + this.rect.h);
-            ctx.quadraticCurveTo(this.rect.x, this.rect.y + this.rect.h, this.rect.x, this.rect.y + this.rect.h - this.radius);
-            ctx.lineTo(this.rect.x, this.rect.y + this.radius);
-            ctx.quadraticCurveTo(this.rect.x, this.rect.y, this.rect.x + this.radius, this.rect.y);
-            ctx.closePath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'blue'; 
-            ctx.stroke();    
-            ctx.restore();                                  
-        }                 
-     }
+
         
     export class TextSimple extends Item {
         
@@ -287,27 +254,14 @@ module CanvasGraphicsUI {
         public getText () {
             return this.text;
         }
-        
+        /*
         public MouseUpHandler(x: number, y: number) {
             if (super.MouseUpHandler(x, y) == null) return null;
-
-            
-            if (this.editable) {
-                this.input();
-            }
             
             return <Item> this;
-        } 
-        /*
-        public MouseDownHandler(x: number, y: number) {
-            if (super.MouseDownHandler(x, y) == null) return null;
-
-       //     this.input();
-            
-            return <Item> this;
-        }        
-          */         
-                                
+        }      
+                   
+        */
         public paint () {
                       
             const ctx = this.ctx;
@@ -355,6 +309,7 @@ module CanvasGraphicsUI {
             this.bold = origin.bold; 
         }
         
+        /*
         public clicker (e) {
                     
             var keyCode = e.keyCode;
@@ -392,7 +347,7 @@ module CanvasGraphicsUI {
         public input() {
             
         //    this.deleteInput();
- /*
+ 
             var r = this.canvas.getBoundingClientRect();
             
             var input: HTMLInputElement = document.createElement('input');
@@ -414,8 +369,9 @@ module CanvasGraphicsUI {
             input.focus();
             
             this.inp = input;
-            */
-        }         
+            
+        }  
+        */       
     }    
     
   
@@ -471,9 +427,7 @@ module CanvasGraphicsUI {
             super.paint();
         }
         
-    }    
-    
-    
+    }            
     
     export class Button extends Item {
         

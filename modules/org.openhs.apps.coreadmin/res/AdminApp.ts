@@ -179,8 +179,15 @@ module AdminApp {
         public buildLayout () {
                         
             //Time
-            this.m_textTime = new TextSimple(this.ctx, 'Time', 750, 10, 250, 100);
-            this.add(this.m_textTime);          
+            this.m_textTime = new TextSimple(this.ctx, 'Time', 730, 0, 250, 100);
+            this.add(this.m_textTime);   
+            
+            this.m_textTime.fontSize = 26;
+            this.m_textTime.fontFamily = "px Tahoma, sans-serif";
+            this.m_textTime.fontColor = '#8c8c8c';
+            this.m_textTime.textAlign = "left";
+            this.m_textTime.textBaseline = "top";  
+            this.m_textTime.bold = false;              
             
             //Icons
             this.icons = new Array <ImageButton> ();
@@ -263,6 +270,10 @@ module AdminApp {
     
     export class ScreenThings extends Screen {
         
+        public strName :            String = 'Name';
+        public strSitePath :        String = 'Site Path';
+        public strDevicePath :      String = 'Device Path';        
+        
         public m_siteData:          SiteData = null;  
         
         //Texts
@@ -276,7 +287,8 @@ module AdminApp {
         public m_list:              ListBox;
         
         //Property box - data
-        public m_propData:          PropertyBox;        
+        public m_propData:          PropertyBox;       
+         
  
         constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
             super(canvas);        
@@ -284,16 +296,29 @@ module AdminApp {
             this.m_siteData = siteData;            
             this.buildLayout();
        }
-
         
         public buildLayout () {
    
             //Time
-            this.m_textTime = new TextSimple(this.ctx, 'Time', 750, 10, 250, 100);
+            this.m_textTime = new TextSimple(this.ctx, 'Time', 730, 0, 250, 100);
             this.add(this.m_textTime);          
             
-            this.m_textTitle = new TextSimple(this.ctx, '', 20, 20, 250, 40);
+            this.m_textTime.fontSize = 26;
+            this.m_textTime.fontFamily = "px Tahoma, sans-serif";
+            this.m_textTime.fontColor = '#8c8c8c';
+            this.m_textTime.textAlign = "left";
+            this.m_textTime.textBaseline = "top";  
+            this.m_textTime.bold = false;     
+            
+            this.m_textTitle = new TextSimple(this.ctx, '', 15, 40, 250, 40);
             this.add(this.m_textTitle);  
+            
+            this.m_textTitle.fontSize = 26;
+            this.m_textTitle.fontFamily = "px Tahoma, sans-serif";
+            this.m_textTitle.fontColor = '#8c8c8c';
+            this.m_textTitle.textAlign = "left";
+            this.m_textTitle.textBaseline = "top";  
+            this.m_textTitle.bold = false;               
     
             //Leave button
             this.btnLeave = new ImageButton(this.ctx, iconLeave, iconLeave, 750, 450, 80, 80);
@@ -315,39 +340,149 @@ module AdminApp {
                         
             var o = this;
                                     
-            swal({
-                  title: dataName,
-                  input: 'text',
-                  inputValue: data,
-                  inputPlaceholder: 'Please enter new ' + dataName,
-                  showCancelButton: true,
-                  inputValidator: function (value) {
+            swal({                
+                title: dataName,
+                input: 'text',
+                inputValue: data,
+                inputPlaceholder: 'Please enter new ' + dataName,
+                showCancelButton: true,
+                inputValidator: function (value) {                    
                     return new Promise(function (resolve, reject) {
-                      if (value) {
-                        resolve()
+                      if (value) {                                                    
+                          resolve()
                       } else {
-                        reject('You need to write something!')
+                          reject('You need to write something!')
                       }
                     })
                   }
-                }).then(function (name) {
-                    
+                }).then(function (name) {                                        
                     o.SetData(thing, dataName, name);                                                                   
              });                
         }       
         
         public SetData(thing: Thing, dataName: String, data: String) {
             
-        }        
+        }    
+        
+        public setName (thing: Thing, name: String) {
+            
+            swal({                
+                title: this.strName,
+                input: 'text',
+                inputValue: name,
+                inputPlaceholder: 'Please enter new ' + this.strName,
+                showCancelButton: true,
+                inputValidator: function (value) {                    
+                    return new Promise(function (resolve, reject) {
+                      if (value) {                                                    
+                          resolve()
+                      } else {
+                          reject('You need to write something!')
+                      }
+                    })
+                  }
+                }).then(function (name) {  
+                
+                    var messType = 'error';
+                    
+                    if (thing.setName(name)) {                        
+                        thing.update();       
+                        
+                        messType = 'success';
+                    }
+                                                           
+                    swal({
+                        type: messType,
+                        title: 'Changed...' + name
+                    })                                                                                                           
+             });             
+        }
+        
+        public setSitePath (thing: Thing, sitePath: String) {
+            
+            var m_siteData = this.m_siteData;
+            
+            swal({                
+                title: this.strName,
+                input: 'text',
+                inputValue: sitePath,
+                inputPlaceholder: 'Please enter new ' + this.strSitePath,
+                showCancelButton: true,
+                inputValidator: function (value) {                    
+                    return new Promise(function (resolve, reject) {
+                      if (value) {                                                    
+                          resolve()
+                      } else {
+                          reject('You need to write something!')
+                      }
+                    })
+                  }
+                }).then(function (name) {  
+                
+                    var messType = 'error';
+                    
+                    if (thing.setSitePath(name)) {                        
+                        //thing.update();     
+                        if (thing instanceof TemperatureSensor) {
+                            m_siteData.updateObjectArray('idTempSensArr');                        
+                        } else if (thing instanceof Switch) {
+                            m_siteData.updateObjectArray('idSwitchArr');                        
+                        } else if (thing instanceof Door) {
+                            m_siteData.updateObjectArray('idDoorArr');                        
+                        } else if (thing instanceof Room) {
+                            m_siteData.updateObjectArray('idRoomArr');                        
+                        } else if (thing instanceof Floor) {
+                            m_siteData.updateObjectArray('idFloorArr');                        
+                        }       
+                        
+                        messType = 'success';
+                    }
+                                                           
+                    swal({
+                        type: messType,
+                        title: 'Changed...' + name
+                    })                                                                                                           
+             });             
+        }     
+        
+        public setDevicePath (thing: Thing, devicePath: String) {
+            
+            swal({                
+                title: this.strName,
+                input: 'text',
+                inputValue: devicePath,
+                inputPlaceholder: 'Please enter new ' + this.strSitePath,
+                showCancelButton: true,
+                inputValidator: function (value) {                    
+                    return new Promise(function (resolve, reject) {
+                      if (value) {                                                    
+                          resolve()
+                      } else {
+                          reject('You need to write something!')
+                      }
+                    })
+                  }
+                }).then(function (name) {  
+                
+                    var messType = 'error';
+                    
+                    if (thing.setDevicePath(name)) {                        
+                        thing.update();       
+                        
+                        messType = 'success';
+                    }
+                                                           
+                    swal({
+                        type: messType,
+                        title: 'Changed...' + name
+                    })                                                                                                           
+             });             
+        }         
         
     }//class end   
      
     export class ScreenTemps extends ScreenThings {   
-    
-        public strName :            String = 'Name';
-        public strSitePath :        String = 'Site Path';
-        public strDevicePath :      String = 'Device Path';
-        
+            
         protected updateData() {                                
             super.updateData();
             
@@ -388,20 +523,18 @@ module AdminApp {
             } 
             
             if (ret == this.m_propData.m_data.m_items[0]) {                                                           
-                this.changeDlg (thing, this.strName, this.m_propData.m_data.m_items[0].getText());
+                this.setName(thing, (<TextSimple> ret).getText());
                 
             } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
-                this.changeDlg (thing, this.strSitePath, this.m_propData.m_data.m_items[1].getText());
+                this.setSitePath(thing, (<TextSimple> ret).getText());
                 
             } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
-                this.changeDlg (thing, this.strDevicePath, this.m_propData.m_data.m_items[2].getText());
+                this.setDevicePath(thing, (<TextSimple> ret).getText());
                 
             }
             
             return ret;            
-        }
-        
-      
+        }              
         
         public SetData(thing: Thing, dataName: String, data: String) {
             
@@ -409,28 +542,45 @@ module AdminApp {
                 
                 if (thing instanceof TemperatureSensor) {
                     
-                    var ret = thing.setName(data);
+                    var ret = false;
+                    var sent = false;
                     
-                    var tp = 'success';
-                    
-                    if (ret) {
-                        thing.update();
-                    } else {
-                        tp = 'error';
+                    if (dataName === this.strName) {
+                        sent = true;
+                        ret = thing.setName(data);
+                                                                        
+                        if (ret) thing.update();                        
+                        
+                    } else if (dataName === this.strSitePath) {
+                        sent = true;  
+                        ret = thing.setSitePath(data);
+                        
+                        if (ret) this.m_siteData.updateObjectArray('idTempSensArr');
+                        
+                    } else if (dataName === this.strDevicePath) {
+                        sent = true;  
+                        ret = thing.setDevicePath(data);
+                        
+                        if (ret) thing.update();
                     }
-                                   
-                              swal({
-                    type: tp,
-                    title: 'Changed...' + data
-                  })                
-                }
-                
-                
-            }
-        
-           //   window.alert('Changing name...' + nameP + '  ..to:' + data);
-            
-
+                    
+                    if (sent) {
+                        
+                        var tp = 'success';
+                        
+                        if (ret) {
+                           // thing.update();
+                        } else {
+                            tp = 'error';
+                        }
+                                       
+                        swal({
+                            type: tp,
+                            title: 'Changed...' + data
+                        })         
+                    }       
+                }                                
+            }           
         }
         
     } //class end
@@ -458,13 +608,38 @@ module AdminApp {
             //Text details:
             if (this.m_list.selectedRow != 0) {
                 
-                let item = this.m_siteData.m_switchArray[this.m_list.selectedRow - 1];
+                let item = this.m_siteData.m_switchArray[this.m_list.selectedRow - 1];               
                 
-                this.m_propData.setText("Name:", item.getName(), 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-                this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
+                this.m_propData.setText(this.strName + ':', item.getName(), 0);
+                this.m_propData.setText(this.strSitePath, item.getSitePath(), 1);
+                this.m_propData.setText(this.strDevicePath, item.getDevicePath(), 2);                 
             }                        
-        }                 
+        }          
+        
+        public MouseUpHandler(x: number, y: number) {
+            var ret = super.MouseUpHandler(x, y);            
+            if (ret == null) return ret;
+            
+            var thing: Thing = null;
+            
+            if (this.m_list.selectedRow >= 1){
+                thing = this.m_siteData.m_switchArray[this.m_list.selectedRow - 1];
+            } 
+            
+            if (ret == this.m_propData.m_data.m_items[0]) {                                                           
+                this.setName(thing, (<TextSimple> ret).getText());
+                                
+            } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
+                this.setSitePath(thing, (<TextSimple> ret).getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
+                this.setDevicePath(thing, (<TextSimple> ret).getText());
+                
+            }
+            
+            return ret;            
+        }          
+        
     } //class end    
     
     export class ScreenDoors extends ScreenThings {        
@@ -496,7 +671,32 @@ module AdminApp {
                 this.m_propData.setText("Site Path:", item.getSitePath(), 1);
               //  this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
             }                        
-        }                 
+        }  
+        
+        public MouseUpHandler(x: number, y: number) {
+            var ret = super.MouseUpHandler(x, y);            
+            if (ret == null) return ret;
+            
+            var thing: Thing = null;
+            
+            if (this.m_list.selectedRow >= 1){
+                thing = this.m_siteData.m_doorArray[this.m_list.selectedRow - 1];
+            } 
+            
+            if (ret == this.m_propData.m_data.m_items[0]) {                                                           
+                this.setName(thing, (<TextSimple> ret).getText());  
+                              
+            } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
+                this.setSitePath(thing, (<TextSimple> ret).getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
+                this.setDevicePath(thing, (<TextSimple> ret).getText());
+                
+            }
+            
+            return ret;            
+        }            
+        
     } //class end   
     
     export class ScreenRooms extends ScreenThings {        
@@ -524,11 +724,37 @@ module AdminApp {
                 
                 let item = this.m_siteData.m_roomArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.getName(), 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-            //    this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
+                this.m_propData.setText(this.strName + ':', item.getName(), 0);
+                this.m_propData.setText(this.strSitePath, item.getSitePath(), 1);
+    
+                
             }                        
-        }                 
+        }  
+        
+        public MouseUpHandler(x: number, y: number) {
+            var ret = super.MouseUpHandler(x, y);            
+            if (ret == null) return ret;
+            
+            var thing: Thing = null;
+            
+            if (this.m_list.selectedRow >= 1){
+                thing = this.m_siteData.m_roomArray[this.m_list.selectedRow - 1];
+            } 
+            
+            if (ret == this.m_propData.m_data.m_items[0]) {                                                           
+                this.setName(thing, (<TextSimple> ret).getText());  
+                              
+            } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
+                this.setSitePath(thing, (<TextSimple> ret).getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
+                this.setDevicePath(thing, (<TextSimple> ret).getText());
+                
+            }
+            
+            return ret;            
+        }                  
+        
     } //class end  
     
     
@@ -557,11 +783,35 @@ module AdminApp {
                 
                 let item = this.m_siteData.m_floorArray[this.m_list.selectedRow - 1];
                 
-                this.m_propData.setText("Name:", item.getName(), 0);
-                this.m_propData.setText("Site Path:", item.getSitePath(), 1);
-               // this.m_propData.setText("Device Path:", item.getDevicePath(), 2); 
+                this.m_propData.setText(this.strName + ':', item.getName(), 0);
+                this.m_propData.setText(this.strSitePath, item.getSitePath(), 1);
             }                        
-        }                 
+        }      
+        
+        public MouseUpHandler(x: number, y: number) {
+            var ret = super.MouseUpHandler(x, y);            
+            if (ret == null) return ret;
+            
+            var thing: Thing = null;
+            
+            if (this.m_list.selectedRow >= 1){
+                thing = this.m_siteData.m_floorArray[this.m_list.selectedRow - 1];
+            } 
+            
+            if (ret == this.m_propData.m_data.m_items[0]) {                                                           
+                this.setName(thing, (<TextSimple> ret).getText());   
+                             
+            } else if (ret == this.m_propData.m_data.m_items[1]) {                                            
+                this.setSitePath(thing, (<TextSimple> ret).getText());
+                
+            } else if (ret == this.m_propData.m_data.m_items[2]) {                                            
+                this.setDevicePath(thing, (<TextSimple> ret).getText());
+                
+            }
+            
+            return ret;            
+        }            
+        
     } //class end     
 } 
 

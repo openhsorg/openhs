@@ -318,8 +318,6 @@ public class JsonSiteMapping {
 			
 			jsonRet.put("return", new Boolean(true));
 			
-			//logger.info("***Added floor");
-			
 		} else if (id.equals("idDeleteThing")) {
 			
 			boolean ret = false;
@@ -386,8 +384,8 @@ public class JsonSiteMapping {
 			
 			try {
 				thing = m_siteService.getThing(sitePath);
+				
 			} catch (SiteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -404,8 +402,32 @@ public class JsonSiteMapping {
 			
 			jsonRet.put("return", new Boolean(ret));
 			
-			logger.info("***NAME***:" + newName + "    ...ret: " + ret);
+		//	logger.info("***NAME***:" + newName + "    ...ret: " + ret);
 			
+		} else if (id.equals("idSetSitePath")) {
+			
+			String sitePath = json.getString("sitePath");
+			String sitePathNew = json.getString("idString");
+			
+			boolean ret = false;	
+			
+			try {
+				ret = m_siteService.renameSitePath(sitePath, sitePathNew);
+			} catch (SiteException e) {
+				e.printStackTrace();
+			}			
+			
+			jsonRet.put("return", new Boolean(ret));						
+			
+		} else if (id.equals("idSetDevicePath")) {
+			
+			String sitePath = json.getString("sitePath");
+			String devicePathNew = json.getString("idString");
+			
+			boolean ret = m_siteService.renameDevicePath(sitePath, devicePathNew);	
+			
+			jsonRet.put("return", new Boolean(ret));
+									
 		} else if (id.equals("idTimeDate")) {
 			
 			getTimeDateJSON(jsonRet);
@@ -446,6 +468,8 @@ public class JsonSiteMapping {
 				//logger.info("***PATH***:" + sitePath + "  ret: " + ret);
 			}
 
+	//		logger.info("***PATH***:" + sitePath + "  ret: " + ret);
+			
 			jsonRet.put("return", new Boolean(ret));								
 			
 		} else if (id.equals("idFloorArr")) {

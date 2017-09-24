@@ -34,6 +34,10 @@ public interface ISiteService {
 	
 	public boolean removeThing(String sitePath);
 	
+	public boolean renameSitePath (String sitePathOld, String sitePathNew) throws SiteException;
+	
+	public boolean renameDevicePath (String devicePathOld, String devicePathNew);
+	
 	public boolean setNumberThings (int number, Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 	
 	public Thing getThing (String sitePath) throws SiteException;
