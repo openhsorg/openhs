@@ -6,6 +6,7 @@
 /// <reference path="OhsLibrary/jquery.d.ts" />
 /// <reference path='OhsLibrary/OhsSiteData.ts'/>
 /// <reference path='OhsLibrary/CanvasGraphicsUI.ts'/>
+/// <reference path='OhsLibrary/OhsWifiAdmin.ts'/>
 
 
 import swal from 'sweetalert2';
@@ -31,10 +32,11 @@ module AdminApp {
     import Window =             OhsSiteData.Window;
     import Switch =             OhsSiteData.Switch;
     import ContactSensor =      OhsSiteData.ContactSensor;
-    import Thing =              OhsSiteData.Thing;             
+    import Thing =              OhsSiteData.Thing;
     
+    import WifiManager =        OhsWifiAdmin.WifiManager;   
     
-    
+        
     const iconTemp =          '/adminres/images/tempIcon.png';  
     const iconSwitch =        '/adminres/images/switchIcon.png';
     const iconFloor =         '/adminres/images/floorIcon.png';
@@ -49,21 +51,14 @@ module AdminApp {
         
         constructor (canvas: HTMLCanvasElement) {                  
             this.m_frame = new FrameMain(canvas);
-            /*
-            swal({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  type: 'error',
-  confirmButtonText: 'Cool'
-})
-            */
         }                              
     }
     
     export class FrameMain extends Frame {
         
         //Site data
-        public m_siteData:               SiteData = null;
+        public m_siteData :                 SiteData = null;
+        public m_wifiManager :              WifiManager = null;
         
         //Screen pointers...             
         private m_screenMain:            ScreenMain = null;
@@ -78,6 +73,7 @@ module AdminApp {
 
             //Data
             this.m_siteData = new SiteData ();
+            this.m_wifiManager = new WifiManager ();
 
             //Create screens...
             this.m_screenMain = new ScreenMain(this.m_siteData, canvas);
