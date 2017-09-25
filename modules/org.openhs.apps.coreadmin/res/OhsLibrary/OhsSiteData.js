@@ -21,13 +21,16 @@ var OhsSiteData;
     const idRoomArr = 'idRoomArr';
     const idFloorArr = 'idFloorArr';
     const idThingCommand = 'idThingCommand';
-    const idThingGet = 'idThingGet';
+    const idThingUpdate = 'idThingUpdate';
     const idSiteUpdate = 'idSiteUpdate';
     const idSetFloors = 'idSetFloors';
     const idAddFloor = 'idAddFloor';
     const idDeleteFloor = 'idDeleteFloor';
     const idDeleteThing = 'idDeleteThing';
     const idAddThing = 'idAddThing';
+    const idSetName = 'idSetName';
+    const idSetSitePath = 'idSetSitePath';
+    const idSetDevicePath = 'idSetDevicePath';
     /*
     function sleep(ms) {
         var unixtime_ms = new Date().getTime();
@@ -371,6 +374,14 @@ var OhsSiteData;
         }
     }
     OhsSiteData.SiteData = SiteData;
+    /**
+     * Basic object...
+     *
+     * Commands:
+     * 1. update - means get data from server...
+     * 2. set    - means post data to server or set to object...
+     * 3. get    - means read local data from object only...
+     */
     class Thing {
         constructor() {
             this.valid = false; //content of the forecast is valid        
@@ -381,22 +392,74 @@ var OhsSiteData;
             this.posY = 0.0;
             this.posZ = 0.0;
         }
-        setSitePath(path) {
-            this.sitePath = path;
-        }
+        //   public setSitePath (path: string) {
+        //this.sitePath = path;
+        //     }   
         getSitePath() {
             return this.sitePath;
         }
         getDevicePath() {
             return this.devicePath;
         }
-        setDevicePath(path) {
-            this.devicePath = path;
+        getName() {
+            return this.name;
+        }
+        setName(name) {
+            var js = JSON.stringify({
+                idPost: idSetName,
+                sitePath: this.sitePath,
+                idString: name
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        setSitePath(sitePathNew) {
+            var js = JSON.stringify({
+                idPost: idSetSitePath,
+                sitePath: this.sitePath,
+                idString: sitePathNew
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        setDevicePath(siteDevicePathNew) {
+            var js = JSON.stringify({
+                idPost: idSetDevicePath,
+                sitePath: this.sitePath,
+                idString: siteDevicePathNew
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         isValid() {
             return this.valid;
         }
         update() {
+            var js = JSON.stringify({
+                idPost: idThingUpdate,
+                sitePath: this.sitePath
+            });
+            var ret = postAjax(url, js);
+            if (JSON.parse(ret['return'])) {
+                this.fillFromJSON(ret);
+            }
+            else {
+            }
         }
         updateDelayed(wait) {
             window.setTimeout(() => this.update(), wait);
@@ -498,17 +561,6 @@ var OhsSiteData;
             if (JSON.parse(ret['return'])) {
                 this.stateInt = parseInt(ret['state_int']);
                 this.updateDelayed(100);
-            }
-        }
-        update() {
-            var js = JSON.stringify({
-                idPost: idThingCommand,
-                path: this.sitePath,
-                command: 'update'
-            });
-            var ret = postAjax(url, js);
-            if (JSON.parse(ret['return'])) {
-                this.stateInt = parseInt(ret['state_int']);
             }
         }
     }
