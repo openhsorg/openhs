@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { OhsSiteDataModule } from './ohs-site-data/ohs-site-data.module';
+import { OhsGuiFrameworkComponent } from './ohs-gui-framework/ohs-gui-framework.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    OhsGuiFrameworkComponent
   ],
   imports: [
     BrowserModule,
