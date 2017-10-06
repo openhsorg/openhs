@@ -1,14 +1,21 @@
+
+
 export class Rect {
+
+    //hh
 
     public x = 0;
     public y = 0;
     public w = 0;
     public h = 0;
 
-    public isClicked (clx:number, cly:number) {
-        if (!(clx > this.x && clx < this.x + this.w)) return false;
-        if (!(cly < this.y+this.h && cly > this.y)) return false;
-
+    public isClicked (clx: number, cly: number) {
+        if (!(clx > this.x && clx < this.x + this.w)) {
+            return false;
+        }
+        if (!(cly < this.y + this.h && cly > this.y)) {
+            return false;
+        }
         return true;
     }
 
@@ -56,8 +63,8 @@ export class Rect {
 
     public scaleSize (perc: number) {
 
-        var old_w: number = this.w;
-        var old_h: number = this.h;
+        const old_w: number = this.w;
+        const old_h: number = this.h;
 
         this.w = this.w * perc;
         this.h = this.h * perc;
@@ -69,14 +76,14 @@ export class Rect {
     public paint(ctx: CanvasRenderingContext2D) {
       ctx.beginPath();
       ctx.rect(this.x, this.y, this.w, this.h);
-      ctx.closePath();              
-    }       
-    
+      ctx.closePath();
+    }
+
     public getRight () {
         return this.x + this.w;
     }
-    
+
     public getBottom () {
         return this.y + this.h;
-    }    
+    }
 }
