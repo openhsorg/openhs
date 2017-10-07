@@ -105,6 +105,18 @@ export class ListBox extends Item {
         this.add(new TextSimple (this.ctx, txt, 0, 0, 10, 10));
     }
 
+    public setNumber (num: number) {
+        if (num > this.m_items.length) {
+            for (var i = this.m_items.length; i < num; i++) {
+               // let ss = new types();
+                //arg.push(ss);
+                this.add(new TextSimple (this.ctx, '', 0, 0, 10, 10));
+            }
+        } else if (num < this.m_items.length) {
+            this.m_items.length = num;
+        }
+    }
+
     public setText (txt: String, n: number) {
         if (this.m_items.length < n + 1) {
             this.addEntry(txt);

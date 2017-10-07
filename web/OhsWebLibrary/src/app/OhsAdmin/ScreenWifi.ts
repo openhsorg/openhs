@@ -14,6 +14,31 @@ import { OhsAdminSettings } from './OhsAdminSettings';
 import swal from 'sweetalert2';
 
 export class ScreenWifi extends ScreenThings {
+
+    public btnNoSensor:             ImageButton;
+    public btnRelaySensor:          ImageButton;
+    public btnUnknownSensor:        ImageButton;
+
+    constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
+        super (siteData, canvas);
+        
+    }
+
+    public buildLayout () {
+        super.buildLayout();
+
+        this.btnNoSensor = new ImageButton(this.ctx, OhsAdminSettings.ICON_SENSOR, OhsAdminSettings.ICON_SENSOR, 380, 250, 300, 180);
+        this.add(this.btnNoSensor);
+
+        this.btnRelaySensor = new ImageButton(this.ctx, OhsAdminSettings.ICON_RELAYSENSOR, OhsAdminSettings.ICON_RELAYSENSOR, 380, 250, 300, 180);
+        this.add(this.btnRelaySensor);
+        this.btnRelaySensor.setVisibility(false);
+        
+        this.btnUnknownSensor = new ImageButton(this.ctx, OhsAdminSettings.ICON_UNKNOWNSENSOR, OhsAdminSettings.ICON_UNKNOWNSENSOR, 380, 250, 300, 180);
+        this.add(this.btnUnknownSensor);        
+        this.btnUnknownSensor.setVisibility(false);
+
+    }
  
     protected updateData() {
         super.updateData();
@@ -25,6 +50,10 @@ export class ScreenWifi extends ScreenThings {
 
         var i = 0;
 
+        //Set size...
+        this.m_list.setNumber(this.m_siteData.m_wifiNodeArray.length);
+        this.m_propData.setNumber(this.m_siteData.m_wifiNodeArray.length);
+
         // Update entries
         for (var item of this.m_siteData.m_wifiNodeArray) {
             var txt = item.getName();
@@ -33,10 +62,10 @@ export class ScreenWifi extends ScreenThings {
 
             i ++;
         }
-        
-
-        // Remove entries...
-        // TBD
+  
+        this.btnUnknownSensor.setVisibility(false);
+        this.btnNoSensor.setVisibility(true);
+        this.btnRelaySensor.setVisibility(false);        
 
         // Text details:
         if (this.m_list.selectedRow !== 0 && (this.m_siteData.m_wifiNodeArray.length >= (this.m_list.selectedRow))) {
@@ -46,6 +75,9 @@ export class ScreenWifi extends ScreenThings {
             this.m_propData.setText(this.strName + ':', item.getName(), 0);
             this.m_propData.setText(this.strSitePath, item.getSitePath(), 1);
             this.m_propData.setText(this.strDevicePath, item.getDevicePath(), 2); 
+
+            this.btnNoSensor.setVisibility(false);
+            this.btnRelaySensor.setVisibility(true);
         }        
     }
 
@@ -70,7 +102,50 @@ export class ScreenWifi extends ScreenThings {
 
         }
 
+        if (this.btnRelaySensor.MouseUpHandler(x, y) != null){
+            //window.alert('ok...');
+            this.requestConnection();
+        }
+
+ 
         return ret;
+    }
+
+    public requestConnection () {
+
+        swal({
+            title: 'Do You want to connect?',
+            text: "We will include this sensor to your system...",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, please!',
+            animation: true
+          }).then(function () {
+            swal({
+                title: 'Please wait!',
+                text: 'I will close in 5 seconds.',
+                timer: 5000,
+                onOpen: function () {
+                  swal.showLoading()
+                }
+              }).then(
+                function () {},
+                // handling the promise rejection
+                function (dismiss) {
+                  if (dismiss === 'timer') {
+                    //console.log('I was closed by the timer')
+                    swal(
+                        'Connected!',
+                        'Sensor has been connected...',
+                        'success'
+                      )                    
+                  }
+                }
+              )
+          })
+
     }
 
 } // class end

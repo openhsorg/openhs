@@ -43,7 +43,6 @@ public class JsonSiteMapping {
 			final String keyName = "name";
 			final String keySitePath = "sitePath";
 			final String keyDevicePath = "devicePath";
-		//	final String keyImagePath = "imagePath";
 			final String keyPosX = "posX";
 			final String keyPosY = "posY";
 			final String keyPosZ = "posZ";
@@ -52,6 +51,8 @@ public class JsonSiteMapping {
 			final String keyStateInt = "stateInt";
 			final String keyTemperature = "temperature";
 			final String keyValid = "valid";
+			final String keyNetType = "netType";
+			final String keySensorType = "sensorType";
 			
 		//	JSONObject json = new JSONObject();
 			
@@ -151,13 +152,9 @@ public class JsonSiteMapping {
 					
 					json.put(keyName, wn.getName());
 					json.put(keySitePath, wn.getSitePath());
-					json.put(keyDevicePath, m_siteService.getDevicePath(wn.getSitePath()));
-					/*
-					json.put(keyPosX, swt.x);
-					json.put(keyPosY, swt.y);
-					json.put(keyPosZ, swt.z);
-					json.put(keyStateInt, swt.getStateInt());
-					*/
+					json.put(keyDevicePath, m_siteService.getDevicePath(wn.getSitePath()));					
+					json.put(keyNetType, wn.netType);
+					json.put(keySensorType, wn.sensorType);														
 					
 					json.put(keyValid, new Boolean(true));
 				  

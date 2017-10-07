@@ -27,6 +27,12 @@ export class PropertyBox extends Item {
         this.m_data.setSelectable(false);
 
     }
+
+    public setNumber (num: number) {
+        this.m_props.setNumber(num);
+        this.m_data.setNumber(num);        
+    }
+
     public MouseMoveHandler(x: number, y: number) {
         if (super.MouseMoveHandler(x, y) !== this) { return null; }
 

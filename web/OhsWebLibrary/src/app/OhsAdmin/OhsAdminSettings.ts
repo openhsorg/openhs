@@ -12,6 +12,9 @@ export class OhsAdminSettings {
     public static ICON_LEAVE            = 'adminres/images/leave.png';
     public static ICON_WIFI             = 'adminres/images/wifiIcon.png';
     public static ICON_IQRF             = 'adminres/images/iqrfIcon.png';
+    public static ICON_SENSOR           = 'adminres/images/no_sensor.png';
+    public static ICON_UNKNOWNSENSOR    = 'adminres/images/wemos_unknown.png';
+    public static ICON_RELAYSENSOR      = 'adminres/images/wemos_relay.png';
 
 }
 

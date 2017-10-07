@@ -10,6 +10,8 @@ export class ImageButton extends Item {
 
     protected int = null;
 
+    protected visible = true;
+
     constructor (ctx: CanvasRenderingContext2D, imgSrc: string, imgPush: string, x: number, y: number, w: number, h: number) {
         super(ctx);
 
@@ -21,29 +23,60 @@ export class ImageButton extends Item {
 
     }
 
+    public setVisibility (enable: boolean) {
+        this.visible = enable;
+    }
+
+    public MouseDownHandler(x: number, y: number) {
+        if (this.visible) {
+            return super.MouseDownHandler(x, y);
+        } else {
+            return null;
+        }
+    }
+
+    public MouseUpHandler(x: number, y: number) {
+        if (this.visible) {
+            return super.MouseUpHandler(x, y);
+        } else {
+            return null;
+        }
+    }
+
+    public MouseMoveHandler(x: number, y: number) {
+        if (this.visible) {
+            return super.MouseMoveHandler(x, y);
+        } else {
+            return null;
+        }
+    }    
+
     public paint () {
 
         const ctx = this.ctx;
 
-        ctx.save();
+        if (this.visible) {
 
-        if (this.push) {
-            ctx.drawImage(this.imgPush, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-        } else {
-            ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-        }
-
-        ctx.restore();
-
-        if (this.border) {
             ctx.save();
-            ctx.beginPath();
-            ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'blue';
-            ctx.stroke();
-            ctx.closePath();
+
+            if (this.push) {
+                ctx.drawImage(this.imgPush, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            } else {
+                ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            }
+
             ctx.restore();
+
+            if (this.border) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'blue';
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
         }
     }
 }
