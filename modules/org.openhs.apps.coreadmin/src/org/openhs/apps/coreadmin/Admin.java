@@ -29,7 +29,7 @@ public class Admin extends HttpServlet {
 
  		PrintWriter out = response.getWriter();
      
- 		print_html (out);
+ 		print_html2 (out);
  	        
  		out.close();	         
 	 
@@ -82,6 +82,27 @@ public class Admin extends HttpServlet {
     	out.println("</body>");
     	out.println("</html>");    	
     }  	
+    
+    protected void print_html2 (PrintWriter out){
+    	
+    	out.println("<!doctype html>");
+    	out.println("<html lang='en'>");
+    	out.println("<head>");
+    	out.println("<meta charset='utf-8'>");
+    	out.println("<title>ABC xxx2</title>");
+    	//out.println("<base href='/'>");
+
+    	out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
+    	out.println("<link rel='icon' type='image/x-icon' href='adminres/dist/favicon.ico'>");
+    	out.println("</head>");
+    	out.println("<body>");
+    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='850' height='550' style='margin-top: -275px; margin-left: -425px'>");
+    	out.println("Error: Your browser does not support the HTML canvas element.");
+    	out.println("</canvas>");  
+    	out.println("<app-root></app-root>");
+    	out.println("<script type='text/javascript' src='adminres/dist/inline.bundle.js'></script><script type='text/javascript' src='adminres/dist/polyfills.bundle.js'></script><script type='text/javascript' src='adminres/dist/scripts.bundle.js'></script><script type='text/javascript' src='adminres/dist/styles.bundle.js'></script><script type='text/javascript' src='adminres/dist/vendor.bundle.js'></script><script type='text/javascript' src='adminres/dist/main.bundle.js'></script></body>");
+    	out.println("</html>");
+    }  	    
 
 	
 	public void activate () {

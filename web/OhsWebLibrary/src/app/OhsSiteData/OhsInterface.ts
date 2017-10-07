@@ -18,6 +18,7 @@ export class OhsInterface {
     public static ID_TEMP_SENS_ARR      = 'idTempSensArr';
     public static ID_SWITCH_ARR         = 'idSwitchArr';
     public static ID_CONTACTSENS_ARR    = 'idContactSensArr';
+    public static ID_WIFINODE_ARR       = 'idWifiNodeArr';
     public static ID_TIME_DATE          = 'idTimeDate';
     public static ID_SET_FLOORS         = 'idSetFloors';
     public static ID_ADD_FLOOR          = 'idAddFloor';

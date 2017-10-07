@@ -748,7 +748,7 @@ public class MySiteServiceImpl implements ISiteService {
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getThingSet(java.lang.Class)
-	 * Return: Set of all things og given type.
+	 * Return: Set of all things of given type.
 	 */
 	public Set<Thing> getThingSet (Class<?>  t) throws SiteException {		
 		Set<Thing> keySet = new HashSet <Thing> ();

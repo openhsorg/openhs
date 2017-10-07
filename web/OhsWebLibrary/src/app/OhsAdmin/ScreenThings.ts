@@ -117,38 +117,41 @@ export class ScreenThings extends OhsScreen {
     }
 
     public setName (thing: Thing, name: String) {
-/*
+
         swal({
-            title: this.strName,
+            title: this.strName.toString(),
             input: 'text',
             inputValue: name,
             inputPlaceholder: 'Please enter new ' + this.strName,
-            showCancelButton: true,
-            inputValidator: function (value) {
-                return new Promise(function (resolve, reject) {
-                  if (value) {
-                      resolve()
-                  } else {
-                      reject('You need to write something!')
-                  }
-                })
-              }
-            }).then(function (name) {
+            showCancelButton: true
 
-                var messType = 'error';
+        }).then((name) => {
+                        
+            let ret = false;
+            
+            if (thing.setName(name)) {
+                thing.update();
 
-                if (thing.setName(name)) {
-                    thing.update();
-
-                    messType = 'success';
-                }
-
+                ret = true;
+            }
+            
+            if (ret) {
                 swal({
-                    type: messType,
-                    title: 'Changed...' + name
-                })
-         });
-         */
+                    type: 'success',
+                    title: 'Name changed...' + name
+                });
+             } else {
+                swal({
+                    type: 'error',
+                    title: 'Not changed...!'
+                });
+             }
+         }, (dismiss) => {
+            swal({
+                type: 'error',
+                title: 'Canceled, nothing changed..!'
+            });                          
+         });         
     }
 
     public setSitePath (thing: Thing, sitePath: String) {
@@ -163,100 +166,86 @@ export class ScreenThings extends OhsScreen {
             showCancelButton: true,
           //  inputValidator: false
 
-            }).then((name) => {
+        }).then((name) => {
 
-                window.alert('je to: ' + name);
+            window.alert('je to: ' + name);
+            
+            let ret = false;
 
-                /*
-                let messType = 'error';
-
-                if (thing.setSitePath(name)) {
-                    // thing.update();
-                    if (thing instanceof TemperatureSensor) {
-                        m_siteData.updateObjectArray('idTempSensArr');
-                    } else if (thing instanceof Switch) {
-                        m_siteData.updateObjectArray('idSwitchArr');
-                    } else if (thing instanceof Door) {
-                        m_siteData.updateObjectArray('idDoorArr');
-                    } else if (thing instanceof Room) {
-                        m_siteData.updateObjectArray('idRoomArr');
-                    } else if (thing instanceof Floor) {
-                        m_siteData.updateObjectArray('idFloorArr');
-                    }
-
-                    messType = 'success';
+            if (thing.setSitePath(name)) {
+                // thing.update();
+                if (thing instanceof TemperatureSensor) {
+                    m_siteData.updateObjectArray('idTempSensArr');
+                } else if (thing instanceof Switch) {
+                    m_siteData.updateObjectArray('idSwitchArr');
+                } else if (thing instanceof Door) {
+                    m_siteData.updateObjectArray('idDoorArr');
+                } else if (thing instanceof Room) {
+                    m_siteData.updateObjectArray('idRoomArr');
+                } else if (thing instanceof Floor) {
+                    m_siteData.updateObjectArray('idFloorArr');
                 }
-                */
 
-                const ax = 'success';
-
+                ret = true;
+            }
+            
+            if (ret) {
                 swal({
-                    type: ax,
+                    type: 'success',
                     title: 'Changed...' + name
                 });
-         });
-
-/*
-        swal({
-            type: 'warning',
-            title: 'Are you sure to Delete Staff?',
-            text: 'You will not be able to recover the data of Staff',
-            showCancelButton: true,
-            confirmButtonColor: '#049F0C',
-            cancelButtonColor: '#ff0000',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, keep it'
-          }).then(() => {
-            window.alert('OK');
-        
-          }, (dismiss) => {
-            // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-            if (dismiss === 'cancel') {
-              swal({
-                type: 'info',
-                title: 'Cancelled',
-                text: 'Your Staff file is safe :)'
-              });
-            }
-          });
-*/
-
+             } else {
+                swal({
+                    type: 'error',
+                    title: 'Not changed...!'
+                });
+             }
+         }, (dismiss) => {
+            swal({
+                type: 'error',
+                title: 'Canceled, nothing changed..!'
+            });                          
+         }); 
     }
 
     public setDevicePath (thing: Thing, devicePath: String) {
-/*
-        swal({
-            title: this.strName,
-            input: 'text',
-            inputValue: devicePath,
-            inputPlaceholder: 'Please enter new ' + this.strSitePath,
-            showCancelButton: true,
-            inputValidator: function (value) {
-                return new Promise(function (resolve, reject) {
-                  if (value) {
-                      resolve()
-                  } else {
-                      reject('You need to write something!')
-                  }
-                })
-              }
-            }).then(function (name) {
 
-                var messType = 'error';
-
-                if (thing.setDevicePath(name)) {
-                    thing.update();
-
-                    messType = 'success';
-                }
-
+        var m_siteData = this.m_siteData;
+        
                 swal({
-                    type: messType,
-                    title: 'Changed...' + name
-            })
-         });
-
-         */
+                    title: this.strName.toString(),
+                    input: 'text',
+                    inputValue: devicePath,
+                    inputPlaceholder: 'Please enter new ' + this.strSitePath,
+                    showCancelButton: true
+        
+                }).then((name) => {        
+                    
+                    let ret = false;
+        
+                    if (thing.setDevicePath(name)) {
+                        thing.update();
+    
+                        ret = true;
+                    }
+                    
+                    if (ret) {
+                        swal({
+                            type: 'success',
+                            title: 'Changed...' + name
+                        });
+                     } else {
+                        swal({
+                            type: 'error',
+                            title: 'Not changed...!'
+                        });
+                     }
+                 }, (dismiss) => {
+                    swal({
+                        type: 'error',
+                        title: 'Canceled, nothing changed..!'
+                    });                          
+                 });         
     }
 
 }// class end

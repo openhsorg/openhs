@@ -8,7 +8,6 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhs.comm.wifiadmin.WifiAdmin;
-import org.openhs.comm.wifiadmin.WifiNode;
 
 public class JsonWifiAdminMapping {
 	
@@ -80,7 +79,7 @@ public class JsonWifiAdminMapping {
 		return jsonArray;						
 	}	
 
-	public boolean getThingJSON (WifiNode node, JSONObject json) {
+	public boolean getThingJSON (JSONObject json) {
 		
 		//These strings must reflect to TypeScript definitions of strings
 		final String keyName = "name";

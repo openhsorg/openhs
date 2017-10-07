@@ -14,6 +14,10 @@ import java.util.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.WifiNode;
+import org.openhs.core.site.api.ISiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +27,84 @@ public class WifiManager {
 	
 	private Logger logger = LoggerFactory.getLogger(WifiManager.class);
 	
+	public ISiteService m_siteService = null; 
+	
+	WifiManager (ISiteService siteService) {
+		this.m_siteService = siteService;
+		
+	}
+	
 	public  static String getOsName(){		
 	    if(OS == null) { OS = System.getProperty("os.name"); }
 	    return OS;		
 	}	
+	
+	/*
+	 * Add discovered nodes to OhsStructure
+	 */
+	void UpdateSiteData (List<String> listThings) {
+		
+		Set<Thing> setNodes = null;
+		
+		try {
+			setNodes = this.m_siteService.getThingSet(WifiNode.class);
+		} catch (SiteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (setNodes != null) {
+			
+			for (String iot: listThings) {
+			
+				boolean isIncluded = false;
+				
+				for (Thing item : setNodes) {									
+					WifiNode node = (WifiNode) item;
+					
+					if(node.getName().equals(iot)) {
+						isIncluded = true;
+					}
+				}
+				
+				// Add to data
+				if (!isIncluded) {
+					WifiNode iotNode = new WifiNode();
+					iotNode.setName(iot);
+					iotNode.netType = "wifi";
+					this.m_siteService.addThing(iotNode.netType + "/" + iotNode.getName(), iotNode);
+					
+					logger.info("Adding this iot:" + iot);
+				}			
+			}
+			
+			//Remove not valid node....
+			
+			ArrayList<Thing> listThing = new ArrayList<Thing>();	
+			
+			for (Thing item : setNodes) {
+				boolean isIncluded = false;
+				
+				for (String iot: listThings) {
+				
+					if (item.getName().equals(iot)) {
+						isIncluded = true;
+					}					
+				}	
+				
+				if (!isIncluded) {				
+					listThing.add(item);
+				}
+			}
+			
+			//Remove items in list...
+			for (Thing lt: listThing) {												
+				this.m_siteService.removeThing(lt.getSitePath());
+			}			
+		}						
+	}
+	
+	
 	
 	/*
 	 * Function: Get a list of available IOT wifi items

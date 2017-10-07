@@ -4,22 +4,25 @@ import { TemperatureSensor } from '../OhsSiteData/TemperatureSensor';
 
 import { Frame } from '../OhsGuiFramework/Frame';
 import { OhsScreen } from '../OhsGuiFramework/OhsScreen';
+
+ import { OhsWifiAdmin } from '../OhsWifiAdmin/OhsWifiAdmin';
+
 import { ScreenMain } from './ScreenMain';
 import { ScreenTemps } from './ScreenTemps';
 import { ScreenSwitches } from './ScreenSwitches';
 import { ScreenDoors } from './ScreenDoors';
 import { ScreenRooms } from './ScreenRooms';
 import { ScreenFloors } from './ScreenFloors';
+import { ScreenWifi } from './ScreenWifi';
 
 import swal from 'sweetalert2';
 
 export class FrameMain extends Frame {
 
-
     // Site data
-    public m_siteData:                 SiteData = null;
-  //  public m_wifiManager :              WifiManager = null;
-
+    public m_siteData:               SiteData = null;
+    public m_wifiAdmin:              OhsWifiAdmin = null;
+  
     // Screen pointers...
     private m_screenMain:            ScreenMain = null;
     private m_screenTemps:           ScreenTemps = null;
@@ -27,16 +30,17 @@ export class FrameMain extends Frame {
     private m_screenDoors:           ScreenDoors = null;
     private m_screenRooms:           ScreenRooms = null;
     private m_screenFloors:          ScreenFloors = null;
+    private m_screenWifi:            ScreenWifi = null;
 
     constructor (canvas: HTMLCanvasElement) {
         super(canvas);
 
         // Data
         this.m_siteData = new SiteData ();
-    //    this.m_wifiManager = new WifiManager ();
+        this.m_wifiAdmin = new OhsWifiAdmin();    
 
         // Create screens...
-        this.m_screenMain = new ScreenMain(this.m_siteData, canvas);
+        this.m_screenMain = new ScreenMain(this.m_siteData, canvas, this.m_wifiAdmin); 
         this.addItem(this.m_screenMain);
 
         this.m_screenTemps = new ScreenTemps(this.m_siteData, canvas);
@@ -53,6 +57,9 @@ export class FrameMain extends Frame {
 
         this.m_screenFloors = new ScreenFloors(this.m_siteData, canvas);
         this.addItem(this.m_screenFloors);
+
+        this.m_screenWifi = new ScreenWifi(this.m_siteData, canvas);
+        this.addItem(this.m_screenWifi);        
 
         // Set current screen...
         this.m_curScreen = this.m_screenMain;
@@ -96,7 +103,13 @@ export class FrameMain extends Frame {
             } else if (ret === this.m_screenMain.icons[4]) {
                   this.SwitchScreen(this.m_screenFloors);
 
+            } else if (ret === this.m_screenMain.icons[5]) {
+                  this.SwitchScreen(this.m_screenWifi);
+
             } else if (ret === this.m_screenFloors.btnLeave) {
+                  this.SwitchScreen(this.m_screenMain);
+
+            } else if (ret === this.m_screenWifi.btnLeave) {
                   this.SwitchScreen(this.m_screenMain);
 
             }

@@ -2,7 +2,9 @@ import {TextSimple} from './TextSimple';
 
 export class NumberRounded extends TextSimple {
 
-    protected colorInside                               = '#a6a6a6';
+    protected colorBkg                                  = '#003399';
+    protected colorZeroBkg                              = '#a6a6a6';
+    protected colorInside                               = this.colorBkg;
     protected colorText                                 = '#ffffff';
     public num                                          = 0;
 
@@ -26,14 +28,18 @@ export class NumberRounded extends TextSimple {
         this.setText(this.num.toString());
     }
 
+    public SetColorBkg (color: String) {
+        this.colorBkg = color.toString();
+    }
+
     public paint () {
 
         const ctx = this.ctx;
 
         if (this.num <= 0) {
-            this.colorInside = '#a6a6a6';
+            this.colorInside = this.colorZeroBkg;
         } else {
-            this.colorInside = '#003399';
+            this.colorInside = this.colorBkg;
         }
 
         // Basic shape

@@ -20,6 +20,7 @@ import org.openhs.core.commons.Switch;
 import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.WifiNode;
 import org.openhs.core.commons.Window;
 import org.openhs.core.site.api.ISiteService;
 import org.slf4j.Logger;
@@ -143,6 +144,21 @@ public class JsonSiteMapping {
 					json.put(keyPosY, swt.y);
 					json.put(keyPosZ, swt.z);
 					json.put(keyStateInt, swt.getStateInt());
+					json.put(keyValid, new Boolean(true));
+				  
+				} else if (thing instanceof WifiNode) {
+					WifiNode wn = (WifiNode) thing;
+					
+					json.put(keyName, wn.getName());
+					json.put(keySitePath, wn.getSitePath());
+					json.put(keyDevicePath, m_siteService.getDevicePath(wn.getSitePath()));
+					/*
+					json.put(keyPosX, swt.x);
+					json.put(keyPosY, swt.y);
+					json.put(keyPosZ, swt.z);
+					json.put(keyStateInt, swt.getStateInt());
+					*/
+					
 					json.put(keyValid, new Boolean(true));
 				  
 				} else {
@@ -548,8 +564,7 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(true));
 				
 			} else {
-				jsonRet.put("return", new Boolean(false));
-				
+				jsonRet.put("return", new Boolean(false));				
 			}
 			
 			//logger.info("JsonXX: " + jsonRet.toString());			
@@ -562,10 +577,22 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(true));
 				
 			} else {
-				jsonRet.put("return", new Boolean(false));
+				jsonRet.put("return", new Boolean(false));				
+			}	
+			
+		} else if (id.equals("idWifiNodeArr")) {
+			
+			JSONArray jsonArr = getThingArrayJSON (WifiNode.class);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idWifiNodeArr", jsonArr);
+				jsonRet.put("return", new Boolean(true));
 				
-			}
-				
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}	
+			
+			//logger.info("JsonXX: " + jsonRet.toString());			
 		}
 		
 		//logger.info("JsonXX: " + jsonRet.toString());

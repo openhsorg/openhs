@@ -7,6 +7,7 @@ import {Switch} from './Switch';
 import {Door} from './Door';
 import {Window} from './Window';
 import {ContactSensor} from './ContactSensor';
+import {WifiNode} from './WifiNode';
 import {OhsInterface} from './OhsInterface';
 import {postAjax} from './OhsInterface';
 
@@ -25,6 +26,7 @@ export class SiteData {
     public m_doorArray:             Array <Door> = null;
     public m_windowArray:           Array <Window> = null;
     public m_contactSensorArray:    Array <ContactSensor> = null;
+    public m_wifiNodeArray:         Array <WifiNode> = null;
 
     protected getCount              = 0;
 
@@ -41,6 +43,7 @@ export class SiteData {
         this.m_doorArray = new Array<Door>();
         this.m_windowArray = new Array<Window>();
         this.m_contactSensorArray = new Array<ContactSensor>();
+        this.m_wifiNodeArray = new Array<WifiNode>();
 
         // Initial update
         this.m_site.update();
@@ -52,6 +55,7 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
         this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
         this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
+        this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
 
         // Timers
         this.fastTimerGetDataEvent(500);
@@ -113,9 +117,7 @@ export class SiteData {
             this.m_site.update();
 
         } else if (this.getCount === 8) {
-
-            // Filter arrays
-
+            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
         }
 
         if (this.getCount === 8) {
@@ -225,6 +227,15 @@ export class SiteData {
                         var object = parsedJSON[i];
 
                         this.m_contactSensorArray[i].fillFromJSON(object);
+                    }
+                }    else if (idObjArray === OhsInterface.ID_WIFINODE_ARR) {
+                    
+                    this.setNumber(parsedJSON.length, this.m_wifiNodeArray, WifiNode);
+
+                    for (var i = 0; i < parsedJSON.length; i++) {
+                        var object = parsedJSON[i];
+
+                        this.m_wifiNodeArray[i].fillFromJSON(object);
                     }
                 }
             }
@@ -363,6 +374,12 @@ export class SiteData {
                 return <Thing>this.m_contactSensorArray[id];
             }
         }
+
+        for (let id in this.m_wifiNodeArray) {
+            if (this.m_wifiNodeArray[id].getSitePath() === path) {
+                return <Thing>this.m_wifiNodeArray[id];
+            }
+        }        
 
         return null;
     }

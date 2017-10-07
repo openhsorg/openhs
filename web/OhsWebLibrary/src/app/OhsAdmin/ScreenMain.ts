@@ -9,6 +9,8 @@ import { ListBox } from '../OhsGuiFramework/ListBox';
 import { PropertyBox } from '../OhsGuiFramework/PropertyBox';
 import { NumberRounded } from '../OhsGuiFramework/NumberRounded';
 
+import { OhsWifiAdmin } from '../OhsWifiAdmin/OhsWifiAdmin';
+
 import { OhsAdminSettings } from './OhsAdminSettings';
 
 import swal from 'sweetalert2';
@@ -16,6 +18,7 @@ import swal from 'sweetalert2';
 export class ScreenMain extends OhsScreen {
 
     public m_siteData:          SiteData = null;
+    public m_wifiAdmin:         OhsWifiAdmin = null;
 
     // Texts
     protected m_textTime:       TextSimple = null;
@@ -26,10 +29,11 @@ export class ScreenMain extends OhsScreen {
     public icons:               Array <ImageButton>;
     protected nums:             Array <NumberRounded>;
 
-    constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
+    constructor (siteData: SiteData, canvas: HTMLCanvasElement, wifiAdmin: OhsWifiAdmin) {
         super(canvas);
 
         this.m_siteData = siteData;
+        this.m_wifiAdmin = wifiAdmin;
         this.buildLayout();
 
    }
@@ -54,6 +58,8 @@ export class ScreenMain extends OhsScreen {
         this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_DOOR, OhsAdminSettings.ICON_DOOR, 400, 30, 150, 150));
         this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_ROOM, OhsAdminSettings.ICON_ROOM, 400, 30, 150, 150));
         this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_FLOOR, OhsAdminSettings.ICON_FLOOR, 400, 30, 150, 150));
+        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_WIFI, OhsAdminSettings.ICON_WIFI, 400, 30, 150, 150));
+        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_IQRF, OhsAdminSettings.ICON_IQRF, 400, 30, 150, 150));
 
         for (let icon of this.icons) {
             this.add(icon);
@@ -66,6 +72,8 @@ export class ScreenMain extends OhsScreen {
         this.nums.push(new NumberRounded(this.ctx));
         this.nums.push(new NumberRounded(this.ctx));
         this.nums.push(new NumberRounded(this.ctx));
+        this.nums.push(new NumberRounded(this.ctx));
+        this.nums[5].SetColorBkg('#ff6600');
 
         for (let num of this.nums) {
             this.add(num);
@@ -115,5 +123,6 @@ export class ScreenMain extends OhsScreen {
         this.nums[2].SetNumber(this.m_siteData.m_doorArray.length);
         this.nums[3].SetNumber(this.m_siteData.m_roomArray.length);
         this.nums[4].SetNumber(this.m_siteData.m_floorArray.length);
+        this.nums[5].SetNumber(this.m_siteData.m_wifiNodeArray.length);
     }
 } // class end

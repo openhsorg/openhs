@@ -3,12 +3,15 @@ import * as $ from 'jquery';
 
 export class OhsAdminSettings {
 
+    
     public static ICON_TEMP             = 'adminres/images/tempIcon.png';
     public static ICON_SWITCH           = 'adminres/images/switchIcon.png';
     public static ICON_FLOOR            = 'adminres/images/floorIcon.png';
     public static ICON_DOOR             = 'adminres/images/doorIcon.png';
     public static ICON_ROOM             = 'adminres/images/roomIcon.png';
     public static ICON_LEAVE            = 'adminres/images/leave.png';
+    public static ICON_WIFI             = 'adminres/images/wifiIcon.png';
+    public static ICON_IQRF             = 'adminres/images/iqrfIcon.png';
 
 }
 

@@ -8,8 +8,6 @@
 
 package org.openhs.core.commons;
 
-import java.util.TreeMap;
-
 public class Room extends Thing {
 	
 	public String imagePath = "no path";
