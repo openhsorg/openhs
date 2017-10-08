@@ -11,6 +11,8 @@ import { PropertyBox } from '../OhsGuiFramework/PropertyBox';
 import { OhsWifiAdmin } from '../OhsWifiAdmin/OhsWifiAdmin';
 import { OhsAdminSettings } from './OhsAdminSettings';
 
+//import {MatDialogModule} from '@angular/material';
+
 import swal from 'sweetalert2';
 
 export class ScreenWifi extends ScreenThings {
@@ -18,9 +20,12 @@ export class ScreenWifi extends ScreenThings {
     public btnNoSensor:             ImageButton;
     public btnRelaySensor:          ImageButton;
     public btnUnknownSensor:        ImageButton;
+    public m_wifiAdmin:             OhsWifiAdmin = null;
 
-    constructor (siteData: SiteData, canvas: HTMLCanvasElement) {
+    constructor (siteData: SiteData, canvas: HTMLCanvasElement, wifiAdmin: OhsWifiAdmin) {
         super (siteData, canvas);
+
+        this.m_wifiAdmin = wifiAdmin;
         
     }
 
@@ -104,14 +109,28 @@ export class ScreenWifi extends ScreenThings {
 
         if (this.btnRelaySensor.MouseUpHandler(x, y) != null){
             //window.alert('ok...');
-            this.requestConnection();
+            if (thing != null) {
+                this.requestConnection(thing.getSitePath());
+            }
+        } else if (this.btnNoSensor.MouseUpHandler(x, y) != null) {
+            /*
+            let dialogRef = dialog.open(UserProfileComponent, {
+                height: '400px',
+                width: '600px',
+              });
+              */
+
         }
 
  
         return ret;
     }
 
-    public requestConnection () {
+    public requestConnection (sitePath: String) {
+
+        //this.m_wifiAdmin.connectNode('');
+
+        var ret = false;
 
         swal({
             title: 'Do You want to connect?',
@@ -122,7 +141,16 @@ export class ScreenWifi extends ScreenThings {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, please!',
             animation: true
-          }).then(function () {
+          }).then( () => {           
+
+           // window.alert('ctn');
+
+           ret = true;
+           //window.alert('sss1ss');
+           this.m_wifiAdmin.connectNode(sitePath);
+           
+            
+/*
             swal({
                 title: 'Please wait!',
                 text: 'I will close in 5 seconds.',
@@ -144,7 +172,13 @@ export class ScreenWifi extends ScreenThings {
                   }
                 }
               )
+              */
           })
+
+          if (ret) {
+            //this.m_wifiAdmin.connectNode(sitePath);
+            window.alert('sssss');
+          }
 
     }
 

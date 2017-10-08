@@ -1,6 +1,8 @@
 import { OhsWifiAdminSettings } from './OhsWifiAdminSettings';
 import {postAjax} from './OhsWifiAdminSettings';
 
+import swal from 'sweetalert2';
+
 export class OhsWifiAdmin {
     public timer;
 
@@ -45,5 +47,38 @@ export class OhsWifiAdmin {
             arg.length = num;
         }
     }  
+
+    public connectNode (sitePath: String) {
+
+        //window.alert('connecting...:' + sitePath);
+        
+        var js = JSON.stringify({
+            idPost : OhsWifiAdminSettings.ID_CONECT_NODE,
+            sitePath  : sitePath
+        });
+
+        var ret = postAjax (OhsWifiAdminSettings.URL, js);
+
+        if (ret != null) {
+            if (JSON.parse(ret['return'])) {
+            // this.fillFromJSON(ret);
+                //window.alert('response...:' + sitePath + ' OK');
+
+                swal(
+                    'Done!',
+                    'We are working on it!',
+                    'success'
+                  )
+
+            } else {
+                swal(
+                    'Problem!',
+                    'Cannot do that... :(',
+                    'error'
+                  )
+            }
+        }
+        
+    }    
       
 }

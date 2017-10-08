@@ -14,12 +14,15 @@ public class WifiAdmin {
     private WifiAdminDiscovery m_discovery = null;
     public ISiteService m_siteService = null; 
     
-    WifiManager m_wifiManager;// = new WifiManager ();
-    
+    public WifiManager m_wifiManager;// = new WifiManager ();
+        
     //Data
     List<String> iot = null; //list of IOT filtered WIFI devices
 	
     private class WifiAdminDiscovery implements Runnable {
+        private int jobScheduled = 0;
+        String sitePath = "";
+    	
     	WifiAdminDiscovery() {
     		m_threadIncoming = new Thread(this);
     		m_threadIncoming.start();
@@ -29,23 +32,33 @@ public class WifiAdmin {
 		     try {
 		       while (m_runningIncoming) {
 		    	   
-		    	 logger.info("\n<------ WIFI ADMIN ------------>");
-        		 iot = m_wifiManager.GetIotWifiList("Homie");
+		    	   if (this.jobScheduled == 1) {
+		    		   m_wifiManager.connectNode(this.sitePath);
+		    		   
+		    		   this.jobScheduled = 0;
+		    		   
+		    	   } else {		    		   
+			    	   
+		    		   //logger.info("\n<------ WIFI ADMIN ------------>");
+		        		 iot = m_wifiManager.GetIotWifiList("Homie");
+		        		 /*
+		        		 if (iot.size() <= 0) {
+		        			 logger.info(">> No IOT :(");
+		        		 }
+		        		 
+		        		 for (String line: iot) {
+		        			 logger.info(">>" + line);        			         			 
+		        		 }
+		        		 */
+		        		 
+		        		 m_wifiManager.UpdateSiteData(iot);
+		        		 
+		        		// logger.info("\n<------ Network interfaces ------------>");
+		        		// m_wifiManager.NetworkInterfaces();
+		        		 
+		        		// m_wifiManager.getListDevices();
         		 
-        		 if (iot.size() <= 0) {
-        			 logger.info(">> No IOT :(");
-        		 }
-        		 
-        		 for (String line: iot) {
-        			 logger.info(">>" + line);        			         			 
-        		 }
-        		 
-        		 m_wifiManager.UpdateSiteData(iot);
-        		 
-        		// logger.info("\n<------ Network interfaces ------------>");
-        		// m_wifiManager.NetworkInterfaces();
-        		 
-        		// m_wifiManager.getListDevices();
+		    	   }
         		 
         		 Thread.sleep(5000);
 		       }
@@ -63,6 +76,14 @@ public class WifiAdmin {
     		}
         }
     }	
+    
+    public boolean scheduleNodeConnection (String sitePath) {
+    	this.m_discovery.jobScheduled = 1;
+    	this.m_discovery.sitePath = sitePath;
+    	
+    	return true;
+    	
+    }
 
     public void activate() {
 		logger.info("org.openhs.comm.wifiadmin: activate");	   
@@ -88,5 +109,5 @@ public class WifiAdmin {
         if (m_siteService == ser) {
             ser = null;
         }
-    }      
+    }        
 }

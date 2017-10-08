@@ -5,6 +5,7 @@ export class OhsWifiAdminSettings {
     public static URL                   = 'services/ohs_wifiadmin_ws';
     public static ID_SET_NAME           = 'idSetName';    
     public static ID_WIFI_ARR           = 'idWifiArr';    
+    public static ID_CONECT_NODE        = 'idConnectNode';   
 
 }
 

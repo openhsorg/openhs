@@ -58,7 +58,7 @@ export class FrameMain extends Frame {
         this.m_screenFloors = new ScreenFloors(this.m_siteData, canvas);
         this.addItem(this.m_screenFloors);
 
-        this.m_screenWifi = new ScreenWifi(this.m_siteData, canvas);
+        this.m_screenWifi = new ScreenWifi(this.m_siteData, canvas, this.m_wifiAdmin);
         this.addItem(this.m_screenWifi);        
 
         // Set current screen...

@@ -190,7 +190,7 @@ public class WifiManager {
 	List<String> GetFullWifiList_Linux() throws Exception {
 		List<String> devList = new ArrayList<String>();
 		
-		logger.info("detectWifi_Linux()> Linux system...");
+		//logger.info("detectWifi_Linux()> Linux system...");
 	        
         ProcessBuilder builder = new ProcessBuilder(
                 "nmcli", "dev", "wifi");
@@ -446,4 +446,149 @@ public class WifiManager {
         System.out.println("\nAll Connected devices(" + Available_Devices.size() +"):");
         for(int i=0;i<Available_Devices.size();++i) System.out.println(Available_Devices.get(i));
     }	
+	
+	public boolean connectNode (String sitePath) throws Exception {
+		
+		// logger.info("CONNECTING: " + sitePath);
+		boolean ret = false;
+		WifiNode node = (WifiNode) this.m_siteService.getThing(sitePath);
+		
+		if (node != null) {
+			//logger.info("CONNECTING: " + sitePath);
+			
+			ret = ConnectWifi("Homie-cb5b29e0", "cb5b29e0");	
+			
+			Thread.sleep(6000);
+			
+			if (ret) {
+				//ConnectWifi("MERVIN_2G", "lamicekskace11");
+			}
+			
+			
+			ret = true;
+		}
+		
+		return ret;
+	}
+	
+	public boolean ConnectWifi(String name, String password) throws Exception {		
+    	//logger.info("\n>GetFullWifiList(): " + "...detecting wifi");    	
+        
+        String os = getOsName();
+        
+        if (os.contains("Windows")) {
+        	//return GetFullWifiList_Win();
+        	
+        } else if (os.contains("Linux")) {
+        	return ConnectWifi_Lin(name, password);
+        }
+        
+       return false;
+    }	
+	
+	public boolean ConnectWifi_Lin(String name, String password) throws Exception {	
+		
+		List<String> out1 = commandLinux("nmcli", "con", "down", "MERVIN_5G");
+		
+		logger.info("!1->: " + out1.toString());
+		
+		Thread.sleep(3000);
+		
+		List<String> out2;
+		
+		int i = 0;
+		boolean err = false;
+		String str;
+		
+		do {
+		
+			out2 = commandLinux("nmcli", "-w", "120", "dev", "wifi", "con", "Homie-5ccf7fc0a99e", "password", "5ccf7fc0a99e", "name", "hh");
+			
+			logger.info("!2->: " + out2.toString());
+			
+			i ++;
+			
+			Thread.sleep(3000);
+			
+			str = Arrays.toString(out2.toArray()); 									
+			
+			//logger.info("!!!: " + str);
+		
+		} while (str.contains("Error") && i < 4);				
+		
+		Thread.sleep(3000);
+		
+		List<String> out3 = commandLinux("nmcli", "con", "down", "hh");
+		
+		logger.info("!3->: " + out3.toString());	
+		
+		Thread.sleep(3000);
+		
+		List<String> out4 = commandLinux("nmcli", "con", "up", "MERVIN_5G");
+		
+		logger.info("!4->: " + out4.toString());
+		
+		commandLinux("nmcli", "connection", "delete", "id", "hh");
+		
+		/*
+		logger.info("++++++ Connect Wifi:" + name + ":" + password + "++++++");
+		
+		boolean ret = false;
+		
+        ProcessBuilder builder = new ProcessBuilder(
+                "nmcli", "dev", "wifi", "connect", name.toString(), "password", password.toString());
+	        
+        builder.redirectErrorStream(true);
+        Process p = builder.start();           
+        
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        
+        String line = r.readLine();
+        while(line != null)
+        {        	
+        	logger.info("+++>" + line);
+        	
+        	if (line.contains("successfully activated")) {
+        		ret = true;
+        	}
+      	        	        	
+        	line = r.readLine();
+        	        	       	
+        }
+        r.close();			
+
+        logger.info("++++++ Connect Wifi END ++++++");
+        
+       return ret;
+       */
+		
+		return false;
+    }		
+	
+	public List<String> commandLinux(String... command) throws Exception {
+		List<String> ret = new ArrayList<String>();
+		
+		//logger.info("++++++ Command: " + command);
+		
+        ProcessBuilder builder = new ProcessBuilder(command);
+	        
+        builder.redirectErrorStream(true);
+        Process p = builder.start();           
+        
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        
+        String line = r.readLine();
+                
+        while(line != null)
+        {        	
+        	//logger.info("++++++>" + line);
+        
+        	ret.add(line);
+        	line = r.readLine();
+        	        	        	       	
+        }
+        r.close();			
+		
+		return ret;
+	}
 }

@@ -40,14 +40,11 @@ public class WifiAdminWebServiceImpl {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })    
     public String postMessage(String id){
     	
-    	//logger.info("POST....>> " + id);
+    	//logger.info("WAWS, POST....>> " + id);
     	
     	JSONObject json = new JSONObject(id);	
-    	
-    	//JSONObject jsonR = jsonMap.command(json);
-    	
-    	return jsonMap.command(json).toString();   	
-    	
+
+    	return jsonMap.command(json).toString();   	    	
     }
 	
 	public void activate () {

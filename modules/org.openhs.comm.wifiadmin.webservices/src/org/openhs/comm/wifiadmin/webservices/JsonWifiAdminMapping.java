@@ -26,8 +26,22 @@ public class JsonWifiAdminMapping {
 		
 		JSONObject jsonRet = new JSONObject ();		
 		
-		if (id.equals("idThingCommand")) {
+		if (id.equals("idConnectNode")) {
 			
+			boolean ret = false;
+			
+			String sitePath = json.getString("sitePath");
+			
+			if (sitePath != null) {
+				
+				try {
+					ret = this.m_wifiAdmin.scheduleNodeConnection(sitePath);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			/*
 			JSONArray jsonArr = getThingArrayJSON ();
 			
 			if (jsonArr != null) {
@@ -37,11 +51,11 @@ public class JsonWifiAdminMapping {
 			} else {
 				jsonRet.put("return", new Boolean(false));				
 			}	
+			*/
 			
-			logger.info("JsonXX: " + jsonRet.toString());				
-			
-			
-			jsonRet.put("return", new Boolean(true));
+			//logger.info("JsonXX: " + jsonRet.toString());				
+						
+			jsonRet.put("return", new Boolean(ret));
 		}
 			
 		return jsonRet;	
