@@ -31,11 +31,11 @@ bool messageHandler(String value) {
 bool messageHandler2(String value) {  
   if (value == "true") {
     digitalWrite(relayPin, HIGH);
-    Homie.setNodeProperty(relayNode, "on", "true"); // Update the state of the light
+    //Homie.setNodeProperty(relayNode, "on", "true"); // Update the state of the light
     Serial.println("Relay is on");
   } else if (value == "false") {
     digitalWrite(relayPin, LOW);
-    Homie.setNodeProperty(relayNode, "on", "false");
+    //Homie.setNodeProperty(relayNode, "on", "false");
     Serial.println("Relay is off");
   } else {
     return false;
@@ -52,10 +52,10 @@ void setupHandler() {
 
 void setup() {
 
-  Homie.setFirmware("OpenHS relay", "1.0.0");
-  Homie.registerNode(relayNode);
-  relayNode.subscribe("message", messageHandler);    
-  relayNode.subscribe("on", messageHandler2);
+  //Homie.setFirmware("OpenHS relay", "1.0.0");
+  //Homie.registerNode(relayNode);
+  //relayNode.subscribe("message", messageHandler);    
+  //relayNode.subscribe("on", messageHandler2);
   Homie.setSetupFunction(setupHandler);
   Homie.setup();
 }
