@@ -8,7 +8,13 @@
 
 package org.openhs.core.site.services;
 
+import java.awt.List;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.openhs.core.commons.Thing;
 import org.openhs.core.commons.Window;
+import org.json.JSONObject;
 import org.openhs.core.commons.ContactSensor;
 import org.openhs.core.commons.Door;
 import org.openhs.core.commons.Floor;
@@ -30,6 +37,7 @@ import org.openhs.core.commons.Room;
 import org.openhs.core.commons.Site;
 import org.openhs.core.commons.SiteException;
 import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.Temperature;
 import org.openhs.core.commons.TemperatureSensor;
 import org.openhs.core.commons.TextOutput;
 import org.openhs.core.site.api.ISiteService;
@@ -68,6 +76,11 @@ public class MySiteServiceImpl implements ISiteService {
 		loadData();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#buildHouse()
+	 * Function: Create simple example house structure.
+	 */
 	@Override
 	public void buildHouse() {
 
@@ -75,12 +88,7 @@ public class MySiteServiceImpl implements ISiteService {
 			Floor floor = new Floor();
 			floor.setName("My first floor");
 			floor.setDimensions(22.450f, 13.700f);
-			addThing("floors/Floor1", floor);
-			
-			floor = new Floor();
-			floor.setName("My second floor");
-			floor.setDimensions(22.450f, 13.700f);
-			addThing("floors/Floor2", floor);
+			addThing("floors/Floor1", floor);		
 
 			Room room = new Room();
 			room.setName("Outside");
@@ -375,6 +383,11 @@ public class MySiteServiceImpl implements ISiteService {
 		ss.setId(newID);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addThing(java.lang.String, org.openhs.core.commons.Thing)
+	 * Adds new thing.
+	 */
 	public boolean addThing (String sitePath, Thing thing){
 		
 		if (ss.things.get(sitePath) == null) {
@@ -387,6 +400,59 @@ public class MySiteServiceImpl implements ISiteService {
 		return false;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#renameSitePath(java.lang.String, java.lang.String)
+	 * Rename Site Path...
+	 */
+	public boolean renameSitePath (String sitePathOld, String sitePathNew) throws SiteException {
+		
+		Thing thing = ss.things.get(sitePathOld);
+		
+		if (thing != null) {						 			
+			thing.setSitePath(sitePathNew);
+			ss.things.put(sitePathNew, thing);
+			ss.things.remove(sitePathOld);
+			
+			String devPath = getDevicePath (sitePathOld);
+			
+			if (!devPath.equals("")){
+				
+				ss.devPaths.put(devPath, sitePathNew);								
+			}
+						
+			return true;
+		}
+
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#renameDevicePath(java.lang.String, java.lang.String)
+	 * Rename Device path...
+	 */
+	public boolean renameDevicePath (String sitePath, String devicePathNew){
+		
+		String devicePathOld = getDevicePath (sitePath);
+		//String sitePath = ss.devPaths.get(devicePathOld);
+		
+		if (!devicePathOld.equals("")) {
+			
+			ss.devPaths.put(devicePathNew, sitePath);
+			ss.devPaths.remove(devicePathOld);
+						
+			return true;
+		}
+
+		return false;
+	}	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addThing(java.lang.String, java.lang.String, org.openhs.core.commons.Thing)
+	 * Add new thing + pairs with device name.
+	 */
 	public boolean addThing (String sitePath, String devicePath, Thing thing){
 		
 		if (addThing(sitePath, thing)) {			
@@ -396,8 +462,39 @@ public class MySiteServiceImpl implements ISiteService {
 		}
 
 		return false;
-	}	
+	}
 	
+	public boolean removeThing(String sitePath) {
+		
+	//	logger.info("****Command:" + sitePath);
+		
+		if (ss.things.remove(sitePath) != null) {			
+			//Remove also device path connection			
+			/*
+			Set<String> keySetAll = ss.devPaths.keySet();
+			
+			for (String item : keySetAll) {	
+				
+				String path = ss.devPaths.get(item);
+				
+				if (path.equals(sitePath)) {
+					ss.devPaths.remove(item);
+					
+					return true;
+				}
+			}
+				*/		
+			return true;
+		}
+				
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThing(java.lang.String)
+	 * Get thing by site path.
+	 */
 	public Thing getThing (String sitePath) throws SiteException {		
 
 		Thing obj = ss.things.get(sitePath);
@@ -409,6 +506,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return obj;
 	}	
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThingDevice(java.lang.String)
+	 * Get thing by device path.
+	 */
 	public Thing getThingDevice (String devicePath) throws SiteException {
 				
 		String sitePath = ss.devPaths.get(devicePath);
@@ -420,12 +522,12 @@ public class MySiteServiceImpl implements ISiteService {
 		return getThing(sitePath);
 		
 	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#setThingDevice(java.lang.String, org.openhs.core.commons.Thing)
 	 * string devicePath must exists, then this replaces in datastructure the object...
-	 */
-	
+	 */	
 	public boolean setThingDevice (String devicePath, Thing device) throws SiteException {
 		
 		String sitePath = ss.devPaths.get(devicePath);
@@ -449,8 +551,7 @@ public class MySiteServiceImpl implements ISiteService {
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getChildren(java.lang.String)
 	 * Returns list of sitePaths, children of included sitePath item.  Only first level of children.
-	 */
-	
+	 */	
 	public Set<String> getChildren (String sitePath) throws SiteException {
 		
 		// Divide
@@ -477,7 +578,6 @@ public class MySiteServiceImpl implements ISiteService {
 					String[] partsItem = item.split(delim);
 					for (String str : partsItem) {
 						if (str.equals("")) {
-							System.out.println("\n\n eeeee");
 							throw new SiteException("keyPath contaims empty strings...");
 						}
 					}
@@ -492,6 +592,10 @@ public class MySiteServiceImpl implements ISiteService {
 		return keySet;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getNumberThings(java.lang.String)
+	 */
 	public int getNumberThings (String sitePath) throws SiteException {
 				
 		Set<String> set = getChildren (sitePath);
@@ -499,6 +603,108 @@ public class MySiteServiceImpl implements ISiteService {
 		return set.size();				
 	}
 	
+	public boolean setNumberThings (int number, Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		Set<String> set = getThingPathSet (t);
+		
+		if (number > set.size()) {
+			//Add items
+			
+			for (int i = set.size(); i <= number; i++) {	
+												
+				String className = "org.openhs.core.commons.Floor";
+				Thing object = (Thing) Class.forName(className).newInstance();					
+								
+/*				Class<?> c = Class.forName(t.getName());					
+				Constructor<?> cons = c.getConstructor(t);
+				Object object = cons.newInstance();
+				*/
+				
+			//	String sitePath = "";
+				
+				if (object instanceof Floor) {
+										
+					
+				}
+				
+				addThing("floors/Floor" + i , (Thing) object);
+
+			}
+			
+			
+		} else if (number < set.size()) {
+			//Remove items
+			ArrayList<String> setList = new ArrayList<String>(set);
+			
+			logger.info("\n\nJE TO:" + number + "  AND:" + set.size());
+			
+			for (int i = number; i < set.size(); i++) {
+				removeThing(setList.get(i));
+			}
+								
+		}
+		
+		return true;				
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#addNextThing(java.lang.Class)
+	 * Creates next class...
+	 */
+	public boolean addNextThing (Class<?>  t) throws SiteException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		Set<String> set = getThingPathSet (t);
+								
+		String className = t.getName(); //"org.openhs.core.commons.Floor";
+		Thing object = (Thing) Class.forName(className).newInstance();
+		
+		String basePath = "";
+		String baseName = "";
+		String newPath = "";
+		String newName = "";				
+				
+		if (t == Floor.class) {
+			basePath = "floors/";
+			baseName = "Floor";
+			
+		} else if (t == Room.class) {
+			basePath = "rooms/";
+			baseName = "Room";
+		}
+
+		int n = 0;
+		
+		do {
+		
+			n++;
+			
+			newName = baseName + "_" + n;
+			newPath = basePath + baseName + "_" + n;
+			
+		} while (ss.things.get(newPath) != null);
+		
+		logger.info("--------->:" + newPath);
+		
+		boolean ret = this.addThing(newPath, object);		
+		
+		if (ret) {
+			Thing newThing = getThing(newPath);
+			
+			if (newThing != null) {			
+				newThing.setName(newName);
+			}
+		}
+				
+		return ret;				
+	}	
+	
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getDevicePath(java.lang.String)
+	 * Returns device path of thing specified by sitePath.
+	 */
 	public String getDevicePath (String sitePath) {
 		
 		Set <String> devicePaths = ss.devPaths.keySet();
@@ -538,6 +744,27 @@ public class MySiteServiceImpl implements ISiteService {
 
 		return keySet;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getThingSet(java.lang.Class)
+	 * Return: Set of all things of given type.
+	 */
+	public Set<Thing> getThingSet (Class<?>  t) throws SiteException {		
+		Set<Thing> keySet = new HashSet <Thing> ();
+		
+		Set<String> keySetAll = getThingPathSet(t);
+		
+		for (String item : keySetAll) {
+			
+			Thing thing = (Thing) getThing(item);													
+			
+			keySet.add(thing);															
+		}
+
+		return keySet;
+	}	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.openhs.core.site.api.ISiteService#getChildThingsPaths(java.lang.String, java.lang.Class)
@@ -564,6 +791,11 @@ public class MySiteServiceImpl implements ISiteService {
 		return keySet;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.openhs.core.site.api.ISiteService#getSite()
+	 * Returns site object.
+	 */
 	public Site getSite() {
 		return ss;
 	}
@@ -597,8 +829,7 @@ public class MySiteServiceImpl implements ISiteService {
 					state = false;
 					break;
 				}
-			}		
-			
+			}					
 			return state;			
 		}
 		
@@ -1165,5 +1396,147 @@ public class MySiteServiceImpl implements ISiteService {
 			buildHouse(); // build some house....
 		}
 	}
-
+	/*
+	public JSONObject getThingJSON (String path) {
+  	  
+  	  JSONObject json = new JSONObject();
+  	  
+  	  Thing thing;
+		  
+		  try {
+			  thing = this.getThing(path);			  			  
+			  
+			  if (thing instanceof Floor) {
+				  Floor floor = (Floor) thing;		
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", floor.getName());
+				  json.put(path + "__imagePath", floor.imagePath);
+				  json.put(path + "__dim_x", String.format("%.3f",  floor.dim_x));
+				  json.put(path + "__dim_y", String.format("%.3f",  floor.dim_y));				  				
+				  
+			  } else if (thing instanceof Room) {
+				  Room room = (Room) thing;		
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", room.getName());
+				  json.put(path + "__imagePath", room.imagePath);
+				  
+			  } else if (thing instanceof Door) {
+				  Door door = (Door) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", door.getName());
+				  json.put(path + "__imagePath_open", door.imagePath_open);
+				  json.put(path + "__imagePath_close", door.imagePath_close);
+				  json.put(path + "__x", String.format("%.3f", door.x));
+				  json.put(path + "__y", String.format("%.3f", door.y));
+				  json.put(path + "__z", String.format("%.3f", door.z));	
+				  json.put(path + "__open", new Boolean(this.isClosed(door)));
+				  json.put(path + "__lock", new Boolean(this.isLocked(door)));
+				  json.put(path + "__supplierName", door.supplier);
+				  
+				//  System.out.println("Door path:" + door.getSitePath());
+				  
+			  } else if (thing instanceof Window) {
+				  Window window = (Window) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", window.getName());
+				  json.put(path + "__imagePath_open", window.imagePath_open);
+				  json.put(path + "__imagePath_close", window.imagePath_close);
+				  json.put(path + "__x", String.format("%.3f", window.x));
+				  json.put(path + "__y", String.format("%.3f", window.y));
+				  json.put(path + "__z", String.format("%.3f", window.z));	
+				  json.put(path + "__open", new Boolean(this.isClosed(window)));
+				  json.put(path + "__lock", new Boolean(this.isLocked(window)));					  
+				  
+			  } else if (thing instanceof TemperatureSensor) {
+				  TemperatureSensor sensor = (TemperatureSensor) thing;
+				  Temperature temp = sensor.getTemperature();
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", sensor.getName());
+				  json.put(path + "__temperature", String.format("%.2f",  temp.getCelsius()));
+				  json.put(path + "__x", String.format("%.3f", sensor.x));
+				  json.put(path + "__y", String.format("%.3f", sensor.y));
+				  json.put(path + "__z", String.format("%.3f", sensor.z));				  
+				  
+			  } else if (thing instanceof ContactSensor) {
+				  ContactSensor contact = (ContactSensor) thing;
+				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", contact.getName());
+				  json.put(path + "__state_int", new Boolean(contact.getState()));
+				  json.put(path + "__x", String.format("%.3f", contact.x));
+				  json.put(path + "__y", String.format("%.3f", contact.y));
+				  json.put(path + "__z", String.format("%.3f", contact.z));				  
+				  
+			  } else if (thing instanceof Switch) {
+				  Switch swt = (Switch) thing;
+				  				  
+				  json.put(path + "__validity", new Boolean(true));
+				  json.put(path + "__name", swt.getName());
+				  json.put(path + "__state_int", new Integer(swt.getStateInt()));
+				  json.put(path + "__x", String.format("%.3f", swt.x));
+				  json.put(path + "__y", String.format("%.3f", swt.y));
+				  json.put(path + "__z", String.format("%.3f", swt.z));
+				  
+			  } else {
+				  json.put(path + "__validity", new Boolean(false));
+			  }
+			  
+		  } catch (SiteException e) {
+			  e.printStackTrace();
+			  json.put(path + "__validity", new Boolean(false));
+		  }    	  
+  	  
+		  return json;
+    }  	
+	
+	public JSONObject getThingArrayJSON (Class<?> t) {
+  	  
+  	  JSONObject json = new JSONObject();	
+  	  
+  	  Set<String> paths;
+  	  try {
+  		  paths = this.getThingPathSet(t);
+  		  json.put("Array_validity", new Boolean(true));
+  		  
+  	  } catch (SiteException e) {    		  
+  		  json.put("Array_validity", new Boolean(false));
+  		  e.printStackTrace();    		  
+  		  return json;
+  	  }				
+  	  
+  	  for (String path: paths) {
+  		  JSONObject jsonItem = getThingJSON (path);
+  		  
+  		  if (jsonItem.length() > 0){    			  
+			      for(String key : JSONObject.getNames(jsonItem))
+			      {
+			    	  json.put(key, jsonItem.get(key));
+			      }
+  		 }	      		  
+  	  }
+  	  
+  	  return json; 
+    }	
+	
+    public JSONObject getTimeDateJSON() {	    		    	
+	    Date curDate = new Date();
+	    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+	    String time = format.format(curDate); 	 		  
+	    
+	    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
+	    String date = format2.format(curDate); 	  	    	  		    		    	
+    	
+		JSONObject json = new JSONObject();	
+		
+		json.put("time", time);
+		json.put("date", date);	
+		
+		return json;
+    } 	
+*/
 }

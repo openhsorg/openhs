@@ -8,19 +8,34 @@ public class Floor extends Thing {
 	
 	//max dimensions of floor [m]
 	public double dim_x = 0.000f; 
-	public float dim_y = 0.000f;	
+	public double dim_y = 0.000f;	
+	
+	public double x = 0.0;
+	public double y = 0.0;
+	public double z = 0.0;	
 	
 	public void setDimensions(float dimx, float dimy){		
 		this.dim_x = dimx;
 		this.dim_y = dimy;
 	}
 	
-	/*
-	 * Rooms.
-	 */
-	/*
-	public TreeMap<String, Room> rooms = 
-            new TreeMap<String, Room>();	
+	public double getDimX () {
+		return this.dim_x;
+	}
 	
-	*/
+	public double getDimY () {
+		return this.dim_y;
+	}	
+	
+	public void setDimX (double x) {
+		this.dim_x = x;
+	}
+	
+	public void setDimY (double y) {
+		this.dim_y = y;
+	}	
+	
+	public String getImagePath () {
+		return this.imagePath;
+	}
 }

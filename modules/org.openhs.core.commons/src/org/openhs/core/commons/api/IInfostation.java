@@ -38,8 +38,8 @@ public interface IInfostation {
 	public boolean isLocked (Thing m_thing) throws SiteException;
 	public void setAllDoorsSwitch (boolean state) throws SiteException;
 	public void setAllRoomSwitches (boolean state) throws SiteException;
-	public String JSON_ThingArrayToString (Class<?> t);
-	public String JSON_ThingToString (String path);
+	//public String JSON_ThingArrayToString (Class<?> t);
+	//public String JSON_ThingToString (String path);
 	//public String JSON_Supplier (String name);
 	public void sendMail ();
 	

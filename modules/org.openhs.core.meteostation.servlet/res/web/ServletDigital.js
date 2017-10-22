@@ -21,8 +21,8 @@ var DigiMeteoStation;
         heigth: 100
     };
     var nextServlet = "";
-    var Temperature = (function () {
-        function Temperature(clockCanvas, next) {
+    class Temperature {
+        constructor(clockCanvas, next) {
             this.clockCanvas = clockCanvas;
             this.ns = "/org.openhs.core.meteostation"; //next;
             this.timerEvent();
@@ -52,36 +52,34 @@ var DigiMeteoStation;
                 window.location.replace(nextServlet);
             }, false);
         }
-        Temperature.prototype.timerEvent = function () {
-            var _this = this;
+        timerEvent() {
             this.paintTemp();
-            var t = 1000 - Date.now() % 1000;
-            window.setTimeout(function () { return _this.timerEvent(); }, 1000);
-        };
-        Temperature.prototype.paintTemp = function () {
+            let t = 1000 - Date.now() % 1000;
+            window.setTimeout(() => this.timerEvent(), 1000);
+        }
+        paintTemp() {
             if (!this.staticImageCanvas || this.staticImageCanvas.width != this.clockCanvas.width || this.staticImageCanvas.height != this.clockCanvas.height) {
                 this.createStaticImageCanvas();
             }
             this.clockCanvas.getContext("2d").drawImage(this.staticImageCanvas, 0, 0);
             new ClockImagePainter(this.clockCanvas).paintDynamicImage();
-        };
-        Temperature.prototype.createStaticImageCanvas = function () {
-            var canvas = document.createElement("canvas");
+        }
+        createStaticImageCanvas() {
+            let canvas = document.createElement("canvas");
             canvas.width = this.clockCanvas.width;
             canvas.height = this.clockCanvas.height;
             new ClockImagePainter(canvas).paintStaticImage();
             this.staticImageCanvas = canvas;
-        };
-        return Temperature;
-    }());
+        }
+    }
     DigiMeteoStation.Temperature = Temperature; // end class Temperature
     //------------------------------------------------------------------------------
-    var clockLabel = "source-code.biz";
-    var transparentColor = "rgba(0,0,0,0)";
-    var whiteColor = "#FFFFFF";
-    var blackColor = "#000000";
-    var borderColor = "#C0C0C0";
-    var secPtrColor = "#CC0000";
+    const clockLabel = "source-code.biz";
+    const transparentColor = "rgba(0,0,0,0)";
+    const whiteColor = "#FFFFFF";
+    const blackColor = "#000000";
+    const borderColor = "#C0C0C0";
+    const secPtrColor = "#CC0000";
     var ni = 0;
     var tempIn = 0;
     var tempOut = 0;
@@ -95,8 +93,8 @@ var DigiMeteoStation;
     imgFrost.onload = function () {
         imgFrostLoaded = true;
     };
-    var ClockImagePainter = (function () {
-        function ClockImagePainter(canvas) {
+    class ClockImagePainter {
+        constructor(canvas) {
             this.ctx = canvas.getContext("2d");
             this.width = canvas.width;
             this.height = canvas.height;
@@ -105,7 +103,7 @@ var DigiMeteoStation;
             this.centerY = this.height / 2;
             // ni = 0; 
         }
-        ClockImagePainter.prototype.getData = function () {
+        getData() {
             $(document).ready(function () {
                 $.getJSON('org.openhs.core.meteostation.digital', { orderId: "John" }, function (data) {
                     ni = parseInt(data['order']);
@@ -127,16 +125,16 @@ var DigiMeteoStation;
                                     */
                 });
             });
-        };
-        ClockImagePainter.prototype.paintStaticImage = function () {
+        }
+        paintStaticImage() {
             // Paint outer background.
-            var ctx = this.ctx;
+            const ctx = this.ctx;
             ctx.save();
             ctx.fillStyle = transparentColor;
             ctx.fillRect(0, 0, this.width, this.height);
             ctx.restore();
             // Paint inner background and border.
-            var width = 4;
+            const width = 4;
             ctx.save();
             ctx.beginPath();
             ctx.rect(0, 0, this.width, this.height);
@@ -147,7 +145,7 @@ var DigiMeteoStation;
             ctx.stroke();
             ctx.restore();
             ctx.save();
-            var fontSize = 80;
+            let fontSize = 80;
             ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
@@ -198,12 +196,12 @@ var DigiMeteoStation;
            // Draw text.
            this.drawClockLabel();
             */
-        };
-        ClockImagePainter.prototype.paintDynamicImage = function () {
-            var ctx = this.ctx;
+        }
+        paintDynamicImage() {
+            const ctx = this.ctx;
             this.getData();
             ctx.save();
-            var fontSize = 80;
+            let fontSize = 80;
             ctx.font = fontSize + "px Lucida Sans Unicode, Lucida Grande, sans-serif";
             ctx.textAlign = "right";
             ctx.textBaseline = "middle";
@@ -249,16 +247,16 @@ var DigiMeteoStation;
            ctx.fillText(txt, 10, 150);
            ctx.restore();
             */
-        };
-        ClockImagePainter.prototype.drawRadial = function (alpha, r1, r2, width1, width2, color) {
-            var sin = Math.sin(alpha);
-            var cos = Math.cos(alpha);
-            var pm1X = this.centerX + sin * r1;
-            var pm1Y = this.centerY - cos * r1;
-            var pm2X = this.centerX + sin * r2;
-            var pm2Y = this.centerY - cos * r2;
-            var px = [];
-            var py = [];
+        }
+        drawRadial(alpha, r1, r2, width1, width2, color) {
+            let sin = Math.sin(alpha);
+            let cos = Math.cos(alpha);
+            let pm1X = this.centerX + sin * r1;
+            let pm1Y = this.centerY - cos * r1;
+            let pm2X = this.centerX + sin * r2;
+            let pm2Y = this.centerY - cos * r2;
+            let px = [];
+            let py = [];
             px[0] = pm1X - cos * width1 / 2;
             py[0] = pm1Y - sin * width1 / 2;
             px[3] = pm1X + cos * width1 / 2;
@@ -268,43 +266,43 @@ var DigiMeteoStation;
             px[2] = pm2X + cos * width2 / 2;
             py[2] = pm2Y + sin * width2 / 2;
             this.drawFilledPolygon(px, py, color);
-        };
-        ClockImagePainter.prototype.drawFilledPolygon = function (px, py, color) {
-            var ctx = this.ctx;
+        }
+        drawFilledPolygon(px, py, color) {
+            const ctx = this.ctx;
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(px[0], py[0]);
-            for (var i = 1; i < px.length; i++) {
+            for (let i = 1; i < px.length; i++) {
                 ctx.lineTo(px[i], py[i]);
             }
             ctx.fillStyle = color;
             ctx.fill();
             ctx.restore();
-        };
-        ClockImagePainter.prototype.drawRadialFilledCircle = function (alpha, r1, circR, color) {
-            var ctx = this.ctx;
-            var p0X = this.centerX + Math.sin(alpha) * r1;
-            var p0Y = this.centerY - Math.cos(alpha) * r1;
+        }
+        drawRadialFilledCircle(alpha, r1, circR, color) {
+            const ctx = this.ctx;
+            let p0X = this.centerX + Math.sin(alpha) * r1;
+            let p0Y = this.centerY - Math.cos(alpha) * r1;
             ctx.save();
             ctx.beginPath();
             ctx.arc(p0X, p0Y, circR, 0, 2 * Math.PI);
             ctx.fillStyle = color;
             ctx.fill();
             ctx.restore();
-        };
-        ClockImagePainter.prototype.drawClockLabel = function () {
-            var ctx = this.ctx;
+        }
+        drawClockLabel() {
+            const ctx = this.ctx;
             ctx.save();
-            var fontSize = Math.round(this.r * 20 / 200);
+            let fontSize = Math.round(this.r * 20 / 200);
             ctx.font = fontSize + "px Helvetica, sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = borderColor;
             ctx.fillText(clockLabel, this.centerX, this.centerY + this.r / 2);
             ctx.restore();
-        };
-        return ClockImagePainter;
-    }()); // end class ClockImagePainter
+        }
+    }
+     // end class ClockImagePainter
     //Function to get the mouse position
     function getMousePos(canvas, event) {
         var rect = canvas.getBoundingClientRect();

@@ -56,39 +56,31 @@ public class MainServlet {
 
     public void activate() {
         msg.println("org.openhs.core.remote.access: activate");
-
+/*
         mainServlet = new MainServlet();
         adminServlet = new AdminServlet(m_openhsProps, m_siteService, m_meteo);
         imageServlet = new ImageServlet();
         imageServlet2 = new ImageServlet2();
         imageServlet3 = new ImageServlet3();
         btnSrv = new ButtonServlet();
-       // meteoServlet = new MeteoServlet(m_meteo);
-        //timeServlet = new TimeServlet(m_siteService);
         timeServlet2 = new TimeServlet2(m_siteService, m_meteo);
         testServlet = new TestServlet();
         welcomeServlet = new WelcomeServlet();
         statisticsServlet = new StatisticsServlet();
         clockServlet = new ClockServlet();
-        //meteoStatServlet = new MeteoStationServlet(m_meteo);
-      //  meteoStatServlet = m_meteo.m_servlet1;
-        
 
         try {
+        	
             m_httpService.registerServlet("/openhs", adminServlet, null, null);
             m_httpService.registerServlet("/image", imageServlet, null, null);
             m_httpService.registerServlet("/image2", imageServlet2, null, null);
             m_httpService.registerServlet("/image3", imageServlet3, null, null);
-            m_httpService.registerServlet("/btn", btnSrv, null, null);
-           // m_httpService.registerServlet("/meteo", meteoServlet, null, null);            
+            m_httpService.registerServlet("/btn", btnSrv, null, null);     
             m_httpService.registerServlet("/time", timeServlet2, null, null);
             m_httpService.registerServlet("/test", testServlet, null, null);
             m_httpService.registerServlet("/", welcomeServlet, null, null);
             m_httpService.registerServlet("/stats", statisticsServlet, null, null);
             m_httpService.registerServlet("/clock", clockServlet, null, null);
-           // m_httpService.registerServlet("/meteo", meteoStatServlet, null, null);
-         //   m_httpService.registerServlet("/meteo", m_meteo.m_servlet1, null, null);
-            
             m_httpService.registerResources("/images", "/images", null);
             m_httpService.registerResources("/web", "/web", null);
             
@@ -100,9 +92,11 @@ public class MainServlet {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        */
     }
 
     public void deactivate() {
+    	/*
     	msg.println("org.openhs.core.remote.access: deactivate");
         m_httpService.unregister("/openhs");
         m_httpService.unregister("/image");
@@ -117,6 +111,7 @@ public class MainServlet {
         m_httpService.unregister("/stats");
         m_httpService.unregister("/clock");
         m_httpService.unregister("/meteo2");
+        */
     }
 
     public void setService(ISiteService ser) {

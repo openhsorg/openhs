@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhs.comm.wifiadmin.webservices">
+   <implementation class="org.openhs.comm.wifiadmin.webservices.WifiAdminWebServiceImpl"/>
+   <reference bind="setService" cardinality="1..1" interface="org.openhs.comm.wifiadmin.WifiAdmin" name="WifiAdmin" policy="static"/>
+   <service>
+      <provide interface="org.openhs.comm.wifiadmin.webservices.WifiAdminWebServiceImpl"/>
+   </service>
+</scr:component>
