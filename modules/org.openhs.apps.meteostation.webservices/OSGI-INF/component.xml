@@ -5,4 +5,5 @@
       <provide interface="org.openhs.apps.meteostation.webservices.MeteoStationWebServiceImpl"/>
    </service>
    <reference bind="setService" cardinality="1..1" interface="org.openhs.apps.meteostation.IMeteoStation" name="IMeteoStation" policy="static"/>
+   <reference bind="setService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetService"/>
 </scr:component>

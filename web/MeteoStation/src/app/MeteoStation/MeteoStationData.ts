@@ -1,8 +1,8 @@
 
 export class MeteoStationData {
 
-    protected validity              = false; // content of the forecast is valid        
-    protected id                    = '*'; // OpenHS path    
+    public validity                 = false; // content of the forecast is valid
+    public id                       = '*'; // OpenHS path
     public tmpIn:                   number;
     public tmpOut:                  number;
     public frost                    = false;

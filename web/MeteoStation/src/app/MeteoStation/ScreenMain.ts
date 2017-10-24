@@ -7,10 +7,12 @@ import { PropertyBox } from '../OhsGuiFramework/PropertyBox';
 import { NumberRounded } from '../OhsGuiFramework/NumberRounded';
 
 import { MeteoStationSettings } from './MeteoStationSettings';
+import { MeteoStation } from './MeteoStation';
 
 
 export class ScreenMain extends OhsScreen {
 
+    private m_meteoStation:     MeteoStation = null;
 
     // Texts
     protected m_textTime:       TextSimple = null;
@@ -22,11 +24,11 @@ export class ScreenMain extends OhsScreen {
     public icons:               Array <ImageButton>;
     protected nums:             Array <NumberRounded>;
 
-    constructor (canvas: HTMLCanvasElement) {
+    constructor (canvas: HTMLCanvasElement, meteo: MeteoStation) {
         super(canvas);
 
+        this.m_meteoStation = meteo;
         this.buildLayout();
-   
    }
 
     public buildLayout () {
@@ -51,6 +53,12 @@ export class ScreenMain extends OhsScreen {
         this.m_textSmth.textAlign = 'left';
         this.m_textSmth.textBaseline = 'top';
         this.m_textSmth.bold = false;
+
+        this.btnTemp = new ImageButton(this.ctx, MeteoStationSettings.IMG, MeteoStationSettings.IMG, 30, 30, 150, 150);
+        this.add(this.btnTemp);
+
+        this.btnTemp.Size(50, 50, 120, 120);
+
        
 
         /*
@@ -121,7 +129,7 @@ export class ScreenMain extends OhsScreen {
     protected updateData () {
         super.updateData();
 
-        this.m_textSmth.setText('Haloo....');
+        this.m_textSmth.setText('Id:' + this.m_meteoStation.data.id);
 
        // window.alert('aaa');
 /*

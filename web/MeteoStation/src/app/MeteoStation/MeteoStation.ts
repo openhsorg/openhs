@@ -20,28 +20,28 @@ export class MeteoStation {
 
         window.clearTimeout(this.timer);
         this.timer = window.setTimeout(() => this.timerEvent(step), step);
-    }    
+    }
 
     protected updateData () {
 
         var js = JSON.stringify({
             idPost : MeteoStationSettings.ID_GET_DATA
-            });
-    
-            var ret = postAjax(MeteoStationSettings.URL, js);
-    
-            if (ret != null) {
-/*
-                if (JSON.parse(ret['return'])) {
-                    //this.data.fillFromJSON(ret);
-        
-                } else {
-        
-                }                
-    */
-                
-            }   
-            
+        });
+
+        var ret = postAjax(MeteoStationSettings.URL, js);
+
+        if (ret != null) {
+
+            if (JSON.parse(ret['return'])) {
+                this.data.fillFromJSON(ret);
+
+            } else {
+
+            }
+
+
+        }
+
           //  window.alert('update time:');
 
     }

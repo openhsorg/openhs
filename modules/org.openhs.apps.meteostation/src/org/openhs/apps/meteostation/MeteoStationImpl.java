@@ -86,9 +86,12 @@ public class MeteoStationImpl implements IMeteoStation{
     	  
     	  MeteoStationData data = new MeteoStationData ();
     	  
-    	  data.id = "MeteoStation 1";
+    	  // Name from file
     	  
+    	  String name = (String) this.m_properties.get("station_name");
     	  
+    	  data.id = name;
+    	     	  
     	  
     	  
     	  return data;    	  

@@ -1,9 +1,0 @@
-<servlet>
-     <servlet-name>aaa</servlet-name>
-     <servlet-class>org.openhs.appr.meteostation.webservices</servlet-class>
-     <init-param>
-         <param-name>javax.ws.rs.Application</param-name>
-         <param-value>MeteoStationWebServiceImpl </param-value>
-     </init-param>
-     <load-on-startup>1</load-on-startup>
-</servlet>

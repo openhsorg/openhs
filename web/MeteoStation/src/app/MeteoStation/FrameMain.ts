@@ -8,11 +8,10 @@ import { MeteoStation } from './MeteoStation';
 export class FrameMain extends Frame {
 
     // Site data
-  
+
     // Screen pointers...
     private m_screenMain:            ScreenMain = null;
-    private m_meteoStation:          MeteoStation = null;     
-   
+    private m_meteoStation:          MeteoStation = null;
 
     constructor (canvas: HTMLCanvasElement) {
         super(canvas);
@@ -21,12 +20,12 @@ export class FrameMain extends Frame {
         this.m_meteoStation = new MeteoStation ();
 
         // Create screens...
-        this.m_screenMain = new ScreenMain(canvas); 
-        this.addItem(this.m_screenMain);   
+        this.m_screenMain = new ScreenMain(canvas, this.m_meteoStation);
+        this.addItem(this.m_screenMain);
 
         // Set current screen...
         this.m_curScreen = this.m_screenMain;
-       
+
    }
 
     public MouseDownHandler (event) {

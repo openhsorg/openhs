@@ -3,8 +3,9 @@ import * as $ from 'jquery';
 
 export class MeteoStationSettings {
     
-    public static ID_GET_DATA          = 'idTimeDate';
+    public static ID_GET_DATA          = 'idMeteoData';
     public static URL                  = 'services/ohs_meteo';
+    public static IMG                  = 'assets/images/add.png';
 
 }
 

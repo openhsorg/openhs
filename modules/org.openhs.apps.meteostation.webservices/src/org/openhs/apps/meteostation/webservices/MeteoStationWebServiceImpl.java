@@ -1,16 +1,32 @@
 package org.openhs.apps.meteostation.webservices;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 import org.openhs.apps.meteostation.IMeteoStation;
+import org.openhs.core.commons.ContactSensor;
+import org.openhs.core.commons.Door;
+import org.openhs.core.commons.Floor;
 import org.openhs.core.commons.MeteoStationData;
+import org.openhs.core.commons.Room;
+import org.openhs.core.commons.Site;
+import org.openhs.core.commons.Switch;
+import org.openhs.core.commons.TemperatureSensor;
+import org.openhs.core.commons.Thing;
+import org.openhs.core.commons.WifiNode;
+import org.openhs.core.commons.Window;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +45,9 @@ public class MeteoStationWebServiceImpl {
 	final String idThingGet = "idThingGet";
 	
 	IMeteoStation m_meteo = null;
+	
+	HttpService m_httpService = null;
+	MeteoStationServlet servlet = null;
 		
 	// initialize logger
 	private Logger logger = LoggerFactory.getLogger(MeteoStationWebServiceImpl.class);
@@ -52,26 +71,40 @@ public class MeteoStationWebServiceImpl {
         return out;
     }	      
     
+    // This method is called if XML is request
+    /*
+    @GET
+    @Path("/bla")
+    @Produces(MediaType.TEXT_XML)
+    public String sayXMLHello() {
+      return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
+    } 
+    */
+     
     @POST
  //   @Produces("text/plain")
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })    
     public String postMessage(String id){
     	
-    	logger.info("POST....>> " + id);
+    	//logger.info("POST....>> " + id);
     	
     	JSONObject json = new JSONObject(id);	
     	
     	//JSONObject jsonR = jsonMap.command(json);
     	
-    	return json.toString(); //jsonMap.command(json).toString();    	
+    	return command(json).toString();    	
     	
     }
 	
 	public void activate () {
 		System.out.println("Component MeteoStationWebServiceImpl activated!");
 		
+
+		
 		logger.info("KKKKKKKKKKKKKKKKK");
+		
+		 //WebResource r = createResource().path("/simple");
 
 	}
 
@@ -90,5 +123,77 @@ public class MeteoStationWebServiceImpl {
             ser = null;
         }
     }   	
+    
+    public void setService(HttpService ser) {
+    	logger.info("org.openhs.core.remote.access: Set HttpService");
+        m_httpService = ser;
+        
+		servlet = new MeteoStationServlet ();
+		
+        try {
+        	m_httpService.registerServlet("/meteo", servlet, null, null);  
+        	m_httpService.registerResources("/meteores", "/web", null);       
+        	m_httpService.registerResources("/assets", "/web/dist/assets", null);  
+        } catch (ServletException e) {
+            // TODO Auto-generated catch block
+        	System.out.println("\n\n--->*************************");
+            e.printStackTrace();
+        } catch (NamespaceException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } 		        
+    }
+
+    public void unsetService(HttpService ser) {
+    	logger.info("org.openhs.core.remote.access: UnSet HttpService");
+        if (m_httpService == ser) {
+            m_httpService = null;
+        }
+    }	    
+   
+    
+    public JSONObject command (JSONObject json) {
+    	
+		String id = json.getString("idPost");
+		
+		JSONObject jsonRet = new JSONObject ();
+	//	jsonRet.put("return", new Boolean(false));
+		
+	//	logger.info("POST2....>> " + json.toString());
+		
+		if (id.equals("idMeteoData")) {
+			
+			MeteoStationData data = this.m_meteo.getData();
+			
+			boolean ret = getMeteoDataJSON (data, jsonRet);
+			
+			jsonRet.put("return", new Boolean(ret));
+			
+			logger.info("POST....>> command " + id);
+			
+		}
+    
+		return jsonRet;	
+    }
+    
+	public boolean getMeteoDataJSON (MeteoStationData data, JSONObject json) {
+				
+	//	JSONObject json = new JSONObject();
+		
+		try {
+				
+			json.put("id", data.id);
+			json.put("validity", data.validity);
+			json.put("tmpIn", data.tmpIn);
+			json.put("tmpOut", data.tmpOut);
+		  
+		} catch (Exception e) {
+			e.printStackTrace();
+			//  json.put(path + "__validity", new Boolean(false));
+			return false;
+		}    	  
+	  
+		return true;
+    }  	    
 	
 }
