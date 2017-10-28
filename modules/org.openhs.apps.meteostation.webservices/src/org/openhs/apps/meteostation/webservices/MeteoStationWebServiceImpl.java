@@ -1,6 +1,8 @@
 package org.openhs.apps.meteostation.webservices;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.Consumes;
@@ -9,7 +11,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
@@ -133,7 +134,7 @@ public class MeteoStationWebServiceImpl {
         try {
         	m_httpService.registerServlet("/meteo", servlet, null, null);  
         	m_httpService.registerResources("/meteores", "/web", null);       
-        	m_httpService.registerResources("/assets", "/web/dist/assets", null);  
+        	m_httpService.registerResources("/meteo_assets", "/web/dist/meteo_assets", null);  
         } catch (ServletException e) {
             // TODO Auto-generated catch block
         	System.out.println("\n\n--->*************************");
@@ -171,7 +172,20 @@ public class MeteoStationWebServiceImpl {
 			
 			logger.info("POST....>> command " + id);
 			
-		}
+		} else if (id.equals("idDateTime")) {
+			
+		    Date curDate = new Date();
+		    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		    String time = format.format(curDate); 	 		  
+		    
+		    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
+		    String date = format2.format(curDate); 	  	    	  		    		    	
+			
+		    jsonRet.put("time", time);
+		    jsonRet.put("date", date);		
+		    jsonRet.put("return", new Boolean(true));
+		
+		}		
     
 		return jsonRet;	
     }

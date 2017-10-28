@@ -10389,15 +10389,36 @@ var FrameMain = (function (_super) {
 
 var MeteoStation = (function () {
     function MeteoStation() {
+        this.dateString = '---';
+        this.timeString = '---';
         this.data = new __WEBPACK_IMPORTED_MODULE_0__MeteoStationData__["a" /* MeteoStationData */]();
         // Timers
+        this.timerFastEvent(800);
         this.timerEvent(2000);
     }
+    MeteoStation.prototype.timerFastEvent = function (step) {
+        var _this = this;
+        this.updateDateTime();
+        window.clearTimeout(this.timerFast);
+        this.timerFast = window.setTimeout(function () { return _this.timerFastEvent(step); }, step);
+    };
     MeteoStation.prototype.timerEvent = function (step) {
         var _this = this;
         this.updateData();
         window.clearTimeout(this.timer);
         this.timer = window.setTimeout(function () { return _this.timerEvent(step); }, step);
+    };
+    MeteoStation.prototype.updateDateTime = function () {
+        var js = JSON.stringify({
+            idPost: __WEBPACK_IMPORTED_MODULE_1__MeteoStationSettings__["a" /* MeteoStationSettings */].ID_GET_DATE_TIME
+        });
+        var ret = Object(__WEBPACK_IMPORTED_MODULE_1__MeteoStationSettings__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__MeteoStationSettings__["a" /* MeteoStationSettings */].URL, js);
+        if (ret != null) {
+            if (JSON.parse(ret['return'])) {
+                this.dateString = ret['date'];
+                this.timeString = ret['time'];
+            }
+        }
     };
     MeteoStation.prototype.updateData = function () {
         var js = JSON.stringify({
@@ -10411,7 +10432,6 @@ var MeteoStation = (function () {
             else {
             }
         }
-        //  window.alert('update time:');
     };
     return MeteoStation;
 }());
@@ -10429,6 +10449,8 @@ var MeteoStationData = (function () {
     function MeteoStationData() {
         this.validity = false; // content of the forecast is valid
         this.id = '*'; // OpenHS path
+        this.tmpIn = 0.0;
+        this.tmpOut = 0.0;
         this.frost = false;
     }
     MeteoStationData.prototype.fillFromJSON = function (json) {
@@ -10460,8 +10482,10 @@ var MeteoStationSettings = (function () {
 }());
 
 MeteoStationSettings.ID_GET_DATA = 'idMeteoData';
+MeteoStationSettings.ID_GET_DATE_TIME = 'idDateTime';
 MeteoStationSettings.URL = 'services/ohs_meteo';
-MeteoStationSettings.IMG = 'assets/images/add.png';
+MeteoStationSettings.IMG = 'meteo_assets/images/add.png';
+MeteoStationSettings.IMG_BKG = 'meteo_assets/images/weather.jpg';
 function postAjax(urlAdr, jsonDat) {
     var result = null;
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
@@ -10492,7 +10516,7 @@ function postAjax(urlAdr, jsonDat) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ScreenMain; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/OhsScreen.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/TextSimple.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageButton.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageStatic__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageStatic.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MeteoStationSettings__ = __webpack_require__("../../../../../src/app/MeteoStation/MeteoStationSettings.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10513,104 +10537,80 @@ var ScreenMain = (function (_super) {
     function ScreenMain(canvas, meteo) {
         var _this = _super.call(this, canvas) || this;
         _this.m_meteoStation = null;
+        // Images
+        _this.m_imageBkg = null;
         // Texts
         _this.m_textTime = null;
-        _this.m_textSmth = null;
+        _this.m_textDate = null;
+        _this.m_textTmpIn = null;
+        _this.m_textTmpOut = null;
+        _this.m_textTmpInVal = null;
+        _this.m_textTmpOutVal = null;
         _this.m_meteoStation = meteo;
         _this.buildLayout();
         return _this;
     }
     ScreenMain.prototype.buildLayout = function () {
+        this.m_imageBkg = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.add(this.m_imageBkg);
+        this.m_imageBkg.setImage(__WEBPACK_IMPORTED_MODULE_3__MeteoStationSettings__["a" /* MeteoStationSettings */].IMG_BKG);
+        this.m_imageBkg.Size(0, 0, this.canvas.width, this.canvas.height);
         // Time
-        this.m_textTime = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 730, 0, 250, 100);
+        this.m_textTime = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 20, 20, 250, 100);
         this.add(this.m_textTime);
-        this.m_textTime.fontSize = 26;
-        this.m_textTime.fontFamily = 'px Tahoma, sans-serif';
-        this.m_textTime.fontColor = '#8c8c8c';
+        this.m_textTime.fontSize = 50;
+        this.m_textTime.fontFamily = 'px Arial, sans-serif';
+        this.m_textTime.fontColor = 'red';
         this.m_textTime.textAlign = 'left';
         this.m_textTime.textBaseline = 'top';
         this.m_textTime.bold = false;
-        this.m_textSmth = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 20, 20, 250, 100);
-        this.add(this.m_textSmth);
-        this.m_textSmth.fontSize = 40;
-        this.m_textSmth.fontFamily = 'px Tahoma, sans-serif';
-        this.m_textSmth.fontColor = 'red';
-        this.m_textSmth.textAlign = 'left';
-        this.m_textSmth.textBaseline = 'top';
-        this.m_textSmth.bold = false;
-        this.btnTemp = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_3__MeteoStationSettings__["a" /* MeteoStationSettings */].IMG, __WEBPACK_IMPORTED_MODULE_3__MeteoStationSettings__["a" /* MeteoStationSettings */].IMG, 30, 30, 150, 150);
-        this.add(this.btnTemp);
-        this.btnTemp.Size(50, 50, 120, 120);
-        /*
-        // Icons
-        this.icons = new Array <ImageButton> ();
-        
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_TEMP, OhsAdminSettings.ICON_TEMP, 30, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_SWITCH, OhsAdminSettings.ICON_SWITCH, 200, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_DOOR, OhsAdminSettings.ICON_DOOR, 400, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_ROOM, OhsAdminSettings.ICON_ROOM, 400, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_FLOOR, OhsAdminSettings.ICON_FLOOR, 400, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_WIFI, OhsAdminSettings.ICON_WIFI, 400, 30, 150, 150));
-        this.icons.push(new ImageButton(this.ctx, OhsAdminSettings.ICON_IQRF, OhsAdminSettings.ICON_IQRF, 400, 30, 150, 150));
-        
-
-        for (let icon of this.icons) {
-            this.add(icon);
-        }
-        
-
-        // Nums Rounded
-        this.nums = new Array <NumberRounded> ();
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums.push(new NumberRounded(this.ctx));
-        this.nums[5].SetColorBkg('#ff6600');
-
-        for (let num of this.nums) {
-            this.add(num);
-        }
-
-        this.IconMatrix (this.GetSize().width - 150, this.GetSize().height, 4, 3, 150, 150);
-        */
-    };
-    // Arange icons to rectangle...
-    ScreenMain.prototype.IconMatrix = function (w, h, numX, numY, iconSizeX, iconSizeY) {
-        var dx = (w - (numX * iconSizeX)) / (numX + 1);
-        var dy = (h - (numY * iconSizeY)) / (numY + 1);
-        var id = 0;
-        for (var i = 1; i <= numY; i++) {
-            for (var j = 1; j <= numX; j++) {
-                var dxa = (j * dx) + ((j - 1) * iconSizeX);
-                var dya = (i * dy) + ((i - 1) * iconSizeY);
-                if (this.icons.length > id) {
-                    this.icons[id].Size(dxa, dya, 150, 150);
-                }
-                if (this.nums.length > id) {
-                    this.nums[id].center(dxa + 150 - 5, dya + 150 - 5, 50, 50);
-                }
-                id++;
-            }
-        }
+        this.m_textDate = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 580, 20, 250, 100);
+        this.add(this.m_textDate);
+        this.m_textDate.fontSize = 50;
+        this.m_textDate.fontFamily = 'px Arial, sans-serif';
+        this.m_textDate.fontColor = 'red';
+        this.m_textDate.textAlign = 'right';
+        this.m_textDate.textBaseline = 'top';
+        this.m_textDate.bold = false;
+        this.m_textTmpIn = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'In:', 20, 100, 250, 100);
+        this.add(this.m_textTmpIn);
+        this.m_textTmpIn.fontSize = 160;
+        this.m_textTmpIn.fontFamily = 'px Arial, sans-serif';
+        this.m_textTmpIn.fontColor = '#e6b800';
+        this.m_textTmpIn.textAlign = 'left';
+        this.m_textTmpIn.textBaseline = 'top';
+        this.m_textTmpIn.bold = false;
+        this.m_textTmpOut = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Out:', 20, 300, 250, 100);
+        this.add(this.m_textTmpOut);
+        this.m_textTmpOut.fontSize = 160;
+        this.m_textTmpOut.fontFamily = 'px Arial, sans-serif';
+        this.m_textTmpOut.fontColor = '#e6b800';
+        this.m_textTmpOut.textAlign = 'left';
+        this.m_textTmpOut.textBaseline = 'top';
+        this.m_textTmpOut.bold = false;
+        this.m_textTmpInVal = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 580, 100, 250, 100);
+        this.add(this.m_textTmpInVal);
+        this.m_textTmpInVal.fontSize = 160;
+        this.m_textTmpInVal.fontFamily = 'px Arial, sans-serif';
+        this.m_textTmpInVal.fontColor = '#e6b800';
+        this.m_textTmpInVal.textAlign = 'right';
+        this.m_textTmpInVal.textBaseline = 'top';
+        this.m_textTmpInVal.bold = true;
+        this.m_textTmpOutVal = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'Time', 580, 300, 250, 100);
+        this.add(this.m_textTmpOutVal);
+        this.m_textTmpOutVal.fontSize = 160;
+        this.m_textTmpOutVal.fontFamily = 'px Arial, sans-serif';
+        this.m_textTmpOutVal.fontColor = '#e6b800';
+        this.m_textTmpOutVal.textAlign = 'right';
+        this.m_textTmpOutVal.textBaseline = 'top';
+        this.m_textTmpOutVal.bold = true;
     };
     ScreenMain.prototype.updateData = function () {
         _super.prototype.updateData.call(this);
-        this.m_textSmth.setText('Id:' + this.m_meteoStation.data.id);
-        // window.alert('aaa');
-        /*
-                // Update data....
-                this.m_textTime.setText(this.m_siteData.timeString);
-        
-                // Numbers
-                this.nums[0].SetNumber(this.m_siteData.m_tempSensorArray.length);
-                this.nums[1].SetNumber(this.m_siteData.m_switchArray.length);
-                this.nums[2].SetNumber(this.m_siteData.m_doorArray.length);
-                this.nums[3].SetNumber(this.m_siteData.m_roomArray.length);
-                this.nums[4].SetNumber(this.m_siteData.m_floorArray.length);
-                this.nums[5].SetNumber(this.m_siteData.m_wifiNodeArray.length);
-                */
+        this.m_textTime.setText(this.m_meteoStation.timeString);
+        this.m_textDate.setText(this.m_meteoStation.dateString);
+        this.m_textTmpInVal.setText(this.m_meteoStation.data.tmpIn + '\xBA C');
+        this.m_textTmpOutVal.setText(this.m_meteoStation.data.tmpOut + '\xBA C');
     };
     return ScreenMain;
 }(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */])); // class end
@@ -10703,11 +10703,11 @@ function sleep(ms) {
 
 /***/ }),
 
-/***/ "../../../../../src/app/OhsGuiFramework/ImageButton.ts":
+/***/ "../../../../../src/app/OhsGuiFramework/ImageStatic.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageButton; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageStatic; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Item__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/Item.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -10720,76 +10720,70 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 
-var ImageButton = (function (_super) {
-    __extends(ImageButton, _super);
-    function ImageButton(ctx, imgSrc, imgPush, x, y, w, h) {
+var ImageStatic = (function (_super) {
+    __extends(ImageStatic, _super);
+    function ImageStatic(ctx) {
         var _this = _super.call(this, ctx) || this;
-        _this.img = new Image();
-        _this.imgPush = new Image();
+        _this.img = null;
+        _this.imgSrc = '---';
+        _this.loaded = false;
         _this.border = false;
-        _this.push = false;
-        _this.int = null;
-        _this.visible = true;
-        _this.img.src = imgSrc;
-        _this.imgPush.src = imgPush;
-        //    this.border = false;
-        _this.rect.size(x, y, w, h);
+        _this.rectClicked = null;
+        _this.radius = 0;
+        _this.img = new Image();
         return _this;
     }
-    ImageButton.prototype.setVisibility = function (enable) {
-        this.visible = enable;
+    ImageStatic.prototype.onImageLoad = function (event) {
+        this.loaded = true;
     };
-    ImageButton.prototype.MouseDownHandler = function (x, y) {
-        if (this.visible) {
-            return _super.prototype.MouseDownHandler.call(this, x, y);
-        }
-        else {
-            return null;
+    ImageStatic.prototype.setImage = function (path) {
+        if (path !== this.imgSrc) {
+            this.img.src = path;
+            this.imgSrc = path;
         }
     };
-    ImageButton.prototype.MouseUpHandler = function (x, y) {
-        if (this.visible) {
-            return _super.prototype.MouseUpHandler.call(this, x, y);
-        }
-        else {
-            return null;
-        }
-    };
-    ImageButton.prototype.MouseMoveHandler = function (x, y) {
-        if (this.visible) {
-            return _super.prototype.MouseMoveHandler.call(this, x, y);
-        }
-        else {
-            return null;
-        }
-    };
-    ImageButton.prototype.paint = function () {
+    ImageStatic.prototype.paint = function () {
         var ctx = this.ctx;
-        if (this.visible) {
+        ctx.save();
+        _super.prototype.paint.call(this);
+        if (this.radius !== 0) {
+            ctx.clip();
+        }
+        ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+        ctx.restore();
+        if (this.border) {
             ctx.save();
-            if (this.push) {
-                ctx.drawImage(this.imgPush, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            }
-            else {
-                ctx.drawImage(this.img, this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-            }
+            ctx.beginPath();
+            ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'blue';
+            ctx.stroke();
+            ctx.closePath();
             ctx.restore();
-            if (this.border) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'blue';
-                ctx.stroke();
-                ctx.closePath();
-                ctx.restore();
-            }
         }
     };
-    return ImageButton;
+    ImageStatic.prototype.paintPush = function (ctx) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.rect.x + (this.rect.w / 2), this.rect.y + (this.rect.h / 2), 10, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'blue';
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore();
+    };
+    ImageStatic.prototype.getImage = function () {
+        return this.img;
+    };
+    ImageStatic.prototype.getImageSrc = function () {
+        return this.imgSrc;
+    };
+    return ImageStatic;
 }(__WEBPACK_IMPORTED_MODULE_0__Item__["a" /* Item */]));
 
-//# sourceMappingURL=ImageButton.js.map
+//# sourceMappingURL=ImageStatic.js.map
 
 /***/ }),
 

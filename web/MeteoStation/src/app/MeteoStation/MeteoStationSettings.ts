@@ -2,10 +2,12 @@
 import * as $ from 'jquery';
 
 export class MeteoStationSettings {
-    
+
     public static ID_GET_DATA          = 'idMeteoData';
+    public static ID_GET_DATE_TIME     = 'idDateTime';
     public static URL                  = 'services/ohs_meteo';
-    public static IMG                  = 'assets/images/add.png';
+    public static IMG                  = 'meteo_assets/images/add.png';
+    public static IMG_BKG              = 'meteo_assets/images/weather.jpg';
 
 }
 

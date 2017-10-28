@@ -13,8 +13,8 @@ public class MeteoStationData {
 	public boolean validity = false;
 	public String id = "none";
 	
-	public float tmpIn = 0;	
-	public float tmpOut = 0;
+	public double tmpIn = 0.0;	
+	public double tmpOut = 0.0;
 	
 	public boolean frost = false;
 	

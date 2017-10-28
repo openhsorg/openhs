@@ -3,6 +3,10 @@ package org.openhs.apps.meteostation;
 import java.util.Map;
 
 import org.openhs.core.commons.MeteoStationData;
+import org.openhs.core.commons.SiteException;
+import org.openhs.core.commons.Temperature;
+import org.openhs.core.commons.TemperatureSensor;
+import org.openhs.core.commons.Thing;
 import org.openhs.core.site.api.ISiteService;
 import org.openhs.core.weather.OpenhsWeather;
 import org.osgi.service.component.ComponentContext;
@@ -84,15 +88,31 @@ public class MeteoStationImpl implements IMeteoStation{
             
       public MeteoStationData getData () {
     	  
-    	  MeteoStationData data = new MeteoStationData ();
-    	  
+    	  MeteoStationData data = new MeteoStationData ();    	  
     	  // Name from file
     	  
-    	  String name = (String) this.m_properties.get("station_name");
+    	  String name = (String) this.m_properties.get("station_name");    	  
+    	  data.id = name;    	     	     	  
     	  
-    	  data.id = name;
-    	     	  
+    	  String tmpPathIn = (String) this.m_properties.get("tempPathInside");
+    	  String tmpPathOut = (String) this.m_properties.get("tempPathOutside");
     	  
+    	  try {    		  
+    		  TemperatureSensor tmpIn = (TemperatureSensor) this.m_siteService.getThing(tmpPathIn);
+    		  TemperatureSensor tmpOut = (TemperatureSensor) this.m_siteService.getThing(tmpPathOut);
+    		  
+    		  Temperature tempIn = tmpIn.getTemperature();
+    		  Temperature tempOut = tmpOut.getTemperature();
+    		  
+    		  data.tmpIn = tempIn.getCelsius();
+    		  data.tmpOut = tempOut.getCelsius();
+    		  
+    		  data.validity = true;
+    		  
+    	  } catch (SiteException e) {
+    		  // TODO Auto-generated catch block
+    		  e.printStackTrace();
+    	  }
     	  
     	  return data;    	  
       }
