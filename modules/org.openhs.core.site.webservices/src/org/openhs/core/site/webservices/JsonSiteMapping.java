@@ -49,7 +49,7 @@ public class JsonSiteMapping {
 			final String keyDimX = "dimX";
 			final String keyDimY = "dimY";
 			final String keyStateInt = "stateInt";
-			final String keyTemperature = "temperature";
+			final String keyTemperature = "temp";
 			final String keyValid = "valid";
 			final String keyNetType = "netType";
 			final String keySensorType = "sensorType";
