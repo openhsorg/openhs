@@ -4,6 +4,7 @@ export class Item {
 
     // Basic Rectangle...
     public rect:     Rect = new Rect ();
+    public visible        = true;
 
     // public canvas:              HTMLCanvasElement =         null;
     protected ctx:                CanvasRenderingContext2D;

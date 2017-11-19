@@ -92,10 +92,11 @@ export class OhsScreen {
         ctx.save();
 
         for (let item of this.m_item) {
-            item.paint();
+            if (item.visible) {
+                item.paint();
+            }
         }
 
         ctx.restore();
-
     }
 }

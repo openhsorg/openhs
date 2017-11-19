@@ -7,5 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/component.xml
 Import-Package: org.json;version="20160810.0.0",
  org.openhs.core.commons,
- org.openhs.core.commons.api
+ org.openhs.core.commons.api,
+ org.slf4j;version="1.7.2"
 Export-Package: org.openhs.core.weather

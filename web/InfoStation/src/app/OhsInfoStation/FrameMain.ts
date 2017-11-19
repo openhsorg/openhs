@@ -1,6 +1,7 @@
 import { SiteData } from '../OhsSiteData/SiteData';
 import { InfoStation } from './InfoStation';
 import { Thing } from '../OhsSiteData/Thing';
+import { OhsWeather } from '../OhsWeather/OhsWeather';
 import { TemperatureSensor } from '../OhsSiteData/TemperatureSensor';
 
 import { Frame } from '../OhsGuiFramework/Frame';
@@ -20,6 +21,8 @@ export class FrameMain extends Frame {
 
     private m_infoStation:           InfoStation = null;
 
+    private m_ohsWeather:            OhsWeather = null;
+
 
     constructor (canvas: HTMLCanvasElement) {
         super(canvas);
@@ -27,11 +30,12 @@ export class FrameMain extends Frame {
         // Data
         this.m_siteData = new SiteData ();
         this.m_infoStation = new InfoStation();
-
+        this.m_ohsWeather = new OhsWeather();
+        
         // Create screens...
-        this.m_screenMain = new ScreenMain(this.m_siteData, this.m_infoStation, canvas);
+        this.m_screenMain = new ScreenMain(this.m_siteData, this.m_infoStation, this.m_ohsWeather, canvas);
         this.addItem(this.m_screenMain);
-
+       
         // Set current screen...
         this.m_curScreen = this.m_screenMain;
 

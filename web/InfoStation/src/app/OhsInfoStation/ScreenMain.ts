@@ -8,10 +8,13 @@ import { TextSimple } from '../OhsGuiFramework/TextSimple';
 import { ImageButton } from '../OhsGuiFramework/ImageButton';
 import { ListBox } from '../OhsGuiFramework/ListBox';
 import { PropertyBox } from '../OhsGuiFramework/PropertyBox';
+import { ImageStatic } from '../OhsGuiFramework/ImageStatic';
 import { NumberRounded } from '../OhsGuiFramework/NumberRounded';
 
+import { GeometryCircle } from './GeometryCircle';
 import { InfoStationSettings } from './InfoStationSettings';
 import { InfoStation } from './InfoStation';
+import { OhsWeather } from '../OhsWeather/OhsWeather';
 
 import swal from 'sweetalert2';
 
@@ -19,6 +22,7 @@ export class ScreenMain extends OhsScreen {
 
     public m_siteData:          SiteData = null;
     public m_infoStation:       InfoStation = null;
+    public m_weather:           OhsWeather = null;    
 
     // Texts
     protected m_textTime:       TextSimple = null;
@@ -32,11 +36,18 @@ export class ScreenMain extends OhsScreen {
     protected m_watch:          ImageButton = null;
     protected m_doors:          ImageButton = null;
 
-    constructor (siteData: SiteData, iStation: InfoStation, canvas: HTMLCanvasElement) {
+    // Graphics
+    protected m_circle:         GeometryCircle = null;
+
+    // Images
+    protected m_weatherIcons:   Array<ImageStatic>    = new Array<ImageStatic>(); 
+
+    constructor (siteData: SiteData, iStation: InfoStation, weather: OhsWeather, canvas: HTMLCanvasElement) {
         super(canvas);
 
         this.m_siteData = siteData;
         this.m_infoStation = iStation;
+        this.m_weather = weather;
         this.buildLayout();
 
        // window.alert('test');
@@ -105,6 +116,52 @@ export class ScreenMain extends OhsScreen {
         this.m_textWind.bold = false;
         this.m_textWind.Size((this.canvas.width / 2) - 60, (this.canvas.height / 2) - 10, 200, 120);
 
+        // Geometry
+        this.m_circle = new GeometryCircle(this.ctx, this.canvas);
+        this.add(this.m_circle);
+        this.m_circle.visible = true;
+
+        // Weather icons
+        // 1:Sunny, 2:Sunny with Cloud, 3: Cloudy, 4: Cloudy+Rain, 5:Cloudy+Storm, 6: Cloudy+Snow
+        var img = new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_SUNNY);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+
+        var img =  new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_PARTCLOUDY);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);        
+
+        var img =  new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_CLOUDY);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);             
+        
+        var img =  new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_CLOUDRAIN);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);               
+
+        var img =  new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_CLOUDSTORM);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);               
+
+        var img =  new ImageStatic(this.ctx);
+        img.setImage(InfoStationSettings.IMG_CLOUDSNOW);
+        img.Size(0, 0, 150, 150);
+        img.visible = false;
+        this.m_weatherIcons.push(img);               
+
+        for (let icon of this.m_weatherIcons) {
+            this.add(icon);
+        }
 
         
 /*
@@ -151,18 +208,40 @@ export class ScreenMain extends OhsScreen {
 
        // this.m_textTempIn.setText(this.m_infoStation.data.tmpInPath);
         //this.m_textTempOut.setText(this.m_infoStation.data.tmpOutPath);
-
+        
         this.updateTempData();
-
+        this.updatedWeatherData();
+   
     }
 
     protected updateTempData() {
 
         var thingIn = <TemperatureSensor> this.m_siteData.getThing(this.m_infoStation.data.tmpInPath);
-        var thingOut = <TemperatureSensor> this.m_siteData.getThing(this.m_infoStation.data.tmpOutPath);
+        //var thingOut = <TemperatureSensor> this.m_siteData.getThing(this.m_infoStation.data.tmpOutPath);
 
-        this.m_textTempIn.setText(thingIn.temp.toString());
-        this.m_textTempOut.setText(thingOut.temp.toString());
+        if (thingIn != null) {
+            this.m_textTempIn.setText(thingIn.temp.toString());
+        }
+      //  this.m_textTempOut.setText(thingOut.temp.toString());
+
+      this.m_textTempOut.setText(this.m_weather.m_currentWeather.temp.toPrecision(3).toString());
+
+    }
+
+    protected updatedWeatherData() {
+
+        var imgNum = this.m_weather.m_currentWeather.weatherSymbol;
+
+        if (imgNum > 0 && imgNum < this.m_weatherIcons.length) {
+            if (!this.m_weatherIcons[imgNum - 1].visible) {
+                // Set visibility
+                for (var icon of this.m_weatherIcons) {
+                    icon.visible = false;
+                }
+
+                this.m_weatherIcons[imgNum - 1].visible = true;
+            }
+        }
 
     }
 

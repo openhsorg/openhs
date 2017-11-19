@@ -10,7 +10,7 @@ export class ImageButton extends Item {
 
     protected int = null;
 
-    protected visible = true;
+    //protected visible = true;
 
     constructor (ctx: CanvasRenderingContext2D, imgSrc: string, imgPush: string, x: number, y: number, w: number, h: number) {
         super(ctx);

@@ -492,8 +492,7 @@ module KitchenInfoStation {
             const ctx = canvas.getContext('2d');
             var width: number = canvas.width;
             var height: number = canvas.height;
-            
-                       
+                                   
             ctx.clearRect(0, 0, width, height);
                                     
             var arcCenterX = width / 2;
