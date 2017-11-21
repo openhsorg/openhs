@@ -14,6 +14,13 @@ export class InfoStationSettings {
     public static IMG_CLOUDY           = 'ohsinfo_assets/images/cloudy.png';
     public static IMG_PARTCLOUDY       = 'ohsinfo_assets/images/partcloudy.png';
     public static IMG_SUNNY            = 'ohsinfo_assets/images/sunny.png';
+    public static IMG_WIND             = 'ohsinfo_assets/images/wind.png';
+    public static IMG_DROP             = 'ohsinfo_assets/images/drop.png';
+    public static IMG_STOPWATCH        = 'ohsinfo_assets/images/stopwatch.png';
+    public static IMG_VOICEMESSAGE     = 'ohsinfo_assets/images/voicemessage.png';
+    public static IMG_BULB             = 'ohsinfo_assets/images/bulb.png';
+    public static IMG_DOOR             = 'ohsinfo_assets/images/door.png';
+    public static IMG_HUMIDITY         = 'ohsinfo_assets/images/humidity.png';
 
 }
 

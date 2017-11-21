@@ -15,6 +15,7 @@ export class SiteData {
 
     // ---Timers---
     private fastTimerGetData;
+    private normalTimerGetData;
     private slowTimerGetData;
 
     // ---Site data---
@@ -28,7 +29,8 @@ export class SiteData {
     public m_contactSensorArray:    Array <ContactSensor> = null;
     public m_wifiNodeArray:         Array <WifiNode> = null;
 
-    protected getCount              = 0;
+    protected getCountNormal        = 0;
+    protected getCountSlow          = 0;
 
     // ---Other data---
     public timeString       = '---';
@@ -58,17 +60,18 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
 
         // Timers
-        this.fastTimerGetDataEvent(500);
-        this.slowTimerGetDataEvent(2000);
+        this.fastTimerGetDataEvent(150);
+        this.slowTimerGetDataEvent(10000);
+        this.normalTimerGetDataEvent(2000);
 
     }
 
-    private slowTimerGetDataEvent(step: number) {
+    private normalTimerGetDataEvent(step: number) {
 
-        this.updateSlowData();
+        this.updateData();
 
-        window.clearTimeout(this.slowTimerGetData);
-        this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
+        window.clearTimeout(this.normalTimerGetData);
+        this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);
     }
 
     private fastTimerGetDataEvent(step: number) {
@@ -79,52 +82,37 @@ export class SiteData {
         this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step);
     }
 
-    public updateFastData () {
+    private slowTimerGetDataEvent(step: number) {
 
-        // Date & Time
-        this.updateDateTime();
+        this.updateSlowData();
 
-        // Switch
-    //    this.getObjectArray(idSwitchArr);
+        window.clearTimeout(this.slowTimerGetData);
+        this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
     }
 
-    public updateSlowData () {
+    public updateFastData () {
+        // Date & Time
+        this.updateDateTime();
+    }
 
-        //   this.get_DateTime();
+    public updateData () {
 
-        if (this.getCount === 0) {
-            this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
-
-        } else if (this.getCount === 1) {
-            this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
-
-        } else if (this.getCount === 2) {
-            this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
-
-        } else if (this.getCount === 3) {
-            this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
-
-        } else if (this.getCount === 4) {
+        if (this.getCountNormal === 1) {
             this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
 
-        } else if (this.getCount === 5) {
+        } else if (this.getCountNormal === 2) {
             this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
 
-        } else if (this.getCount === 6) {
+        } else if (this.getCountNormal === 3) {
             this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
 
-        } else if (this.getCount === 7) {
-            this.m_site.update();
-
-        } else if (this.getCount === 8) {
-            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
         }
 
-        if (this.getCount === 8) {
-            this.getCount = 0;
+        if (this.getCountNormal === 3) {
+            this.getCountNormal = 1;
 
         } else {
-                this.getCount ++;
+                this.getCountNormal ++;
         }
     }
 
@@ -145,6 +133,34 @@ export class SiteData {
             }
 
           //  window.alert('update time:' + this.timeString);
+        }
+    }
+    public updateSlowData () {
+
+        if (this.getCountSlow === 0) {
+            this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
+
+        } else if (this.getCountSlow === 1) {
+            this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
+
+        } else if (this.getCountSlow === 2) {
+            this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+
+        } else if (this.getCountSlow === 3) {
+            this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+
+        } else if (this.getCountSlow === 4) {
+            this.m_site.update();
+
+        } else if (this.getCountSlow === 5) {
+            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+        }
+
+        if (this.getCountSlow === 5) {
+            this.getCountSlow = 0;
+
+        } else {
+                this.getCountSlow ++;
         }
     }
 

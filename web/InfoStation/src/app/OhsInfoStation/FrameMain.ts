@@ -31,11 +31,11 @@ export class FrameMain extends Frame {
         this.m_siteData = new SiteData ();
         this.m_infoStation = new InfoStation();
         this.m_ohsWeather = new OhsWeather();
-        
+
         // Create screens...
         this.m_screenMain = new ScreenMain(this.m_siteData, this.m_infoStation, this.m_ohsWeather, canvas);
         this.addItem(this.m_screenMain);
-       
+
         // Set current screen...
         this.m_curScreen = this.m_screenMain;
 

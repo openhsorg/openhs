@@ -19,7 +19,7 @@ export class GeometryCircle extends Item {
                                 
         var arcCenterX = width / 2;
         var arcCenterY = height / 2 + (height * 0.1);
-        var arcRadius = height * 0.32;             
+        var arcRadius = height * 0.38;             
 
         var r = Math.min(this.canvas.width, this.canvas.height) * 7 / 16;       
         
@@ -27,7 +27,7 @@ export class GeometryCircle extends Item {
         this.ctx.beginPath();
         this.ctx.arc(arcCenterX, arcCenterY, arcRadius, 0, 2 * Math.PI, true); 
         this.ctx.lineWidth = 2;
-        this.ctx.strokeStyle = 'red';
+        this.ctx.strokeStyle = '#999999';
         this.ctx.stroke();
         this.ctx.restore();         
 

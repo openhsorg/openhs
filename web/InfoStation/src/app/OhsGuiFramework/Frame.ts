@@ -5,6 +5,7 @@ export class Frame {
     public m_screens:           Array <OhsScreen>; // = new Array<Screen>();
     private canvas:             HTMLCanvasElement;
     private ctx:                CanvasRenderingContext2D;
+    loop: number;
 
     // Pointer to current screen...
     public m_curScreen:         OhsScreen = null;
@@ -22,7 +23,12 @@ export class Frame {
 
      //    document.addEventListener("keydown", () => this.KeyDownHandler);
 
-        requestAnimationFrame(() => this.paint());
+//        requestAnimationFrame(() => this.paint());
+
+        //20Hz
+        this.loop = window.setInterval(()=>{
+            this.paint();
+        }, 50);
 
     }
 

@@ -204,7 +204,7 @@ public class JsonSiteMapping {
 	
     public void getTimeDateJSON(JSONObject json) {	    		    	
 	    Date curDate = new Date();
-	    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+	    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 	    String time = format.format(curDate); 	 		  
 	    
 	    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
