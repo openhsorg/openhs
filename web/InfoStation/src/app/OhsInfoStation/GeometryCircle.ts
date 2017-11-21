@@ -19,9 +19,9 @@ export class GeometryCircle extends Item {
                                 
         var arcCenterX = width / 2;
         var arcCenterY = height / 2 + (height * 0.1);
-        var arcRadius = height * 0.38;             
+        var arcRadius = (height * 0.8) / 2;             
 
-        var r = Math.min(this.canvas.width, this.canvas.height) * 7 / 16;       
+        //var r = Math.min(this.canvas.width, this.canvas.height) * 7 / 12;       
         
         this.ctx.save();
         this.ctx.beginPath();

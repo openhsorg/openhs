@@ -43,13 +43,15 @@ public class InfoStationServlet extends HttpServlet {
 
     	out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
     	out.println("<link rel='icon' type='image/x-icon' href='ohsinfo_res/dist/favicon.ico'>");
+    	out.println("<link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'>");
+    	out.println("<link href='https://fonts.googleapis.com/css?family=Oswald|Roboto+Condensed' rel='stylesheet'>");    	
     	out.println("</head>");
     	out.println("<body>");
     	
     //	out.println("blllllllaaaaaaaaaa");
     	
     	
-    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='850' height='550' style='margin-top: -275px; margin-left: -425px'>");
+    	out.println("<canvas id='infoCanvas' class=canvasScreen charset='utf-8' width='800' height='500' style='margin-top: -250px; margin-left: -400px'>");
     	out.println("Error: Your browser does not support the HTML canvas element.");
     	out.println("</canvas>");  
     	out.println("<app-root></app-root>");

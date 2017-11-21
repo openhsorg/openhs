@@ -112,52 +112,52 @@ export class ScreenMain extends OhsScreen {
         this.m_textTime = new TextSimple(this.ctx, 'Time', 730, 0, 250, 100);
         this.add(this.m_textTime);
 
-        this.m_textTime.fontSize = 140;
-        this.m_textTime.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        this.m_textTime.fontSize = 170;
+        this.m_textTime.fontFamily = 'px Roboto Condensed, sans-serif';
         this.m_textTime.fontColor = '#000000';
         this.m_textTime.textAlign = 'right';
         this.m_textTime.textBaseline = 'middle';
-        this.m_textTime.bold = false;
-        this.m_textTime.Size((this.canvas.width / 2) + 30, (this.canvas.height / 2) + 10, 170, 70);
+        this.m_textTime.bold = true;
+        this.m_textTime.Size((this.canvas.width / 2) - 15, (this.canvas.height / 2) - 35, 200, 150);
 
         // Date
         this.m_textDate = new TextSimple(this.ctx, 'Time', 730, 0, 250, 100);
         this.add(this.m_textDate);
 
-        this.m_textDate.fontSize = 50;
-        this.m_textDate.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        this.m_textDate.fontSize = 60;
+        this.m_textDate.fontFamily = 'px Roboto Condensed, sans-serif';
         this.m_textDate.fontColor = '#000000';
         this.m_textDate.textAlign = 'right';
         this.m_textDate.textBaseline = 'middle';
         this.m_textDate.bold = false;
-        this.m_textDate.Size((this.canvas.width / 2) - 20, (this.canvas.height / 2) + 120, 170, 70);
+        this.m_textDate.Size((this.canvas.width / 2) - 15, (this.canvas.height / 2) + 120, 170, 70);
 
         // Temp In
         this.m_textTempIn = new TextSimple(this.ctx, 'TmpIn', 730, 0, 250, 100);
         this.add(this.m_textTempIn);
 
         this.m_textTempIn.fontSize = 120;
-        this.m_textTempIn.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        this.m_textTempIn.fontFamily = 'px Roboto Condensed, sans-serif';
         this.m_textTempIn.fontColor = '#000000';
         this.m_textTempIn.textAlign = 'right';
-        this.m_textTempIn.textBaseline = 'middle';
-        this.m_textTempIn.bold = false;
-        this.m_textTempIn.Size(this.canvas.width - 230, 60, 230, 65);
+        this.m_textTempIn.textBaseline = 'top';
+        this.m_textTempIn.bold = true;
+        this.m_textTempIn.Size(this.canvas.width - 230, 5, 230, 65);
 
         // Temp Out
         this.m_textTempOut = new TextSimple(this.ctx, 'TmpOut', 0, 0, 0, 0);
         this.add(this.m_textTempOut);
 
         this.m_textTempOut.fontSize = 120;
-        this.m_textTempOut.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+        this.m_textTempOut.fontFamily = 'px Roboto Condensed, sans-serif';
         this.m_textTempOut.fontColor = '#000000';
-        this.m_textTempOut.textAlign = 'right';
-        this.m_textTempOut.textBaseline = 'middle';
-        this.m_textTempOut.bold = false;
-        this.m_textTempOut.Size(220, 60, 120, 65);
+        this.m_textTempOut.textAlign = 'left';
+        this.m_textTempOut.textBaseline = 'top';
+        this.m_textTempOut.bold = true;
+        this.m_textTempOut.Size(170, 5, 120, 65);
 
         // Wind
-        this.m_textWind = new TextSimple(this.ctx, 'Wind', 260, 60, 120, 100);
+        this.m_textWind = new TextSimple(this.ctx, 'Wind', 260, 0, 120, 100);
         this.add(this.m_textWind);
 
         this.m_textWind.fontSize = 40;
@@ -170,19 +170,19 @@ export class ScreenMain extends OhsScreen {
 
         // Buttons
         this.m_phone = new ImageButton (this.ctx,
-            InfoStationSettings.IMG_VOICEMESSAGE, InfoStationSettings.IMG_VOICEMESSAGE, 30, this.canvas.height / 2, 60, 60);
+            InfoStationSettings.IMG_VOICEMESSAGE, InfoStationSettings.IMG_VOICEMESSAGE, 5, this.canvas.height / 2, 80, 80);
         this.add(this.m_phone);
 
         this.m_watch = new ImageButton (this.ctx,
-            InfoStationSettings.IMG_STOPWATCH, InfoStationSettings.IMG_STOPWATCH, 130, this.canvas.height / 2, 60, 60);
+            InfoStationSettings.IMG_STOPWATCH, InfoStationSettings.IMG_STOPWATCH, 100, this.canvas.height / 2, 80, 80);
         this.add(this.m_watch);
 
         this.m_bulb = new ImageButton (this.ctx,
-            InfoStationSettings.IMG_BULB, InfoStationSettings.IMG_BULB, 670, this.canvas.height / 2, 60, 60);
+            InfoStationSettings.IMG_BULB, InfoStationSettings.IMG_BULB, 620, this.canvas.height / 2, 80, 80);
         this.add(this.m_bulb);
 
         this.m_door = new ImageButton (this.ctx,
-            InfoStationSettings.IMG_DOOR, InfoStationSettings.IMG_DOOR, 770, this.canvas.height / 2, 60, 60);
+            InfoStationSettings.IMG_DOOR, InfoStationSettings.IMG_DOOR, 715, this.canvas.height / 2, 80, 80);
         this.add(this.m_door);
 
 
