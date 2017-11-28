@@ -22,14 +22,14 @@ export class ScreenMain extends OhsScreen {
 
     public m_siteData:          SiteData = null;
     public m_infoStation:       InfoStation = null;
-    public m_weather:           OhsWeather = null;    
+    public m_weather:           OhsWeather = null;
 
     // Texts
-    protected m_textTime:       TextSimple = null;
-    protected m_textDate:       TextSimple = null;
-    protected m_textTempOut:    TextSimple = null;
-    protected m_textTempIn:     TextSimple = null;
-    protected m_textWind:       TextSimple = null;
+    public m_textTime:          TextSimple = null;
+    public m_textDate:          TextSimple = null;
+    public m_textTempOut:       TextSimple = null;
+    public m_textTempIn:        TextSimple = null;
+    public m_textWind:          TextSimple = null;
 
     // Icons
     protected m_phone:          ImageButton = null;
@@ -41,7 +41,7 @@ export class ScreenMain extends OhsScreen {
     protected m_circle:         GeometryCircle = null;
 
     // Images
-    protected m_weatherIcons:   Array<ImageStatic>    = new Array<ImageStatic>(); 
+    public m_weatherIcons:      Array<ImageStatic>    = new Array<ImageStatic>(); 
     protected m_wind:           ImageStatic;
 
     constructor (siteData: SiteData, iStation: InfoStation, weather: OhsWeather, canvas: HTMLCanvasElement) {
@@ -261,11 +261,6 @@ export class ScreenMain extends OhsScreen {
             this.m_wind.visible = true;
             this.m_textWind.setText(num.toString() + ' m/s');
         }
-
-
-
     }
-
-
 
 } // class end

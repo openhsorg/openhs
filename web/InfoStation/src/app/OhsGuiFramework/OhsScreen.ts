@@ -18,11 +18,9 @@ export class OhsScreen {
     }
 
     public add (item: Item) {
-
-        // item.canvas = this.canvas;
-
         this.m_item.push(item);
     }
+
     /*
     public SetCanvas (canvas: HTMLCanvasElement) {
         this.canvas = canvas;
