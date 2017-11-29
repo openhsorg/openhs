@@ -4,7 +4,7 @@ import {postAjax} from './OhsInterface';
 
 export class Switch extends Thing {
 
-        protected   stateInt:  number;
+        protected   stateInt:  number; //1-off 2- off_on 3- on, 4- on_off
 
         constructor () {
             super ();

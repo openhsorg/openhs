@@ -61,14 +61,16 @@ export class SiteData {
 
         // Timers
         this.fastTimerGetDataEvent(150);
-        this.slowTimerGetDataEvent(10000);
-        this.normalTimerGetDataEvent(2000);
+      //  this.slowTimerGetDataEvent(10000);
+        this.normalTimerGetDataEvent(5000);
 
     }
 
     private normalTimerGetDataEvent(step: number) {
 
         this.updateData();
+
+        this.updateSlowData();
 
         window.clearTimeout(this.normalTimerGetData);
         this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);

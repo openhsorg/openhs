@@ -23,13 +23,13 @@ export class Frame {
 
      //    document.addEventListener("keydown", () => this.KeyDownHandler);
 
-//        requestAnimationFrame(() => this.paint());
-
+        requestAnimationFrame(() => this.paint());
+/*
         //20Hz
         this.loop = window.setInterval(()=>{
             this.paint();
         }, 50);
-
+*/
     }
 
     public paint () {

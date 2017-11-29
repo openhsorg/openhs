@@ -21,6 +21,12 @@ export class InfoStationSettings {
     public static IMG_BULB             = 'ohsinfo_assets/images/bulb.png';
     public static IMG_DOOR             = 'ohsinfo_assets/images/door.png';
     public static IMG_HUMIDITY         = 'ohsinfo_assets/images/humidity.png';
+    public static IMG_FLOOR            = 'ohsinfo_assets/images/floorIcon.png';
+    public static IMG_FLOOR1           = 'ohsinfo_assets/images/floor1.jpg';
+    public static IMG_BULB_ON          = 'ohsinfo_assets/images/bulbOn.png';
+    public static IMG_BULB_OFF         = 'ohsinfo_assets/images/bulbOff.png';
+    public static IMG_BULB_ONOFF       = 'ohsinfo_assets/images/bulbOn_Off.png';
+    public static IMG_BULB_OFFON       = 'ohsinfo_assets/images/bulbOff_On.png';
 
 }
 

@@ -1,7 +1,6 @@
 import {InfoStationData} from './InfoStationData';
 import {InfoStationSettings} from './InfoStationSettings';
 import {postAjax} from './InfoStationSettings';
-//import { SiteData } from '../OhsSiteData/SiteData';
 
 export class InfoStation {
 

@@ -17,23 +17,25 @@ export class OhsScreen {
         this.m_item = new Array <Item>();
     }
 
+    protected buildLayout () {
+        this.removeAll();
+
+    }
+
     public add (item: Item) {
         this.m_item.push(item);
     }
 
-    /*
-    public SetCanvas (canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
-
+    public removeAll () {
+        this.m_item.length = 0;
     }
-    */
+
     public GetSize() {
         return {
                 width: this.canvas.width,
                 height: this.canvas.height
                 };
     }
-
 
     public MouseDownHandler(x: number, y: number) {
         for (let item of this.m_item) {

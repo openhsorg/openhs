@@ -32,10 +32,10 @@ export class ScreenMain extends OhsScreen {
     public m_textWind:          TextSimple = null;
 
     // Icons
-    protected m_phone:          ImageButton = null;
-    protected m_watch:          ImageButton = null;
-    protected m_bulb:           ImageButton = null;
-    protected m_door:           ImageButton = null;
+    public m_phone:             ImageButton = null;
+    public m_watch:             ImageButton = null;
+    public m_bulb:              ImageButton = null;
+    public m_door:              ImageButton = null;
 
     // Graphics
     protected m_circle:         GeometryCircle = null;

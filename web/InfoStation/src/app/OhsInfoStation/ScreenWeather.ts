@@ -20,70 +20,41 @@ export class ScreenWeather extends OhsScreen {
             super(canvas);
 
             this.m_weather = weather;
-
-           // window.alert('test');
-          //  this.buildLayout();
-
-
        }
 
-        public buildLayout () {
-/*
-            this.m_panels.push(new PanelWeather(this.ctx, this.m_weather.m_forecastWeather[0]));
-            this.m_panels.push(new PanelWeather(this.ctx, this.m_weather.m_forecastWeather[1]));
-            this.m_panels.push(new PanelWeather(this.ctx, this.m_weather.m_forecastWeather[2]));
-            this.m_panels.push(new PanelWeather(this.ctx, this.m_weather.m_forecastWeather[3]));
+    protected updateData () {
+        // super.updateData();
 
+        if (this.m_panels.length < 5 && this.m_weather.m_forecastWeather.length > 1) {
+            this.m_panels.length = 0;
+
+            for (let item of this.m_weather.m_forecastWeather) {
+                const nl = this.m_panels.push(new PanelWeather(this.ctx, item));
+
+                if (nl === 5) {
+                    break;
+                }
+            }
+
+            // Resize
             const dx = 5;
             let d_pan = (this.canvas.width - dx) / this.m_panels.length;
 
-            var i = 0;
+            var j = 0;
 
-            for (let item of this.m_panels) {
-                item.Size(dx + (i * (d_pan)), 0, d_pan - dx, this.canvas.height);
+            for (let item2 of this.m_panels) {
 
-                i++;
-            }
-            */
-        }
+                let xx = dx + (j * (d_pan));
 
-        protected updateData () {
-           // super.updateData();
+                item2.Size(xx, 5, d_pan - dx, this.canvas.height);
 
-            if (this.m_panels.length < 5 && this.m_weather.m_forecastWeather.length > 1) {
-                this.m_panels.length = 0;
+                item2.m_textTempOut.setText('j: ' + j);
 
-                for (let item of this.m_weather.m_forecastWeather) {
-                    const nl = this.m_panels.push(new PanelWeather(this.ctx, item));
+                j = j + 1;
 
-                    if (nl === 5) {
-                        break;
-                    }
-                }
-
-                // Resize
-                const dx = 5;
-                let d_pan = (this.canvas.width - dx) / this.m_panels.length;
-
-                var j = 0;
-
-                for (let item2 of this.m_panels) {
-
-                    let xx = dx + (j * (d_pan));
-
-                    item2.Size(xx, 5, d_pan - dx, this.canvas.height);
-
-                    item2.m_textTempOut.setText('j: ' + j);
-
-                    j = j + 1;
-
-                    //window.alert(' resize...: ' + xx + ' J: ' + j);
-
-                    item2.visible = true;
-                    this.add(item2);
-
-                 //   window.alert(' resize...: ' + item2.m_textTempOut.getText());
-                }
+                item2.visible = true;
+                this.add(item2);
             }
         }
     }
+}
