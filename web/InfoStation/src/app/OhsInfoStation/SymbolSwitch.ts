@@ -12,15 +12,15 @@ export class SymbolSwitch extends Item {
     public m_switch:        Switch = null;
     public m_imgState:      Array <ImageStatic>;
 
-    protected fx:   number;
-    protected fy:   number;
+    protected scaleX:   number;
+    protected scaleY:   number;
 
-    constructor (ctx: CanvasRenderingContext2D, swt: Switch, fx: number, fy: number) {
+    constructor (ctx: CanvasRenderingContext2D, swt: Switch, scaleX: number, scaleY: number) {
         super(ctx);
 
         this.m_switch = swt;
-        this.fx = fx;
-        this.fy = fy;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
 
         this.m_imgState = new Array <ImageStatic> ();
 
@@ -59,10 +59,10 @@ export class SymbolSwitch extends Item {
 
     protected updateData() {
 
-        this.rect.size(this.m_switch.posX * this.fx, this.m_switch.posY * this.fy, 50, 50);
+        this.Size(this.m_switch.posX * this.scaleX, this.m_switch.posY * this.scaleY, 50, 50);
 
         for (let img of this.m_imgState) {
-            img.Size(this.m_switch.posX * this.fx, this.m_switch.posY * this.fy, 50, 50);
+            img.Size(this.m_switch.posX * this.scaleX, this.m_switch.posY * this.scaleY, 50, 50);
             img.visible = false;
         }
 
@@ -80,7 +80,17 @@ export class SymbolSwitch extends Item {
         } else {
             this.m_imgState[3].visible =  true;
         }
+    }
 
+    public MouseDownHandler(x: number, y: number) {
+        const ret = super.MouseDownHandler(x, y);
+
+        if (ret === this) {
+            this.m_switch.click();
+
+        }
+
+        return ret;
     }
 
 }

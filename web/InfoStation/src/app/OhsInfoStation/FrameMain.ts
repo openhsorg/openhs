@@ -113,12 +113,15 @@ export class FrameMain extends Frame {
                 }
 
 
-            } else if (this.m_curScreen === this.m_screenFloor) {
-                this.m_curScreen = this.m_screenMain;
-                return null;
             }
 
         }
+
+        if (this.m_curScreen === this.m_screenFloor && ret === null) {
+            this.m_curScreen = this.m_screenMain;
+            return null;
+        }
+
 
         return null;
     }

@@ -85,7 +85,8 @@ export class Frame {
 
         if (this.m_curScreen != null) {
             return this.m_curScreen.MouseUpHandler(mousePos.x, mousePos.y);
-        }     }
+        }
+    }
 
     public addItem (screen: OhsScreen) {
 

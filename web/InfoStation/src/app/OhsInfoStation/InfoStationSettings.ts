@@ -27,6 +27,7 @@ export class InfoStationSettings {
     public static IMG_BULB_OFF         = 'ohsinfo_assets/images/bulbOff.png';
     public static IMG_BULB_ONOFF       = 'ohsinfo_assets/images/bulbOn_Off.png';
     public static IMG_BULB_OFFON       = 'ohsinfo_assets/images/bulbOff_On.png';
+    public static IMG_TEMP_SYMBOL      = 'ohsinfo_assets/images/tempSymbol.png';
 
 }
 
@@ -54,3 +55,4 @@ export function postAjax(urlAdr: string, jsonDat: string) {
 
      return result;
  }
+

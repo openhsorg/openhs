@@ -18,6 +18,10 @@ export class SiteData {
     private normalTimerGetData;
     private slowTimerGetData;
 
+    loop: number;
+    loop1: number;
+    loop2: number;
+
     // ---Site data---
     public m_site:                  Site = null;
     public m_floorArray:            Array <Floor> = null;
@@ -58,11 +62,23 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
         this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
         this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
-
+/*
         // Timers
         this.fastTimerGetDataEvent(150);
-      //  this.slowTimerGetDataEvent(10000);
-        this.normalTimerGetDataEvent(5000);
+        this.slowTimerGetDataEvent(10000);
+        this.normalTimerGetDataEvent(1000);
+*/
+        this.loop = window.setInterval(()=>{
+            this.updateFastData();
+        }, 500);
+
+        this.loop1 = window.setInterval(()=>{
+            this.updateData();
+        }, 1000);
+
+        this.loop2 = window.setInterval(()=>{
+            this.updateSlowData();
+        }, 10000);
 
     }
 
@@ -70,7 +86,7 @@ export class SiteData {
 
         this.updateData();
 
-        this.updateSlowData();
+      //  this.updateSlowData();
 
         window.clearTimeout(this.normalTimerGetData);
         this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);

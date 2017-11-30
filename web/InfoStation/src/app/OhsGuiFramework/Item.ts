@@ -5,6 +5,7 @@ export class Item {
     // Basic Rectangle...
     public rect:     Rect = new Rect ();
     public visible        = true;
+    public clickable      = true;
 
     // public canvas:              HTMLCanvasElement =         null;
     protected ctx:                CanvasRenderingContext2D;
@@ -18,7 +19,7 @@ export class Item {
 
     public MouseDownHandler(x: number, y: number) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) { return this; } else { return null; }
         } else {
             return null;
         }
@@ -26,7 +27,7 @@ export class Item {
 
     public MouseUpHandler(x: number, y: number) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) { return this; } else { return null; }
         } else {
             return null;
         }
@@ -34,7 +35,7 @@ export class Item {
 
     public MouseMoveHandler(x: number, y: number) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) { return this; } else { return null; }
         } else {
             return null;
         }
