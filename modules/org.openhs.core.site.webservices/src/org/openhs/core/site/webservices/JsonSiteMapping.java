@@ -49,7 +49,7 @@ public class JsonSiteMapping {
 			final String keyDimX = "dimX";
 			final String keyDimY = "dimY";
 			final String keyStateInt = "stateInt";
-			final String keyTemperature = "temperature";
+			final String keyTemperature = "temp";
 			final String keyValid = "valid";
 			final String keyNetType = "netType";
 			final String keySensorType = "sensorType";
@@ -204,7 +204,7 @@ public class JsonSiteMapping {
 	
     public void getTimeDateJSON(JSONObject json) {	    		    	
 	    Date curDate = new Date();
-	    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+	    SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 	    String time = format.format(curDate); 	 		  
 	    
 	    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");

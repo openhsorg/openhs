@@ -10,7 +10,7 @@ import swal from 'sweetalert2';
 export class ScreenFloors extends ScreenThings {
 
     protected updateData() {
-        super.updateData();
+       // super.updateData();
 
         this.m_textTitle.setText('Floors');
 
