@@ -232,13 +232,13 @@ module WelcomeApp {
                 window.open("/admin", "_self");                  
                                 
             } else if (this.btnKitchen.isClicked(mx, my)) {                
-                window.open("/kitchen", "_self");  
+                window.open("/ohsinfo", "_self");  
                  
             } else if (this.btnClock.isClicked(mx, my)) {                
                 window.open("/org.openhs.core.clock.servlet.ClockSimpleServlet", "_self");  
                  
             } else if (this.btnMeteo.isClicked(mx, my)) {                
-                window.open("/org.openhs.core.meteostation.digital", "_self");  
+                window.open("/meteo", "_self");  
                  
             }   
               
