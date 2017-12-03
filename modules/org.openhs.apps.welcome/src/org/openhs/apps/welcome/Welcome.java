@@ -45,7 +45,7 @@ public class Welcome extends HttpServlet {
 	}
 	    
 	    
-    protected void print_html (PrintWriter out){
+    protected void print_htmlOLD (PrintWriter out){
     	
     	out.println("\n<!DOCTYPE html>");
     	out.println("<html>");
@@ -76,7 +76,26 @@ public class Welcome extends HttpServlet {
     	
     	out.println("</body>");
     	out.println("</html>");    	
-    }  		
+    }  	
+    
+    protected void print_html (PrintWriter out){
+    	    	
+    	out.println("<!doctype html>");
+		out.println("<html lang='en'>");
+		out.println("<head>");
+		out.println("<meta charset='utf-8'>");
+		out.println("<title>OhsWelcome</title>");
+	
+		out.println("<base href='/'>");
+		
+		out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");
+		out.println("<link rel='icon' type='image/x-icon' href='favicon.ico'>");
+		out.println("</head>");
+		out.println("<body>");
+		out.println("<app-root></app-root>");
+		out.println("<script type='text/javascript' src='cres/dist/inline.bundle.js'></script><script type='text/javascript' src='cres/dist/polyfills.bundle.js'></script><script type='text/javascript' src='cres/dist/styles.bundle.js'></script><script type='text/javascript' src='cres/dist/vendor.bundle.js'></script><script type='text/javascript' src='cres/dist/main.bundle.js'></script></body>");
+		out.println("</html>");    	
+    }     
 	
 	public void activate () {
 		System.out.println("Component Welcome activated!");
@@ -84,7 +103,8 @@ public class Welcome extends HttpServlet {
 		/* Make adress references */										
         try {
             m_httpService.registerServlet("/" + url, this, null, null);  
-            m_httpService.registerResources("/" + urlRes, "/res", null);                        
+            m_httpService.registerResources("/" + urlRes, "/web", null);    
+            m_httpService.registerResources("/assets", "/web/dist/assets", null);  
         } catch (ServletException e) {
             // TODO Auto-generated catch block
         	System.out.println("\n\n--->*************************");
