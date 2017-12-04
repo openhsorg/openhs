@@ -53,7 +53,6 @@ export class SiteData {
 
         // Initial update
         this.m_site.update();
-
         this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
         this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
         this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
@@ -70,8 +69,8 @@ export class SiteData {
 */
         this.loop = window.setInterval(()=>{
             this.updateFastData();
-        }, 500);
-
+        }, 1000);
+/*
         this.loop1 = window.setInterval(()=>{
             this.updateData();
         }, 1000);
@@ -79,14 +78,12 @@ export class SiteData {
         this.loop2 = window.setInterval(()=>{
             this.updateSlowData();
         }, 10000);
-
+*/
     }
-
+/*
     private normalTimerGetDataEvent(step: number) {
 
         this.updateData();
-
-      //  this.updateSlowData();
 
         window.clearTimeout(this.normalTimerGetData);
         this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);
@@ -107,7 +104,7 @@ export class SiteData {
         window.clearTimeout(this.slowTimerGetData);
         this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
     }
-
+*/
     public updateFastData () {
         // Date & Time
         this.updateDateTime();
