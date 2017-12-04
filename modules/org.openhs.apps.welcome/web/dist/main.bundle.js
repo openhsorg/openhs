@@ -154,7 +154,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var MainWindowComponent = (function () {
     function MainWindowComponent() {
-        this.plesk = 'Windstorm';
+        this.plesk = 'Windstorm - 2xxx';
     }
     MainWindowComponent.prototype.ngOnInit = function () {
     };
@@ -164,7 +164,7 @@ MainWindowComponent = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'app-main-window',
         //templateUrl: './main-window.component.html',
-        template: "<p class=\"tn\"><span>Version: {{plesk}}</span></p>  \n  <div> \n  <a href=\"/admin\">\n    <img src=\"../../assets/images/admin.png\" alt=\"\">\n  </a>\n  <a href=\"/meteo\">    \n    <img src=\"./assets/images/metgeo.png\" alt =\"\">   \n  </a>\n  <a href=\"/ohsinfo\">   \n    <img src=\"assets/images/kitchen.png\" alt =\"\"> \n  </a>\n  <a href=\"/org.openhs.core.clock.servlet.ClockSimpleServlet\">      \n    <img src=\"/assets/images/clock.png\" alt =\"\">\n  </a>\n</div>",
+        template: "<p class=\"tn\"><span>Version: {{plesk}}</span></p>  \n  <div> \n  <a href=\"/admin\">\n    <img src=\"assets/images/admin.png\" alt=\"\">\n  </a>\n  <a href=\"/meteo\">\n    <img src=\"assets/images/meteo.png\" alt =\"\">   \n  </a>\n  <a href=\"/ohsinfo\">   \n    <img src=\"assets/images/kitchen.png\" alt =\"\"> \n  </a>\n  <a href=\"/org.openhs.core.clock.servlet.ClockSimpleServlet\">      \n    <img src=\"assets/images/clock.png\" alt =\"\">\n  </a>\n</div>",
         styles: [__webpack_require__("../../../../../src/app/main-window/main-window.component.css")]
     }),
     __metadata("design:paramtypes", [])
