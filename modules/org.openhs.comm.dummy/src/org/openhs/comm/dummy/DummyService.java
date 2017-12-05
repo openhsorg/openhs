@@ -115,7 +115,7 @@ public class DummyService implements IMessageParser, ICommService {
 	
 	@Override
 	public void sendMessage(Message m) {
-		logger.debug(" Sending message: " + m.toString());
+		//logger.info(" Sending message: " + m.toString());
 		
 		//send back response - just workaround here to mimic switch response
 		ThingUpdater tu = parseMessage(m);

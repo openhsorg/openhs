@@ -12126,6 +12126,7 @@ OhsInterface.ID_ADD_FLOOR = 'idAddFloor';
 OhsInterface.ID_DELETE_FLOOR = 'idDeleteFloor';
 OhsInterface.ID_DELETE_THING = 'idDeleteThing';
 OhsInterface.ID_ADD_THING = 'idAddThing';
+OhsInterface.ID_UPDATE_TIMESTAMP = 'idUpdateTimestamp';
 function postAjax(urlAdr, jsonDat) {
     var result = null;
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
@@ -12255,6 +12256,7 @@ var Site = (function (_super) {
 var SiteData = (function () {
     function SiteData() {
         var _this = this;
+        this.timeStamp = new Date().getTime();
         // ---Site data---
         this.m_site = null;
         this.m_floorArray = null;
@@ -12289,6 +12291,7 @@ var SiteData = (function () {
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_SWITCH_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_CONTACTSENS_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WIFINODE_ARR);
+        this.timeStamp = new Date().getTime();
         /*
                 // Timers
                 this.fastTimerGetDataEvent(150);
@@ -12299,31 +12302,43 @@ var SiteData = (function () {
             _this.updateFastData();
         }, 500);
         this.loop1 = window.setInterval(function () {
-            _this.updateData();
-        }, 1000);
-        this.loop2 = window.setInterval(function () {
-            _this.updateSlowData();
-        }, 10000);
+            _this.updateDataTimestamp();
+        }, 3000);
+        /*
+                this.loop1 = window.setInterval(()=>{
+                    this.updateData();
+                }, 1000);
+        
+                this.loop2 = window.setInterval(()=>{
+                    this.updateSlowData();
+                }, 10000);
+        */
     }
-    SiteData.prototype.normalTimerGetDataEvent = function (step) {
-        var _this = this;
-        this.updateData();
-        //  this.updateSlowData();
-        window.clearTimeout(this.normalTimerGetData);
-        this.normalTimerGetData = window.setTimeout(function () { return _this.normalTimerGetDataEvent(step); }, step);
-    };
-    SiteData.prototype.fastTimerGetDataEvent = function (step) {
-        var _this = this;
-        this.updateFastData();
-        window.clearTimeout(this.fastTimerGetData);
-        this.fastTimerGetData = window.setTimeout(function () { return _this.fastTimerGetDataEvent(step); }, step);
-    };
-    SiteData.prototype.slowTimerGetDataEvent = function (step) {
-        var _this = this;
-        this.updateSlowData();
-        window.clearTimeout(this.slowTimerGetData);
-        this.slowTimerGetData = window.setTimeout(function () { return _this.slowTimerGetDataEvent(step); }, step);
-    };
+    /*
+        private normalTimerGetDataEvent(step: number) {
+    
+            this.updateData();
+    
+            window.clearTimeout(this.normalTimerGetData);
+            this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);
+        }
+    
+        private fastTimerGetDataEvent(step: number) {
+    
+            this.updateFastData();
+    
+            window.clearTimeout(this.fastTimerGetData);
+            this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step);
+        }
+    
+        private slowTimerGetDataEvent(step: number) {
+    
+            this.updateSlowData();
+    
+            window.clearTimeout(this.slowTimerGetData);
+            this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
+        }
+    */
     SiteData.prototype.updateFastData = function () {
         // Date & Time
         this.updateDateTime();
@@ -12357,6 +12372,28 @@ var SiteData = (function () {
                 this.timeString = ret['time'];
             }
             //  window.alert('update time:' + this.timeString);
+        }
+    };
+    SiteData.prototype.updateDataTimestamp = function () {
+        var js = JSON.stringify({
+            idPost: __WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_UPDATE_TIMESTAMP,
+            timStmp: this.timeStamp.toString()
+        });
+        var ret = Object(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].URL, js);
+        if (ret != null) {
+            if (JSON.parse(ret['return'])) {
+                var str = JSON.stringify(ret[__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_UPDATE_TIMESTAMP]);
+                var parsedJSON = JSON.parse(str);
+                for (var i = 0; i < parsedJSON.length; i++) {
+                    var object = parsedJSON[i];
+                    var sitePath = object['sitePath'];
+                    var thing = this.getThing(sitePath);
+                    if (thing != null) {
+                        thing.fillFromJSON(object);
+                    }
+                }
+                this.timeStamp = new Date().getTime();
+            }
         }
     };
     SiteData.prototype.updateSlowData = function () {
@@ -12707,7 +12744,7 @@ var Switch = (function (_super) {
         var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
         if (JSON.parse(ret['return'])) {
             this.stateInt = parseInt(ret['state_int'], 10);
-            this.updateDelayed(100);
+            this.updateDelayed(150);
         }
     };
     Switch.prototype.off = function () {
@@ -12719,7 +12756,7 @@ var Switch = (function (_super) {
         var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
         if (JSON.parse(ret['return'])) {
             this.stateInt = parseInt(ret['state_int'], 10);
-            this.updateDelayed(100);
+            this.updateDelayed(150);
         }
     };
     return Switch;
@@ -12770,7 +12807,7 @@ var TemperatureSensor = (function (_super) {
 
 var Thing = (function () {
     function Thing() {
-        this.valid = false; // content of the forecast is valid        
+        this.valid = false; // content of the forecast is valid
         this.sitePath = '*'; // OpenHS path
         this.devicePath = '*'; // OpenHS path
         this.name = 'no name';

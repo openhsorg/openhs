@@ -53,19 +53,22 @@ public class Test {
     Temperature temp2 = new Temperature();
 
     void SetTemperature() {
+    	/*
         temp1.set(temp1.getCelsius() + 0.5);
         temp2.set(temp2.getCelsius() + 2);
+        */
         /*
          * temp1 = temp1 + 0.5;
          * temp2 = temp2 + 2;
          */
+        /*
         if (temp1.getCelsius() >= 40) {
             temp1.set(-40);
         }
         if (temp2.getCelsius() >= 40) {
             temp2.set(-40);
         }
-
+*/
        // m_siteService.setSensorTemperature("Room1", "Sensor1", temp1);
     //   m_siteService.setSensorTemperature("Outside", "Sensor1", temp2);
 

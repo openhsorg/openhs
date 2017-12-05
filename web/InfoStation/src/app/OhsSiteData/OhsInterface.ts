@@ -25,6 +25,7 @@ export class OhsInterface {
     public static ID_DELETE_FLOOR       = 'idDeleteFloor';
     public static ID_DELETE_THING       = 'idDeleteThing';
     public static ID_ADD_THING          = 'idAddThing';
+    public static ID_UPDATE_TIMESTAMP   = 'idUpdateTimestamp';
 
 
 }

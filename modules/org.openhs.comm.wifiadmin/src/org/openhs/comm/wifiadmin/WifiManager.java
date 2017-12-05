@@ -128,7 +128,7 @@ public class WifiManager {
 		
 	
 	List<String> GetFullWifiList() throws Exception {		
-    	logger.info("\n>GetFullWifiList(): " + "...detecting wifi");    	
+    	//logger.info("\n>GetFullWifiList(): " + "...detecting wifi");    	
         
         String os = getOsName();
         
@@ -145,7 +145,7 @@ public class WifiManager {
 	List<String> GetFullWifiList_Win() throws Exception {		
 		List<String> devList = new ArrayList<String>();
 		
-		logger.info("GetFullWifiList_Win> Windows system...");				
+		//logger.info("GetFullWifiList_Win> Windows system...");				
 		
 		ProcessBuilder builder = new ProcessBuilder(
 				"cmd.exe", "/c", "netsh wlan show all");

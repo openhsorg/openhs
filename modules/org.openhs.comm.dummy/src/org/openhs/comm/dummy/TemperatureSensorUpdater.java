@@ -46,6 +46,8 @@ public class TemperatureSensorUpdater extends ThingUpdater {
 	public void updateIncoming() {
 		if (getThing() != null)
 			((TemperatureSensor)getThing()).getTemperature().set(m_value);
+		
+		((TemperatureSensor)getThing()).setTimestamp();
 	}
 
 	@Override

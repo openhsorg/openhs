@@ -1,13 +1,14 @@
 package org.openhs.core.site.webservices;
 
 import java.lang.reflect.InvocationTargetException;
+//import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.sql.Timestamp;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhs.core.commons.ContactSensor;
@@ -54,14 +55,11 @@ public class JsonSiteMapping {
 			final String keyNetType = "netType";
 			final String keySensorType = "sensorType";
 			
-		//	JSONObject json = new JSONObject();
-			
 			try {
 				if (thing instanceof Site) {
 					Site site = (Site) thing;	
 					
 					json.put(keyName, site.getName());
-					//json.put(keySitePath, site.getSitePath());
 					json.put(keyValid, new Boolean(true));
 
 				} else if (thing instanceof Floor) {
@@ -159,12 +157,11 @@ public class JsonSiteMapping {
 					json.put(keyValid, new Boolean(true));
 				  
 				} else {
-					//  json.put(path + "__validity", new Boolean(false));
+
 				}
 			  
 			} catch (Exception e) {
 				e.printStackTrace();
-				//  json.put(path + "__validity", new Boolean(false));
 				return false;
 			}    	  
   	  
@@ -201,6 +198,65 @@ public class JsonSiteMapping {
 
 			return jsonArray;						
 		}
+		
+		public JSONArray getThingArrayTimestampJSON (Timestamp tsp) {
+			
+			JSONArray jsonArray = new JSONArray();
+
+			try {
+				
+				Set<Thing> listSwitch = this.m_siteService.getThingSet(Switch.class);
+				Set<Thing> listTSensor = this.m_siteService.getThingSet(TemperatureSensor.class);
+				
+				for(Thing item: listSwitch) {
+					if (item.getTimestamp().after(tsp)) {
+						JSONObject obj = new JSONObject ();
+						
+						obj.put("class1", Switch.class.toString());
+						
+						boolean ret = getThingJSON(item, obj);
+						
+						if (ret) {
+							obj.put("validity", new Boolean(true));
+							
+						} else {
+							obj.put("validity", new Boolean(false));
+						}
+														
+						jsonArray.put(obj);												
+					}
+				}
+				
+								
+				for(Thing item: listTSensor) {
+					if (item.getTimestamp().after(tsp)) {
+						JSONObject obj = new JSONObject ();
+						
+						obj.put("class1", TemperatureSensor.class.toString());
+						
+						boolean ret = getThingJSON(item, obj);
+						
+						if (ret) {
+							obj.put("validity", new Boolean(true));
+							
+						} else {
+							obj.put("validity", new Boolean(false));
+						}
+														
+						jsonArray.put(obj);												
+					}
+				}
+
+	
+			} catch (SiteException e) {
+				e.printStackTrace();
+				
+				return null;
+			}						
+
+			return jsonArray;						
+		}
+		
 	
     public void getTimeDateJSON(JSONObject json) {	    		    	
 	    Date curDate = new Date();
@@ -209,15 +265,9 @@ public class JsonSiteMapping {
 	    
 	    SimpleDateFormat format2 = new SimpleDateFormat("MMM dd yyyy");
 	    String date = format2.format(curDate); 	  	    	  		    		    	
-    	
-		//JSONObject json = new JSONObject();	
 		
 		json.put("time", time);
 		json.put("date", date);	
-		
-		//logger.info("TIME, DATE....>> " + json.toString());
-		
-	//	return json;
     } 		    
 	
 	public JSONObject command (JSONObject json) {
@@ -225,7 +275,6 @@ public class JsonSiteMapping {
 		String id = json.getString("idPost");
 		
 		JSONObject jsonRet = new JSONObject ();
-	//	jsonRet.put("return", new Boolean(false));
 		
 	//	logger.info("POST2....>> " + json.toString());
 		
@@ -238,8 +287,6 @@ public class JsonSiteMapping {
 			
 			try {
 				  thing = m_siteService.getThing(path);		
-				  
-				  //logger.info("PATH: " + path);
 				  
 				  if (thing instanceof Switch) {
 					  Switch swt = (Switch) thing;
@@ -257,8 +304,7 @@ public class JsonSiteMapping {
 					  jsonRet.put("return", new Boolean(true));
 					  jsonRet.put("state_int", new Integer(swt.getStateInt()));
 					  
-					  logger.info("Command to set:" );
-					  
+					  logger.info("Command to set:" );					  
 				  }
 				  
 			}catch (SiteException e) {
@@ -266,6 +312,30 @@ public class JsonSiteMapping {
 				  jsonRet.put("return", new Boolean(false));
 			  } 
 
+			
+		} else if (id.equals("idUpdateTimestamp")) {
+			
+			String ts = json.getString("timStmp");					
+			
+			Long ms = Long.valueOf(ts);
+			
+			Timestamp tsp = new Timestamp(ms);
+						
+			logger.info("-------TS: " + tsp.toString());
+			
+			JSONArray jsonArr = getThingArrayTimestampJSON (tsp);
+			
+			if (jsonArr != null) {
+				jsonRet.put("idUpdateTimestamp", jsonArr);
+				jsonRet.put("return", new Boolean(true));
+				
+			} else {
+				jsonRet.put("return", new Boolean(false));				
+			}				
+
+			jsonRet.put("return", new Boolean(true));
+			
+			logger.info("XX: " + jsonRet.toString());
 			
 		} else if (id.equals("idSetFloors")) {
 			
@@ -280,14 +350,8 @@ public class JsonSiteMapping {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
-			
+
 			jsonRet.put("return", new Boolean(true));
-			
-			logger.info("***WWWWWWWWW:" + n);
 			
 		} else if (id.equals("idAddFloor")) {
 			
@@ -301,13 +365,7 @@ public class JsonSiteMapping {
 				e.printStackTrace();
 			}
 			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
-			
-			jsonRet.put("return", new Boolean(true));
-			
-			//logger.info("***Added floor");
+			jsonRet.put("return", new Boolean(true));			
 			
 		}  else if (id.equals("idDeleteFloor")) {
 			
@@ -316,18 +374,8 @@ public class JsonSiteMapping {
 			String sitePath = json.getString("sitePath");
 			
 			logger.info("***removed: " + sitePath);
-								
-			//try {
-				ret = m_siteService.removeThing(sitePath);	
-		//	} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
-		//			| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
-				// TODO Auto-generated catch block
-		//		e.printStackTrace();
-		//	}
-			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
+
+			ret = m_siteService.removeThing(sitePath);	
 			
 			jsonRet.put("return", new Boolean(true));
 			
@@ -336,24 +384,10 @@ public class JsonSiteMapping {
 			boolean ret = false;
 			
 			String sitePath = json.getString("sitePath");
+
+			ret = m_siteService.removeThing(sitePath);	
 			
-			logger.info("***removed: " + sitePath);
-								
-			//try {
-				ret = m_siteService.removeThing(sitePath);	
-		//	} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
-		//			| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
-				// TODO Auto-generated catch block
-		//		e.printStackTrace();
-		//	}
-			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
-			
-			jsonRet.put("return", new Boolean(true));
-			
-			//logger.info("***Added floor");
+			jsonRet.put("return", new Boolean(true));			
 			
 		} else if (id.equals("idAddThing")) {
 			
@@ -374,17 +408,10 @@ public class JsonSiteMapping {
 				ret = m_siteService.addNextThing(t);				
 			} catch (NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException | SiteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
-			
+
 			jsonRet.put("return", new Boolean(true));
-			
-			//logger.info("***Added floor");
 			
 		} else if (id.equals("idSetName")) {
 			
@@ -409,13 +436,7 @@ public class JsonSiteMapping {
 				ret = false;						
 			}
 			
-			//String nFloors = json.getString("path");
-			
-			//getTimeDateJSON(jsonRet);
-			
 			jsonRet.put("return", new Boolean(ret));
-			
-		//	logger.info("***NAME***:" + newName + "    ...ret: " + ret);
 			
 		} else if (id.equals("idSetSitePath")) {
 			
@@ -471,17 +492,12 @@ public class JsonSiteMapping {
 			try {
 				thing = m_siteService.getThing(sitePath);
 			} catch (SiteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}								
 			
 			if (thing != null) {
-				
 				ret = getThingJSON(thing, jsonRet);				
-				//logger.info("***PATH***:" + sitePath + "  ret: " + ret);
 			}
-
-	//		logger.info("***PATH***:" + sitePath + "  ret: " + ret);
 			
 			jsonRet.put("return", new Boolean(ret));								
 			
@@ -510,8 +526,6 @@ public class JsonSiteMapping {
 			} else {
 				jsonRet.put("return", new Boolean(false));				
 			}	
-			
-			//logger.info("JsonXX: " + jsonRet.toString());
 			
 		} else if (id.equals("idDoorArr")) {
 			
@@ -546,11 +560,8 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(true));
 				
 			} else {
-				jsonRet.put("return", new Boolean(false));
-				
+				jsonRet.put("return", new Boolean(false));	
 			}
-			
-			//logger.info("JsonXX: " + jsonRet.toString());		
 			
 		} else if (id.equals("idTempSensArr")) {
 			
@@ -564,7 +575,6 @@ public class JsonSiteMapping {
 				jsonRet.put("return", new Boolean(false));				
 			}
 			
-			//logger.info("JsonXX: " + jsonRet.toString());			
 		} else if (id.equals("idContactSensArr")) {
 			
 			JSONArray jsonArr = getThingArrayJSON (ContactSensor.class);
@@ -588,11 +598,7 @@ public class JsonSiteMapping {
 			} else {
 				jsonRet.put("return", new Boolean(false));				
 			}	
-			
-			//logger.info("JsonXX: " + jsonRet.toString());			
 		}
-		
-		//logger.info("JsonXX: " + jsonRet.toString());
 
 		return jsonRet;		
 	}			

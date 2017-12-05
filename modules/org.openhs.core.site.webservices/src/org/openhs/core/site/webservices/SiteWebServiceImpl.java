@@ -1,12 +1,6 @@
 package org.openhs.core.site.webservices;
 
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
-
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
@@ -15,14 +9,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
-import org.openhs.core.commons.ContactSensor;
-import org.openhs.core.commons.Door;
-import org.openhs.core.commons.Floor;
-import org.openhs.core.commons.Room;
-import org.openhs.core.commons.SiteException;
-import org.openhs.core.commons.Switch;
-import org.openhs.core.commons.TemperatureSensor;
-import org.openhs.core.commons.Window;
 import org.openhs.core.site.api.ISiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +29,7 @@ public class SiteWebServiceImpl implements ISiteWebService {
 	final String idRoomArr = "idRoomArr";
 	final String idFloorArr = "idFloorArr";
 	final String idThingGet = "idThingGet";
-		
+			
 	// initialize logger
 	private Logger logger = LoggerFactory.getLogger(SiteWebServiceImpl.class);
 	
@@ -83,6 +69,7 @@ public class SiteWebServiceImpl implements ISiteWebService {
 		System.out.println("Component SiteWebServiceImpl activated!");
 		
 		jsonMap = new JsonSiteMapping (m_siteService);
+
 	}
 
 	public void deactivate() {

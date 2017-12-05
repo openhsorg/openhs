@@ -71,16 +71,6 @@ public class MeteoStationWebServiceImpl {
      
         return out;
     }	      
-    
-    // This method is called if XML is request
-    /*
-    @GET
-    @Path("/bla")
-    @Produces(MediaType.TEXT_XML)
-    public String sayXMLHello() {
-      return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
-    } 
-    */
      
     @POST
  //   @Produces("text/plain")
@@ -88,25 +78,13 @@ public class MeteoStationWebServiceImpl {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })    
     public String postMessage(String id){
     	
-    	//logger.info("POST....>> " + id);
-    	
     	JSONObject json = new JSONObject(id);	
     	
-    	//JSONObject jsonR = jsonMap.command(json);
-    	
     	return command(json).toString();    	
-    	
     }
 	
 	public void activate () {
 		System.out.println("Component MeteoStationWebServiceImpl activated!");
-		
-
-		
-		logger.info("KKKKKKKKKKKKKKKKK");
-		
-		 //WebResource r = createResource().path("/simple");
-
 	}
 
 	public void deactivate() {
@@ -158,9 +136,6 @@ public class MeteoStationWebServiceImpl {
 		String id = json.getString("idPost");
 		
 		JSONObject jsonRet = new JSONObject ();
-	//	jsonRet.put("return", new Boolean(false));
-		
-	//	logger.info("POST2....>> " + json.toString());
 		
 		if (id.equals("idMeteoData")) {
 			
@@ -191,9 +166,7 @@ public class MeteoStationWebServiceImpl {
     }
     
 	public boolean getMeteoDataJSON (MeteoStationData data, JSONObject json) {
-				
-	//	JSONObject json = new JSONObject();
-		
+
 		try {
 				
 			json.put("id", data.id);
@@ -203,7 +176,6 @@ public class MeteoStationWebServiceImpl {
 		  
 		} catch (Exception e) {
 			e.printStackTrace();
-			//  json.put(path + "__validity", new Boolean(false));
 			return false;
 		}    	  
 	  

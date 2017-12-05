@@ -22,7 +22,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainWindowComponent implements OnInit {
 
-  plesk = 'Windstorm - 2xxx';
+  plesk = 'Winter Line v0.02';
   constructor() {
 
   }

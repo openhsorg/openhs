@@ -15,7 +15,14 @@ export class SiteData {
 
     // ---Timers---
     private fastTimerGetData;
+    private normalTimerGetData;
     private slowTimerGetData;
+
+    private timeStamp = new Date().getTime();
+
+    loop: number;
+    loop1: number;
+    loop2: number;
 
     // ---Site data---
     public m_site:                  Site = null;
@@ -28,7 +35,8 @@ export class SiteData {
     public m_contactSensorArray:    Array <ContactSensor> = null;
     public m_wifiNodeArray:         Array <WifiNode> = null;
 
-    protected getCount              = 0;
+    protected getCountNormal        = 0;
+    protected getCountSlow          = 0;
 
     // ---Other data---
     public timeString       = '---';
@@ -47,7 +55,6 @@ export class SiteData {
 
         // Initial update
         this.m_site.update();
-
         this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
         this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
         this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
@@ -57,18 +64,38 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
         this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
 
+        this.timeStamp = new Date().getTime();
+/*
         // Timers
-        this.fastTimerGetDataEvent(500);
-        this.slowTimerGetDataEvent(2000);
+        this.fastTimerGetDataEvent(150);
+        this.slowTimerGetDataEvent(10000);
+        this.normalTimerGetDataEvent(1000);
+*/
+        this.loop = window.setInterval(() => {
+            this.updateFastData();
+        }, 500);
 
+        this.loop1 = window.setInterval(() => {
+            this.updateDataTimestamp();
+        }, 3000);
+
+/*
+        this.loop1 = window.setInterval(()=>{
+            this.updateData();
+        }, 1000);
+
+        this.loop2 = window.setInterval(()=>{
+            this.updateSlowData();
+        }, 10000);
+*/
     }
+/*
+    private normalTimerGetDataEvent(step: number) {
 
-    private slowTimerGetDataEvent(step: number) {
+        this.updateData();
 
-        this.updateSlowData();
-
-        window.clearTimeout(this.slowTimerGetData);
-        this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
+        window.clearTimeout(this.normalTimerGetData);
+        this.normalTimerGetData = window.setTimeout(() => this.normalTimerGetDataEvent(step), step);
     }
 
     private fastTimerGetDataEvent(step: number) {
@@ -79,52 +106,37 @@ export class SiteData {
         this.fastTimerGetData = window.setTimeout(() => this.fastTimerGetDataEvent(step), step);
     }
 
-    public updateFastData () {
+    private slowTimerGetDataEvent(step: number) {
 
+        this.updateSlowData();
+
+        window.clearTimeout(this.slowTimerGetData);
+        this.slowTimerGetData = window.setTimeout(() => this.slowTimerGetDataEvent(step), step);
+    }
+*/
+    public updateFastData () {
         // Date & Time
         this.updateDateTime();
-
-        // Switch
-    //    this.getObjectArray(idSwitchArr);
     }
 
-    public updateSlowData () {
+    public updateData () {
 
-        //   this.get_DateTime();
-
-        if (this.getCount === 0) {
-            this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
-
-        } else if (this.getCount === 1) {
-            this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
-
-        } else if (this.getCount === 2) {
-            this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
-
-        } else if (this.getCount === 3) {
-            this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
-
-        } else if (this.getCount === 4) {
+        if (this.getCountNormal === 1) {
             this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
 
-        } else if (this.getCount === 5) {
+        } else if (this.getCountNormal === 2) {
             this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
 
-        } else if (this.getCount === 6) {
+        } else if (this.getCountNormal === 3) {
             this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
 
-        } else if (this.getCount === 7) {
-            this.m_site.update();
-
-        } else if (this.getCount === 8) {
-            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
         }
 
-        if (this.getCount === 8) {
-            this.getCount = 0;
+        if (this.getCountNormal === 3) {
+            this.getCountNormal = 1;
 
         } else {
-                this.getCount ++;
+                this.getCountNormal ++;
         }
     }
 
@@ -145,6 +157,68 @@ export class SiteData {
             }
 
           //  window.alert('update time:' + this.timeString);
+        }
+    }
+
+    public updateDataTimestamp () {
+        var js = JSON.stringify({
+                idPost : OhsInterface.ID_UPDATE_TIMESTAMP,
+                timStmp: this.timeStamp.toString()
+        });
+
+        var ret = postAjax(OhsInterface.URL, js);
+
+        if (ret != null) {
+
+            if (JSON.parse(ret['return'])) {
+
+                var str = JSON.stringify(ret[OhsInterface.ID_UPDATE_TIMESTAMP]);
+
+                var parsedJSON = JSON.parse(str);
+
+                for (var i = 0; i < parsedJSON.length; i++) {
+                    var object = parsedJSON[i];
+
+                    var sitePath = object['sitePath'];
+
+                    var thing = this.getThing(sitePath);
+
+                    if (thing != null) {
+                        thing.fillFromJSON(object);
+                    }
+                }
+
+                this.timeStamp = new Date().getTime();
+            }
+        }
+    }
+
+    public updateSlowData () {
+
+        if (this.getCountSlow === 0) {
+            this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
+
+        } else if (this.getCountSlow === 1) {
+            this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
+
+        } else if (this.getCountSlow === 2) {
+            this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+
+        } else if (this.getCountSlow === 3) {
+            this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+
+        } else if (this.getCountSlow === 4) {
+            this.m_site.update();
+
+        } else if (this.getCountSlow === 5) {
+            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+        }
+
+        if (this.getCountSlow === 5) {
+            this.getCountSlow = 0;
+
+        } else {
+                this.getCountSlow ++;
         }
     }
 
@@ -229,7 +303,7 @@ export class SiteData {
                         this.m_contactSensorArray[i].fillFromJSON(object);
                     }
                 }    else if (idObjArray === OhsInterface.ID_WIFINODE_ARR) {
-                    
+
                     this.setNumber(parsedJSON.length, this.m_wifiNodeArray, WifiNode);
 
                     for (var i = 0; i < parsedJSON.length; i++) {

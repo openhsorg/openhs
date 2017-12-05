@@ -18,6 +18,8 @@ export class SiteData {
     private normalTimerGetData;
     private slowTimerGetData;
 
+    private timeStamp = new Date().getTime();
+
     loop: number;
     loop1: number;
     loop2: number;
@@ -61,15 +63,22 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
         this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
         this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+
+        this.timeStamp = new Date().getTime();
 /*
         // Timers
         this.fastTimerGetDataEvent(150);
         this.slowTimerGetDataEvent(10000);
         this.normalTimerGetDataEvent(1000);
 */
-        this.loop = window.setInterval(()=>{
+        this.loop = window.setInterval(() => {
             this.updateFastData();
-        }, 1000);
+        }, 500);
+
+        this.loop1 = window.setInterval(() => {
+            this.updateDataTimestamp();
+        }, 3000);
+
 /*
         this.loop1 = window.setInterval(()=>{
             this.updateData();
@@ -150,6 +159,40 @@ export class SiteData {
           //  window.alert('update time:' + this.timeString);
         }
     }
+
+    public updateDataTimestamp () {
+        var js = JSON.stringify({
+                idPost : OhsInterface.ID_UPDATE_TIMESTAMP,
+                timStmp: this.timeStamp.toString()
+        });
+
+        var ret = postAjax(OhsInterface.URL, js);
+
+        if (ret != null) {
+
+            if (JSON.parse(ret['return'])) {
+
+                var str = JSON.stringify(ret[OhsInterface.ID_UPDATE_TIMESTAMP]);
+
+                var parsedJSON = JSON.parse(str);
+
+                for (var i = 0; i < parsedJSON.length; i++) {
+                    var object = parsedJSON[i];
+
+                    var sitePath = object['sitePath'];
+
+                    var thing = this.getThing(sitePath);
+
+                    if (thing != null) {
+                        thing.fillFromJSON(object);
+                    }
+                }
+
+                this.timeStamp = new Date().getTime();
+            }
+        }
+    }
+
     public updateSlowData () {
 
         if (this.getCountSlow === 0) {
@@ -260,7 +303,7 @@ export class SiteData {
                         this.m_contactSensorArray[i].fillFromJSON(object);
                     }
                 }    else if (idObjArray === OhsInterface.ID_WIFINODE_ARR) {
-                    
+
                     this.setNumber(parsedJSON.length, this.m_wifiNodeArray, WifiNode);
 
                     for (var i = 0; i < parsedJSON.length; i++) {

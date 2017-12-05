@@ -33,16 +33,10 @@ public class Switch extends Thing {
 	 */
 	TimeProfile timeProfile;
 	
-	/*
-	 * Timestamp of last written value.
-	 */
-	Timestamp timestamp = new Timestamp(0);
-	
 	//Coordinates in house 
 	public float x = 0.0f;
 	public float y = 0.0f;
 	public float z = 0.0f;
-	
 		
 	public void setState(boolean state) throws SiteException
 	{
@@ -64,6 +58,8 @@ public class Switch extends Thing {
 	public void setDeviceState(boolean state)
 	{
 		deviceState = state;
+		
+		setTimestamp();
 	}	
 	
 	public boolean setState() throws SiteException {
@@ -71,20 +67,11 @@ public class Switch extends Thing {
 		else state = true;
 		updateOutcoming();
 		
+		setTimestamp();
+		
 		return state;
 	}
-	
-	void setTimestamp()
-	{
-		Date date= new Date();
-		
-		timestamp.setTime(date.getTime());			
-	}
-	
-	public Timestamp getTimestamp ()
-	{
-		return timestamp;
-	}
+
 	
 	public int getStateInt (){
 

@@ -19,6 +19,7 @@ public abstract class ThingUpdater {
 	
 	public void setThing(Thing thing) {
 		this.m_thing = thing;
+		//this.m_thing.setTimestamp();
 	}
 	
 	public void updateIncoming(Thing thing) {

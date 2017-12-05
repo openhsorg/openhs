@@ -29,21 +29,7 @@ public class MeteoStationImpl implements IMeteoStation{
 	public void activate (ComponentContext componentContext, Map<String, Object> properties) {
 		System.out.println("Component MeteoStationImpl activated!");
 		
-		updated(properties);
-		
-	//	this.m_meteo = new MeteoStationWebServiceImpl ();
-	//	this.m_meteo.setProperties(properties);
-		/*
-		logger.info("\n\n\n XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		
-		String loadXml = (String) properties.get("xmlLoadEnable");
-		String xmlFileName = (String) properties.get("xmlFileName");	
-		
-		System.out.println("\n" + xmlFileName);
-		*/
-		//logger.info("IDDDDDDDDDDDD: " + this.m_siteService.getId());
-		
-
+		updated(properties);		
 	}
 
 	public void deactivate() {
@@ -52,23 +38,16 @@ public class MeteoStationImpl implements IMeteoStation{
 	
 	public void updated(Map<String, Object> properties) {
 		m_properties = properties;
-		
-	//	String loadXml = (String) m_properties.get("xmlLoadEnable");
-	//	String xmlFileName = (String) m_properties.get("xmlFileName");		
-
-
 	}	
 	
     public void setService(ISiteService ser) {
   	  logger.info("**** setService(): ISiteService");
         m_siteService = ser;
-
-        //logger.info("IDDDDDDDDDDDD: " + this.m_siteService.getId());
-        
+  
     }
 
-    public void unsetService(ISiteService ser) {
-  	  logger.info("**** unsetService(): ISiteService");
+    public void unsetService(ISiteService ser) {    	
+  	  	logger.info("**** unsetService(): ISiteService");
         if (m_siteService == ser) {
             ser = null;
         }

@@ -1,10 +1,6 @@
 package org.openhs.core.weather.webservices;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Set;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -64,8 +60,6 @@ public class WeatherWebServiceImpl implements IWeatherWebService {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })    
     public String postMessage(String id){
     	
-    	//logger.info("POST....>> " + id);
-    	
     	JSONObject json = new JSONObject(id);	    	    	
     	
     	return command(json).toString();       	
@@ -77,21 +71,14 @@ public class WeatherWebServiceImpl implements IWeatherWebService {
 		String id = json.getString("idPost");
 		
 		JSONObject jsonRet = new JSONObject ();
-	//	jsonRet.put("return", new Boolean(false));
-		
-	//	logger.info("POST2....>> " + json.toString());
 		
 		if (id.equals("idGetCurrentWeatherData")) {
 			
 			WeatherData data = this.m_weather.getCurrentWeatherData();
-			
-			//logger.info("\n------TMP:" + data.temp);
-			
+
 			boolean ret = getJSONWeatherData (data, jsonRet);
 			
 			jsonRet.put("return", new Boolean(ret));
-			
-			//logger.info("JsonXX: " + jsonRet.toString());
 			
 		} else if (id.equals("idGetForecastWeatherData")) {
 
@@ -123,8 +110,6 @@ public class WeatherWebServiceImpl implements IWeatherWebService {
     
 	public boolean getJSONWeatherData (WeatherData data, JSONObject json) {
 		
-	//	JSONObject json = new JSONObject();
-		
 		try {
 						
 			json.put("validity", data.validity);
@@ -140,12 +125,9 @@ public class WeatherWebServiceImpl implements IWeatherWebService {
 			json.put("rain", data.rain);
 			json.put("snow", data.snow);
 			json.put("weatherSymbol", data.weatherSymbol);
-			
-			//logger.info("POST....***>> command: " + data.tmpOutPath);
 		  
 		} catch (Exception e) {
 			e.printStackTrace();
-			//  json.put(path + "__validity", new Boolean(false));
 			return false;
 		}    	  
 	  

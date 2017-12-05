@@ -154,7 +154,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var MainWindowComponent = (function () {
     function MainWindowComponent() {
-        this.plesk = 'Windstorm - 2xxx';
+        this.plesk = 'Winter Line v0.02';
     }
     MainWindowComponent.prototype.ngOnInit = function () {
     };

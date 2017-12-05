@@ -3,7 +3,7 @@ import {postAjax} from './OhsInterface';
 
 export class Thing {
 
-    protected valid                 = false; // content of the forecast is valid        
+    protected valid                 = false; // content of the forecast is valid
     protected sitePath              = '*'; // OpenHS path
     protected devicePath            = '*'; // OpenHS path
     protected name                  = 'no name';

@@ -4,7 +4,7 @@ import {postAjax} from './OhsInterface';
 
 export class Switch extends Thing {
 
-        protected   stateInt:  number;
+        protected   stateInt:  number; //1-off 2- off_on 3- on, 4- on_off
 
         constructor () {
             super ();
@@ -26,9 +26,9 @@ export class Switch extends Thing {
 
         public on () {
             var js = JSON.stringify({
-            idPost : OhsInterface.ID_THING_COMMAND,
-            path:   this.sitePath,
-            command: 'on'
+                idPost : OhsInterface.ID_THING_COMMAND,
+                path:   this.sitePath,
+                command: 'on'
             });
 
             var ret = postAjax(OhsInterface.URL, js);
@@ -36,7 +36,7 @@ export class Switch extends Thing {
             if (JSON.parse(ret['return'])) {
                 this.stateInt = parseInt (ret['state_int'], 10);
 
-                this.updateDelayed(100);
+                this.updateDelayed(150);
             }
         }
 
@@ -52,7 +52,7 @@ export class Switch extends Thing {
             if (JSON.parse(ret['return'])) {
                 this.stateInt = parseInt(ret['state_int'], 10);
 
-                this.updateDelayed (100);
+                this.updateDelayed (150);
             }
         }
     }
