@@ -31,12 +31,14 @@ export class Switch extends Thing {
                 command: 'on'
             });
 
+            this.stateInt = 2;
+
             var ret = postAjax(OhsInterface.URL, js);
 
             if (JSON.parse(ret['return'])) {
                 this.stateInt = parseInt (ret['state_int'], 10);
 
-                this.updateDelayed(150);
+                //this.updateDelayed(150);
             }
         }
 
@@ -47,12 +49,14 @@ export class Switch extends Thing {
                 command: 'off'
             });
 
+            this.stateInt = 4;
+
             var ret = postAjax(OhsInterface.URL, js);
 
             if (JSON.parse(ret['return'])) {
                 this.stateInt = parseInt(ret['state_int'], 10);
 
-                this.updateDelayed (150);
+                //this.updateDelayed (150);
             }
         }
     }

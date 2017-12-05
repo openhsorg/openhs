@@ -74,20 +74,21 @@ export class SiteData {
         this.loop = window.setInterval(() => {
             this.updateFastData();
         }, 500);
-
+/*
         this.loop1 = window.setInterval(() => {
             this.updateDataTimestamp();
         }, 3000);
+        */
 
 /*
         this.loop1 = window.setInterval(()=>{
             this.updateData();
         }, 1000);
-
+*/
         this.loop2 = window.setInterval(()=>{
             this.updateSlowData();
-        }, 10000);
-*/
+        }, 4000);
+
     }
 /*
     private normalTimerGetDataEvent(step: number) {
@@ -195,6 +196,14 @@ export class SiteData {
 
     public updateSlowData () {
 
+        this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
+        this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
+        this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+        this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+        this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
+        this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
+        this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);        
+/*
         if (this.getCountSlow === 0) {
             this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
 
@@ -211,7 +220,12 @@ export class SiteData {
             this.m_site.update();
 
         } else if (this.getCountSlow === 5) {
-            this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+            //this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+            this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+            this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+            this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
+            this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
+            this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
         }
 
         if (this.getCountSlow === 5) {
@@ -220,6 +234,7 @@ export class SiteData {
         } else {
                 this.getCountSlow ++;
         }
+        */
     }
 
     public updateObjectArray (idObjArray:  string) {

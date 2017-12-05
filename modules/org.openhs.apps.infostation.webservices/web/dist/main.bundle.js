@@ -12301,18 +12301,19 @@ var SiteData = (function () {
         this.loop = window.setInterval(function () {
             _this.updateFastData();
         }, 500);
-        this.loop1 = window.setInterval(function () {
-            _this.updateDataTimestamp();
-        }, 3000);
+        /*
+                this.loop1 = window.setInterval(() => {
+                    this.updateDataTimestamp();
+                }, 3000);
+                */
         /*
                 this.loop1 = window.setInterval(()=>{
                     this.updateData();
                 }, 1000);
-        
-                this.loop2 = window.setInterval(()=>{
-                    this.updateSlowData();
-                }, 10000);
         */
+        this.loop2 = window.setInterval(function () {
+            _this.updateSlowData();
+        }, 4000);
     }
     /*
         private normalTimerGetDataEvent(step: number) {
@@ -12397,30 +12398,45 @@ var SiteData = (function () {
         }
     };
     SiteData.prototype.updateSlowData = function () {
-        if (this.getCountSlow === 0) {
-            this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_FLOOR_ARR);
-        }
-        else if (this.getCountSlow === 1) {
-            this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_ROOM_ARR);
-        }
-        else if (this.getCountSlow === 2) {
-            this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_DOOR_ARR);
-        }
-        else if (this.getCountSlow === 3) {
-            this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WINDOW_ARR);
-        }
-        else if (this.getCountSlow === 4) {
-            this.m_site.update();
-        }
-        else if (this.getCountSlow === 5) {
-            this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WIFINODE_ARR);
-        }
-        if (this.getCountSlow === 5) {
-            this.getCountSlow = 0;
-        }
-        else {
-            this.getCountSlow++;
-        }
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_FLOOR_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_ROOM_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_DOOR_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WINDOW_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_SWITCH_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_TEMP_SENS_ARR);
+        this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_CONTACTSENS_ARR);
+        /*
+                if (this.getCountSlow === 0) {
+                    this.updateObjectArray(OhsInterface.ID_FLOOR_ARR);
+        
+                } else if (this.getCountSlow === 1) {
+                    this.updateObjectArray(OhsInterface.ID_ROOM_ARR);
+        
+                } else if (this.getCountSlow === 2) {
+                    this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+        
+                } else if (this.getCountSlow === 3) {
+                    this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+        
+                } else if (this.getCountSlow === 4) {
+                    this.m_site.update();
+        
+                } else if (this.getCountSlow === 5) {
+                    //this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+                    this.updateObjectArray(OhsInterface.ID_DOOR_ARR);
+                    this.updateObjectArray(OhsInterface.ID_WINDOW_ARR);
+                    this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
+                    this.updateObjectArray(OhsInterface.ID_TEMP_SENS_ARR);
+                    this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
+                }
+        
+                if (this.getCountSlow === 5) {
+                    this.getCountSlow = 0;
+        
+                } else {
+                        this.getCountSlow ++;
+                }
+                */
     };
     SiteData.prototype.updateObjectArray = function (idObjArray) {
         var js = JSON.stringify({
@@ -12741,10 +12757,11 @@ var Switch = (function (_super) {
             path: this.sitePath,
             command: 'on'
         });
+        this.stateInt = 2;
         var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
         if (JSON.parse(ret['return'])) {
             this.stateInt = parseInt(ret['state_int'], 10);
-            this.updateDelayed(150);
+            //this.updateDelayed(150);
         }
     };
     Switch.prototype.off = function () {
@@ -12753,10 +12770,11 @@ var Switch = (function (_super) {
             path: this.sitePath,
             command: 'off'
         });
+        this.stateInt = 4;
         var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
         if (JSON.parse(ret['return'])) {
             this.stateInt = parseInt(ret['state_int'], 10);
-            this.updateDelayed(150);
+            //this.updateDelayed (150);
         }
     };
     return Switch;
