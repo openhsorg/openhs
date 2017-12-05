@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Statistics
-Bundle-SymbolicName: org.openhs.core.statistics
-Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Service-Component: OSGI-INF/component.xml
-Import-Package: org.openhs.core.site.api,
- org.openhs.core.site.services

@@ -10297,11 +10297,13 @@ var Frame = (function () {
         this.canvas.addEventListener('mousemove', function (event) { self.MouseMoveHandler(event); }, false);
         // window.addEventListener('keydown', function(event){self.KeyDownHandler(event);}, false);
         //    document.addEventListener("keydown", () => this.KeyDownHandler);
-        //        requestAnimationFrame(() => this.paint());
-        //20Hz
-        this.loop = window.setInterval(function () {
-            _this.paint();
-        }, 50);
+        requestAnimationFrame(function () { return _this.paint(); });
+        /*
+                //20Hz
+                this.loop = window.setInterval(()=>{
+                    this.paint();
+                }, 50);
+        */
     }
     Frame.prototype.paint = function () {
         var _this = this;
@@ -10552,13 +10554,19 @@ var Item = (function () {
         // Basic Rectangle...
         this.rect = new __WEBPACK_IMPORTED_MODULE_0__Rect__["a" /* Rect */]();
         this.visible = true;
+        this.clickable = true;
         this.ctx = ctx;
     }
     Item.prototype.paint = function () {
     };
     Item.prototype.MouseDownHandler = function (x, y) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) {
+                return this;
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;
@@ -10566,7 +10574,12 @@ var Item = (function () {
     };
     Item.prototype.MouseUpHandler = function (x, y) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) {
+                return this;
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;
@@ -10574,7 +10587,12 @@ var Item = (function () {
     };
     Item.prototype.MouseMoveHandler = function (x, y) {
         if (this.rect.isClicked(x, y)) {
-            return this;
+            if (this.clickable) {
+                return this;
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;
@@ -10613,16 +10631,15 @@ var OhsScreen = (function () {
         this.ctx = this.canvas.getContext('2d');
         this.m_item = new Array();
     }
+    OhsScreen.prototype.buildLayout = function () {
+        this.removeAll();
+    };
     OhsScreen.prototype.add = function (item) {
-        // item.canvas = this.canvas;
         this.m_item.push(item);
     };
-    /*
-    public SetCanvas (canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
-
-    }
-    */
+    OhsScreen.prototype.removeAll = function () {
+        this.m_item.length = 0;
+    };
     OhsScreen.prototype.GetSize = function () {
         return {
             width: this.canvas.width,
@@ -10696,7 +10713,6 @@ var OhsScreen = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Rect; });
 var Rect = (function () {
     function Rect() {
-        //hh
         this.x = 0;
         this.y = 0;
         this.w = 0;
@@ -10878,6 +10894,9 @@ var TextSimple = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsWeather_OhsWeather__ = __webpack_require__("../../../../../src/app/OhsWeather/OhsWeather.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_Frame__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/Frame.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ScreenMain__ = __webpack_require__("../../../../../src/app/OhsInfoStation/ScreenMain.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ScreenWeather__ = __webpack_require__("../../../../../src/app/OhsInfoStation/ScreenWeather.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__ScreenAllFloors__ = __webpack_require__("../../../../../src/app/OhsInfoStation/ScreenAllFloors.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__ScreenFloor__ = __webpack_require__("../../../../../src/app/OhsInfoStation/ScreenFloor.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10893,6 +10912,9 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
+
+
+
 var FrameMain = (function (_super) {
     __extends(FrameMain, _super);
     function FrameMain(canvas) {
@@ -10901,6 +10923,9 @@ var FrameMain = (function (_super) {
         _this.m_siteData = null;
         // Screen pointers...
         _this.m_screenMain = null;
+        _this.m_screenWeather = null;
+        _this.m_screenAllFloors = null;
+        _this.m_screenFloor = null;
         _this.m_infoStation = null;
         _this.m_ohsWeather = null;
         // Data
@@ -10910,17 +10935,65 @@ var FrameMain = (function (_super) {
         // Create screens...
         _this.m_screenMain = new __WEBPACK_IMPORTED_MODULE_4__ScreenMain__["a" /* ScreenMain */](_this.m_siteData, _this.m_infoStation, _this.m_ohsWeather, canvas);
         _this.addItem(_this.m_screenMain);
+        _this.m_screenWeather = new __WEBPACK_IMPORTED_MODULE_5__ScreenWeather__["a" /* ScreenWeather */](_this.m_ohsWeather, canvas);
+        _this.addItem(_this.m_screenWeather);
+        _this.m_screenAllFloors = new __WEBPACK_IMPORTED_MODULE_6__ScreenAllFloors__["a" /* ScreenAllFloors */](_this.m_siteData, canvas);
+        _this.addItem(_this.m_screenAllFloors);
+        _this.m_screenFloor = new __WEBPACK_IMPORTED_MODULE_7__ScreenFloor__["a" /* ScreenFloor */](_this.m_siteData, canvas);
+        _this.addItem(_this.m_screenFloor);
         // Set current screen...
         _this.m_curScreen = _this.m_screenMain;
         return _this;
     }
     FrameMain.prototype.MouseDownHandler = function (event) {
         var ret = _super.prototype.MouseDownHandler.call(this, event);
+        // Anything on weather screen
+        if (this.m_curScreen === this.m_screenWeather) {
+            this.m_curScreen = this.m_screenMain;
+            return null;
+        }
+        /*
+        else if (this.m_curScreen === this.m_screenAllFloors) {
+            this.m_curScreen = this.m_screenMain;
+            return null;
+        }
+        */
         return null;
     };
     FrameMain.prototype.MouseUpHandler = function (event) {
         var ret = _super.prototype.MouseUpHandler.call(this, event);
         if (ret != null) {
+            if (this.m_curScreen === this.m_screenMain) {
+                for (var _i = 0, _a = this.m_screenMain.m_weatherIcons; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    if (item === ret) {
+                        this.m_curScreen = this.m_screenWeather;
+                        return null;
+                    }
+                }
+                if (ret === this.m_screenMain.m_bulb) {
+                    this.m_curScreen = this.m_screenAllFloors;
+                    return null;
+                }
+            }
+            else if (this.m_curScreen === this.m_screenAllFloors) {
+                var i = 0;
+                for (var _b = 0, _c = this.m_screenAllFloors.m_floorIcons; _b < _c.length; _b++) {
+                    var fl = _c[_b];
+                    if (ret === fl) {
+                        var path = this.m_screenAllFloors.m_floorPath[i].getText();
+                        this.m_screenFloor.setSitePath(path);
+                        this.m_curScreen = this.m_screenFloor;
+                        return null;
+                        //window.alert(path);
+                    }
+                    i++;
+                }
+            }
+        }
+        if (this.m_curScreen === this.m_screenFloor && ret === null) {
+            this.m_curScreen = this.m_screenMain;
+            return null;
         }
         return null;
     };
@@ -10993,7 +11066,6 @@ var GeometryCircle = (function (_super) {
 
 
 
-//import { SiteData } from '../OhsSiteData/SiteData';
 var InfoStation = (function () {
     function InfoStation() {
         this.dateString = '---';
@@ -11085,6 +11157,13 @@ InfoStationSettings.IMG_VOICEMESSAGE = 'ohsinfo_assets/images/voicemessage.png';
 InfoStationSettings.IMG_BULB = 'ohsinfo_assets/images/bulb.png';
 InfoStationSettings.IMG_DOOR = 'ohsinfo_assets/images/door.png';
 InfoStationSettings.IMG_HUMIDITY = 'ohsinfo_assets/images/humidity.png';
+InfoStationSettings.IMG_FLOOR = 'ohsinfo_assets/images/floorIcon.png';
+InfoStationSettings.IMG_FLOOR1 = 'ohsinfo_assets/images/floor1.jpg';
+InfoStationSettings.IMG_BULB_ON = 'ohsinfo_assets/images/bulbOn.png';
+InfoStationSettings.IMG_BULB_OFF = 'ohsinfo_assets/images/bulbOff.png';
+InfoStationSettings.IMG_BULB_ONOFF = 'ohsinfo_assets/images/bulbOn_Off.png';
+InfoStationSettings.IMG_BULB_OFFON = 'ohsinfo_assets/images/bulbOff_On.png';
+InfoStationSettings.IMG_TEMP_SYMBOL = 'ohsinfo_assets/images/tempSymbol.png';
 function postAjax(urlAdr, jsonDat) {
     var result = null;
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
@@ -11105,6 +11184,339 @@ function postAjax(urlAdr, jsonDat) {
     return result;
 }
 //# sourceMappingURL=InfoStationSettings.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/PanelWeather.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PanelWeather; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/Item.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageStatic.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_TextSimple__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/TextSimple.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var PanelWeather = (function (_super) {
+    __extends(PanelWeather, _super);
+    function PanelWeather(ctx, weatherData) {
+        var _this = _super.call(this, ctx) || this;
+        _this.m_weatherData = null;
+        // Texts
+        _this.m_textTime = null;
+        _this.m_textDate = null;
+        _this.m_textTempOut = null;
+        _this.m_textWind = null;
+        // Images
+        _this.m_weatherIcons = new Array();
+        _this.m_weatherData = weatherData;
+        _this.buildLayout();
+        return _this;
+    }
+    PanelWeather.prototype.paint = function () {
+        this.rect.paint(this.ctx);
+        // Update data for painting...
+        this.updateData();
+        // Icons...
+        for (var _i = 0, _a = this.m_weatherIcons; _i < _a.length; _i++) {
+            var icon = _a[_i];
+            if (icon.visible) {
+                icon.paint();
+            }
+        }
+        this.m_wind.paint();
+        //this.m_textTempOut.paint();
+        //this.m_textWind.paint();
+        this.m_textTempOut.paint();
+        //this.m_textWind.paint();
+    };
+    PanelWeather.prototype.updateData = function () {
+        var imgNum = this.m_weatherData.weatherSymbol;
+        if (imgNum > 0 && imgNum < this.m_weatherIcons.length) {
+            if (!this.m_weatherIcons[imgNum - 1].visible) {
+                // Set visibility
+                for (var _i = 0, _a = this.m_weatherIcons; _i < _a.length; _i++) {
+                    var icon = _a[_i];
+                    icon.visible = false;
+                }
+                //window.alert('aaaa: ' + imgNum);
+                this.m_weatherIcons[imgNum - 1].visible = true;
+            }
+        }
+        var num = this.m_weatherData.temp;
+        num = +num.toFixed(1);
+        this.m_textTempOut.setText(num.toString());
+    };
+    PanelWeather.prototype.buildLayout = function () {
+        // Weather icons
+        // 1:Sunny, 2:Sunny with Cloud, 3: Cloudy, 4: Cloudy+Rain, 5:Cloudy+Storm, 6: Cloudy+Snow
+        var img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_SUNNY);
+        img.Size(0, 0, 200, 200);
+        img.visible = true;
+        this.m_weatherIcons.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_PARTCLOUDY);
+        img.Size(0, 0, 200, 200);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_CLOUDY);
+        img.Size(0, 0, 200, 200);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_CLOUDRAIN);
+        img.Size(0, 0, 200, 200);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_CLOUDSTORM);
+        img.Size(0, 0, 200, 200);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_CLOUDSNOW);
+        img.Size(0, 0, 200, 200);
+        img.visible = false;
+        this.m_weatherIcons.push(img);
+        // Wind
+        this.m_wind = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_wind.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_WIND);
+        this.m_wind.Size(0, 0, 80, 80);
+        this.m_wind.Move(360, 55);
+        this.m_wind.visible = true;
+        // Temp Out
+        this.m_textTempOut = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, 'TmpOut', 0, 0, 0, 0);
+        this.m_textTempOut.fontSize = 40;
+        this.m_textTempOut.fontFamily = 'px Roboto Condensed, sans-serif';
+        this.m_textTempOut.fontColor = '#000000';
+        this.m_textTempOut.textAlign = 'left';
+        this.m_textTempOut.textBaseline = 'top';
+        this.m_textTempOut.bold = true;
+        this.m_textTempOut.Size(170, 5, 120, 65);
+        /*
+                // Wind
+                this.m_textWind = new TextSimple(this.ctx, 'Wind', 260, 0, 120, 100);
+        
+                this.m_textWind.fontSize = 40;
+                this.m_textWind.fontFamily = 'px Lucida Sans Unicode, Lucida Grande, sans-serif';
+                this.m_textWind.fontColor = '#000000';
+                this.m_textWind.textAlign = 'left';
+                this.m_textWind.textBaseline = 'top';
+                this.m_textWind.bold = false;
+                this.m_textWind.Size(370, 15, 120, 60);
+        */
+    };
+    PanelWeather.prototype.Size = function (x, y, w, h) {
+        _super.prototype.Size.call(this, x, y, w, h);
+        // window.alert(' Size... x: ' + x + ' y:' + y + ' w: ' + w + ' h: ' + h);
+        // Icons...
+        for (var _i = 0, _a = this.m_weatherIcons; _i < _a.length; _i++) {
+            var icon = _a[_i];
+            icon.Size(x, y, w, w); //rectangle
+        }
+        this.m_wind.Size(x + 20, y + w + 10, w - 20, w - 20);
+        this.m_textTempOut.Size(x + 10, y + (2 * w) + 10, w - 10, w - 10);
+    };
+    return PanelWeather;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__["a" /* Item */]));
+
+//# sourceMappingURL=PanelWeather.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/ScreenAllFloors.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ScreenAllFloors; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/OhsScreen.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/TextSimple.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageButton.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var ScreenAllFloors = (function (_super) {
+    __extends(ScreenAllFloors, _super);
+    function ScreenAllFloors(siteData, canvas) {
+        var _this = _super.call(this, canvas) || this;
+        _this.m_siteData = null;
+        _this.m_siteData = siteData;
+        _this.m_floorIcons = new Array();
+        _this.m_floorName = new Array();
+        _this.m_floorPath = new Array();
+        _this.buildLayout();
+        return _this;
+    }
+    ScreenAllFloors.prototype.buildLayout = function () {
+        _super.prototype.buildLayout.call(this);
+        this.m_floorIcons.length = 0;
+        this.m_floorName.length = 0;
+        this.m_floorPath.length = 0;
+        var floorPaths = this.m_siteData.getSitePaths(this.m_siteData.m_floorArray);
+        for (var _i = 0, floorPaths_1 = floorPaths; _i < floorPaths_1.length; _i++) {
+            var fl = floorPaths_1[_i];
+            this.m_floorIcons.push(new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_FLOOR, __WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_FLOOR, 0, 0, 100, 100));
+            this.m_floorPath.push(new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, fl.toString(), 0, 0, 100, 100));
+            var thing = this.m_siteData.getThing(fl.toString());
+            var txt = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_TextSimple__["a" /* TextSimple */](this.ctx, thing.getName(), 0, 0, 100, 100);
+            txt.fontSize = 24;
+            txt.fontFamily = 'px Roboto Condensed, sans-serif';
+            txt.fontColor = '#000000';
+            txt.textAlign = 'left';
+            txt.textBaseline = 'top';
+            txt.bold = true;
+            this.m_floorName.push(txt);
+        }
+        var gx = 10;
+        var dx = 150;
+        var dy = 150;
+        var dgx = dx + 120;
+        var y = 20;
+        var i = 0;
+        // Reorder
+        for (var _a = 0, _b = this.m_floorIcons; _a < _b.length; _a++) {
+            var item = _b[_a];
+            this.add(item);
+            item.Size(gx + (i * dgx), y, dx, dy);
+            i++;
+        }
+        i = 0;
+        for (var _c = 0, _d = this.m_floorName; _c < _d.length; _c++) {
+            var name = _d[_c];
+            this.add(name);
+            name.Size(gx + (i * dgx), y + dy + gx, 2 * dx, dy);
+            i++;
+        }
+    };
+    ScreenAllFloors.prototype.updateData = function () {
+        // super.updateData();
+        if (this.m_floorIcons.length !== this.m_siteData.getNumberFloors()) {
+            this.buildLayout();
+        }
+    };
+    return ScreenAllFloors;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */]));
+
+//# sourceMappingURL=ScreenAllFloors.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/ScreenFloor.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ScreenFloor; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/OhsScreen.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageStatic.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SymbolSwitch__ = __webpack_require__("../../../../../src/app/OhsInfoStation/SymbolSwitch.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__SymbolTempSensor__ = __webpack_require__("../../../../../src/app/OhsInfoStation/SymbolTempSensor.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+
+var ScreenFloor = (function (_super) {
+    __extends(ScreenFloor, _super);
+    function ScreenFloor(siteData, canvas) {
+        var _this = _super.call(this, canvas) || this;
+        _this.m_siteData = null;
+        _this.sitePath = '';
+        _this.m_imgMap = null;
+        _this.fx = 0.0;
+        _this.fy = 0.0;
+        _this.m_siteData = siteData;
+        _this.m_imgMap = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](_this.ctx);
+        _this.m_symbSwitches = new Array();
+        _this.m_symbTempSensors = new Array();
+        _this.buildLayout();
+        return _this;
+    }
+    ScreenFloor.prototype.buildLayout = function () {
+        _super.prototype.buildLayout.call(this);
+        this.m_imgMap.Size(0, 0, this.canvas.width, this.canvas.height);
+        this.m_imgMap.clickable = false;
+        this.add(this.m_imgMap);
+        // Add switches
+        for (var _i = 0, _a = this.m_siteData.m_switchArray; _i < _a.length; _i++) {
+            var swt = _a[_i];
+            var new_symb = new __WEBPACK_IMPORTED_MODULE_3__SymbolSwitch__["a" /* SymbolSwitch */](this.ctx, swt, this.fx, this.fy);
+            this.m_symbSwitches.push(new_symb);
+            this.add(new_symb);
+        }
+        // Add temp sesnors
+        for (var _b = 0, _c = this.m_siteData.m_tempSensorArray; _b < _c.length; _b++) {
+            var ts = _c[_b];
+            var new_symb = new __WEBPACK_IMPORTED_MODULE_4__SymbolTempSensor__["a" /* SymbolTempSensor */](this.ctx, ts, this.fx, this.fy);
+            this.m_symbTempSensors.push(new_symb);
+            this.add(new_symb);
+        }
+    };
+    ScreenFloor.prototype.setSitePath = function (path) {
+        if (this.sitePath === path) {
+            return;
+        }
+        this.sitePath = path;
+        var floor = this.m_siteData.getThing(this.sitePath.toString());
+        if (floor != null) {
+            // this.fx = floor.dimX;
+            // this.fy = floor.dimY;
+            if (floor.dimX !== 0.0) {
+                this.fx = this.canvas.width / (floor.dimX);
+            }
+            if (floor.dimY !== 0.0) {
+                this.fy = this.canvas.height / (floor.dimY);
+            }
+        }
+        this.m_imgMap.setImage(__WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__["a" /* InfoStationSettings */].IMG_FLOOR1);
+        this.buildLayout();
+    };
+    ScreenFloor.prototype.updateData = function () {
+        if (this.m_symbSwitches.length !== this.m_siteData.m_switchArray.length) {
+            this.buildLayout();
+        }
+    };
+    return ScreenFloor;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */]));
+
+//# sourceMappingURL=ScreenFloor.js.map
 
 /***/ }),
 
@@ -11325,6 +11737,231 @@ var ScreenMain = (function (_super) {
 }(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */])); // class end
 
 //# sourceMappingURL=ScreenMain.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/ScreenWeather.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ScreenWeather; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/OhsScreen.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PanelWeather__ = __webpack_require__("../../../../../src/app/OhsInfoStation/PanelWeather.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ScreenWeather = (function (_super) {
+    __extends(ScreenWeather, _super);
+    function ScreenWeather(weather, canvas) {
+        var _this = _super.call(this, canvas) || this;
+        _this.m_weather = null;
+        _this.m_panels = new Array();
+        _this.m_weather = weather;
+        return _this;
+    }
+    ScreenWeather.prototype.updateData = function () {
+        // super.updateData();
+        if (this.m_panels.length < 5 && this.m_weather.m_forecastWeather.length > 1) {
+            this.m_panels.length = 0;
+            for (var _i = 0, _a = this.m_weather.m_forecastWeather; _i < _a.length; _i++) {
+                var item = _a[_i];
+                var nl = this.m_panels.push(new __WEBPACK_IMPORTED_MODULE_1__PanelWeather__["a" /* PanelWeather */](this.ctx, item));
+                if (nl === 5) {
+                    break;
+                }
+            }
+            // Resize
+            var dx = 5;
+            var d_pan = (this.canvas.width - dx) / this.m_panels.length;
+            var j = 0;
+            for (var _b = 0, _c = this.m_panels; _b < _c.length; _b++) {
+                var item2 = _c[_b];
+                var xx = dx + (j * (d_pan));
+                item2.Size(xx, 5, d_pan - dx, this.canvas.height);
+                item2.m_textTempOut.setText('j: ' + j);
+                j = j + 1;
+                item2.visible = true;
+                this.add(item2);
+            }
+        }
+    };
+    return ScreenWeather;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */]));
+
+//# sourceMappingURL=ScreenWeather.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/SymbolSwitch.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SymbolSwitch; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/Item.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageStatic.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var SymbolSwitch = (function (_super) {
+    __extends(SymbolSwitch, _super);
+    function SymbolSwitch(ctx, swt, scaleX, scaleY) {
+        var _this = _super.call(this, ctx) || this;
+        _this.m_switch = null;
+        _this.m_switch = swt;
+        _this.scaleX = scaleX;
+        _this.scaleY = scaleY;
+        _this.m_imgState = new Array();
+        _this.buildLayout();
+        return _this;
+    }
+    SymbolSwitch.prototype.buildLayout = function () {
+        var img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB_OFF);
+        this.m_imgState.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB_OFFON);
+        this.m_imgState.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB_ON);
+        this.m_imgState.push(img);
+        img = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        img.setImage(__WEBPACK_IMPORTED_MODULE_2__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB_ONOFF);
+        this.m_imgState.push(img);
+    };
+    SymbolSwitch.prototype.paint = function () {
+        _super.prototype.paint.call(this);
+        this.updateData();
+        for (var _i = 0, _a = this.m_imgState; _i < _a.length; _i++) {
+            var img = _a[_i];
+            if (img.visible) {
+                img.paint();
+            }
+        }
+    };
+    SymbolSwitch.prototype.updateData = function () {
+        this.Size(this.m_switch.posX * this.scaleX, this.m_switch.posY * this.scaleY, 50, 50);
+        for (var _i = 0, _a = this.m_imgState; _i < _a.length; _i++) {
+            var img = _a[_i];
+            img.Size(this.m_switch.posX * this.scaleX, this.m_switch.posY * this.scaleY, 50, 50);
+            img.visible = false;
+        }
+        // Switch logic...
+        if (this.m_switch.getState() === 0) {
+            this.m_imgState[0].visible = true;
+        }
+        else if (this.m_switch.getState() === 1) {
+            this.m_imgState[0].visible = true;
+        }
+        else if (this.m_switch.getState() === 2) {
+            this.m_imgState[1].visible = true;
+        }
+        else if (this.m_switch.getState() === 3) {
+            this.m_imgState[2].visible = true;
+        }
+        else if (this.m_switch.getState() === 4) {
+            this.m_imgState[3].visible = true;
+        }
+        else {
+            this.m_imgState[3].visible = true;
+        }
+    };
+    SymbolSwitch.prototype.MouseDownHandler = function (x, y) {
+        var ret = _super.prototype.MouseDownHandler.call(this, x, y);
+        if (ret === this) {
+            this.m_switch.click();
+        }
+        return ret;
+    };
+    return SymbolSwitch;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__["a" /* Item */]));
+
+//# sourceMappingURL=SymbolSwitch.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/SymbolTempSensor.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SymbolTempSensor; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/Item.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/ImageStatic.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_TextSimple__ = __webpack_require__("../../../../../src/app/OhsGuiFramework/TextSimple.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var SymbolTempSensor = (function (_super) {
+    __extends(SymbolTempSensor, _super);
+    function SymbolTempSensor(ctx, tempSensor, scaleX, scaleY) {
+        var _this = _super.call(this, ctx) || this;
+        _this.m_tempSensor = null;
+        _this.m_tempSensor = tempSensor;
+        _this.scaleX = scaleX;
+        _this.scaleY = scaleY;
+        _this.m_imgTemp = new __WEBPACK_IMPORTED_MODULE_1__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](_this.ctx);
+        _this.m_imgTemp.setImage(__WEBPACK_IMPORTED_MODULE_3__InfoStationSettings__["a" /* InfoStationSettings */].IMG_TEMP_SYMBOL);
+        _this.m_txtTemp = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_TextSimple__["a" /* TextSimple */](_this.ctx, ' ', 0, 0, 50, 50);
+        _this.m_txtTemp.fontSize = 24;
+        _this.m_txtTemp.fontFamily = 'px Roboto Condensed, sans-serif';
+        _this.m_txtTemp.fontColor = '#000000';
+        _this.m_txtTemp.textAlign = 'left';
+        _this.m_txtTemp.textBaseline = 'top';
+        _this.m_txtTemp.bold = true;
+        _this.buildLayout();
+        return _this;
+    }
+    SymbolTempSensor.prototype.buildLayout = function () {
+    };
+    SymbolTempSensor.prototype.paint = function () {
+        _super.prototype.paint.call(this);
+        this.updateData();
+        this.m_imgTemp.paint();
+        this.m_txtTemp.paint();
+    };
+    SymbolTempSensor.prototype.updateData = function () {
+        this.Size(this.m_tempSensor.posX * this.scaleX, this.m_tempSensor.posY * this.scaleY, 50, 50);
+        this.m_imgTemp.Size(this.m_tempSensor.posX * this.scaleX, this.m_tempSensor.posY * this.scaleY, 30, 30);
+        this.m_txtTemp.Size((this.m_tempSensor.posX * this.scaleX) + 20, this.m_tempSensor.posY * this.scaleY, 30, 120);
+        var temp = this.m_tempSensor.temp;
+        temp = +temp.toFixed(1);
+        this.m_txtTemp.setText(temp.toString());
+    };
+    return SymbolTempSensor;
+}(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_Item__["a" /* Item */]));
+
+//# sourceMappingURL=SymbolTempSensor.js.map
 
 /***/ }),
 
@@ -11617,6 +12254,7 @@ var Site = (function (_super) {
 
 var SiteData = (function () {
     function SiteData() {
+        var _this = this;
         // ---Site data---
         this.m_site = null;
         this.m_floorArray = null;
@@ -11651,14 +12289,26 @@ var SiteData = (function () {
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_SWITCH_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_CONTACTSENS_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WIFINODE_ARR);
-        // Timers
-        this.fastTimerGetDataEvent(150);
-        this.slowTimerGetDataEvent(10000);
-        this.normalTimerGetDataEvent(2000);
+        /*
+                // Timers
+                this.fastTimerGetDataEvent(150);
+                this.slowTimerGetDataEvent(10000);
+                this.normalTimerGetDataEvent(1000);
+        */
+        this.loop = window.setInterval(function () {
+            _this.updateFastData();
+        }, 500);
+        this.loop1 = window.setInterval(function () {
+            _this.updateData();
+        }, 1000);
+        this.loop2 = window.setInterval(function () {
+            _this.updateSlowData();
+        }, 10000);
     }
     SiteData.prototype.normalTimerGetDataEvent = function (step) {
         var _this = this;
         this.updateData();
+        //  this.updateSlowData();
         window.clearTimeout(this.normalTimerGetData);
         this.normalTimerGetData = window.setTimeout(function () { return _this.normalTimerGetDataEvent(step); }, step);
     };

@@ -174,9 +174,9 @@ public class JsonSiteMapping {
 		public JSONArray getThingArrayJSON (Class<?> t) {
 			
 			JSONArray jsonArray = new JSONArray();
-			Set<Thing> set;
+
 			try {
-				set = m_siteService.getThingSet(t);
+				Set<Thing> set = m_siteService.getThingSet(t);
 				
 				for (Thing item: set) {
 					JSONObject obj = new JSONObject ();

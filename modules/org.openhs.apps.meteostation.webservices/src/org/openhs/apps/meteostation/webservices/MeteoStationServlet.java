@@ -38,7 +38,7 @@ public class MeteoStationServlet extends HttpServlet {
     	out.println("<html lang='en'>");
     	out.println("<head>");
     	out.println("<meta charset='utf-8'>");
-    	out.println("<title>ABC xxx2</title>");
+    	out.println("<title>Meteo Station</title>");
     	//out.println("<base href='/'>");
 
     	out.println("<meta name='viewport' content='width=device-width, initial-scale=1'>");

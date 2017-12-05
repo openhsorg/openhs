@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Email
-Bundle-SymbolicName: org.openhs.core.email
-Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: javax.mail;bundle-version="1.4.0"
-Service-Component: OSGI-INF/component.xml
-Export-Package: org.openhs.core.email

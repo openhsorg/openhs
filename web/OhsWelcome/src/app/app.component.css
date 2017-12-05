@@ -1,0 +1,84 @@
+
+h1 {
+	font: 15px arial, sans-serif;
+    font-size: 28px;color: #2c36c5;
+    text-align:center;
+}
+
+h2 {
+	font: 20px arial, sans-serif;
+	color: #249151;
+}
+
+
+body {
+    background-image: url("/web/welcome/bkg.png");
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;     
+}
+
+.button, .button1, .button2, .button3, .buttonKitchen {
+    height: 150px;
+    width: 150px;
+    padding: 0;
+    border: none;
+    color: transparent; 
+    background-color: transparent;
+    outline: none;
+    display: block;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 10px;
+    position:absolute;
+    left: 50%;
+	top: 50%;
+	background-position:center left, center left;
+}
+
+.button {
+    margin-left:-87px;
+	margin-top:175px;
+    background-image: url(/web/welcome/admin.png);
+	background-repeat:no-repeat;	
+}
+
+.button1 {
+    margin-top:-175px;
+    background-image: url(/web/welcome/meteo.png);
+	background-repeat:no-repeat;    
+}
+
+.button2 {
+    margin-left:-175px;
+    background-image: url(/web/welcome/statistics.jpg);
+	background-repeat:no-repeat;        
+}
+
+.button3 {
+    background-image: url(/web/welcome/clock.jpg);
+	background-repeat:no-repeat;        
+}
+
+.buttonKitchen {
+    margin-left:-600px;
+	margin-top:-822px;	    	
+}
+
+#bg {
+	position: fixed; 
+	top: -50%; 
+	left: -50%; 
+	width: 200%; 
+	height: 200%;
+  }
+  #bg img {
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	right: 0; 
+	bottom: 0; 
+	margin: auto; 
+	min-width: 50%;
+	min-height: 50%;
+  }
