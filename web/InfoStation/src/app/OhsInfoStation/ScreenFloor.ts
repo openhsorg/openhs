@@ -98,4 +98,24 @@ export class ScreenFloor extends OhsScreen {
 
     }
 
+    public MouseDownHandler(x: number, y: number) {        
+        let ret = super.MouseDownHandler(x, y);
+
+        if (ret != null) {
+
+            for (let item of this.m_symbSwitches) {
+                if (ret === item) {
+                    this.cmd = ret;
+                    
+                    return ret;
+                }
+            }
+        
+            
+            return ret;
+        }
+        
+        return null;
+    }    
+
 }

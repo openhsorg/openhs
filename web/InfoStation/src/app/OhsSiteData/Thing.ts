@@ -1,10 +1,11 @@
 import {OhsInterface} from './OhsInterface';
 import {postAjax} from './OhsInterface';
+import {postAjax2} from './OhsInterface';
 
 export class Thing {
 
     protected valid                 = false; // content of the forecast is valid
-    protected sitePath              = '*'; // OpenHS path
+    public sitePath              = '*'; // OpenHS path
     protected devicePath            = '*'; // OpenHS path
     protected name                  = 'no name';
     public posX:                    number;
@@ -84,6 +85,10 @@ export class Thing {
         return this.valid;
     }
 
+    public updateX () {
+
+    }    
+
     public update () {
 
         var js = JSON.stringify({
@@ -91,7 +96,7 @@ export class Thing {
             sitePath  : this.sitePath
         });
 
-        var ret = postAjax (OhsInterface.URL, js);
+        var ret = postAjax2 (OhsInterface.URL, js);
 
         if (JSON.parse(ret['return'])) {
             this.fillFromJSON(ret);
@@ -111,4 +116,49 @@ export class Thing {
             this[propName] = json[propName];
         }
     }
+
+    public updaterx (jsonString: String) {
+        window.alert('---');
+    }
 }
+
+
+export function postAjax3(urlAdr: string, jsonDat: string, obj: Thing) {
+    
+         var result = null;
+    
+      
+         $.ajaxSetup ({
+                     // Disable caching of AJAX responses
+                     cache: false
+                 });
+    
+             $.ajax({
+                 async: true,
+                 type: 'POST',
+                 contentType: 'application/json',
+                 url: urlAdr,
+                 data: jsonDat,
+                 dataType: 'json',
+                 success: function(response) {
+
+                    obj.updaterx(response);
+    /*
+                    if (JSON.parse(response['return'])) {
+                        obj.stateInt = parseInt (response['state_int'], 10);
+    
+                       // var str = JSON.stringify(response);
+                        
+                        //var parsedJSON = JSON.parse(str);
+        
+                     //   window.alert('aaa: ' + this.stateInt);
+                       // this.updateDelayed(250);
+        
+                      
+                    }
+*/
+               
+              }});
+    
+         return result;
+     }

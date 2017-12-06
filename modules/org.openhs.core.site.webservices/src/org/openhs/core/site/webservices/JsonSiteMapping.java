@@ -276,7 +276,7 @@ public class JsonSiteMapping {
 		
 		JSONObject jsonRet = new JSONObject ();
 		
-	//	logger.info("POST2....>> " + json.toString());
+		//logger.info("POST2....>> " + json.toString());
 		
 		if (id.equals("idThingCommand")) {
 			
@@ -284,6 +284,8 @@ public class JsonSiteMapping {
 			String command = json.getString("command");
 			
 			Thing thing;
+			
+			//logger.info("XXXXXX POST2....>> " + json.toString());
 			
 			try {
 				  thing = m_siteService.getThing(path);		
@@ -300,14 +302,18 @@ public class JsonSiteMapping {
 					  } else if (command.equals("update")){
 						  
 					  }
+					  
+					 // Thread.sleep(1000);
 
 					  jsonRet.put("return", new Boolean(true));
 					  jsonRet.put("state_int", new Integer(swt.getStateInt()));
 					  
-					  logger.info("Command to set:" );					  
+					  //logger.info("XXXXXX REturn....>> " + jsonRet.toString());
+					  
+					 // logger.info("Command to set:" );					  
 				  }
 				  
-			}catch (SiteException e) {
+			}catch (Exception e) {
 				  e.printStackTrace();
 				  jsonRet.put("return", new Boolean(false));
 			  } 

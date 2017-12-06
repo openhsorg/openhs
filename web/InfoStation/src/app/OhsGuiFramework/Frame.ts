@@ -30,6 +30,17 @@ export class Frame {
             this.paint();
         }, 50);
 */
+/*
+        //20Hz
+        this.loop = window.setInterval(()=>{
+            this.xxx();
+        }, 2000);
+        */
+
+    }
+
+    public xxx () {
+
     }
 
     public paint () {
@@ -75,7 +86,16 @@ export class Frame {
         var mousePos = getMousePos(this.canvas, event);
 
         if (this.m_curScreen != null) {
-            return this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
+            const ret = this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
+
+            if (this.m_curScreen.cmd != null) {
+              //  window.alert("aaa");
+
+               // this.m_curScreen.cmd = null;
+            }
+
+
+            return ret;
         }
 
     }

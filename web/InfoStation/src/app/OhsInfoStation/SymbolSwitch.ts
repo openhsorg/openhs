@@ -85,12 +85,14 @@ export class SymbolSwitch extends Item {
     public MouseDownHandler(x: number, y: number) {
         const ret = super.MouseDownHandler(x, y);
 
-        if (ret === this) {
+        if (ret === this) {            
             this.m_switch.click();
+            //window.setTimeout(() => this.click(), 150);
 
         }
 
         return ret;
     }
+
 
 }

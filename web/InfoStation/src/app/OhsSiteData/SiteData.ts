@@ -85,9 +85,10 @@ export class SiteData {
             this.updateData();
         }, 1000);
 */
+
         this.loop2 = window.setInterval(()=>{
             this.updateSlowData();
-        }, 4000);
+        }, 5000);
 
     }
 /*

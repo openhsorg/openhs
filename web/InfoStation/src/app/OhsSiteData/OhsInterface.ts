@@ -54,3 +54,32 @@ export function postAjax(urlAdr: string, jsonDat: string) {
 
      return result;
  }
+
+ export function postAjax2(urlAdr: string, jsonDat: string) {
+    
+         var result = null;
+    
+         $.ajaxSetup ({
+                     // Disable caching of AJAX responses
+                     cache: false
+                 });
+    
+             $.ajax({
+                 async: true,
+                 type: 'POST',
+                 contentType: 'application/json',
+                 url: urlAdr,
+                 data: jsonDat,
+                 dataType: 'json',
+                 success: function(response) {
+    
+                 result = response;
+
+               
+              }});
+    
+         return result;
+     }
+
+
+    

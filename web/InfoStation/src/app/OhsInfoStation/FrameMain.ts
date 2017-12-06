@@ -12,6 +12,13 @@ import { ScreenWeather } from './ScreenWeather';
 import { ScreenAllFloors } from './ScreenAllFloors';
 import { ScreenFloor } from './ScreenFloor';
 
+
+import { Switch } from '../OhsSiteData/Switch';
+import { SymbolSwitch } from './SymbolSwitch';
+import {OhsInterface} from '../OhsSiteData/OhsInterface';
+import {postAjax} from '../OhsSiteData/OhsInterface';
+import {postAjax2} from '../OhsSiteData/OhsInterface';
+
 import swal from 'sweetalert2';
 
 export class FrameMain extends Frame {
@@ -55,6 +62,7 @@ export class FrameMain extends Frame {
         this.m_curScreen = this.m_screenMain;
 
    }
+ 
 
     public MouseDownHandler (event) {
         var ret = super.MouseDownHandler(event);

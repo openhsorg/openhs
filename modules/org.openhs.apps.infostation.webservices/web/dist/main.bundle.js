@@ -10304,7 +10304,15 @@ var Frame = (function () {
                     this.paint();
                 }, 50);
         */
+        /*
+                //20Hz
+                this.loop = window.setInterval(()=>{
+                    this.xxx();
+                }, 2000);
+                */
     }
+    Frame.prototype.xxx = function () {
+    };
     Frame.prototype.paint = function () {
         var _this = this;
         var benchmark = false;
@@ -10336,7 +10344,12 @@ var Frame = (function () {
     Frame.prototype.MouseDownHandler = function (event) {
         var mousePos = getMousePos(this.canvas, event);
         if (this.m_curScreen != null) {
-            return this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
+            var ret = this.m_curScreen.MouseDownHandler(mousePos.x, mousePos.y);
+            if (this.m_curScreen.cmd != null) {
+                //  window.alert("aaa");
+                // this.m_curScreen.cmd = null;
+            }
+            return ret;
         }
     };
     Frame.prototype.MouseUpHandler = function (event) {
@@ -10621,12 +10634,13 @@ var Item = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return OhsScreen; });
 var OhsScreen = (function () {
-    //   private msg:                MessageBox = new MessageBox ();
     function OhsScreen(canvas) {
         this.m_item = null;
         this.canvas = null;
         this.ctx = null;
         this.message = false;
+        //   private msg:                MessageBox = new MessageBox ();
+        this.cmd = null;
         this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d');
         this.m_item = new Array();
@@ -11513,6 +11527,20 @@ var ScreenFloor = (function (_super) {
             this.buildLayout();
         }
     };
+    ScreenFloor.prototype.MouseDownHandler = function (x, y) {
+        var ret = _super.prototype.MouseDownHandler.call(this, x, y);
+        if (ret != null) {
+            for (var _i = 0, _a = this.m_symbSwitches; _i < _a.length; _i++) {
+                var item = _a[_i];
+                if (ret === item) {
+                    this.cmd = ret;
+                    return ret;
+                }
+            }
+            return ret;
+        }
+        return null;
+    };
     return ScreenFloor;
 }(__WEBPACK_IMPORTED_MODULE_0__OhsGuiFramework_OhsScreen__["a" /* OhsScreen */]));
 
@@ -11889,6 +11917,7 @@ var SymbolSwitch = (function (_super) {
         var ret = _super.prototype.MouseDownHandler.call(this, x, y);
         if (ret === this) {
             this.m_switch.click();
+            //window.setTimeout(() => this.click(), 150);
         }
         return ret;
     };
@@ -12094,6 +12123,7 @@ var Floor = (function (_super) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return OhsInterface; });
 /* harmony export (immutable) */ __webpack_exports__["b"] = postAjax;
+/* harmony export (immutable) */ __webpack_exports__["c"] = postAjax2;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__("../../../../../../../../../node_modules/jquery/dist/jquery.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
 // import $ from 'jquery';
@@ -12135,6 +12165,25 @@ function postAjax(urlAdr, jsonDat) {
     });
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajax"]({
         async: false,
+        type: 'POST',
+        contentType: 'application/json',
+        url: urlAdr,
+        data: jsonDat,
+        dataType: 'json',
+        success: function (response) {
+            result = response;
+        }
+    });
+    return result;
+}
+function postAjax2(urlAdr, jsonDat) {
+    var result = null;
+    __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
+        // Disable caching of AJAX responses
+        cache: false
+    });
+    __WEBPACK_IMPORTED_MODULE_0_jquery__["ajax"]({
+        async: true,
         type: 'POST',
         contentType: 'application/json',
         url: urlAdr,
@@ -12313,7 +12362,7 @@ var SiteData = (function () {
         */
         this.loop2 = window.setInterval(function () {
             _this.updateSlowData();
-        }, 4000);
+        }, 5000);
     }
     /*
         private normalTimerGetDataEvent(step: number) {
@@ -12718,8 +12767,12 @@ var Supplier = (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Switch; });
+/* unused harmony export postAjax4 */
+/* unused harmony export postAjax5 */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Thing__ = __webpack_require__("../../../../../src/app/OhsSiteData/Thing.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__OhsInterface__ = __webpack_require__("../../../../../src/app/OhsSiteData/OhsInterface.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_jquery__ = __webpack_require__("../../../../../../../../../node_modules/jquery/dist/jquery.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_jquery__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12751,35 +12804,201 @@ var Switch = (function (_super) {
             this.off();
         }
     };
+    Switch.prototype.updater = function (jsonString) {
+        window.alert('aaa: x');
+        if (JSON.parse(jsonString['return'])) {
+            this.stateInt = parseInt(jsonString['state_int'], 10);
+            // var str = JSON.stringify(response);
+            //var parsedJSON = JSON.parse(str);
+            // this.updateDelayed(250);
+        }
+    };
+    /*
+    public on () {
+        this.stateInt = 2;
+
+        //window.setTimeout(() => this.on_update(), 50);
+    }
+
+    public off () {
+        this.stateInt = 4;
+
+        //window.setTimeout(() => this.off_update(), 50);
+
+       // window.alert("aaaa");
+    }
+    */
+    /*
+    public click_update () {
+        if (this.stateInt == 2) {
+            this.on_update();
+
+        } else if (this.stateInt == 4) {
+            this.off_update();
+
+        }
+
+    }
+*/
     Switch.prototype.on = function () {
+        // window.alert('aaa');
+        var _this = this;
+        this.stateInt = 2;
         var js = JSON.stringify({
             idPost: __WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].ID_THING_COMMAND,
             path: this.sitePath,
             command: 'on'
         });
-        this.stateInt = 2;
-        var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
-        if (JSON.parse(ret['return'])) {
-            this.stateInt = parseInt(ret['state_int'], 10);
-            //this.updateDelayed(150);
-        }
+        /*
+                    $.ajaxSetup ({
+                        // Disable caching of AJAX responses
+                        cache: false
+                    });
+        
+                $.ajax({
+                    async: true,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    url: OhsInterface.URL,
+                    data: js,
+                    dataType: 'json',
+                    success: function(response) {
+        
+                        if (JSON.parse(response['return'])) {
+                            this.stateInt = parseInt (response['state_int'], 10);
+        
+                           // var str = JSON.stringify(response);
+                            
+                            //var parsedJSON = JSON.parse(str);
+            
+                         //   window.alert('aaa: ' + this.stateInt);
+                           // this.updateDelayed(250);
+            
+                          
+                        }
+        
+                  
+                 }});
+                 ////'services/ohs_site_data'
+                    
+        */
+        //       var ret = postAjax3(OhsInterface.URL, js, this);
+        var ret = postAjax4(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js, this);
+        window.setTimeout(function () { return _this.updateX(); }, 100);
+        //   window.setTimeout(() => this.update(), 250);
     };
     Switch.prototype.off = function () {
+        var _this = this;
+        this.stateInt = 4;
         var js = JSON.stringify({
             idPost: __WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].ID_THING_COMMAND,
             path: this.sitePath,
             command: 'off'
         });
-        this.stateInt = 4;
-        var ret = Object(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js);
+        /*
+        
+                    $.ajaxSetup ({
+                        // Disable caching of AJAX responses
+                        cache: false
+                    });
+        
+                    $.ajax({
+                        async: true,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        url: OhsInterface.URL,
+                        data: js,
+                        dataType: 'json',
+                        success: function(response) {
+        
+                            if (JSON.parse(response['return'])) {
+                                this.stateInt = parseInt (response['state_int'], 10);
+                
+                               // this.updateDelayed(250);
+                            }
+        
+                    
+                    }});
+                    
+        */
+        var ret = postAjax4(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js, this);
+        window.setTimeout(function () { return _this.updateX(); }, 100);
+        /*
+        var ret = postAjax2(OhsInterface.URL, js);
+
         if (JSON.parse(ret['return'])) {
             this.stateInt = parseInt(ret['state_int'], 10);
-            //this.updateDelayed (150);
+
+            this.updateDelayed (250);
         }
+
+        window.setTimeout(() => this.update(), 250);
+        */
+    };
+    Switch.prototype.updateX = function () {
+        var js = JSON.stringify({
+            idPost: __WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].ID_THING_UPDATE,
+            sitePath: this.sitePath
+        });
+        //window.alert('aaa+++');
+        postAjax5(__WEBPACK_IMPORTED_MODULE_1__OhsInterface__["a" /* OhsInterface */].URL, js, this);
     };
     return Switch;
 }(__WEBPACK_IMPORTED_MODULE_0__Thing__["a" /* Thing */]));
 
+function postAjax4(urlAdr, jsonDat, obj) {
+    var result = null;
+    __WEBPACK_IMPORTED_MODULE_2_jquery__["ajaxSetup"]({
+        // Disable caching of AJAX responses
+        cache: false
+    });
+    __WEBPACK_IMPORTED_MODULE_2_jquery__["ajax"]({
+        async: true,
+        type: 'POST',
+        contentType: 'application/json',
+        url: urlAdr,
+        data: jsonDat,
+        dataType: 'json',
+        success: function (response) {
+            if (JSON.parse(response['return'])) {
+                obj.stateInt = parseInt(response['state_int'], 10);
+                // var str = JSON.stringify(response);
+                //var parsedJSON = JSON.parse(str);
+                //   window.alert('aaa: ' + this.stateInt);
+                // this.updateDelayed(250);
+            }
+        }
+    });
+    return result;
+}
+function postAjax5(urlAdr, jsonDat, obj) {
+    var result = null;
+    __WEBPACK_IMPORTED_MODULE_2_jquery__["ajaxSetup"]({
+        // Disable caching of AJAX responses
+        cache: false
+    });
+    __WEBPACK_IMPORTED_MODULE_2_jquery__["ajax"]({
+        async: true,
+        type: 'POST',
+        contentType: 'application/json',
+        url: urlAdr,
+        data: jsonDat,
+        dataType: 'json',
+        success: function (response) {
+            //   var str = JSON.stringify(response);
+            //window.alert('aaa+++: ' + str);
+            if (JSON.parse(response['return'])) {
+                //   this.fillFromJSON(response);
+                for (var propName in response) {
+                    obj[propName] = response[propName];
+                }
+            }
+            else {
+            }
+        }
+    });
+    return result;
+}
 //# sourceMappingURL=Switch.js.map
 
 /***/ }),
@@ -12820,7 +13039,9 @@ var TemperatureSensor = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Thing; });
+/* unused harmony export postAjax3 */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsInterface__ = __webpack_require__("../../../../../src/app/OhsSiteData/OhsInterface.ts");
+
 
 
 var Thing = (function () {
@@ -12887,12 +13108,14 @@ var Thing = (function () {
     Thing.prototype.isValid = function () {
         return this.valid;
     };
+    Thing.prototype.updateX = function () {
+    };
     Thing.prototype.update = function () {
         var js = JSON.stringify({
             idPost: __WEBPACK_IMPORTED_MODULE_0__OhsInterface__["a" /* OhsInterface */].ID_THING_UPDATE,
             sitePath: this.sitePath
         });
-        var ret = Object(__WEBPACK_IMPORTED_MODULE_0__OhsInterface__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_0__OhsInterface__["a" /* OhsInterface */].URL, js);
+        var ret = Object(__WEBPACK_IMPORTED_MODULE_0__OhsInterface__["c" /* postAjax2 */])(__WEBPACK_IMPORTED_MODULE_0__OhsInterface__["a" /* OhsInterface */].URL, js);
         if (JSON.parse(ret['return'])) {
             this.fillFromJSON(ret);
         }
@@ -12908,9 +13131,45 @@ var Thing = (function () {
             this[propName] = json[propName];
         }
     };
+    Thing.prototype.updaterx = function (jsonString) {
+        window.alert('---');
+    };
     return Thing;
 }());
 
+function postAjax3(urlAdr, jsonDat, obj) {
+    var result = null;
+    $.ajaxSetup({
+        // Disable caching of AJAX responses
+        cache: false
+    });
+    $.ajax({
+        async: true,
+        type: 'POST',
+        contentType: 'application/json',
+        url: urlAdr,
+        data: jsonDat,
+        dataType: 'json',
+        success: function (response) {
+            obj.updaterx(response);
+            /*
+                            if (JSON.parse(response['return'])) {
+                                obj.stateInt = parseInt (response['state_int'], 10);
+            
+                               // var str = JSON.stringify(response);
+                                
+                                //var parsedJSON = JSON.parse(str);
+                
+                             //   window.alert('aaa: ' + this.stateInt);
+                               // this.updateDelayed(250);
+                
+                              
+                            }
+        */
+        }
+    });
+    return result;
+}
 //# sourceMappingURL=Thing.js.map
 
 /***/ }),

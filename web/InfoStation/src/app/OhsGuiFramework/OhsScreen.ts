@@ -10,6 +10,8 @@ export class OhsScreen {
     private message             = false;
     //   private msg:                MessageBox = new MessageBox ();
 
+    public cmd: Item = null;
+
     constructor (canvas: HTMLCanvasElement) {
 
         this.canvas = canvas;
