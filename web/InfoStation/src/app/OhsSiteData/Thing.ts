@@ -1,6 +1,8 @@
 import {OhsInterface} from './OhsInterface';
 import {postAjax} from './OhsInterface';
 import {postAjax2} from './OhsInterface';
+import * as $ from 'jquery';
+
 
 export class Thing {
 

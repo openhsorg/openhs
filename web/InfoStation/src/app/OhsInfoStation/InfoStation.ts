@@ -1,5 +1,6 @@
 import {InfoStationData} from './InfoStationData';
 import {InfoStationSettings} from './InfoStationSettings';
+import {KidEvents} from './KidEvents';
 import {postAjax} from './InfoStationSettings';
 
 export class InfoStation {
@@ -12,16 +13,38 @@ export class InfoStation {
 
     public data:    InfoStationData = new InfoStationData();
 
+    public kidEvents:   KidEvents = new KidEvents(); 
+
     constructor () {
-        this.timerEvent(2000);
+        this.timerEvent(4000);
     }
 
     private timerEvent(step: number) {
 
         this.updateData();
+        this.getKidEvents();
 
         window.clearTimeout(this.timer);
         this.timer = window.setTimeout(() => this.timerEvent(step), step);
+    }
+
+    protected getKidEvents () {
+
+        var js = JSON.stringify({
+            idPost : this.kidEvents.constructor.name
+        });
+
+        var ret = postAjax(InfoStationSettings.URL, js);
+
+        if (ret != null) {
+
+            if (JSON.parse(ret['return'])) {
+                this.kidEvents.fillFromJSON(ret);
+
+            } else {
+
+            }
+        }
     }
 
     protected updateData () {

@@ -41,8 +41,12 @@ export class ScreenMain extends OhsScreen {
     protected m_circle:         GeometryCircle = null;
 
     // Images
-    public m_weatherIcons:      Array<ImageStatic>    = new Array<ImageStatic>(); 
-    protected m_wind:           ImageStatic;
+    public m_weatherIcons:          Array<ImageStatic>    = new Array<ImageStatic>(); 
+    protected m_wind:               ImageStatic;
+    protected m_goToSchool:         ImageStatic;
+    protected m_bathTime:           ImageStatic;
+    protected m_sleepTime:          ImageStatic;
+    protected m_lunchTime:          ImageStatic;
 
     constructor (siteData: SiteData, iStation: InfoStation, weather: OhsWeather, canvas: HTMLCanvasElement) {
         super(canvas);
@@ -169,6 +173,7 @@ export class ScreenMain extends OhsScreen {
         this.m_textWind.Size(370, 15, 120, 60);
 
         // Buttons
+        /*
         this.m_phone = new ImageButton (this.ctx,
             InfoStationSettings.IMG_VOICEMESSAGE, InfoStationSettings.IMG_VOICEMESSAGE, 5, this.canvas.height / 2, 80, 80);
         this.add(this.m_phone);
@@ -176,7 +181,7 @@ export class ScreenMain extends OhsScreen {
         this.m_watch = new ImageButton (this.ctx,
             InfoStationSettings.IMG_STOPWATCH, InfoStationSettings.IMG_STOPWATCH, 100, this.canvas.height / 2, 80, 80);
         this.add(this.m_watch);
-
+        */
         this.m_bulb = new ImageButton (this.ctx,
             InfoStationSettings.IMG_BULB, InfoStationSettings.IMG_BULB, 620, this.canvas.height / 2, 80, 80);
         this.add(this.m_bulb);
@@ -191,7 +196,34 @@ export class ScreenMain extends OhsScreen {
        this.add(this.m_circle);
        this.m_circle.visible = true;
 
+       // Kid Events Images...
+       this.m_goToSchool =  new ImageStatic(this.ctx);
+       this.m_goToSchool.setImage(InfoStationSettings.IMG_GO_SCHOOL);
+       this.m_goToSchool.Size(0, 0, 200, 200);
+       this.m_goToSchool.Move(2, 250);
+       this.m_goToSchool.visible = false;
+       this.add(this.m_goToSchool);
 
+       this.m_bathTime =  new ImageStatic(this.ctx);
+       this.m_bathTime.setImage(InfoStationSettings.IMG_BATH_TIME);
+       this.m_bathTime.Size(0, 0, 250, 200);
+       this.m_bathTime.Move(2, 250);
+       this.m_bathTime.visible = false;
+       this.add(this.m_bathTime);
+
+       this.m_sleepTime =  new ImageStatic(this.ctx);
+       this.m_sleepTime.setImage(InfoStationSettings.IMG_SLEEP_TIME);
+       this.m_sleepTime.Size(0, 0, 250, 200);
+       this.m_sleepTime.Move((this.canvas.width / 2 ) - 125, (this.canvas.height / 4 ) - 100);
+       this.m_sleepTime.visible = false;
+       this.add(this.m_sleepTime);
+
+       this.m_lunchTime =  new ImageStatic(this.ctx);
+       this.m_lunchTime.setImage(InfoStationSettings.IMG_LUNCH_TIME);
+       this.m_lunchTime.Size(0, 0, 200, 250);
+       this.m_lunchTime.Move((this.canvas.width / 2 ) - 100, (this.canvas.height / 4 ) - 125);
+       this.m_lunchTime.visible = false;
+       this.add(this.m_lunchTime);
     }
 
 
@@ -204,11 +236,61 @@ export class ScreenMain extends OhsScreen {
 
        // this.m_textTempIn.setText(this.m_infoStation.data.tmpInPath);
         //this.m_textTempOut.setText(this.m_infoStation.data.tmpOutPath);
-        
+
         this.updateTempData();
         this.updatedWeatherData();
-   
+        this.updateKidEvents();
+
     }
+
+    protected updateKidEvents() {
+
+        this.m_goToSchool.visible = this.m_infoStation.kidEvents.goToSchool;
+        this.m_bathTime.visible = this.m_infoStation.kidEvents.bathTime;
+        this.m_sleepTime.visible = this.m_infoStation.kidEvents.sleepTime;
+        this.m_lunchTime.visible = this.m_infoStation.kidEvents.lunchTime;
+
+
+/*
+        const date = new Date(this.m_siteData.dateString);
+        const day = date.getDay();
+
+        if (day === 5) {
+           // window.alert(this.m_siteData.timeString);
+        }
+
+        const t1 = '08:25';
+        const t2 = '08:45';
+
+        if (this.compareTime(this.m_siteData.timeString, t1) === 1) {
+            if (this.compareTime(t2, this.m_siteData.timeString) === 1) {
+                this.m_timing_goSchool.visible = true;
+            } else {
+                this.m_timing_goSchool.visible = false;
+            }
+        } else {
+            this.m_timing_goSchool.visible = false;
+        }
+        */
+    }
+
+    protected compareTime(str1, str2) {
+
+            if (str1 === str2) {
+                return 0;
+            }
+
+            const time1 = str1.split(':');
+            const time2 = str2.split(':');
+
+            for (let i = 0; i < time1.length; i++) {
+                if (time1[i] > time2[i]) {
+                    return 1;
+                } else if (time1[i] < time2[i]) {
+                    return -1;
+                }
+            }
+        }
 
     protected updateTempData() {
 

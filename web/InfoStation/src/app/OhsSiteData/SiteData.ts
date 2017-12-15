@@ -63,6 +63,7 @@ export class SiteData {
         this.updateObjectArray(OhsInterface.ID_SWITCH_ARR);
         this.updateObjectArray(OhsInterface.ID_CONTACTSENS_ARR);
         this.updateObjectArray(OhsInterface.ID_WIFINODE_ARR);
+        this.updateDateTime();
 
         this.timeStamp = new Date().getTime();
 /*
@@ -73,7 +74,7 @@ export class SiteData {
 */
         this.loop = window.setInterval(() => {
             this.updateFastData();
-        }, 500);
+        }, 40000);
 /*
         this.loop1 = window.setInterval(() => {
             this.updateDataTimestamp();
@@ -88,7 +89,7 @@ export class SiteData {
 
         this.loop2 = window.setInterval(()=>{
             this.updateSlowData();
-        }, 5000);
+        }, 7000);
 
     }
 /*

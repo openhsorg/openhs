@@ -28,6 +28,10 @@ export class InfoStationSettings {
     public static IMG_BULB_ONOFF       = 'ohsinfo_assets/images/bulbOn_Off.png';
     public static IMG_BULB_OFFON       = 'ohsinfo_assets/images/bulbOff_On.png';
     public static IMG_TEMP_SYMBOL      = 'ohsinfo_assets/images/tempSymbol.png';
+    public static IMG_GO_SCHOOL        = 'ohsinfo_assets/images/alligator-going-to-school.png';
+    public static IMG_BATH_TIME        = 'ohsinfo_assets/images/bath_time.png';
+    public static IMG_SLEEP_TIME       = 'ohsinfo_assets/images/go_sleep.gif';
+    public static IMG_LUNCH_TIME       = 'ohsinfo_assets/images/lunch_time.png';
 
 }
 

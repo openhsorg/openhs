@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
 import org.openhs.apps.infostation.Infostation;
+import org.openhs.apps.infostation.KidEvents;
 import org.openhs.core.commons.InfoStationData;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -82,7 +83,7 @@ public class InfostationWebService implements IInfoStationWebService {
 		JSONObject jsonRet = new JSONObject ();
 	//	jsonRet.put("return", new Boolean(false));
 		
-	//	logger.info("POST2....>> " + json.toString());
+	//	logger.info("POST2....>> id: " + id + " cl: " + KidEvents.class.toString());
 		
 		if (id.equals("idInfoStationData")) {
 			
@@ -109,7 +110,18 @@ public class InfostationWebService implements IInfoStationWebService {
 		    jsonRet.put("date", date);		
 		    jsonRet.put("return", new Boolean(true));
 		
-		}		
+		} else if (KidEvents.class.toString().contains(id)) {
+									
+			KidEvents ke = this.m_infostation.getKidEvents();
+			
+			jsonRet.put("goToSchool", new Boolean(ke.goToSchool));
+			jsonRet.put("bathTime", new Boolean(ke.bathTime));
+			jsonRet.put("sleepTime", new Boolean(ke.sleepTime));
+			jsonRet.put("lunchTime", new Boolean(ke.lunchTime));
+			jsonRet.put("return", new Boolean(true));
+			
+			//logger.info("POST2....>> KidEvents: " + jsonRet.toString());
+		}
     
 		return jsonRet;	
     }    

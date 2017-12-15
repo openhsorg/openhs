@@ -11077,6 +11077,8 @@ var GeometryCircle = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return InfoStation; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__InfoStationData__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationData.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__InfoStationSettings__ = __webpack_require__("../../../../../src/app/OhsInfoStation/InfoStationSettings.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__KidEvents__ = __webpack_require__("../../../../../src/app/OhsInfoStation/KidEvents.ts");
+
 
 
 
@@ -11085,13 +11087,28 @@ var InfoStation = (function () {
         this.dateString = '---';
         this.timeString = '---';
         this.data = new __WEBPACK_IMPORTED_MODULE_0__InfoStationData__["a" /* InfoStationData */]();
-        this.timerEvent(2000);
+        this.kidEvents = new __WEBPACK_IMPORTED_MODULE_2__KidEvents__["a" /* KidEvents */]();
+        this.timerEvent(4000);
     }
     InfoStation.prototype.timerEvent = function (step) {
         var _this = this;
         this.updateData();
+        this.getKidEvents();
         window.clearTimeout(this.timer);
         this.timer = window.setTimeout(function () { return _this.timerEvent(step); }, step);
+    };
+    InfoStation.prototype.getKidEvents = function () {
+        var js = JSON.stringify({
+            idPost: this.kidEvents.constructor.name
+        });
+        var ret = Object(__WEBPACK_IMPORTED_MODULE_1__InfoStationSettings__["b" /* postAjax */])(__WEBPACK_IMPORTED_MODULE_1__InfoStationSettings__["a" /* InfoStationSettings */].URL, js);
+        if (ret != null) {
+            if (JSON.parse(ret['return'])) {
+                this.kidEvents.fillFromJSON(ret);
+            }
+            else {
+            }
+        }
     };
     InfoStation.prototype.updateData = function () {
         var js = JSON.stringify({
@@ -11178,6 +11195,10 @@ InfoStationSettings.IMG_BULB_OFF = 'ohsinfo_assets/images/bulbOff.png';
 InfoStationSettings.IMG_BULB_ONOFF = 'ohsinfo_assets/images/bulbOn_Off.png';
 InfoStationSettings.IMG_BULB_OFFON = 'ohsinfo_assets/images/bulbOff_On.png';
 InfoStationSettings.IMG_TEMP_SYMBOL = 'ohsinfo_assets/images/tempSymbol.png';
+InfoStationSettings.IMG_GO_SCHOOL = 'ohsinfo_assets/images/alligator-going-to-school.png';
+InfoStationSettings.IMG_BATH_TIME = 'ohsinfo_assets/images/bath_time.png';
+InfoStationSettings.IMG_SLEEP_TIME = 'ohsinfo_assets/images/go_sleep.gif';
+InfoStationSettings.IMG_LUNCH_TIME = 'ohsinfo_assets/images/lunch_time.png';
 function postAjax(urlAdr, jsonDat) {
     var result = null;
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
@@ -11198,6 +11219,30 @@ function postAjax(urlAdr, jsonDat) {
     return result;
 }
 //# sourceMappingURL=InfoStationSettings.js.map
+
+/***/ }),
+
+/***/ "../../../../../src/app/OhsInfoStation/KidEvents.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return KidEvents; });
+var KidEvents = (function () {
+    function KidEvents() {
+        this.goToSchool = false;
+        this.bathTime = false;
+        this.sleepTime = false;
+        this.lunchTime = false;
+    }
+    KidEvents.prototype.fillFromJSON = function (json) {
+        for (var propName in json) {
+            this[propName] = json[propName];
+        }
+    };
+    return KidEvents;
+}());
+
+//# sourceMappingURL=KidEvents.js.map
 
 /***/ }),
 
@@ -11699,10 +11744,15 @@ var ScreenMain = (function (_super) {
         this.m_textWind.bold = false;
         this.m_textWind.Size(370, 15, 120, 60);
         // Buttons
-        this.m_phone = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_VOICEMESSAGE, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_VOICEMESSAGE, 5, this.canvas.height / 2, 80, 80);
+        /*
+        this.m_phone = new ImageButton (this.ctx,
+            InfoStationSettings.IMG_VOICEMESSAGE, InfoStationSettings.IMG_VOICEMESSAGE, 5, this.canvas.height / 2, 80, 80);
         this.add(this.m_phone);
-        this.m_watch = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_STOPWATCH, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_STOPWATCH, 100, this.canvas.height / 2, 80, 80);
+
+        this.m_watch = new ImageButton (this.ctx,
+            InfoStationSettings.IMG_STOPWATCH, InfoStationSettings.IMG_STOPWATCH, 100, this.canvas.height / 2, 80, 80);
         this.add(this.m_watch);
+        */
         this.m_bulb = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BULB, 620, this.canvas.height / 2, 80, 80);
         this.add(this.m_bulb);
         this.m_door = new __WEBPACK_IMPORTED_MODULE_2__OhsGuiFramework_ImageButton__["a" /* ImageButton */](this.ctx, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_DOOR, __WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_DOOR, 715, this.canvas.height / 2, 80, 80);
@@ -11711,6 +11761,31 @@ var ScreenMain = (function (_super) {
         this.m_circle = new __WEBPACK_IMPORTED_MODULE_4__GeometryCircle__["a" /* GeometryCircle */](this.ctx, this.canvas);
         this.add(this.m_circle);
         this.m_circle.visible = true;
+        // Kid Events Images...
+        this.m_goToSchool = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_goToSchool.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_GO_SCHOOL);
+        this.m_goToSchool.Size(0, 0, 200, 200);
+        this.m_goToSchool.Move(2, 250);
+        this.m_goToSchool.visible = false;
+        this.add(this.m_goToSchool);
+        this.m_bathTime = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_bathTime.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_BATH_TIME);
+        this.m_bathTime.Size(0, 0, 250, 200);
+        this.m_bathTime.Move(2, 250);
+        this.m_bathTime.visible = false;
+        this.add(this.m_bathTime);
+        this.m_sleepTime = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_sleepTime.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_SLEEP_TIME);
+        this.m_sleepTime.Size(0, 0, 250, 200);
+        this.m_sleepTime.Move((this.canvas.width / 2) - 125, (this.canvas.height / 4) - 100);
+        this.m_sleepTime.visible = false;
+        this.add(this.m_sleepTime);
+        this.m_lunchTime = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_lunchTime.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_LUNCH_TIME);
+        this.m_lunchTime.Size(0, 0, 200, 250);
+        this.m_lunchTime.Move((this.canvas.width / 2) - 100, (this.canvas.height / 4) - 125);
+        this.m_lunchTime.visible = false;
+        this.add(this.m_lunchTime);
     };
     ScreenMain.prototype.updateData = function () {
         _super.prototype.updateData.call(this);
@@ -11721,6 +11796,49 @@ var ScreenMain = (function (_super) {
         //this.m_textTempOut.setText(this.m_infoStation.data.tmpOutPath);
         this.updateTempData();
         this.updatedWeatherData();
+        this.updateKidEvents();
+    };
+    ScreenMain.prototype.updateKidEvents = function () {
+        this.m_goToSchool.visible = this.m_infoStation.kidEvents.goToSchool;
+        this.m_bathTime.visible = this.m_infoStation.kidEvents.bathTime;
+        this.m_sleepTime.visible = this.m_infoStation.kidEvents.sleepTime;
+        this.m_lunchTime.visible = this.m_infoStation.kidEvents.lunchTime;
+        /*
+                const date = new Date(this.m_siteData.dateString);
+                const day = date.getDay();
+        
+                if (day === 5) {
+                   // window.alert(this.m_siteData.timeString);
+                }
+        
+                const t1 = '08:25';
+                const t2 = '08:45';
+        
+                if (this.compareTime(this.m_siteData.timeString, t1) === 1) {
+                    if (this.compareTime(t2, this.m_siteData.timeString) === 1) {
+                        this.m_timing_goSchool.visible = true;
+                    } else {
+                        this.m_timing_goSchool.visible = false;
+                    }
+                } else {
+                    this.m_timing_goSchool.visible = false;
+                }
+                */
+    };
+    ScreenMain.prototype.compareTime = function (str1, str2) {
+        if (str1 === str2) {
+            return 0;
+        }
+        var time1 = str1.split(':');
+        var time2 = str2.split(':');
+        for (var i = 0; i < time1.length; i++) {
+            if (time1[i] > time2[i]) {
+                return 1;
+            }
+            else if (time1[i] < time2[i]) {
+                return -1;
+            }
+        }
     };
     ScreenMain.prototype.updateTempData = function () {
         var thingIn = this.m_siteData.getThing(this.m_infoStation.data.tmpInPath);
@@ -12340,6 +12458,7 @@ var SiteData = (function () {
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_SWITCH_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_CONTACTSENS_ARR);
         this.updateObjectArray(__WEBPACK_IMPORTED_MODULE_9__OhsInterface__["a" /* OhsInterface */].ID_WIFINODE_ARR);
+        this.updateDateTime();
         this.timeStamp = new Date().getTime();
         /*
                 // Timers
@@ -12349,7 +12468,7 @@ var SiteData = (function () {
         */
         this.loop = window.setInterval(function () {
             _this.updateFastData();
-        }, 500);
+        }, 40000);
         /*
                 this.loop1 = window.setInterval(() => {
                     this.updateDataTimestamp();
@@ -12362,7 +12481,7 @@ var SiteData = (function () {
         */
         this.loop2 = window.setInterval(function () {
             _this.updateSlowData();
-        }, 5000);
+        }, 7000);
     }
     /*
         private normalTimerGetDataEvent(step: number) {
@@ -13041,6 +13160,9 @@ var TemperatureSensor = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Thing; });
 /* unused harmony export postAjax3 */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OhsInterface__ = __webpack_require__("../../../../../src/app/OhsSiteData/OhsInterface.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery__ = __webpack_require__("../../../../../../../../../node_modules/jquery/dist/jquery.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery__);
+
 
 
 
@@ -13139,11 +13261,11 @@ var Thing = (function () {
 
 function postAjax3(urlAdr, jsonDat, obj) {
     var result = null;
-    $.ajaxSetup({
+    __WEBPACK_IMPORTED_MODULE_1_jquery__["ajaxSetup"]({
         // Disable caching of AJAX responses
         cache: false
     });
-    $.ajax({
+    __WEBPACK_IMPORTED_MODULE_1_jquery__["ajax"]({
         async: true,
         type: 'POST',
         contentType: 'application/json',
