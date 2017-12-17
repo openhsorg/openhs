@@ -129,8 +129,7 @@ public class Infostation {
 			  ke.lunchTime = true;
 		  } else {
 			  ke.lunchTime = false;
-		  } 		  
-    	  		  
+		  } 		      	  		  
     	  
     	  return ke;
       }

@@ -46,7 +46,10 @@ export class ScreenMain extends OhsScreen {
     protected m_goToSchool:         ImageStatic;
     protected m_bathTime:           ImageStatic;
     protected m_sleepTime:          ImageStatic;
-    protected m_lunchTime:          ImageStatic;
+    protected m_lunchTime:          ImageStatic;       
+    protected m_johny:              ImageStatic;
+    protected m_elf:                ImageStatic;
+    protected m_santa:              ImageStatic;
 
     constructor (siteData: SiteData, iStation: InfoStation, weather: OhsWeather, canvas: HTMLCanvasElement) {
         super(canvas);
@@ -61,6 +64,15 @@ export class ScreenMain extends OhsScreen {
    }
 
     public buildLayout () {
+
+
+        this.m_johny =  new ImageStatic(this.ctx);
+        this.m_johny.setImage(InfoStationSettings.IMG_JOHNY);
+        this.m_johny.Size(0, 0, this.canvas.width, this.canvas.height);
+        this.m_johny.Move(0, 0);
+        this.m_johny.visible = true;
+        this.m_johny.clickable = false;
+        this.add(this.m_johny);         
 
         // Weather icons
         // 1:Sunny, 2:Sunny with Cloud, 3: Cloudy, 4: Cloudy+Rain, 5:Cloudy+Storm, 6: Cloudy+Snow
@@ -102,7 +114,7 @@ export class ScreenMain extends OhsScreen {
 
         for (let icon of this.m_weatherIcons) {
             this.add(icon);
-        }
+        }        
 
         // Wind
         this.m_wind =  new ImageStatic(this.ctx);
@@ -224,6 +236,21 @@ export class ScreenMain extends OhsScreen {
        this.m_lunchTime.Move((this.canvas.width / 2 ) - 100, (this.canvas.height / 4 ) - 125);
        this.m_lunchTime.visible = false;
        this.add(this.m_lunchTime);
+
+       this.m_elf =  new ImageStatic(this.ctx);
+       this.m_elf.setImage(InfoStationSettings.IMG_ELF);
+       this.m_elf.Size(0, 0, 100, 150);
+       this.m_elf.Move(100, this.canvas.height - 150);
+       this.m_elf.visible = true;
+       this.add(this.m_elf);
+       
+       this.m_santa =  new ImageStatic(this.ctx);
+       this.m_santa.setImage(InfoStationSettings.IMG_SANTA);
+       this.m_santa.Size(0, 0, 200, 200);
+       this.m_santa.Move((this.canvas.width / 2 ) - 100, 20);
+       this.m_santa.visible = true;
+       this.add(this.m_santa);       
+       
     }
 
 

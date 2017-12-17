@@ -32,6 +32,9 @@ export class InfoStationSettings {
     public static IMG_BATH_TIME        = 'ohsinfo_assets/images/bath_time.png';
     public static IMG_SLEEP_TIME       = 'ohsinfo_assets/images/go_sleep.gif';
     public static IMG_LUNCH_TIME       = 'ohsinfo_assets/images/lunch_time.png';
+    public static IMG_JOHNY            = 'ohsinfo_assets/images/johny.png';
+    public static IMG_ELF              = 'ohsinfo_assets/images/elf.png';
+    public static IMG_SANTA            = 'ohsinfo_assets/images/santa.png';
 
 }
 

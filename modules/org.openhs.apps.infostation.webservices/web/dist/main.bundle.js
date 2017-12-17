@@ -11199,6 +11199,9 @@ InfoStationSettings.IMG_GO_SCHOOL = 'ohsinfo_assets/images/alligator-going-to-sc
 InfoStationSettings.IMG_BATH_TIME = 'ohsinfo_assets/images/bath_time.png';
 InfoStationSettings.IMG_SLEEP_TIME = 'ohsinfo_assets/images/go_sleep.gif';
 InfoStationSettings.IMG_LUNCH_TIME = 'ohsinfo_assets/images/lunch_time.png';
+InfoStationSettings.IMG_JOHNY = 'ohsinfo_assets/images/johny.png';
+InfoStationSettings.IMG_ELF = 'ohsinfo_assets/images/elf.png';
+InfoStationSettings.IMG_SANTA = 'ohsinfo_assets/images/santa.png';
 function postAjax(urlAdr, jsonDat) {
     var result = null;
     __WEBPACK_IMPORTED_MODULE_0_jquery__["ajaxSetup"]({
@@ -11650,6 +11653,13 @@ var ScreenMain = (function (_super) {
         // window.alert('test');
     }
     ScreenMain.prototype.buildLayout = function () {
+        this.m_johny = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_johny.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_JOHNY);
+        this.m_johny.Size(0, 0, this.canvas.width, this.canvas.height);
+        this.m_johny.Move(0, 0);
+        this.m_johny.visible = true;
+        this.m_johny.clickable = false;
+        this.add(this.m_johny);
         // Weather icons
         // 1:Sunny, 2:Sunny with Cloud, 3: Cloudy, 4: Cloudy+Rain, 5:Cloudy+Storm, 6: Cloudy+Snow
         var img = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
@@ -11786,6 +11796,18 @@ var ScreenMain = (function (_super) {
         this.m_lunchTime.Move((this.canvas.width / 2) - 100, (this.canvas.height / 4) - 125);
         this.m_lunchTime.visible = false;
         this.add(this.m_lunchTime);
+        this.m_elf = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_elf.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_ELF);
+        this.m_elf.Size(0, 0, 100, 150);
+        this.m_elf.Move(100, this.canvas.height - 150);
+        this.m_elf.visible = true;
+        this.add(this.m_elf);
+        this.m_santa = new __WEBPACK_IMPORTED_MODULE_3__OhsGuiFramework_ImageStatic__["a" /* ImageStatic */](this.ctx);
+        this.m_santa.setImage(__WEBPACK_IMPORTED_MODULE_5__InfoStationSettings__["a" /* InfoStationSettings */].IMG_SANTA);
+        this.m_santa.Size(0, 0, 200, 200);
+        this.m_santa.Move((this.canvas.width / 2) - 100, 20);
+        this.m_santa.visible = true;
+        this.add(this.m_santa);
     };
     ScreenMain.prototype.updateData = function () {
         _super.prototype.updateData.call(this);

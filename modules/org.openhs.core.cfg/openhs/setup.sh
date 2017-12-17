@@ -91,6 +91,7 @@ echo "$_JAVAC_LOCATION -jar $osgi_file -console -Declipse.ignoreApp=true -Dosgi.
 chmod +x $start_file
 
 # Create service
+
 service_file_name="openhs.service"
 service_file="/lib/systemd/system/$service_file_name"
 
@@ -124,8 +125,9 @@ systemctl daemon-reload
 
 
 #MQTT mosquitto install..
+:'
 if ! [ -x "$(command -v mosquitto)" ]; then
-  echo 'MQTT Mosquitto is NOT installed, continue with this..' >&2
+  echo "MQTT Mosquitto is NOT installed, continue with this.." >&2
   apt-get update -y -qq
   apt-get install -y -qq mosquitto mosquitto-clients
   sudo /etc/init.d/mosquitto start
@@ -158,10 +160,11 @@ if ! [ -x "$(command -v mosquitto)" ]; then
   sudo /etc/init.d/mosquitto start
 
 else
-  echo 'MQTT Mosquitto is installed.' >&2
+  echo "MQTT Mosquitto is installed." >&2
 fi
-
+'
 #IQRF daemon install..
+:'
 service_file_iqrf="/lib/systemd/system/iqrf-daemon.service"
 
 if [[ $platform == *"arm"* ]]
@@ -179,6 +182,7 @@ then
     systemctl status iqrf-daemon.service
   fi
 fi
+'
 
 echo "Starting OpenHS.."
 systemctl enable $service_file_name
